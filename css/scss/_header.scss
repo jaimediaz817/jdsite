@@ -1,0 +1,169 @@
+
+// Medias
+@media(min-width: 0) {
+
+    // CONTACT #1
+    section .social-network li a i {
+        color: $white;
+        font-size: 1.25rem;
+        padding: .6rem 1rem;
+        opacity: 0.8;
+        transition: all 0.4s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+            transform: scale(1.3) rotate(360deg);
+        }
+    }
+
+    // CONTACT #2
+    #details-contact {
+        color: $grey_light;
+    }
+
+    // MENU
+    #navigation-menu {
+
+        // JD - dark
+        .jd-white {
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.6s ease-in-out;
+        }
+
+        // BUTTON HAMBURGUER
+        .navbar-toggler{
+            padding: 0;
+            border: none;
+            line-height: 1;
+            background-color: transparent;
+            border-radius: 0;
+            outline: 0;
+        }
+
+        // Sticki
+        &.stick-menu {
+            transition: all 0.55s ease;
+            background-color: #1f2225;
+            // border-bottom: 2px solid lighten($red_light, 0.15);
+            border-bottom: 2px solid $red_light_darken;
+            width: 100%!important;
+
+            // JD - dark
+            .jd-white {
+                opacity: 1;
+                transform: scale(1);
+            }   
+        }
+        
+        // Icon - BURGUER
+        .icon-menu-custom  {
+            &:before {
+                font-family: "Font Awesome 5 Free";
+                content: "\f0c9";
+                font-weight: 900;
+                font-size: 2rem;
+                color: $white;
+                transition: all 0.4s ease;
+                position: relative;
+                left: 0.3rem;
+
+            }
+
+            // Close Style
+            &.icon-close {
+                &:before {
+                    content: "\f00d";
+                }
+            }
+        }
+
+        // Sub items
+        .navbar-nav {
+            // LI - ITEMS
+            .nav-item {
+                &.active {
+                    border-radius: .5rem;
+                    &:hover {                        
+                        .nav-link {
+                            background-color: $primary;
+                        }                        
+                    }
+                    .nav-link {
+                        background-color: darken($primary, 3%);
+                    }                    
+                }
+
+                // ANCLES - a
+                .nav-link {
+                    padding: 1rem 1.5rem;
+                    display: flex;
+                    justify-content: space-between;
+                    border-radius: .5rem;
+        
+                    &:hover {
+                        color: $white;
+                        background-color: lighten($secundary, 10%);
+        
+                        &:after {
+                            transform: rotateZ(180deg);
+                        }
+                    }
+                    &:after {
+                        font-family: "Font Awesome 5 Free";
+                        content: "\f105";
+                        font-weight: 900;
+                        transition: all 0.4s ease;
+                    }
+
+                    &.active {
+                        background-color: darken($primary, 3%);
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+@media(min-width: 576px) {
+    
+}
+
+@media(min-width: 768px) {
+
+    // MENU
+    #navigation-menu {
+        // Sub items
+        .navbar-nav {
+
+            // LI - ITEMS
+            .nav-item {
+                &.active {
+                    border-radius: 1.5rem;
+                }
+                // ANCLES - a
+                .nav-link {
+                    padding: .7rem 1.2rem;
+                    border-radius: 1.5rem;
+
+                    &:after {
+                        content: "";
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media(min-width: 992px) {
+    
+}
+
+@media(min-width: 1200px) {
+    
+}
+
+@media(min-width: 1450px) {
+
+}

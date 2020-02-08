@@ -148,11 +148,10 @@ $(function(){
 
         var promiseContactJd = $.ajax({
             url: URL_API,
-            type: 'PSOT',
+            type: 'POST',
             cache: false,
             data: $('#formContact').serialize(),
             datatype: 'json',
-            data: {},
             success: function(response){
                 console.log("MEMODEVS API REGISTER: ", response);
             },

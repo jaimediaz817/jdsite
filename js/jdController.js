@@ -124,4 +124,55 @@ $(function(){
    });
 
 
+
+
+    // REQUEST API - REGISTER - CONTACT    
+    var checkedHoraFechaJD = false;
+    var promiseContactJd = $.ajax({
+        url: 'https://memodevs.jaimediaz.dev/api/blogs',
+        type: 'GET',
+        dataType: 'json',
+        data: {},
+        success: function(response){
+            console.log("MEMODEVS API: ", response)
+        }
+    });
+
+    // SUBMIT FORM
+    $("#formContact").submit(function(e){
+        let URL_API = 'https://memodevs.jaimediaz.dev/api/landingPage/contact/message'
+        e.preventDefault();        
+        // Hacer petición ajax
+        var formDataJD = new FormData($("#formContact")[0]);
+        FormData.set('flagFechaHora', checkedHoraFechaJD);
+
+        var promiseContactJd = $.ajax({
+            url: URL_API,
+            type: 'PSOT',
+            cache: false,
+            data: $('#formContact').serialize(),
+            datatype: 'json',
+            data: {},
+            success: function(response){
+                console.log("MEMODEVS API REGISTER: ", response);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            }
+        });        
+    });
+
+    $(".fechas-cita-content").fadeOut();
+
+    $("#checkFechaHoraContact").on("change", function(){
+        console.log("checked", this.checked);
+        if(this.checked) {
+            checkedHoraFechaJD = true;
+            $(".fechas-cita-content").fadeIn();
+        } else {
+            checkedHoraFechaJD = false;
+            $(".fechas-cita-content").fadeOut();
+        }        
+    });
+    
 });

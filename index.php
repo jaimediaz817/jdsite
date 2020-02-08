@@ -443,8 +443,7 @@
                             <div class="form-group form-row">
                                 <label for="number" class="col-12 col-md-3 lbl-number text-primary">Número de celular (opcional):</label>
                                 <div class="col-12 col-md-9">
-                                    <input type="text" class="form-control" name="number" id="number" placeholder="Ingrese su número de celular..."
-                                        data-parsley-required
+                                    <input type="text" class="form-control" name="number" id="number" placeholder="Ingrese su número de celular..."                                        
                                         data-parsley-length="[5, 20]"
                                         data-parsley-required-message="Este campo no puede estar vacío"
                                         data-parsley-length-message="El número telefónico debe tener entre 5 y 20 números regularmente"
@@ -454,7 +453,7 @@
 
                             <!-- Mensaje -->
                             <div class="form-group form-row">
-                                <label for="message" class="col-12 col-md-3 text-primary">Mensaje:</label>
+                                <label for="message" class="col-12 col-md-3 text-primary">Mensaje: <span class="text-muted">(cuéntame lo que piensas o plantea una pregunta)</span></label>
                                 <div class="col-12 col-md-9">
                                     <textarea rows="4" class="text-left form-control" name="message" id="message" placeholder="Escriba su mensaje..."
                                         value=""
@@ -465,13 +464,21 @@
                             </div>
                             <span class="addon-form"></span>
 
+                            <!-- CONTROL NUEVO - habilitar deshabilitar selección de fecha y hora -->
+                            <div class="form-group d-flex justify-content-between mb-2">
+                                <p class="card-text text-left text-muted mb-0">Habilitar/Deshabilitar controles para especificar Fecha y hora</p>
+                                <label class="switch mb-0">
+                                    <input type="checkbox" id="checkFechaHoraContact">
+                                    <span class="slider round"></span>
+                                </label>                                
+                            </div>
+
                             <!-- Fecha cita -->
-                            <div class="form-group form-row">
+                            <div class="form-group form-row fechas-cita-content">
                                 <label for="date" class="col-12 col-md-3 text-primary">Fecha de la cita:</label>
                                 <div class="col-12 col-md-9">
                                     <div class="input-group">
                                         <input type="date" name="date" id="date" class="form-control datepicker"
-                                            data-parsley-required
                                             data-parsley-required-message="Este campo no puede estar vacío"                                        
                                         >
                                         <label for="date" class="input-group-append input-group-cita">
@@ -484,12 +491,11 @@
                             </div>
 
                             <!-- Hora cita -->
-                            <div class="form-group form-row">
+                            <div class="form-group form-row fechas-cita-content">
                                 <label for="time" class="col-12 col-md-3 text-primary">Hora de la cita:</label>
                                 <div class="col-12 col-md-9">
                                     <div class="input-group">
-                                        <input type="text" name="time" id="time" class="form-control timepicker" 
-                                            data-parsley-required
+                                        <input type="text" name="time" id="time" class="form-control timepicker"                                             
                                             data-parsley-required-message="Este campo no puede estar vacío"
                                             data-parsley-errors-container=".error-dia-cita"
                                             >

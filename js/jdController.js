@@ -144,7 +144,7 @@ $(function(){
         e.preventDefault();        
         // Hacer petición ajax
         var formDataJD = new FormData($("#formContact")[0]);
-        FormData.set('flagFechaHora', checkedHoraFechaJD);
+        FormData.set('flagFechaHora', false);
 
         var promiseContactJd = $.ajax({
             url: URL_API,

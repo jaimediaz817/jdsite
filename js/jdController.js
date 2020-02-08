@@ -151,8 +151,8 @@ $(function(){
             type: 'POST',
             cache: false,
             data: $('#formContact').serialize(),
-            contentType: "application/json; charset=utf-8",
-            datatype: 'json',
+            //contentType: "application/json; charset=utf-8",
+            datatype: 'jsonp',
             success: function(response){
                 console.log("MEMODEVS API REGISTER: ", response);
             },

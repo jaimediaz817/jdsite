@@ -69,8 +69,36 @@
                 position: absolute;
                 left: 50%;
                 top: 50%;           
-
             }
+
+            .download-file-pdf {
+                margin-right: 1rem;
+            }
+            .download-file-pdf:after {
+                display: none!important;
+            }
+            .download-file-pdf:before {
+                content: "\f1c1"!important;
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                left: 87%!important;
+                /* content: "\f138"; */
+                top: 1px!important;
+                position: absolute!important;
+                /* right: initial!important; */
+                transform: initial!important;
+                position: relative;
+                background: transparent!important;
+                font-size: 21px;
+                left: 0.75rem;
+                color: white;
+                top: .1rem;
+                -webkit-transition: all .4s ease;
+                transition: all .4s ease;              
+            }
+            a.btn.lp.btn-primary.download-file-pdf span {
+                padding-right: 1rem;
+            }            
 
         </style>
 
@@ -168,6 +196,15 @@
                     <span class="icon-menu-custom"></span>
                 </button>
                 
+
+                
+                <a href="docs/Jaime_Diaz_Hoja_de_Vida.pdf" class="btn lp btn-primary download-file-pdf order-md-1" download="Hoja_de_vida_Jaime_Diaz">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span>Descargar Hoja de Vida</span>
+                </a>
+
+                
+
                 <!-- Link CTA -->
                 <a href="#contact" class="btn lp btn-tertiary order-md-1">Contáctame o realiza una pregunta</a>
 
@@ -344,7 +381,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </section>
 
 

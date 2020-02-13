@@ -98,7 +98,41 @@
             }
             a.btn.lp.btn-primary.download-file-pdf span {
                 padding-right: 1rem;
-            }            
+            }    
+                        
+            .btn-header-align {
+
+            }  
+
+            @media (min-width: 0) {
+                .contact-btn{
+                    margin-top: 0.56rem!important;
+                }
+                .btn-header-align {
+                    margin: 0 0 0 auto;
+                }               
+            }
+            @media (min-width: 576px) {
+
+            }
+
+            @media (min-width: 768px) {
+                .contact-btn {
+                    margin-top: 0!important;
+                    margin-left: 1rem!important;
+                }
+                .btn-header-align {
+                    margin: initial;
+                }
+            }
+
+            @media (min-width: 992px) {
+
+            }
+
+            @media (min-width: 1200px) {
+
+            }
 
         </style>
 
@@ -198,7 +232,7 @@
                 
 
                 
-                <a href="docs/Jaime_Diaz_Hoja_de_Vida.pdf" class="btn lp btn-primary download-file-pdf order-md-1" download="Hoja_de_vida_Jaime_Diaz">
+                <a href="docs/Jaime_Diaz_Hoja_de_Vida.pdf" class="btn lp btn-primary download-file-pdf btn-header-align order-md-1" download="Hoja_de_vida_Jaime_Diaz">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     <span>Descargar Hoja de Vida</span>
                 </a>
@@ -206,7 +240,7 @@
                 
 
                 <!-- Link CTA -->
-                <a href="#contact" class="btn lp btn-tertiary order-md-1">Contáctame o realiza una pregunta</a>
+                <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">Contáctame o realiza una pregunta</a>
 
                 <!-- Content -->
                 <div class="collapse navbar-collapse" id="main-menu">

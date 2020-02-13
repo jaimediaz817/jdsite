@@ -84,7 +84,7 @@
                 <div class="row justify-content-sm-between align-items-sm-center">
 
                     <div class="col-12 col-sm-auto">
-                        <i class="fas fa-map-marker-alt mr-1"></i><span>Barrio Mercedes del Norte, Armenia, Quindío.</span>
+                        <i class="fas fa-map-marker-alt mr-1"></i><span>Armenia, Quindío.</span>
                     </div>
 
                     <div class="col-12 col-sm-auto">
@@ -144,7 +144,7 @@
                     <div class="col-auto ml-md-auto">
                         <!-- Contac -->
                         <i class="fas fa-phone fa-flip-horizontal fa-2x align-middle text-primary"></i>
-                        <span class="font-weight-bold h5 ml-1">+ 57 733 63 64</span>                        
+                        <span class="font-weight-bold h5 ml-1">+ 57 742 34 01</span>                        
                     </div>
                     <div class="col-auto">
                         <!-- Contac -->
@@ -377,7 +377,7 @@
                                     <h5 class="font-weight-bold">Teléfonos</h5>
                                     <p class="mb-0">
                                         <span class="indicativo">(+57) </span><span class="number">320 794 55 14</span>,
-                                        <span class="indicativo"> (+57) </span><span class="number">7 33 63 64</span>
+                                        <span class="indicativo"> (+57) </span><span class="number">7 42 34 01</span>
                                     </p>
                                 </div>
                             </li>
@@ -459,7 +459,7 @@
                                     >
                                 </div>
                             </div>
-                            
+
 
                             <!-- Email -->
                             <div class="form-group form-row">
@@ -589,7 +589,7 @@
                                 <a href="javascript:;">Politicas de privacidad</a>
                             </li>
                         </ul>
-                        <p class="small">©2019. Todos los derechos reservados. Trilogic</p>
+                        <p class="small">©<?php echo(date("Y")); ?>. Todos los derechos reservados. Trilogic</p>
                     </div>
                 </div>
             </div>

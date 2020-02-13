@@ -38,8 +38,41 @@
         <!-- Time -->
         <link rel="stylesheet" href="js/lib/pickadate/themes/default.time.css" type="text/css" media="screen">
 
+        <!-- TOAST   LIB -->
+        <link rel="stylesheet" href="css/lib/toast.css" type="text/css" media="screen">        
+
         <!-- CUSTOM  STYLES -->
         <link rel="stylesheet" href="css/styles.css">
+
+        <style>
+            .loader-background.hide {
+                opacity: 0;
+                transform: scale(0);
+                z-index: -1; 
+            }
+            .loader-background.show {
+                opacity: 1;
+                transform: scale(1);     
+                z-index: 998; 
+            }            
+            .loader-background {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                /* border: 4px solid red; */
+                background: rgba(255,255,255,0.5);                            
+                transform: 0.5s all ease-in;
+            }
+            .loader-component {
+                position: absolute;
+                left: 50%;
+                top: 50%;           
+
+            }
+
+        </style>
 
     </head>
 
@@ -136,7 +169,7 @@
                 </button>
                 
                 <!-- Link CTA -->
-                <a href="#contact" class="btn lp btn-tertiary order-md-1">Regístrate</a>
+                <a href="#contact" class="btn lp btn-tertiary order-md-1">Contáctame o realiza una pregunta</a>
 
                 <!-- Content -->
                 <div class="collapse navbar-collapse" id="main-menu">
@@ -313,6 +346,7 @@
             </div>
         </section>
 
+
         <!-- CONTACT SECTION -->
         <section id="contact" class="contact">
             <header class="py-5 bg-primary text-white text-center position-relative">
@@ -410,7 +444,7 @@
                     <div class="col-12 col-lg-6 form-container">
                         <h2 class="display-4 font-weight-bold"></h2>
                         <!-- text-md-left -->
-                        <h2 class="font-weight-bold text-center mb-4 text-secondary mb-4">Separa una cita y pongámonos en contacto:</h2>
+                        <h2 class="font-weight-bold text-center mb-4 text-secondary mb-4">Separa una cita y pongámonos en contacto o plantea una pregunta:</h2>
                         
                         <!--data-parsley-validate-->
                         <form id="formContact">
@@ -466,8 +500,9 @@
 
                             <!-- CONTROL NUEVO - habilitar deshabilitar selección de fecha y hora -->
                             <div class="form-group d-flex justify-content-between mb-2">
-                                <p class="card-text text-left text-muted mb-0">Habilitar/Deshabilitar controles para especificar Fecha y hora</p>
+                                <p class="card-text text-left text-muted mb-0">No deseo/ Deseo especificar fecha y hora de la cita/reunión</p>
                                 <label class="switch mb-0">
+                                    <input type="hidden" id="hiddenCheckDates" name="hiddenCheckDates" class="hiddenCheckDates" value="false"/>
                                     <input type="checkbox" id="checkFechaHoraContact">
                                     <span class="slider round"></span>
                                 </label>                                
@@ -511,7 +546,7 @@
 
                             <div class="form-group form-row">
                                 <div class="col-12 col-md-9 offset-md-3">
-                                    <button type="submit" class="btn btn-tertiary lp btn-block mt-2">Registrar cita</button>
+                                    <button type="submit" class="btn btn-tertiary lp btn-block mt-2">Registrar cita / plantear pregunta</button>
                                 </div>
                             </div>
 
@@ -558,6 +593,14 @@
                 </div>
             </div>
         </footer>
+
+
+        <!-- Loader -->
+        <div class="loader-background hide">
+            <div class="spinner-border text-danger loader-component" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
 
 
         <!-- *********************************************************************** -->
@@ -607,6 +650,9 @@
         
         <!-- Crea clases para identificar dispositivos -->
         <script src="js/lib/css_browser_selector.js"></script>
+
+        <!-- TOAST -->
+        <script src="js/lib/toast.js"></script>        
 
         <!-- CUSTOM   PATH ******************* -->
         <script src="js/jdController.js"></script>

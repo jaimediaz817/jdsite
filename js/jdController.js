@@ -126,8 +126,54 @@ $(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // .......................................................................
+    // $.toast({
+    //     heading: 'Information',
+    //     text: 'Loaders are enabled by default. Use `loader`, `loaderBg` to change the default behavior',
+    //     icon: 'error',
+    //     showHideTransition: 'fade',
+    //     //hideAfter : false,
+    //     hideAfter: 6000,
+    //     loader: true,        // Change it to false to disable loader
+    //     loaderBg: '#F6364F'  // To change the background
+    // });
+    ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 10000);
+    /*
+    $.toast({
+        text: "Don't forget to star the repository if you like it.", // Text that is to be shown in the toast
+        heading: 'Note', // Optional heading to be shown on the toast
+        showHideTransition: 'fade', // fade, slide or plain
+        allowToastClose: true, // Boolean value true or false
+        hideAfter: 3000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
+        stack: 5, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
+        position: 'bottom-left', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+        
+        bgColor: '#444444',  // Background color of the toast
+        textColor: '#eeeeee',  // Text color of the toast
+        textAlign: 'left',  // Text alignment i.e. left, right or center
+        beforeShow: function () {}, // will be triggered before the toast is shown
+        afterShown: function () {}, // will be triggered after the toat has been shown
+        beforeHide: function () {}, // will be triggered before the toast gets hidden
+        afterHidden: function () {}  // will be triggered after the toast has been hidden
+    });
+    */    
+
+
     // REQUEST API - REGISTER - CONTACT    
-    var checkedHoraFechaJD = false;
+    console.log("location >>>>>>>>>>>>>>>> ", location.host)
     var promiseContactJd = $.ajax({
         url: 'https://memodevs.jaimediaz.dev/api/blogs',
         type: 'GET',
@@ -138,41 +184,99 @@ $(function(){
         }
     });
 
+    // asignar el text area en blanco por defecto
+    $("#message").val("")
+
     // SUBMIT FORM
     $("#formContact").submit(function(e){
-        let URL_API = 'https://memodevs.jaimediaz.dev/api/landingPage/contact/message'
+        let URL_API_DEV = 'http://localhost:8001/api/landingPage/contact/message'
+        let URL_API_PROD = 'https://memodevs.jaimediaz.dev/api/landingPage/contact/message'
+        let API_LOCATION = location.host == "localhost" ? URL_API_DEV : URL_API_PROD;
         e.preventDefault();        
-        // Hacer petición ajax
-        var formDataJD = new FormData($("#formContact")[0]);
-        formDataJD.set('flagFechaHora', false);
-
+        $(".loader-background").removeClass("hide").addClass("show");
         var promiseContactJd = $.ajax({
-            url: URL_API,
-            type: 'POST',
-            cache: false,
-            data: $('#formContact').serialize(),
+            //processData:false,
+            //async : false,            
             //contentType: "application/json; charset=utf-8",
+            url: API_LOCATION,
+            type: 'POST',
+            cache: false,            
+            data: $('#formContact').serialize(),            
             datatype: 'jsonp',
             success: function(response){
                 console.log("MEMODEVS API REGISTER: ", response);
+                $("input, textArea").removeClass("is-valid").val("");
+                $(".loader-background").removeClass("show").addClass("hide");
+                // TOAST success
+                ToastMessage(response.success, 'success');                                
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+                let errorResponse = XMLHttpRequest.responseJSON.error;
+                $(".loader-background").removeClass("show").addClass("hide");
+                console.log("error : >>> ", XMLHttpRequest.responseJSON.error)
+                ToastMessage(XMLHttpRequest.responseJSON.error, 'error');
             }
-        });        
+        });
     });
 
+    // Por defecto ocultar las fechas
     $(".fechas-cita-content").fadeOut();
-
     $("#checkFechaHoraContact").on("change", function(){
         console.log("checked", this.checked);
         if(this.checked) {
-            checkedHoraFechaJD = true;
+            $("#hiddenCheckDates").val(true)
             $(".fechas-cita-content").fadeIn();
         } else {
-            checkedHoraFechaJD = false;
+            $("#hiddenCheckDates").val(false)
             $(".fechas-cita-content").fadeOut();
         }        
     });
+
+
+    function ToastMessage(headerMess = "", messageContent, typeMessage, timeShowMessage = 5000){
+        let iconMessage = '';
+        let headerMessage = 'Resultado de la operación:';
+        if(typeMessage == 'error') {
+            iconMessage = "error";
+            headerMessage = 'Algo ocurió durante el proceso'
+        } else {
+            headerMessage = "Success"
+            iconMessage = "success";
+        }
+
+        if (headerMess !== "") {            
+            headerMessage = headerMess;
+        }
+
+        $.toast({
+            heading: headerMessage,
+            text: messageContent,
+            icon: iconMessage,
+            //showHideTransition: 'fade',
+            showHideTransition: 'plain',
+            //hideAfter : false,
+            hideAfter: timeShowMessage,
+            loader: true,        // Change it to false to disable loader
+            loaderBg: '#F6364F'  // To change the background
+        });
+    }
+
     
+
+    if (urlParam('email') !== null && urlParam('names')) {
+        let emailParam = urlParam('email').trim();
+        let namesParam = urlParam('names').trim().replace(/\+/g, ' ').replace(/\./g, '').replace('/', ' ')
+        $("#names").val(namesParam)
+        $("#email").val(emailParam)
+    } else {
+        
+    }
+
+     function urlParam (name){
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results==null) {
+           return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }    
 });

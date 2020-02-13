@@ -196,7 +196,7 @@
                                 <h2 class="display-4 display-md-4 font-weight-bold text-white">
                                     La calidad y transparencia como mejores aliados en cada proyecto.                                    
                                 </h2>
-                                <a href="javascript:;" class="btn lp btn-primary mt-4 mt-md-3">Cotíza ahora mismo</a>
+                                <a href="#contact" class="btn lp btn-primary mt-4 mt-md-3">Si tienes dudas, pregúntame</a>
                             </div>
                         </div>
                     </div>
@@ -209,7 +209,7 @@
                                 <h2 class="display-4 display-md-4 font-weight-bold text-white">
                                     Un entorno de trabajo óptimo para tener el mejor desempeño y los mejores resultados.
                                 </h2>
-                                <a href="javascript:;" class="btn lp btn-primary mt-4 mt-md-3">Ver tips</a>
+                                <a href="#contact" class="btn lp btn-primary mt-4 mt-md-3">Plantea una pregunta</a>
                             </div>
                         </div>
                     </div>
@@ -275,7 +275,7 @@
                         <p>
                             Saber exactamente qué quieres, es el primer paso para iniciar de la mejor manera un proyecto, el éxito se basa principalmente en el análisis y seguimiento del <span class="market">dominio del problema</span> en las etapas iniciales
                         </p>
-                        <a href="javascript:;" class="btn lp btn-primary">Quiero comenzar un proyecto ahora mismo</a>
+                        <a href="#contact" class="btn lp btn-primary">Deseo saber más información</a>
                     </div>
                 </div>
             </div>
@@ -340,7 +340,7 @@
                         <h2 class="">PRÓXIMAMENTE PODRÁS DISPONER DE UNA CALCULADORA PARA DETERMINAR LOS COSTOS DE TU PROYECTO</h2>
                         <h6 class="text-white-50 my-2">QUEREMOS SER PARTE DE TÍ</h6>
                         <p>Estamos trabajando arduamente para facilitarte las herramientas necesarias con el fin de acercarnos a tus requerimientos, de manera transparente podrás saber cuánto tiempo llevará un desarrollo en semanas, días o meses, y calcular el coste.</p>
-                        <a href="javascript:;" class="btn lp btn-primary my-3">Conóce más sobre la metodología</a>
+                        <a href="#contact" class="btn lp btn-primary my-3">Conóce más sobre la metodología</a>
                     </div>
                 </div>
             </div>

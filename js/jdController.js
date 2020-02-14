@@ -151,7 +151,7 @@ $(function(){
     //     loader: true,        // Change it to false to disable loader
     //     loaderBg: '#F6364F'  // To change the background
     // });
-    ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 10000);
+    ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 6000);
     /*
     $.toast({
         text: "Don't forget to star the repository if you like it.", // Text that is to be shown in the toast
@@ -255,6 +255,7 @@ $(function(){
             icon: iconMessage,
             //showHideTransition: 'fade',
             showHideTransition: 'plain',
+            bgColor: "#444444",
             //hideAfter : false,
             hideAfter: timeShowMessage,
             loader: true,        // Change it to false to disable loader
@@ -279,5 +280,15 @@ $(function(){
            return null;
         }
         return decodeURI(results[1]) || 0;
-    }    
+    }   
+    
+    
+
+    // FOOTER
+	$('[data-toggle="tooltip"]').tooltip();
+	// avatares actions ::
+	$('footer .card-avatares').hover(function() {
+		$(this).toggleClass('flipped');
+    });
+
 });

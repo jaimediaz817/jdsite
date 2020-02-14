@@ -44,6 +44,10 @@
         <!-- CUSTOM  STYLES -->
         <link rel="stylesheet" href="css/styles.css">
 
+        <!-- Fuentes -->
+        <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
+	    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">        
+
         <style>
             .loader-background.hide {
                 opacity: 0;
@@ -115,6 +119,204 @@
 
 
 
+
+
+            /* FOOTER */
+            .footer-section-one {
+                margin-top: 2.5rem;
+            }
+            footer *{
+                font-family: 'Open Sans', sans-serif;
+            }
+            footer .addon{
+                height: 8px;
+                /*border: 1px solid red;*/
+                background: -moz-linear-gradient(71deg, rgba(52,58,64,1) 24%, rgb(0, 172, 184) 100%); /* ff3.6+ */
+                background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(52,58,64,1)), color-stop(100%, rgba(0,83,89,1))); /* safari4+,chrome */
+                background: -webkit-linear-gradient(71deg, rgba(52,58,64,1) 24%, rgb(0, 172, 184) 100%); /* safari5.1+,chrome10+ */
+                background: -o-linear-gradient(71deg, rgba(52,58,64,1) 24%, rgb(0, 172, 184) 100%); /* opera 11.10+ */
+                background: -ms-linear-gradient(71deg, rgba(52,58,64,1) 24%, rgb(0, 172, 184) 100%); /* ie10+ */
+                background: linear-gradient(71deg, rgba(52,58,64,1) 24%, rgb(0, 172, 184) 100%); /* w3c */
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#343a40', endColorstr='#005359',GradientType=1 ); /* ie6-9 */
+            }
+
+            footer .addon .col-main{
+                background: red;
+                height: 100%;
+            }
+
+            .footer{	
+                /*position: absolute;*/
+                position: relative;
+                /*bottom: 75px;*/
+                width: 100%;
+                /*height: 330px;*/
+                line-height: 60px;
+                background-color: #343a40; /* #f5f5f5;*/
+                border-top: 0px solid #212529;
+            }
+            .footer > div {	
+                color:#dee2e6;
+            }
+            footer .social-content{}
+            footer span.text-muted.text-heaeder-foot{
+                border-bottom: 1px dashed #00acb9;
+                padding-bottom: 4px;
+            }
+            footer .social-content a.fab, footer .social-content a.fa {
+                font-size: 32px;
+                color: #00acb9;
+                transition: all 0.5s;
+            }
+            footer .social-content a.fab:hover, footer .social-content a.fa:hover {
+                transition: all 0.5s;
+                color: #fff;
+                text-decoration: none;
+            }
+            footer .social-content .social-text{
+                line-height: 20px;
+                font-size: 13px;
+                color: #6c757d;
+                padding-top: 12px;
+                border-top: 1px solid #00acb9;
+            }
+
+            footer .social-content .col:hover p {
+                color: #dee2e6;
+                transition: all 0.5s;
+            }
+            footer .social-content .col.border-top-custom{
+                border-top: 1px dotted #2f5355;
+                border-right: 1px dashed #424d4e;
+            }
+            footer .social-content .col.border-top-custom:last-child{
+                border-right: none;
+            }
+            footer .social-content .single-text{
+                font-size: 18px;
+                font-family: Roboto;
+                display: inline-block;
+                margin-left: 0.5rem;
+            }
+            /* Footer Line */
+            footer .sub-footer{
+                background: #212529;
+            }
+            footer .sub-footer .jd-container{
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid #00acb9;
+                background: #16232e;
+            }
+            footer .sub-footer .jd-container img{
+                display: inline-block;
+                width: 40px;
+                position: relative;
+            }
+
+            footer .back-content .jd-container{}
+            footer .sub-footer .back-content .jd-container{
+                overflow: hidden;
+            }
+            footer .sub-footer .back-content .jd-container img{
+                width: 100%;
+            }
+
+
+            /* -------------- */
+            footer .card-avatares{
+            -webkit-transition: -webkit-transform 0.6s;
+            -moz-transition: -moz-transform 0.6s;
+            -o-transition: -o-transform 0.6s;
+            transition: transform 0.6s;
+            -webkit-transform-style: preserve-3d;
+            -moz-transform-style: preserve-3d;
+            -o-transform-style: preserve-3d;
+            transform-style: preserve-3d; 
+            }
+            footer .card-avatares.flipped{
+            -webkit-transform: rotateY( 180deg);
+            -moz-transform: rotateY( 180deg);
+            -o-transform: rotateY( 180deg);
+            transform: rotateY( 180deg);
+            }
+            footer .front-content,
+            footer .back-content {
+            display: block;
+            height: 100%;
+            width: 100%;
+            line-height: 60px;
+            color: white;
+            text-align: center;
+            font-size: 4em;
+
+            position: absolute;
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            -o-backface-visibility: hidden;
+            backface-visibility: hidden;
+            /*box-shadow: 3px 5px 20px 2px rgba(0, 0, 0, 0.25);
+            -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.26);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.26);*/
+            }
+            footer .back-content {
+
+            width: 100%;
+            /*padding-left: 3%;
+            padding-right: 3%;*/
+            font-size: 16px;
+            /*text-align: left;*/
+            line-height: 25px;
+
+            /*background: #499a91;*/
+            -webkit-transform: rotateY( 180deg);
+            -moz-transform: rotateY( 180deg);
+            -o-transform: rotateY( 180deg);
+            transform: rotateY( 180deg);
+            }
+            /* -------------- */
+            footer .derechos{
+                font-size: 12px;
+            }
+
+
+            .col-5.color-txt{
+                color:#868e96;
+            }
+            footer .jd-text{
+                font-size: 12px;
+                line-height: 20px;
+            }
+            .col-5.color-txt .jd-text strong{
+                color: #868e96;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /*
+            ####################################################
+            M E D I A  Q U E R I E S
+            ####################################################
+            */
             /* MEDIA QUERIES  */
             @media (min-width: 0) {
                 /* Header */
@@ -663,6 +865,7 @@
                                         data-parsley-required-message="Este campo no puede estar vacío"
                                         data-parsley-type-message="Ingrese un email con un formato válido"
                                     >
+                                    <input type="hidden" id="toFormScrollMobile" />
                                 </div>
                             </div>
 
@@ -749,6 +952,135 @@
             </div>
         </section>
 
+
+        <!-- FOOTER -->
+        <footer class="footer footer-section-one">
+            <div class="addon container-fluid">
+                <div class="row">
+                    <!--<div class="col-8 col-main"></div>-->
+                </div>
+            </div>
+
+            <div class="container">
+
+                <div class="row">
+                    <div class="col mr-auto">
+                        <span class="text-muted text-heaeder-foot"><i class="fa fa-user-circle pr-2" style="font-size: 22px;"></i>Contáctame a través de las redes sociales</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mr-auto pb-1">
+                        <div class="row social-content justify-content-center">
+                            <div class="col">
+                                <a href="https://www.facebook.com/jdiaz.817" class="fab fa-facebook-square"></a>
+                                <p class="social-text">
+                                    Contáctame a través de Facebook, escríbeme un mensaje privado o publicame algo en mi muro.
+                                    Con gusto me pondré en contacto contigo en la mayor brevedad posible.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://twitter.com/JDiaz0017" class="fab fa-twitter-square"></a>
+                                <p class="social-text">
+                                    Envíame un Tuit o publicame algo. Con gusto estaré atento ya con la opción de poder enviar mensajes directos.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://codepen.io/jdiaz0017/" class="fab fa-codepen"></a>
+                                <p class="social-text">
+                                    Si quieres ver al instante algún producto de maquetación no dudes en contactarme para compartir contigo un avance instantáneo de dicho producto. POdrás inspeccionar código y ser partícipe del mismo, evidenciando el poder de las buenas prácticas de codificación y convenciones.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://plus.google.com/u/4/107764142392043892596" class="fab fa-google-plus-g"></a>
+                                <p class="social-text">
+                                    Si tienes en mente algún proyecto podremos gestionar en la nube toda la documentación pertinente mediante el Drive de Google, y todo el Siute de herramientas que esta gran empresa posee. Trabajar en la nube nunca fue tan fácil y directo. Así que no lo pienses más. Contáctame a través de Google +
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://github.com/jaimediaz817" class="fab fa-github-square">
+                                    <i class="fa fa-code-branch" style="font-size: 18px;"></i>
+                                </a>
+                                <p class="social-text">
+                                    Puedes navegar entre los diferentes repositorios públicos en los que he trabajado por Hobbie y/o probando alguna funcionalidad. Puedes ver también algunos proyectos desarrolados en algunos cursos de <strong>Platzi</strong>, experimentos y algo más.
+                                </p>
+                            </div>
+                            <!--<div class="col col-12 col-md-12 col-lg-12 border-top-custom">
+                                <a href="https://github.com/jaimediaz817" class="fa fa-arrow-down"></a>
+                                <p class="social-text">
+                                    <strong>Plunker</strong> es un excekente sitio online en el que puedes ver mis proyectos/experimentos en la nube sin necesidad de desplegar una aplicación en un web hosting u otra plataforma como servicio. Podrás ver un poco de mi trabajo como maquetador web y programación del lado del Frontend.
+                                </p>
+                            </div>-->
+                        </div>
+
+                        <div class="row social-content justify-content-center">						
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://next.plnkr.co/users/jaimediaz817/plunks" class="fa fa-arrow-down"></a>
+                                <p class="social-text">
+                                    <strong>Plunker</strong> es un excelente sitio online en el que puedes ver mis proyectos/experimentos en la nube sin necesidad de desplegar una aplicación en un web hosting u otra plataforma como servicio. Podrás ver un poco de mi trabajo como maquetador web y programación del lado del Frontend.
+                                </p>
+                            </div>
+
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://www.linkedin.com/in/jdiaz817" class="fab fa-linkedin">
+                                    <!--<span class="single-text">Perfil laboral <i class="fa fa-briefcase ml-1" style="color:#6c757d;font-size: 13px;"></i></span>-->
+                                </a>
+                                <p class="social-text">
+                                    Dentro de mi <strong>Perfil Linkedin</strong> adjunto últimamente mis certificados obtendidos tras lograr finalizar cursos en materia académica. Me gusta adquirir nuevos conocimientos técnicos en el ecosistema Javascript principalmente. En términos generales, busco construir un perfil Frontend y Backend. En esta red social pretendo llevar a cabo vínculos importantes con compañeros y/o posibles clientes.
+                                </p>
+                            </div>
+
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://bitbucket.org/jdiaz0017/" class="fab fa-bitbucket">
+                                    <!--<span class="single-text">Perfil laboral <i class="fa fa-bitbucket ml-1" style="color:#6c757d;font-size: 13px;"></i></span>-->
+                                </a>
+                                <p class="social-text">
+                                    Este es mi tercer repositorio donde suelo subir repositorios privados y colaborar con frameworks como <strong>FoxFramework</strong> propuesto por el Ing <strong>Plablo Bejarano</strong> de la Ciudad de cali. En dicho Framework tube la oportunidad de realizar aportes sustanciales en el Core de dicho framework solucionando un error en producción con el modelo. Próximamente estaré compartiendo dicho Framework de la casa.
+                                </p>
+                            </div>
+
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://github.com/jaimediaz817" class="fab fa-github-square"><span class="single-text">Perfil laboral <i class="fa fa-briefcase ml-1" style="color:#6c757d;font-size: 13px;"></i></span></a>
+                                <p class="social-text">
+                                    Esta es mi segunda cuenta Github que regularmente <strong>no</strong> comparto públicamente, no obstante, comparto esta cuenta con el fin de evidenciar mi actividad en los últimos 2 años, participando activamente en el proyecto en el cual laboro. Se trata de un repositorio privado pero se puede evidenciar la actividad constante y compromiso total de mi parte.
+                                </p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid pl-0 pr-0 sub-footer pt-2 pb-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6 col-md-6 col-lg-5 color-txt d-flex align-items-center justify-content-center">
+                            <p class="jd-text text-muted mb-0"><strong>Jaime Iván Díaz</strong>, Ing. de sistemas especialista en desarrollo web | Frontend.</p>
+                        </div>
+
+                        <div class="col-6 col-md-6 col-lg-2 px-0 text-center align-items-center d-flex card-avatares">
+                            <div class="front-content mx-auto">
+                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                    <img src="images/jd.png" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
+                                </a>
+                            </div>
+                            <div class="back-content mx-auto">
+                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                    <img src="images/jd-imagen.jpg" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="text-sm-center text-lg-left col-12 col-md-12 col-lg-5 color-txt derechos text-left text-muted">
+                            Todos los derechos reservados <?php echo(date("Y")); ?> © Trilogic, Inc.
+                        </div>
+                    </div>
+                    
+                </div>			
+            </div>
+        </footer>
+
+
         <!-- FOOTER -->
         <footer id="footer" class="bg-dark text-white-light text-truncate">
             <div class="container">
@@ -781,11 +1113,12 @@
                                 <a href="javascript:;">Politicas de privacidad</a>
                             </li>
                         </ul>
-                        <p class="small">©<?php echo(date("Y")); ?>. Todos los derechos reservados. Trilogic</p>
+                        <p class="small"> <?php echo(date("Y")); ?> ©. Todos los derechos reservados. Trilogic</p>
                     </div>
                 </div>
             </div>
-        </footer>
+        </footer>        
+
 
 
         <!-- Loader -->

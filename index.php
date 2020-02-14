@@ -104,7 +104,31 @@
 
             }  
 
+
+
+            /* MEDIA QUERIES  */
             @media (min-width: 0) {
+                /* Header */
+                .jd-logo-dark {
+                    position: absolute;
+                    left: 7px;
+                    top: 57px;                    
+                }
+                .jd-logo-dark img{
+                    opacity: 0.3;
+                }
+                .show-text-sm {
+                    display: inline-block;
+                }
+                .show-text-md {  
+                    display: none;
+                }      
+                .btn-header-align {
+                    width: 215px;
+                    border-radius: 12px!important;
+                }                          
+
+
                 .contact-btn{
                     margin-top: 0.56rem!important;
                 }
@@ -113,17 +137,39 @@
                 }               
             }
             @media (min-width: 576px) {
+                /* Header */
 
             }
 
             @media (min-width: 768px) {
+                /* Header */
+                .jd-logo-dark {
+                    position: initial;
+                    left: initial;
+                    top: initial;                    
+                }
+                .jd-logo-dark img{
+                    opacity: initial;
+                }
+                .show-text-sm {                 
+                    display: none;
+                }                
+                .show-text-md {  
+                    display: inline-block
+                }
+                .btn-header-align {
+                    width: initial;
+                    border-radius: 50px!important;
+                }
+
+
                 .contact-btn {
                     margin-top: 0!important;
                     margin-left: 1rem!important;
                 }
                 .btn-header-align {
                     margin: initial;
-                }
+                }                
             }
 
             @media (min-width: 992px) {
@@ -222,7 +268,11 @@
             <div class="container">
 
                 <!-- Logo dark -->
-                <a href="javascript:;" class="d-none d-md-block jd-white pr-4">
+                <!-- 
+                d-none  
+
+                -->
+                <a href="javascript:;" class="jd-logo-dark d-md-block jd-white pr-4">
                     <img src="images/jd_white.svg" alt="Logo" width="40" class="img-fluid">
                 </a>
 
@@ -240,7 +290,10 @@
                 
 
                 <!-- Link CTA -->
-                <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">Contáctame o realiza una pregunta</a>
+                <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">
+                    <span class="show-text-md">Contáctame o realiza una pregunta</span>
+                    <span class="show-text-sm">Contáctame</span>
+                </a>
 
                 <!-- Content -->
                 <div class="collapse navbar-collapse" id="main-menu">

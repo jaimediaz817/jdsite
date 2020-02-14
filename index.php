@@ -106,14 +106,31 @@
 
 
 
+
+
+
+
+
+
+
+
+
             /* MEDIA QUERIES  */
             @media (min-width: 0) {
                 /* Header */
+                .cta-buttons-container a {
+                    line-height: 1;
+                }                
                 .jd-logo-dark {
                     position: absolute;
-                    left: 7px;
-                    top: 57px;                    
+                    left: 54px;
+                    top: 28px;                                      
                 }
+                .show-menu-responsive .jd-logo-dark {
+                    left: calc(50% + -20px);
+                    top: 16px;                    
+                }
+
                 .jd-logo-dark img{
                     opacity: 0.3;
                 }
@@ -126,7 +143,12 @@
                 .btn-header-align {
                     width: 215px;
                     border-radius: 12px!important;
-                }                          
+                }   
+                .cta-buttons-container {
+                    order: 2;
+                    display: flex;
+                    flex-direction: column;
+                }                
 
 
                 .contact-btn{
@@ -142,6 +164,21 @@
             }
 
             @media (min-width: 768px) {
+                .section-menu-cta-buttons {
+                    margin-left: 0;
+                    margin-right: 0;
+                    padding-left: 0;
+                    padding-right: 0;                    
+                    max-width: 100%;
+                }                
+                .section-menu-cta-buttons a:nth-child(2){
+                    margin-left: 0!important;
+                    margin-top: 0.5rem!important;
+                }
+                .cta-buttons-container a {
+                    line-height: 1;
+                }                       
+
                 /* Header */
                 .jd-logo-dark {
                     position: initial;
@@ -151,17 +188,17 @@
                 .jd-logo-dark img{
                     opacity: initial;
                 }
-                .show-text-sm {                 
-                    display: none;
-                }                
-                .show-text-md {  
-                    display: inline-block
-                }
+
                 .btn-header-align {
-                    width: initial;
+                    width: 100%;
                     border-radius: 50px!important;
                 }
 
+                .cta-buttons-container {
+                    order: 1;
+                    flex-direction: column;
+                    flex-shrink: 0;                    
+                }                                
 
                 .contact-btn {
                     margin-top: 0!important;
@@ -177,7 +214,36 @@
             }
 
             @media (min-width: 1200px) {
+                .section-menu-cta-buttons {
+                    width: 100%;
+                    padding-right: 15px;
+                    padding-left: 15px;
+                    margin-right: auto;
+                    margin-left: auto; 
+                    max-width: 1200px;
+                }
 
+                .section-menu-cta-buttons a:nth-child(2){
+                    margin-left: 1.25rem!important;
+                    margin-top: initial!important;
+                }
+
+                .cta-buttons-container a {
+                    line-height: initial;
+                }                
+
+                .show-text-sm {                 
+                    display: none;
+                }                
+                .show-text-md {  
+                    display: inline-block
+                }
+                .cta-buttons-container {
+                    flex-direction: row;
+                }      
+                .btn-header-align {
+                    width: initial;
+                }                              
             }
 
         </style>
@@ -265,7 +331,7 @@
 
         <!-- MENU NAV -->
         <nav id="navigation-menu" class="navbar navbar-dark bg-secundary-light-1 navbar-expand-md">
-            <div class="container">
+            <div class="container section-menu-cta-buttons">
 
                 <!-- Logo dark -->
                 <!-- 
@@ -281,19 +347,20 @@
                 </button>
                 
 
-                
-                <a href="docs/Jaime_Diaz_Hoja_de_Vida.pdf" class="btn lp btn-primary download-file-pdf btn-header-align order-md-1" download="Hoja_de_vida_Jaime_Diaz">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                    <span>Descargar Hoja de Vida</span>
-                </a>
-
-                
-
-                <!-- Link CTA -->
-                <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">
-                    <span class="show-text-md">Contáctame o realiza una pregunta</span>
-                    <span class="show-text-sm">Contáctame</span>
-                </a>
+                <div class="cta-buttons-container">
+                    <!-- PDF BUTTON -->
+                    <a href="docs/Jaime_Diaz_Hoja_de_Vida.pdf" class="btn lp btn-primary download-file-pdf btn-header-align order-md-1" download="Hoja_de_vida_Jaime_Diaz">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        <span class="show-text-md">Descargar Hoja de Vida</span>
+                        <span class="show-text-sm">Hoja de vida</span>
+                    </a>
+            
+                    <!-- Link CTA -->
+                    <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">
+                        <span class="show-text-md">Contáctame o realiza una pregunta</span>
+                        <span class="show-text-sm">Contáctame</span>
+                    </a>
+                </div>
 
                 <!-- Content -->
                 <div class="collapse navbar-collapse" id="main-menu">

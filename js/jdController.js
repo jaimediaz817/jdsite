@@ -4,6 +4,7 @@ $(function(){
     $("#navigation-menu .navbar-toggler").on("click", function(){
         console.log("click")
         $(this).children().toggleClass("icon-close");
+        $(".section-menu-cta-buttons").toggleClass("show-menu-responsive")
     });
 
     // items menu

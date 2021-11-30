@@ -496,11 +496,11 @@
                                 </a>
                             </li>
                             <!-- WhatsApp -->
-                            <li>
+                            <!-- <li>
                                 <a href="https://wa.me/573207945514?text=Hola,%20quiero%20comunicarme%20contigo..." target="_blank">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 </div>

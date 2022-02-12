@@ -294,8 +294,11 @@ $(function(){
         $("#howToHelp").hide();
         $(".swipe-item-sorpresa").show();
 
+        $("#howToHelp, #costs, #contact").addClass("d-sorpresa-none");
+
         ToastMessage("mi fresita:", "Ésta es una sorpresa para el amor de mi vida...", "espero que te guste", 11000);
     } else {
+        $("#howToHelp, #costs, #contact").removeClass("d-sorpresa-none");
         ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 6000);
     }
     

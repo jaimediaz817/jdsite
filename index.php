@@ -682,7 +682,7 @@
         </section>
 
         <!-- HOW CAN WE HELP YOU -->
-        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax d-sorpresa-none" data-jarallax data-speed="0.7" id="howToHelp">
+        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
 
             <!-- PICTURE -->
             <picture class="jarallax-img">
@@ -750,7 +750,7 @@
         </section>
 
         <!-- COSTS -->
-        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax d-sorpresa-none" data-jarallax data-jarallax data-speed="0.95">
+        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
 
             <!-- PICTURE -->
             <picture class="jarallax-img">
@@ -773,7 +773,7 @@
 
 
         <!-- CONTACT SECTION -->
-        <section id="contact" class="contact d-sorpresa-none">
+        <section id="contact" class="contact">
             <header class="py-5 bg-primary text-white text-center position-relative">
                 <h2 class="display-4 font-weight-bold">CONTÁCTANOS</h2>
                 <h6 class="text-white-50">ESTAMOS LISTOS PARA ATENDERTE</h6>

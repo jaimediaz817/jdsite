@@ -448,6 +448,10 @@
                 }                              
             }
 
+            .d-sorpresa-none {
+                display: none!important;
+            }
+
         </style>
 
     </head>
@@ -568,11 +572,12 @@
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="navbar-nav mt-3 mt-md-0">
                         <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#contact-info" class="nav-link active">Inicio</a></li>
-                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#welcome" class="nav-link">Bienvenido</a></li>
-                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#numeric" class="nav-link">Mis números</a></li>
-                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#costs" class="nav-link">Costos</a></li>
-                        <li class="mb-1 mb-md-0 mr-md-0 nav-item"><a href="#contact" class="nav-link">Contacto</a></li>
-                        <li class="mb-1 mb-md-0 mr-md-0 nav-item"><a href="#footer" class="nav-link">Soporte</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#welcome" class="nav-link swipe-item-home">Bienvenido</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#welcome" class="nav-link swipe-item-sorpresa">¡VER SORPRESA!</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#numeric" class="nav-link swipe-item-home">Mis números</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#costs" class="nav-link swipe-item-home">Costos</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item"><a href="#contact" class="nav-link swipe-item-home">Contacto</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item"><a href="#footer" class="nav-link swipe-item-home">Soporte</a></li>
                     </ul>
                 </div>
             </div>
@@ -586,21 +591,27 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-9 col-sm-11 col-md-12">
-                                <h2 class="display-4 display-md-4 font-weight-bold text-white">
+                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-home">
                                     La calidad y transparencia como mejores aliados en cada proyecto.                                    
                                 </h2>
+                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-sorpresa">
+                                    !Puede que no lo haya demostrado como lo esperé durante tanto tiempo!....
+                                </h2>                                
                                 <a href="#contact" class="btn lp btn-primary mt-4 mt-md-3">Si tienes dudas, pregúntame</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="swiper-slide d-flex justify-content-center align-items-center img image2">
+                <div class="swiper-slide d-flex justify-content-center align-items-center img image2 swipe-item-home">
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-9 col-sm-11 col-md-12">
-                                <h2 class="display-4 display-md-4 font-weight-bold text-white">
+                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-home">
                                     Un entorno de trabajo óptimo para tener el mejor desempeño y los mejores resultados.
+                                </h2>
+                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-sorpresa">
+                                Pero fue la alegría silenciosa más impactante y al mismo tiempo más bonita que recibido por parte de alguien, mi fresita amada...
                                 </h2>
                                 <a href="#contact" class="btn lp btn-primary mt-4 mt-md-3">Plantea una pregunta</a>
                             </div>
@@ -623,7 +634,7 @@
             <div class="container">
                 <div class="row">
 
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-6 swipe-item-home">
                         <div class="video-container position-relative">
                             <img src="images/slides/slide_code.jpg" alt="Imágen de bienvenida a mi Home page." class="img-fluid">
 
@@ -634,7 +645,18 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-lg-6 pt-4 pt-lg-0 text-center text-lg-left">
+                    <div class="col-12 col-lg-6 swipe-item-sorpresa">
+                        <div class="video-container position-relative">
+                            <img src="https://www.currentschoolnews.com/wp-content/uploads/2021/05/photo-1547948577-438c80482068.jpg" alt="Imágen de bienvenida a mi Home page." class="img-fluid">
+
+                            <a href="https://youtu.be/cFQpvmvpd2s" data-title="Vídeo sorpresa para el amor de mi vida" data-vbtype="video" data-autoplay="true" class="btn-play venobox venobox-action">
+                                <i class="fas fa-play"></i>
+                            </a>
+                            
+                        </div>
+                    </div>                    
+
+                    <div class="col-12 col-lg-6 pt-4 pt-lg-0 text-center text-lg-left swipe-item-home">
                         <h2 class="txt-title display-4 font-weight-bold text-secundary mt-lg-n2">
                             Bienvenidos a mi <span class="text-primary">Home page.</span>
                         </h2>
@@ -646,12 +668,21 @@
                         <a href="javascript:;" class="btn lp btn-primary">Más información</a>
                     </div>
 
+                    <div class="col-12 col-lg-6 pt-4 pt-lg-0 text-center text-lg-left swipe-item-sorpresa">
+                        <h2 class="txt-title display-4 font-weight-bold text-secundary mt-lg-n2">
+                            Hola mi fresita amada, sé que estás cansada <span class="text-primary">lo sé</span>
+                        </h2>
+                        <h6 class="text-black-50 mb-lg-3">"La disciplina vencerá la inteligencia"</h6>
+                        <p>
+                            Como una muestra de mi inmensa alegría y felicidad, decidí prepararte una pequeña sorpresa y espero que te guste fresita de mi vida
+                        </p>
+                    </div>                    
                 </div>
             </div>
         </section>
 
         <!-- HOW CAN WE HELP YOU -->
-        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
+        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax d-sorpresa-none" data-jarallax data-speed="0.7" id="howToHelp">
 
             <!-- PICTURE -->
             <picture class="jarallax-img">
@@ -719,7 +750,7 @@
         </section>
 
         <!-- COSTS -->
-        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
+        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax d-sorpresa-none" data-jarallax data-jarallax data-speed="0.95">
 
             <!-- PICTURE -->
             <picture class="jarallax-img">
@@ -742,7 +773,7 @@
 
 
         <!-- CONTACT SECTION -->
-        <section id="contact" class="contact">
+        <section id="contact" class="contact d-sorpresa-none">
             <header class="py-5 bg-primary text-white text-center position-relative">
                 <h2 class="display-4 font-weight-bold">CONTÁCTANOS</h2>
                 <h6 class="text-white-50">ESTAMOS LISTOS PARA ATENDERTE</h6>

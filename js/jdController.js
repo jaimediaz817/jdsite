@@ -39,6 +39,8 @@ $(function(){
         }
     });
 
+    $(".swipe-item-sorpresa").hide();
+
     // VENOBOX
     $(".btn-play").venobox({
         border: '5px',
@@ -151,7 +153,7 @@ $(function(){
     //     loader: true,        // Change it to false to disable loader
     //     loaderBg: '#F6364F'  // To change the background
     // });
-    ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 6000);
+    
     /*
     $.toast({
         text: "Don't forget to star the repository if you like it.", // Text that is to be shown in the toast
@@ -281,6 +283,21 @@ $(function(){
         }
         return decodeURI(results[1]) || 0;
     }   
+
+    // SORPRESAS PERSONALES PARAM VALIDATION
+    if (urlParam('parametroEspecial') !== null) {
+        let parametroDestino = urlParam('parametroEspecial').trim();
+        
+        // ocultar segmentos para que no hagan ruido
+        $(".cta-buttons-container, #numeric, #howToHelp").hide();
+        $(".swipe-item-home").hide();
+        $("#howToHelp").hide();
+        $(".swipe-item-sorpresa").show();
+
+        ToastMessage("mi fresita:", "Ésta es una sorpresa para el amor de mi vida...", "espero que te guste", 11000);
+    } else {
+        ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 6000);
+    }
     
     
 
@@ -290,5 +307,14 @@ $(function(){
 	$('footer .card-avatares').hover(function() {
 		$(this).toggleClass('flipped');
     });
+
+    /**
+     * TEMPORAL
+     */
+    function getSearchParams(k){
+        var p={};
+        location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=v})
+        return k?p[k]:p;
+    }    
 
 });

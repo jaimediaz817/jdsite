@@ -711,11 +711,18 @@
                 <h2 class="display-4 font-weight-bold text-secondary">UN POCO SOBRE MIS NÚMEROS</h2>
                 <h6 class="text-black-50">TENGO ALGUNOS NÚMEROS QUE MOSTRARTE.</h6>
 
+                <?php 
+                    // anios de experiencia
+                    $date1 = new DateTime("2012-11-02");
+                    $date2 = new DateTime("now");
+                    $interval = $date1->diff($date2);
+                ?>
+
                 <div class="row numbers_bg">
                     <div class="col-6 col-md-3 py-4 counter-container">
                         <i class="far fa-calendar-alt text-primary display-4 mb-2"></i>
                         <div class="font-weight-bold text-secondary display-4 h2">
-                            <span class="counter" data-counterup-beginat="0" data-counterup-time="500">7</span>
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="500"><?= $interval->y ?></span>
                         </div>
                         <h6>Años de experiencia</h6>
                         <div class="counter-line"></div>

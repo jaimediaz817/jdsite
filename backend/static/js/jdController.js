@@ -93,8 +93,8 @@ $(function(){
        clear: 'Borrar',
        format: 'hh:i a',
        interval: 60,
-       min: [6,00],
-   })
+       min: [6, 0],
+   }) 
 
    /* 
    Time conf.
@@ -176,7 +176,7 @@ $(function(){
 
 
     // REQUEST API - REGISTER - CONTACT    
-    console.log("location >>>>>>>>>>>>>>>> ", location.host)
+    // console.log("location >>>>>>>>>>>>>>>> ", location.host)
     var promiseContactJd = $.ajax({
         url: 'https://memodevs.jaimediaz.dev/api/blogs',
         type: 'GET',

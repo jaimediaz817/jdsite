@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql_jd
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme_root
+      MYSQL_DATABASE: jdsite
+      MYSQL_USER: jdsite
+      MYSQL_PASSWORD: changeme_dev
+      TZ: America/Bogota
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_jd
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: jdsite
+      PMA_PASSWORD: changeme_dev
+      TZ: America/Bogota
+      UPLOAD_LIMIT: 128M
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

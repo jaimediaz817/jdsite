@@ -1,2 +1,5 @@
 node_modules/
 backend/jdsite/__pycache__/
+backend/inquiries/__pycache__/
+backend/inquiries/migrations/__pycache__/
+backend/.env

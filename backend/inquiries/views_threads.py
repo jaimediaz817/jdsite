@@ -20,9 +20,13 @@ from .utils import calculate_work_hours
 # Estas variables globales se han movido aquí para mayor claridad, pero su uso
 # ha sido reemplazado por el framework de `sites` de Django, que es una mejor práctica.
 # Se mantienen por si se reutilizan en otros contextos.
-SITE_BASE_URL = getattr(settings, "SITE_BASE_URL", "http://localhost:8000").rstrip("/")
+SITE_BASE_URL = getattr(
+    settings, "SITE_BASE_URL", "http://localhost:8000"
+).rstrip("/")
 EMAIL_SUBJECT_PREFIX = getattr(settings, "EMAIL_SUBJECT_PREFIX", "[JD] ")
-DEFAULT_FROM_EMAIL = getattr(settings, "DEFAULT_FROM_EMAIL", settings.EMAIL_HOST_USER)
+DEFAULT_FROM_EMAIL = getattr(
+    settings, "DEFAULT_FROM_EMAIL", settings.EMAIL_HOST_USER
+)
 REPLY_TO_EMAIL = getattr(settings, "REPLY_TO_EMAIL", settings.EMAIL_HOST_USER)
 
 
@@ -48,7 +52,10 @@ def home_view(request):
     experience_years = (
         today.year
         - start_date_career.year
-        - ((today.month, today.day) < (start_date_career.month, start_date_career.day))
+        - (
+            (today.month, today.day)
+            < (start_date_career.month, start_date_career.day)
+        )
     )
 
     context = {
@@ -66,10 +73,16 @@ def jd_send_email_html(to, subject, template, context):
     text = "Por favor utiliza un cliente compatible con HTML."
 
     msg = EmailMultiAlternatives(
-        subject=subject, body=text, from_email=settings.DEFAULT_FROM_EMAIL, to=[to]
+        subject=subject,
+        body=text,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[to],
     )
     msg.attach_alternative(html, "text/html")
-    msg.send()
+    result = msg.send()
+    print(
+        f"[JD][EMAIL] Enviado a {to} usando backend: {settings.EMAIL_BACKEND} (resultado: {result})"
+    )
 
 
 @require_POST
@@ -128,7 +141,9 @@ def api_submit_question(request):
         if created:
             print(f"🟢 [DEBUG] Reclutador nuevo creado: {recruiter.email}")
         else:
-            print(f"🟡 [DEBUG] Reclutador existente actualizado: {recruiter.email}")
+            print(
+                f"🟡 [DEBUG] Reclutador existente actualizado: {recruiter.email}"
+            )
         # --------------------------------
 
         # 2. Crear el Hilo (Thread)
@@ -333,7 +348,9 @@ def api_admin_reply(request):
 
         print("🟢 [DEBUG] Notificación enviada exitosamente.")
     except Exception as e:
-        print(f"🔴 [ERROR CRÍTICO] Falló el envío de notificación de respuesta: {e}")
+        print(
+            f"🔴 [ERROR CRÍTICO] Falló el envío de notificación de respuesta: {e}"
+        )
         # Aunque el correo falle, la respuesta se guarda y se muestra en el chat.
         # El return de éxito no se ve afectado.
 

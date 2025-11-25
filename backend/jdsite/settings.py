@@ -9,7 +9,6 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-key")
 # DEBUG = os.getenv("DEBUG", "True") == "True"
 DEBUG = True
-
 # Detecta entorno
 DJANGO_ENV = os.getenv("DJANGO_ENV", "development").lower()
 
@@ -106,6 +105,15 @@ SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000")
 
 # CONF NUEVA:EMAIL_BACKEND = os.getenv("EMAIL_BACKEND",
 # "django.core.mail.backends.console.EmailBackend")
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_SES_REGION_NAME = os.getenv(
+    "AWS_SES_REGION_NAME", "us-east-2"
+)  # O la región donde creaste la identidad (ej: eu-west-1)
+AWS_SES_REGION_ENDPOINT = f"email.{AWS_SES_REGION_NAME}.amazonaws.com"
+
+
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"

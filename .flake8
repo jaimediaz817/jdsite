@@ -1,0 +1,3 @@
+[flake8]
+max-line-length = 88        # o el valor que prefieras (por ej. 100, 120)
+extend-ignore = E501       # ignora E501 por completo

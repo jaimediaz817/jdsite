@@ -1,0 +1,3 @@
+¡Gracias por tu mensaje!
+Puedes consultar el estado aquí:
+{{ url }}/ask/status/{{ q.token }}/

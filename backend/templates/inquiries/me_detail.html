@@ -1,0 +1,15 @@
+<h1>Pregunta de {{ inquiry.name }} ({{ inquiry.email }})</h1>
+<p><b>Recibida:</b> {{ inquiry.created_at }}{% if inquiry.viewed_at %} | <b>Vista:</b> {{ inquiry.viewed_at }}{% endif %}</p>
+<p><b>Mensaje:</b><br>{{ inquiry.message|linebreaks }}</p>
+<hr>
+<h3>Responder</h3>
+<form method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <button>Enviar respuesta</button>
+</form>
+{% if inquiry.response_message %}
+<hr>
+<h3>Respuesta enviada</h3>
+<p>{{ inquiry.response_message|linebreaks }}</p>
+<p><b>Respondida:</b> {{ inquiry.responded_at }}</p>
+{% endif %}

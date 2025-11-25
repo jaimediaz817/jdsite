@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Chat con {{ thread.recruiter.name }} | Admin JD</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+        <style>
+            body {
+                background-color: #f0f2f5;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* Layout */
+            .main-container {
+                height: 100vh;
+                display: flex;
+            }
+
+            /* Sidebar Info */
+            .sidebar-info {
+                width: 300px;
+                background: #fff;
+                border-right: 1px solid #ddd;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+            }
+            .recruiter-avatar {
+                width: 80px;
+                height: 80px;
+                background: #00adb5;
+                color: #fff;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                margin: 0 auto 15px;
+            }
+            .info-item {
+                margin-bottom: 15px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+            .info-label {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                color: #888;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+            .info-value {
+                font-size: 1rem;
+                color: #333;
+                font-weight: 500;
+                word-break: break-word;
+            }
+
+            /* Chat Area */
+            .chat-area {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                background: #e5ddd5;
+                position: relative;
+            }
+            .chat-header {
+                background: #fff;
+                padding: 15px 20px;
+                border-bottom: 1px solid #ddd;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* Messages Container */
+            .messages-container {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            /* Bubbles */
+            .msg-bubble {
+                max-width: 70%;
+                padding: 10px 15px;
+                border-radius: 7px;
+                position: relative;
+                font-size: 0.95rem;
+                line-height: 1.4;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .msg-recruiter {
+                align-self: flex-start;
+                background: #fff;
+                border-top-left-radius: 0;
+            }
+            .msg-owner {
+                align-self: flex-end;
+                background: #dcf8c6;
+                border-top-right-radius: 0;
+            }
+
+            .msg-meta {
+                display: block;
+                font-size: 0.7rem;
+                color: #999;
+                margin-top: 5px;
+                text-align: right;
+            }
+
+            /* Input Area */
+            .input-area {
+                background: #f0f0f0;
+                padding: 15px;
+                border-top: 1px solid #ddd;
+            }
+            .input-group-text {
+                background: #fff;
+                border: none;
+            }
+            .form-control-chat {
+                border: none;
+                border-radius: 20px;
+                padding: 10px 20px;
+                resize: none;
+                height: 50px;
+            }
+            .btn-send {
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: 10px;
+                background: #00adb5;
+                border: none;
+            }
+            .btn-send:hover {
+                background: #028a93;
+            }
+
+            /* Scrollbar */
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #ccc;
+                border-radius: 3px;
+            }
+
+            /* ====== Responsive tweaks ====== */
+
+            /* Ajuste leve en pantallas medianas */
+            @media (max-width: 1200px) {
+            .sidebar-info { width: 260px; }
+            }
+
+/* ===== FIX COMPLETO MOVIL / TABLET (no cambia clases ni JS) ===== */
+@media (max-width: 992px) {
+  /* Evita cualquier desplazamiento horizontal */
+  html, body { overflow-x: hidden; }
+
+  /* El contenedor principal pasa a flujo vertical 100% */
+  .main-container {
+    display: block;              /* fuerza a pila (sidebar arriba, chat abajo) */
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  /* Sidebar compacta, de ancho completo y con scroll propio si se alarga */
+  .sidebar-info {
+    width: 100%;
+    max-width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 10px 12px;
+    max-height: 200px;           /* reduce “aire” arriba */
+    overflow: auto;              /* si hay muchos datos, scroll en la ficha */
+  }
+
+  /* Área de chat: nada de márgenes/anchos residuales */
+  .chat-area {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 !important;
+    flex: none;
+    min-height: calc(100vh - 140px);   /* más alto, pero sin “techo” exagerado */
+  }
+
+  /* Zona de mensajes */
+  .messages-container {
+    padding: 12px;
+    gap: 8px;
+    max-width: 100%;
+    padding-bottom: 110px;       /* para que el input sticky no tape el último msg */
+  }
+
+  /* Burbujas más anchas en móvil */
+  .msg-bubble { max-width: 95%; }
+
+  /* Input siempre visible al fondo */
+  .input-area {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding: 10px 12px;
+  }
+
+  .form-control-chat {
+    height: 44px;
+    font-size: .95rem;
+    padding: 10px 14px;
+  }
+  .btn-send { width: 44px; height: 44px; }
+
+  /* Avatar/typo compactos para que no “empuje” el chat hacia abajo */
+  .recruiter-avatar { width: 56px; height: 56px; font-size: 1.2rem; margin-bottom: 6px; }
+  .sidebar-info h4,
+  .sidebar-info .recruiter-name { font-size: 1rem; margin: 4px 0 2px; }
+  .sidebar-info .info-item { margin: 6px 0; }
+  .sidebar-info .info-label { font-size: .82rem; letter-spacing: .02em; }
+  .sidebar-info hr { margin: 8px 0; }
+
+  .recruiter-avatar {
+    /* Evita que el flex lo estire */
+    flex: 0 0 auto;
+
+    /* Elimina padding que vuelve “píldora” al círculo */
+    padding: 0 !important;
+
+    /* Que siempre sea un cuadrado y luego redondo */
+    width: clamp(48px, 12vw, 64px);
+    aspect-ratio: 1 / 1;     /* mantiene 1:1 aunque cambie el ancho */
+    height: auto;
+    border-radius: 50%;
+
+    /* Centrado del carácter dentro del círculo */
+    display: grid;
+    place-items: center;
+
+    /* Evita efectos ópticos por line-height */
+    line-height: 1;
+    box-sizing: border-box;
+
+    /* Asegura que no herede transform o estiramientos raros */
+    transform: none !important;
+    align-self: center;
+    margin: 6px auto 4px;
+  }  
+}
+
+/* Afinado extra para teléfonos muy pequeños */
+@media (max-width: 576px) {
+  .sidebar-info { max-height: 180px; }
+  .messages-container { padding-bottom: 120px; }
+  .recruiter-avatar {
+    width: clamp(44px, 14vw, 56px);
+  }  
+}
+
+
+        </style>
+    </head>
+    <body>
+        <div class="main-container">
+            <!-- SIDEBAR: INFO DEL RECLUTADOR -->
+            {% comment %}
+            <div class="sidebar-info shadow-sm">
+                <div class="text-center mb-4">
+                    <a
+                        href="{% url 'inquiries:admin_threads' %}"
+                        class="btn btn-outline-secondary btn-sm float-left"
+                        ><i class="fas fa-arrow-left"></i
+                    ></a>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="recruiter-avatar">
+                    {{ thread.recruiter.name|slice:":1" }}
+                </div>
+                <h5 class="text-center font-weight-bold">
+                    {{ thread.recruiter.name }}
+                </h5>
+                <p class="text-center text-muted small">
+                    {{ thread.recruiter.company|default:"Empresa no
+                    especificada" }}
+                </p>
+
+                <div class="mt-4">
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            <a href="mailto:{{ thread.recruiter.email }}"
+                                >{{ thread.recruiter.email }}</a
+                            >
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Teléfono</div>
+                        <div class="info-value">
+                            {% if thread.recruiter.phone %}
+                            <a
+                                href="https://wa.me/{{ thread.recruiter.phone|cut:'+'|cut:' ' }}"
+                                target="_blank"
+                                class="text-success"
+                            >
+                                <i class="fab fa-whatsapp"></i> {{
+                                thread.recruiter.phone }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">--</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Reunión Propuesta</div>
+                        <div class="info-value">
+                            {% if thread.meeting_date %}
+                            <i class="far fa-calendar-alt"></i> {{
+                            thread.meeting_date|date:"d M Y" }}<br />
+                            <i class="far fa-clock"></i> {{
+                            thread.meeting_time|time:"H:i" }} {% else %}
+                            <span class="text-muted">Sin fecha</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endcomment %}
+            <!-- filepath: c:\Users\Usuario Windows\Documents\JDiaz-PC-DESKTOP1\proyectos_jdiaz\marca_personal__Portafolio_JD\backend\templates\inquiries\admin_thread_detail.html -->
+            <!-- SIDEBAR: INFO DEL RECLUTADOR -->
+            <div class="sidebar-info shadow-sm">
+                <div class="text-center mb-4">
+                    <a
+                        href="{% url 'inquiries:admin_threads' %}"
+                        class="btn btn-outline-secondary btn-sm float-left"
+                    >
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="recruiter-avatar">
+                    {{ thread.recruiter.name|slice:":1" }}
+                </div>
+
+                <h5 class="text-center font-weight-bold">
+                    {{ thread.recruiter.name }}
+                </h5>
+
+                <p class="text-center text-muted small">
+                    <!-- prettier-ignore -->
+                    {% if thread.recruiter.company %}
+                    {{thread.recruiter.company }} {% else %} Empresa no especificada {% endif %}
+                </p>
+
+                <div class="mt-4">
+                    <!-- EMAIL -->
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            <a href="mailto:{{ thread.recruiter.email }}">
+                                {{ thread.recruiter.email }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- TELÉFONO -->
+                    <div class="info-item">
+                        <div class="info-label">Teléfono</div>
+                        <div class="info-value">
+                            {% if thread.recruiter.phone %}
+                            <a
+                                href="https://wa.me/{{ thread.recruiter.phone|cut:'+'|cut:' ' }}"
+                                target="_blank"
+                                class="text-success"
+                            >
+                                <i class="fab fa-whatsapp"></i>
+                                {{thread.recruiter.phone }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">--</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- REUNIÓN -->
+                    {% comment %} <div class="info-item">
+                        <div class="info-label">Reunión Propuesta</div>
+                        <div class="info-value">
+                            {% if thread.meeting_date %}
+                            <i class="far fa-calendar-alt"></i> {{
+                            thread.meeting_date|date:"d M Y" }}<br />
+                            <i class="far fa-clock"></i> {{
+                            thread.meeting_time|time:"H:i" }} {% else %}
+                            <span class="text-muted">Sin fecha</span>
+                            {% endif %}
+                        </div>
+                    </div> {% endcomment %}
+                    {% if thread.meeting_date %}
+                    <div class="info-item">
+                        <div class="info-label">Reunión Propuesta</div>
+                        <div class="info-value">
+                            <i class="far fa-calendar-alt"></i> {{ thread.meeting_date|date:"d M Y" }}<br>
+                            <i class="far fa-clock"></i> {{ thread.meeting_time|time:"H:i" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!-- FIN DEL BLOQUE NUEVO -->                    
+                </div>
+            </div>
+
+            <!-- CHAT AREA -->
+            <div class="chat-area">
+                <div class="chat-header shadow-sm">
+                    <div>
+                        <strong>Hilo #{{ thread.code }}</strong>
+                        <span class="badge badge-pill badge-info ml-2"
+                            >{{ thread.get_status_display }}</span
+                        >
+                    </div>
+                    <small class="text-muted"
+                        >Iniciado: {{ thread.created_at|date:"d M Y" }}</small
+                    >
+                </div>
+
+                <div class="messages-container" id="msgContainer">
+                    {% for msg in thread.messages.all %}
+                    <div
+                        class="msg-bubble {% if msg.sender == 'OWNER' %}msg-owner{% else %}msg-recruiter{% endif %}"
+                    >
+                        {{ msg.content|linebreaksbr }}
+                        <span class="msg-meta">
+                            {{ msg.created_at|date:"H:i" }}
+                            <!-- prettier-ignore -->
+                            {% if msg.sender == 'OWNER' %}<i
+                                class="fas fa-check-double text-primary ml-1"
+                            ></i
+                            >{% endif %}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted mt-5">
+                        No hay mensajes aún.
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="input-area">
+                    <form id="replyForm" class="d-flex align-items-center">
+                        {% csrf_token %}
+                        <input
+                            type="hidden"
+                            name="thread_id"
+                            value="{{ thread.id }}"
+                        />
+                        <textarea
+                            name="message"
+                            id="messageInput"
+                            class="form-control form-control-chat"
+                            placeholder="Escribe tu respuesta..."
+                            required
+                        ></textarea>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-send shadow"
+                        >
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            // Envuelve todo en un document.ready para asegurar que el DOM esté cargado
+            $(function() {
+                const container = document.getElementById("msgContainer");
+                
+                // 1. Scroll al fondo
+                if (container) {
+                    container.scrollTop = container.scrollHeight;
+                }
+
+                // 2. Manejador del formulario de respuesta
+                $("#replyForm").on("submit", function (e) {
+                    e.preventDefault();
+                    const btn = $(this).find("button");
+                    const input = $("#messageInput");
+                    const msgText = input.val().trim();
+
+                    if (!msgText) return;
+
+                    btn.prop("disabled", true);
+
+                    $.post("{% url 'inquiries:api_admin_reply' %}", $(this).serialize())
+                        .done(function (res) {
+                            if (res.ok) {
+                                // Crea la burbuja de chat con el contenido de la respuesta
+                                const html = `
+                                <div class="msg-bubble msg-owner">
+                                    ${res.content.replace(/\n/g, "<br>")}
+                                    <span class="msg-meta">
+                                        ${res.date}
+                                        <i class="fas fa-check-double text-primary ml-1"></i>
+                                    </span>
+                                </div>`;
+                                
+                                $("#msgContainer").append(html);
+                                container.scrollTop = container.scrollHeight; // Scroll al nuevo mensaje
+                                input.val(""); // Limpia el input
+                            } else {
+                                alert("Error al enviar: " + (res.error || "Desconocido"));
+                            }
+                        })
+                        .fail(function () {
+                            alert("Error de conexión. No se pudo enviar la respuesta.");
+                        })
+                        .always(function () {
+                            btn.prop("disabled", false);
+                            input.focus();
+                        });
+                });
+
+                // 3. Enviar con Enter (sin Shift)
+                $("#messageInput").on("keydown", function (e) {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        $("#replyForm").submit();
+                    }
+                });
+            });
+        </script>        
+        {% comment %} <script>
+            // Scroll al fondo al cargar
+            const container = document.getElementById("msgContainer");
+            container.scrollTop = container.scrollHeight;
+
+            // Enviar mensaje vía AJAX
+            $("#replyForm").on("submit", function (e) {
+                e.preventDefault();
+                const btn = $(this).find("button");
+                const input = $("#messageInput");
+                const msgText = input.val().trim();
+
+                if (!msgText) return;
+
+                btn.prop("disabled", true);
+
+                $.post(
+                    "{% url 'inquiries:api_admin_reply' %}",
+                    $(this).serialize()
+                )
+                    .done(function (res) {
+                        if (res.ok) {
+                            // Agregar burbuja visualmente
+                            const html = `
+                    <div class="msg-bubble msg-owner">
+                        ${res.content}
+                        <span class="msg-meta">${res.date} <i class="fas fa-check-double text-primary ml-1"></i></span>
+                    </div>
+                `;
+                            $("#msgContainer").append(html);
+                            container.scrollTop = container.scrollHeight;
+                            input.val("");
+                        } else {
+                            alert("Error: " + res.error);
+                        }
+                    })
+                    .fail(function () {
+                        alert("Error de conexión");
+                    })
+                    .always(function () {
+                        btn.prop("disabled", false);
+                        input.focus();
+                    });
+            });
+
+            // Enviar con Enter (sin Shift)
+            $("#messageInput").on("keydown", function (e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    $("#replyForm").submit();
+                }
+            });
+        </script> {% endcomment %}
+    </body>
+</html>

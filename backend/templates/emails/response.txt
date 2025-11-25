@@ -1,0 +1,7 @@
+Hola {{ q.name }},
+He respondido tu pregunta:
+
+{{ q.response_message }}
+
+Consulta el hilo aquí:
+{{ url }}/ask/status/{{ q.token }}/

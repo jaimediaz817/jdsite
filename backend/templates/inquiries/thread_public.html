@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <title>Seguimiento de tu consulta - Jaime Díaz</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+        <style>
+            body {
+                background-color: #f0f2f5;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .main-card {
+                max-width: 800px;
+                margin: 2rem auto;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                overflow: hidden;
+            }
+            .card-header-custom {
+                background-color: #00adb5;
+                color: white;
+                padding: 1.5rem;
+                text-align: center;
+            }
+            .card-header-custom h3 {
+                margin: 0;
+                font-weight: 600;
+            }
+            .card-body-custom {
+                padding: 1rem;
+                background-color: #e5ddd5; /* Fondo tipo chat */
+            }
+            .thread-info {
+                text-align: center;
+                padding: 0.5rem 1rem;
+                background: #f8f9fa;
+                border-bottom: 1px solid #ddd;
+                font-size: 0.9rem;
+            }
+            .messages-container {
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .msg-bubble {
+                max-width: 75%;
+                padding: 10px 15px;
+                border-radius: 7px;
+                position: relative;
+                font-size: 0.95rem;
+                line-height: 1.4;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                word-wrap: break-word;
+            }
+            .msg-recruiter {
+                align-self: flex-end; /* El reclutador es el "dueño" de esta vista */
+                background: #dcf8c6;
+                border-top-right-radius: 0;
+            }
+            .msg-owner {
+                align-self: flex-start; /* Mis respuestas */
+                background: #fff;
+                border-top-left-radius: 0;
+            }
+            .msg-meta {
+                display: block;
+                font-size: 0.7rem;
+                color: #999;
+                margin-top: 5px;
+                text-align: right;
+            }
+            .footer-note {
+                background-color: #f8f9fa;
+                padding: 1.25rem;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #6c757d;
+                border-top: 1px solid #ddd;
+            }
+            .footer-note i {
+                color: #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-card">
+            <div class="card-header-custom">
+                <h3>
+                    <i class="fas fa-shield-alt mr-2"></i>Seguimiento de tu
+                    consulta
+                </h3>
+            </div>
+
+            <div class="thread-info">
+                <span class="mr-3"
+                    >Código: <strong>{{ thread.code }}</strong></span
+                >
+                <span
+                    >Estado:
+                    <strong>{{ thread.get_status_display }}</strong></span
+                >
+            </div>
+
+            <div class="card-body-custom">
+                <div class="messages-container">
+                    {% for msg in thread.messages.all %}
+                    <div
+                        class="msg-bubble {% if msg.sender == 'OWNER' %}msg-owner{% else %}msg-recruiter{% endif %}"
+                    >
+                        <!-- CORRECCIÓN: Usar 'content' en lugar de 'body' -->
+                        {{ msg.content|linebreaksbr }}
+                        <span class="msg-meta">
+                            {{ msg.created_at|date:"d M, H:i" }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center my-4">
+                        Aún no hay mensajes.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="footer-note">
+                <i class="fas fa-info-circle mr-2"></i>Si necesitas añadir más
+                información, por favor, responde al correo que te envié.
+            </div>
+        </div>
+    </body>
+</html>

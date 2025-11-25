@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 82
+target-version = ["py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 82
+
+[tool.ruff]
+line-length = 82
+target-version = "py313"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+ignore = ["E203"]  # no ignores E501, así Ruff hace cumplir 82

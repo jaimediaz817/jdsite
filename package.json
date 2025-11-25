@@ -1,0 +1,17 @@
+{
+  "name": "marca_personal__portafolio_jd",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass:watch": "sass --embed-source-map --quiet --no-error-css backend/static/css/scss/styles.scss backend/static/css/styles.css --watch",
+    "sass:build": "sass --style=compressed backend/static/css/scss/styles.scss backend/static/css/styles.css"    
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "sass": "^1.94.2"
+  }
+}

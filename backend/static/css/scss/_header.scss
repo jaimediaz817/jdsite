@@ -1,7 +1,24 @@
 
+#contact-info {
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 12px rgba(0,173,181,0.08);
+    background: rgba(0,173,181,0.98); // glass suave si quieres
+    a { text-decoration: underline dotted; }
+    .fa-lg { opacity: 0.85; }
+
+    .container {
+        .row {
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
+        }
+    }
+}
+
+
 // Medias
 @media(min-width: 0) {
-
     // CONTACT #1
     section .social-network li a i {
         color: $white;
@@ -19,6 +36,7 @@
     // CONTACT #2
     #details-contact {
         color: $grey_light;
+        display: none!important;
     }
 
     // MENU
@@ -53,6 +71,7 @@
             .jd-white {
                 opacity: 1;
                 transform: scale(1);
+                left: 45%;
             }   
         }
         
@@ -154,6 +173,66 @@
             }
         }
     }
+}
+
+@media (min-width: 1200px) {
+
+}
+
+// Estilos base (mobile first)
+.text-slide-container h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+.text-slide-container h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.text-slide-container .lead {
+  font-size: 1rem;
+}
+.hero-stack-chips span {
+  font-size: 0.95rem;
+  padding: 0.3rem 0.8rem;
+}
+
+// Solo desktop
+@media (min-width: 992px) {
+  .text-slide-container h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+  }
+  .text-slide-container h2 {
+    font-size: 2.8rem;
+    line-height: 1.1;
+  }
+  .text-slide-container .lead {
+    font-size: 1.5rem;
+  }
+  .hero-stack-chips span {
+    font-size: 1rem;
+    padding: 0.4rem 1.1rem;
+  }
+}
+
+
+
+// Oculta el elemento solo en mobile (menor a 992px)
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+    #navigation-menu {
+        // JD - dark
+        div.jd-white {
+            border: 1px solid red;
+
+            display: block !important;
+        }
+    }
+
+
 }
 
 @media(min-width: 992px) {

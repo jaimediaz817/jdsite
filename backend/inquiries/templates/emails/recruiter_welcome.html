@@ -1,0 +1,28 @@
+{% extends "emails/base_email.html" %}
+
+{% block subject %}
+He recibido tu mensaje – Jaime Díaz
+{% endblock %}
+
+{% block body %}
+<p>Hola {{ recruiter_name }},</p>
+
+<p>
+Gracias por escribirme. He recibido tu mensaje y te responderé lo antes posible.
+</p>
+
+{% if meeting_date %}
+<p>He registrado tu propuesta de reunión para el <strong>{{ meeting_date|date:"l, d F Y" }} a las {{ meeting_time|time:"H:i" }}</strong>. Te confirmaré la disponibilidad en mi respuesta.</p>
+{% endif %}
+
+<p>
+Mientras tanto puedes consultar el estado de tu mensaje y todas las respuestas
+desde el enlace seguro que preparé para ti:
+</p>
+{% endblock %}
+
+{% block cta %}
+<div class="cta-container">
+    <a href="{{ status_url }}" class="cta-btn">Ver seguimiento de mi consulta</a>
+</div>
+{% endblock %}

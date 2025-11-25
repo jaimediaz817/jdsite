@@ -162,3 +162,18 @@
         }
     }
 }
+
+// CONTAINERS SOLO EN TABLET/DESKTOP
+@media (max-width: 767.98px) {
+    .flex-center-full {
+        padding-top: 3rem;
+    }
+}
+@media (min-width: 768px) {
+  .flex-center-full {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+}

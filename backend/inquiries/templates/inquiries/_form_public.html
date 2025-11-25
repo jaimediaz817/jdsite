@@ -1,0 +1,106 @@
+<form id="formContact">
+    {% csrf_token %}
+
+    <!-- Nombres -->
+    <div class="form-group form-row">
+        <label for="names" class="col-12 col-md-3 text-primary">Nombre completo:</label>
+        <div class="col-12 col-md-9">
+            <input type="text" class="form-control" name="names" id="names"
+                    placeholder="Ej: Ana Gómez / Carlos Ruiz"
+                    data-parsley-required
+                    data-parsley-error-message="Indica tu nombre para poder responderte">
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group form-row">
+        <label for="email" class="col-12 col-md-3 text-primary">Email:</label>
+        <div class="col-12 col-md-9">
+            <input type="email" class="form-control" name="email" id="email"
+                    placeholder="Tu email (corporativo si aplica)"
+                    data-parsley-required
+                    data-parsley-type="email"
+                    data-parsley-required-message="El email es obligatorio"
+                    data-parsley-type-message="Formato de email inválido">
+            <input type="hidden" id="toFormScrollMobile" />
+        </div>
+    </div>
+
+    <!-- Número -->
+    <div class="form-group form-row">
+        <label for="number" class="col-12 col-md-3 lbl-number text-primary">Teléfono (opcional):</label>
+        <div class="col-12 col-md-9">
+            <input type="text" class="form-control" name="number" id="number"
+                    placeholder="Número directo / móvil"
+                    data-parsley-length="[5, 20]"
+                    data-parsley-required-message="Campo requerido"
+                    data-parsley-length-message="Entre 5 y 20 caracteres">
+        </div>
+    </div>
+
+    <!-- Mensaje -->
+    <div class="form-group form-row">
+        <label for="message" class="col-12 col-md-3 text-primary">
+            Mensaje: <span class="text-muted">(rol, contexto, stack, pregunta)</span>
+        </label>
+        <div class="col-12 col-md-9">
+            <textarea rows="4" class="text-left form-control" name="message" id="message"
+                        placeholder="Ej: Buscamos perfil Full-Stack con experiencia en integraciones (Zoho / APIs). ¿Disponibilidad para una reunión inicial?"
+                        data-parsley-required
+                        data-parsley-required-message="Indica algún contexto para ayudarte"></textarea>
+        </div>
+    </div>
+    <span class="addon-form"></span>
+
+    <!-- CONTROL NUEVO - habilitar deshabilitar selección de fecha y hora -->
+    <div class="form-group d-flex justify-content-between mb-2">
+        <p class="card-text text-left text-muted mb-0">
+            No deseo / Deseo proponer fecha y hora de la reunión inicial
+        </p>
+        <label class="switch mb-0">
+            <input type="hidden" id="hiddenCheckDates" name="hiddenCheckDates" class="hiddenCheckDates" value="false"/>
+            <input type="checkbox" id="checkFechaHoraContact">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <!-- Fecha cita -->
+    <div class="form-group form-row fechas-cita-content" style="display:none;">
+        <label class="col-12 col-md-3 text-primary" placeholder="Selecciona una fecha">Fecha propuesta:</label>
+        <div class="col-12 col-md-9">
+            <div class="input-group">
+                <input type="date" name="date" id="date-pick" class="form-control datepicker"
+                        data-parsley-required-message="La fecha no es válida">
+                <label class="input-group-append input-group-cita" for="date-pick">
+                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hora cita -->
+    <div class="form-group form-row fechas-cita-content" style="display:none;">
+        <label for="time" class="col-12 col-md-3 text-primary">Selecciona una hora:</label>
+        <div class="col-12 col-md-9">
+            <div class="input-group">
+                <input type="text" name="time" id="time" class="form-control timepicker"
+                        data-parsley-required-message="La hora no es válida"
+                        data-parsley-errors-container=".error-dia-cita">
+                <label for="time" class="input-group-append input-group-cita">
+                    <span class="input-group-text"><i class="far fa-clock"></i></span>
+                </label>
+            </div>
+            <div class="error-dia-cita"></div>
+        </div>
+    </div>
+
+    <div class="form-group form-row">
+        <div class="col-12 col-md-9 offset-md-3">
+            <button type="submit" class="btn btn-tertiary lp btn-block mt-2"
+                    aria-label="Enviar solicitud de reunión o consulta">
+                Enviar solicitud / pregunta
+            </button>
+            <small id="formHelp" class="form-text text-muted mt-2"></small>
+        </div>
+    </div>
+</form>

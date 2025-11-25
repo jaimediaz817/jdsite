@@ -1,0 +1,25 @@
+{% extends "emails/base_email.html" %}
+
+{% block subject %}
+Nueva consulta de {{ recruiter_name }}
+{% endblock %}
+
+{% block body %}
+<p>Has recibido una nueva consulta a través del formulario de contacto.</p>
+<p><strong>Nombre:</strong> {{ recruiter_name }}</p>
+<p><strong>Email:</strong> {{ recruiter_email }}</p>
+{% if meeting_date %}
+<p><strong>Propone reunión:</strong> {{ meeting_date|date:"l, d F Y" }} a las {{ meeting_time|time:"H:i" }}</p>
+{% endif %}
+<p><strong>Mensaje:</strong></p>
+
+<p style="white-space:pre-line;">{{ message }}</p>
+
+<p>Puedes responder desde tu panel de administración:</p>
+{% endblock %}
+
+{% block cta %}
+<div class="cta-container">
+    <a href="{{ admin_url }}" class="cta-btn">Ir al hilo en el panel Admin</a>
+</div>
+{% endblock %}

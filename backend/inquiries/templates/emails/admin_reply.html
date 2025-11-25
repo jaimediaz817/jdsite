@@ -1,0 +1,28 @@
+{% extends "emails/base_email.html" %}
+
+{% block subject %}
+Nueva respuesta a tu consulta – Jaime Díaz
+{% endblock %}
+
+{% block body %}
+<p>Hola {{ recruiter_name }},</p>
+
+<p>
+He respondido tu consulta desde mi panel privado. Puedes ver el hilo completo
+y la respuesta directamente en el enlace seguro que preparé para ti.
+</p>
+
+<p><strong>Mi respuesta fue:</strong></p>
+
+<blockquote style="border-left:4px solid #005CFF;padding-left:12px;color:#444;">
+    {{ message_text|linebreaksbr }}
+</blockquote>
+{% endblock %}
+
+{% block cta %}
+<div class="cta-container">
+    <a href="{{ status_url }}" class="cta-btn">
+        Ver seguimiento de mi consulta
+    </a>
+</div>
+{% endblock %}

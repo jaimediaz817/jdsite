@@ -1,253 +1,364 @@
-$(function(){
-    
-    // Menu    
-    $("#navigation-menu .navbar-toggler").on("click", function(){
-        console.log("click")
+$(function () {
+    // TODO: evaluar para quitart
+    function getCookie(name) {
+        const v = `; ${document.cookie}`.split(`; ${name}=`);
+        if (v.length === 2)
+            return decodeURIComponent(v.pop().split(";").shift());
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (
+                !/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) &&
+                !this.crossDomain
+            ) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+            }
+        },
+    });
+
+    // Menu
+    $("#navigation-menu .navbar-toggler").on("click", function () {
+        console.log("click");
         $(this).children().toggleClass("icon-close");
-        $(".section-menu-cta-buttons").toggleClass("show-menu-responsive")
+        $(".section-menu-cta-buttons").toggleClass("show-menu-responsive");
+    });
+
+    // VIDEO
+    $(function () {
+        $(".btn-play[data-fancybox]").on("error", function () {
+            window.open(
+                "https://www.youtube.com/watch?v=VtXjvHf-gG0",
+                "_blank"
+            );
+        });
     });
 
     // items menu
-    $("#navigation-menu .navbar-nav .nav-item .nav-link").on("click", function(){
-        console.log("click")
-        $("#navigation-menu .navbar-toggler span").removeClass("icon-close");
-        $("#navigation-menu .navbar-collapse").collapse("hide");
-
-    });
+    $("#navigation-menu .navbar-nav .nav-item .nav-link").on(
+        "click",
+        function () {
+            console.log("click");
+            $("#navigation-menu .navbar-toggler span").removeClass(
+                "icon-close"
+            );
+            $("#navigation-menu .navbar-collapse").collapse("hide");
+        }
+    );
 
     // SWIPER
-    var swiper = new Swiper('#headerSlider', {
+    var swiper = new Swiper("#headerSlider", {
         // params
         speed: 800,
         navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
         },
         pagination: {
-            el: '.swiper-pagination',
-            type: 'bullets',
-            clickable: true
+            el: ".swiper-pagination",
+            type: "bullets",
+            clickable: true,
         },
         loop: true,
         autoplay: {
-            delay: 4000,
+            delay: 15000,
         },
-        effect: 'fade',
+        effect: "fade",
         keyboard: {
             enabled: true,
-            onlyInViewport: true
-        }
-    });
-
-    $(".swipe-item-sorpresa").hide();
-
-    // VENOBOX
-    $(".btn-play").venobox({
-        border: '5px',
-        bgcolor: '#00adb5',
-        autoplay: true,
-        overlayClose: false,
-        closeBackground: '#F6364F',
-        closeColor: '#FFFFFF',
-        titleColor: 'rgba(255,255,255,0.7)',
-        titleattr: 'data-title'
+            onlyInViewport: true,
+        },
     });
 
     // COUNTER
     $(".counter").counterUp();
 
     // PICKERS - DATE
-    $('.datepicker').pickadate({
-        monthsFull: [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre' ],
-        monthsShort: [ 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic' ],
-        weekdaysFull: [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado' ],
-        weekdaysShort: [ 'dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb' ],
-        today: 'Hoy',
-        clear: 'Borrar',
-        close: 'Cerrar',
+    $(".datepicker").pickadate({
+        monthsFull: [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre",
+        ],
+        monthsShort: [
+            "ene",
+            "feb",
+            "mar",
+            "abr",
+            "may",
+            "jun",
+            "jul",
+            "ago",
+            "sep",
+            "oct",
+            "nov",
+            "dic",
+        ],
+        weekdaysFull: [
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+        ],
+        weekdaysShort: ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"],
+        today: "Hoy",
+        clear: "Borrar",
+        close: "Cerrar",
 
-        labelMonthNext: 'Siguiente mes',
-        labelMonthPrev: 'Mes anterior',
-        labelMonthSelect: 'Seleccione un mes',
-        labelYearSelect: 'Seleccione un año',
+        labelMonthNext: "Siguiente mes",
+        labelMonthPrev: "Mes anterior",
+        labelMonthSelect: "Seleccione un mes",
+        labelYearSelect: "Seleccione un año",
 
         firstDay: 1,
-        format: 'dddd, d !de mmmm !de yyyy',
-        formatSubmit: 'yyyy/mm/dd',
+        format: "dddd, d !de mmmm !de yyyy",
+        formatSubmit: "yyyy-mm-dd",
         selectYears: true,
         selectMonths: true,
         min: true,
         max: 30,
-        onStart: function(){
+        onStart: function () {
             var date = new Date();
             //this.setDate( date.getFullYear(), date.getMonth() + 1, date.getDate())
-            this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()])
+            this.set("select", [
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+            ]);
         },
     });
+
     // Limits
-    /*
-    selectYears: 60
-    */
-
-   $('.timepicker').pickatime({
-       clear: 'Borrar',
-       format: 'hh:i a',
-       interval: 60,
-       min: [6, 0],
-   }) 
-
-   /* 
-   Time conf.
-   inverval: 150 <= invervalo en minutos
-   min: [8,00]
-   max: [10,00]
-   */
-	
-   $.trim($("#message").text());
-   
-   // VALIDATE
-   $("#formContact").parsley({
-       errorClass: "is-invalid text-danger",
-       successClass: "is-valid",
-       errorsWrapper: "<ul class='list-unstyled text-danger mb-0 pt-2 small'></ul>",
-       errorsTemplate: "<li class='custom'></li>",
-       trigger: "change",
-       triggerAfterFailure: "change"
-   });
-
-   // STICKY
-   $('#navigation-menu').stickit({
-       className: 'stick-menu'
-   });
-   
-   // SCROLL
-   $("#navigation-menu .navbar-nav .nav-item .nav-link").mPageScroll2id({
-       offset: 55,
-       highlightClass: 'active',
-   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // .......................................................................
-    // $.toast({
-    //     heading: 'Information',
-    //     text: 'Loaders are enabled by default. Use `loader`, `loaderBg` to change the default behavior',
-    //     icon: 'error',
-    //     showHideTransition: 'fade',
-    //     //hideAfter : false,
-    //     hideAfter: 6000,
-    //     loader: true,        // Change it to false to disable loader
-    //     loaderBg: '#F6364F'  // To change the background
-    // });
-    
-    /*
-    $.toast({
-        text: "Don't forget to star the repository if you like it.", // Text that is to be shown in the toast
-        heading: 'Note', // Optional heading to be shown on the toast
-        showHideTransition: 'fade', // fade, slide or plain
-        allowToastClose: true, // Boolean value true or false
-        hideAfter: 3000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
-        stack: 5, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
-        position: 'bottom-left', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
-        
-        bgColor: '#444444',  // Background color of the toast
-        textColor: '#eeeeee',  // Text color of the toast
-        textAlign: 'left',  // Text alignment i.e. left, right or center
-        beforeShow: function () {}, // will be triggered before the toast is shown
-        afterShown: function () {}, // will be triggered after the toat has been shown
-        beforeHide: function () {}, // will be triggered before the toast gets hidden
-        afterHidden: function () {}  // will be triggered after the toast has been hidden
+    $(".timepicker").pickatime({
+        clear: "Borrar",
+        format: "hh:i a", // Esto es lo que ve el usuario (ej: 05:00 p.m.)
+        // --- ¡AÑADE ESTA LÍNEA! ---
+        formatSubmit: "HH:i", // Esto es lo que se envía (ej: 17:00)
+        // -------------------------
+        interval: 60,
+        min: [6, 0],
     });
-    */    
 
+    $.trim($("#message").text());
 
-    // REQUEST API - REGISTER - CONTACT    
-    // console.log("location >>>>>>>>>>>>>>>> ", location.host)
-    var promiseContactJd = $.ajax({
-        url: 'https://memodevs.jaimediaz.dev/api/blogs',
-        type: 'GET',
-        dataType: 'json',
-        data: {},
-        success: function(response){
-            console.log("MEMODEVS API: ", response)
-        }
+    // VALIDATE
+    $("#formContact").parsley({
+        errorClass: "is-invalid text-danger",
+        successClass: "is-valid",
+        errorsWrapper:
+            "<ul class='list-unstyled text-danger mb-0 pt-2 small'></ul>",
+        errorsTemplate: "<li class='custom'></li>",
+        trigger: "change",
+        triggerAfterFailure: "change",
+    });
+
+    // STICKY
+    $("#navigation-menu").stickit({
+        className: "stick-menu",
+    });
+
+    // SCROLL
+    $("#navigation-menu .navbar-nav .nav-item .nav-link").mPageScroll2id({
+        offset: 55,
+        highlightClass: "active",
+    });
+
+    // ANIMATIONS
+    $(".skills-surface").css("opacity", 0).animate({ opacity: 1 }, 600);
+
+    // Prefill mensaje desde proyectos
+    $(".project-card .btn").on("click", function () {
+        const project = $(this).data("project");
+        const stack = $(this).data("stack");
+        const baseMsg = `Hola Jaime, me interesa un proyecto similar a "${project}" basado en: ${stack}. ¿Podemos conversar?`;
+        $("#message").val(baseMsg);
+        $("html, body").animate(
+            { scrollTop: $("#contact").offset().top - 70 },
+            600
+        );
+        $("#message").focus();
     });
 
     // asignar el text area en blanco por defecto
-    $("#message").val("")
+    $("#message").val("");
 
-    // SUBMIT FORM
-    $("#formContact").submit(function(e){
-        let URL_API_DEV = 'http://localhost:8001/api/landingPage/contact/message'
-        let URL_API_PROD = 'https://memodevs.jaimediaz.dev/api/landingPage/contact/message'
-        let API_LOCATION = location.host == "localhost" ? URL_API_DEV : URL_API_PROD;
-        e.preventDefault();        
-        $(".loader-background").removeClass("hide").addClass("show");
-        var promiseContactJd = $.ajax({
-            //processData:false,
-            //async : false,            
-            //contentType: "application/json; charset=utf-8",
-            url: API_LOCATION,
-            type: 'POST',
-            cache: false,            
-            data: $('#formContact').serialize(),            
-            datatype: 'jsonp',
-            success: function(response){
-                console.log("MEMODEVS API REGISTER: ", response);
-                $("input, textArea").removeClass("is-valid").val("");
-                $(".loader-background").removeClass("show").addClass("hide");
-                // TOAST success
-                ToastMessage(response.success, 'success');                                
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                let errorResponse = XMLHttpRequest.responseJSON.error;
-                $(".loader-background").removeClass("show").addClass("hide");
-                console.log("error : >>> ", XMLHttpRequest.responseJSON.error)
-                ToastMessage(XMLHttpRequest.responseJSON.error, 'error');
+    function toggleFechas(on) {
+        const $blocks = $(".fechas-cita-content");
+        const $date = $("#date");
+        const $time = $("#time");
+        if (on) {
+            $blocks.show();
+            $date.attr("data-parsley-required", "true");
+            $time.attr("data-parsley-required", "true");
+            $("#hiddenCheckDates").val("true");
+        } else {
+            $blocks.hide();
+            $date.removeAttr("data-parsley-required").val("");
+            $time.removeAttr("data-parsley-required").val("");
+            $("#hiddenCheckDates").val("false");
+        }
+    }
+
+    // ENVÍO FORMULARIO *****************************************************
+    function bindForm() {
+        const $form = $("#formContact");
+        if (!$form.length) return; // si no está en la página, no hace nada
+
+        const $loader = $("#formLoader");
+
+        // Estado inicial del switch (oculto)
+        toggleFechas(false);
+
+        // Switch de reunión
+        $("#checkFechaHoraContact")
+            .off("change.jd")
+            .on("change.jd", function () {
+                toggleFechas(this.checked);
+            });
+
+        // Envío
+        $form.off("submit.jd").on("submit.jd", function (e) {
+            e.preventDefault();
+
+            // Parsley (si está cargado)
+            if ($form.parsley && typeof $form.parsley === "function") {
+                const ok = $form.parsley().validate();
+                if (!ok) return;
             }
+
+            // --- ¡AQUÍ EMPIEZA LA MAGIA DE LA CONFIRMACIÓN! ---
+            Swal.fire({
+                title: "¿Confirmar envío?",
+                text: "Se enviará tu mensaje para que pueda revisarlo.",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#F6364F", // Tu color primario
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "¡Sí, enviar!",
+                cancelButtonText: "No, cancelar",
+            }).then((result) => {
+                // Si el usuario hace clic en "¡Sí, enviar!"
+                if (result.isConfirmed) {
+                    // --- TODA LA LÓGICA DE ENVÍO VA AQUÍ DENTRO ---
+                    const $btn = $form.find("button[type=submit]");
+                    const $help = $("#formHelp");
+
+                    $btn.prop("disabled", true);
+                    $loader.addClass("show");
+
+                    const payload = {
+                        name: $("#names").val().trim(),
+                        email: $("#email").val().trim(),
+                        phone: $("#number").val().trim(),
+                        message: $("#message").val().trim(),
+                        hiddenCheckDates: $("#hiddenCheckDates").val(),
+                        meeting_date: $("input[name='date_submit']").val(),
+                        meeting_time: $("input[name='time_submit']").val(),
+                    };
+
+                    console.log(">>>>>>>>>>>>>>>> ", payload);
+
+                    $.post("/inq/api/submit/", payload)
+                        .done(function (r) {
+                            ToastMessage(
+                                "¡Enviado!",
+                                "Tu mensaje ha sido recibido correctamente.",
+                                "success"
+                            );
+                            $help.html(
+                                '¡Gracias! Te envié un correo con el enlace. También puedes <a target="_blank" href="' +
+                                    r.status_url +
+                                    '">abrir el seguimiento aquí</a>.'
+                            );
+                            $form[0].reset();
+                            toggleFechas(false);
+                        })
+                        .fail(function (xhr) {
+                            const errorData = xhr.responseJSON;
+                            let msg = "No se pudo enviar. Intenta de nuevo.";
+                            if (errorData && errorData.errors) {
+                                // Construir un mensaje de error más detallado
+                                const errors = Object.values(errorData.errors)
+                                    .map((e) => e[0])
+                                    .join("<br>");
+                                Swal.fire(
+                                    "Error de Validación",
+                                    errors,
+                                    "error"
+                                );
+                                msg =
+                                    "Por favor, corrige los errores indicados.";
+                            }
+                            $help.text(msg);
+                        })
+                        .always(function () {
+                            $btn.prop("disabled", false);
+                            $loader.removeClass("show");
+                        });
+                    // --- FIN DE LA LÓGICA DE ENVÍO ---
+                } else {
+                    // Si el usuario cancela, no hacer nada
+                    // Si el usuario cancela, reiniciamos el formulario para una experiencia limpia.
+                    $form[0].reset();
+                    toggleFechas(false);
+                    // Opcional: Notificar al usuario que la acción fue cancelada.
+                    ToastMessage(
+                        "Cancelado",
+                        "El envío del mensaje ha sido cancelado.",
+                        "info",
+                        3000
+                    );
+                }
+            });
         });
+    }
+
+    // Espera DOM listo
+    $(function () {
+        bindForm();
     });
 
     // Por defecto ocultar las fechas
     $(".fechas-cita-content").fadeOut();
-    $("#checkFechaHoraContact").on("change", function(){
+    $("#checkFechaHoraContact").on("change", function () {
         console.log("checked", this.checked);
-        if(this.checked) {
-            $("#hiddenCheckDates").val(true)
+        if (this.checked) {
+            $("#hiddenCheckDates").val(true);
             $(".fechas-cita-content").fadeIn();
         } else {
-            $("#hiddenCheckDates").val(false)
+            $("#hiddenCheckDates").val(false);
             $(".fechas-cita-content").fadeOut();
-        }        
+        }
     });
 
-
-    function ToastMessage(headerMess = "", messageContent, typeMessage, timeShowMessage = 5000){
-        let iconMessage = '';
-        let headerMessage = 'Resultado de la operación:';
-        if(typeMessage == 'error') {
+    function ToastMessage(
+        headerMess = "",
+        messageContent,
+        typeMessage,
+        timeShowMessage = 5000
+    ) {
+        let iconMessage = "";
+        let headerMessage = "Resultado de la operación:";
+        if (typeMessage == "error") {
             iconMessage = "error";
-            headerMessage = 'Algo ocurió durante el proceso'
+            headerMessage = "Algo ocurió durante el proceso";
         } else {
-            headerMessage = "Success"
+            headerMessage = "Success";
             iconMessage = "success";
         }
 
-        if (headerMess !== "") {            
+        if (headerMess !== "") {
             headerMessage = headerMess;
         }
 
@@ -256,68 +367,91 @@ $(function(){
             text: messageContent,
             icon: iconMessage,
             //showHideTransition: 'fade',
-            showHideTransition: 'plain',
+            showHideTransition: "plain",
             bgColor: "#444444",
             //hideAfter : false,
             hideAfter: timeShowMessage,
-            loader: true,        // Change it to false to disable loader
-            loaderBg: '#F6364F'  // To change the background
+            loader: true, // Change it to false to disable loader
+            loaderBg: "#F6364F", // To change the background
         });
     }
 
-    
-
-    if (urlParam('email') !== null && urlParam('names')) {
-        let emailParam = urlParam('email').trim();
-        let namesParam = urlParam('names').trim().replace(/\+/g, ' ').replace(/\./g, '').replace('/', ' ')
-        $("#names").val(namesParam)
-        $("#email").val(emailParam)
+    // TODO: VUELA >>>
+    if (urlParam("email") !== null && urlParam("names")) {
+        let emailParam = urlParam("email").trim();
+        let namesParam = urlParam("names")
+            .trim()
+            .replace(/\+/g, " ")
+            .replace(/\./g, "")
+            .replace("/", " ");
+        $("#names").val(namesParam);
+        $("#email").val(emailParam);
     } else {
-        
     }
 
-     function urlParam (name){
-        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-        if (results==null) {
-           return null;
+    function urlParam(name) {
+        var results = new RegExp("[?&]" + name + "=([^&#]*)").exec(
+            window.location.href
+        );
+        if (results == null) {
+            return null;
         }
         return decodeURI(results[1]) || 0;
-    }   
-
-    // SORPRESAS PERSONALES PARAM VALIDATION
-    if (urlParam('parametroEspecial') !== null) {
-        let parametroDestino = urlParam('parametroEspecial').trim();
-        
-        // ocultar segmentos para que no hagan ruido
-        $(".cta-buttons-container, #numeric, #howToHelp").hide();
-        $(".swipe-item-home").hide();
-        $("#howToHelp").hide();
-        $(".swipe-item-sorpresa").show();
-
-        $("#howToHelp, #costs, #contact").addClass("d-sorpresa-none");
-
-        ToastMessage("mi fresita:", "Ésta es una sorpresa para el amor de mi vida...", "espero que te guste", 11000);
-    } else {
-        $("#howToHelp, #costs, #contact").removeClass("d-sorpresa-none");
-        ToastMessage("¡Nueva funcionalidad!", "Ya puedes plantear preguntas, comentarios o lo que quieras contarme en la sección de registro. Saludos.", '¡Nueva funcionalidad!', 6000);
     }
-    
-    
+    // <<<<<<<<<<<
 
     // FOOTER
-	$('[data-toggle="tooltip"]').tooltip();
-	// avatares actions ::
-	$('footer .card-avatares').hover(function() {
-		$(this).toggleClass('flipped');
+    $('[data-toggle="tooltip"]').tooltip();
+    // avatares actions ::
+    $("footer .card-avatares").hover(function () {
+        $(this).toggleClass("flipped");
     });
 
     /**
      * TEMPORAL
      */
-    function getSearchParams(k){
-        var p={};
-        location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=v})
-        return k?p[k]:p;
-    }    
+    function getSearchParams(k) {
+        var p = {};
+        location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (s, k, v) {
+            p[k] = v;
+        });
+        return k ? p[k] : p;
+    }
 
+    // Botón flotante "Ir arriba"
+    var $btnTop = $("#btnTop");
+    $(window).on("scroll", function () {
+        if ($(this).scrollTop() > 260) {
+            $btnTop.addClass("show");
+        } else {
+            $btnTop.removeClass("show");
+        }
+    });
+    $btnTop.on("click", function () {
+        $("html, body").animate({ scrollTop: 0 }, 600);
+    });
+
+    // Accesibilidad rápida botón certificaciones
+    $(".btn-cert-pdf").on("keyup", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+            this.click();
+        }
+    });
+
+    $(function () {
+        // Flip en hover (desktop)
+        $(".flip-logo-jd")
+            .on("mouseenter focus", function () {
+                $(this).addClass("flipped");
+            })
+            .on("mouseleave blur", function () {
+                $(this).removeClass("flipped");
+            });
+
+        // Flip en tap/click (mobile)
+        $(".flip-logo-jd").on("click touchend", function (e) {
+            e.preventDefault();
+            $(this).toggleClass("flipped");
+        });
+    });
 });

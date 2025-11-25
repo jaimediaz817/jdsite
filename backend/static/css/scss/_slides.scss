@@ -10,10 +10,6 @@
         }
         &.image1 {
             background-image:
-            // linear-gradient(
-            //   rgba($grey_light, 0.7),
-            //   rgba($grey_dark, 0.7)
-            // ),
             url('../images/slides/slide_boilerplate.jpg');
         }
         &.image2 {
@@ -22,7 +18,10 @@
         }
     
         // Opacity
-        &:before {
+        // Overlay para slides de imagen
+        &.img:before,
+        &.image1:before,
+        &.image2:before {
             content: "";
             position: absolute;
             top: 0;
@@ -30,8 +29,41 @@
             left: 0;
             right: 0;
             z-index: -1;
-            background: rgba($grey_dark,0.75);
-        }        
+            background: rgba($grey_dark, 0.89);
+        }
+
+        // Overlay para slide de video
+        &.video-slide:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+            background: rgba($grey_dark, 0.70);
+        }
+        // CLASE NUEVA PARA EL VIDEO
+        &.video-slide {
+            overflow: hidden; // Importante para que el video no se salga
+            background-color: #000; // Fondo negro mientras carga
+
+            // Estilos de la etiqueta <video>
+            .bg-video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover; // ¡LA CLAVE! Hace que el video cubra todo sin deformarse
+                z-index: -2; // Lo mandamos al fondo del todo
+            }
+
+            // Aseguramos que el velo oscuro (overlay) esté ENCIMA del video
+            &:before {
+                z-index: -1; // El velo está en -1, el video en -2. ¡Perfecto!
+            }
+        }
     } 
 
     // Pagination
@@ -92,7 +124,17 @@
 
             .container {
                 h2 {
-                    font-size: 2.5rem;
+                    font-size: 2.5rem;                    
+                }
+                .text-left {
+                    text-align: left;
+                }
+                // Solo para móvil
+                @media (max-width: 767.98px) {
+                .text-mobile-small {
+                    font-size: 1.75rem !important;
+                    line-height: 1.3;
+                }
                 }
             }
         }    
@@ -158,4 +200,350 @@
 
 @media(min-width: 1450px) {
 
+}
+
+
+
+
+
+/* === Logo flotante sobre el hero === */
+#headerSlider {
+    position: relative; /* necesario para posicionar elementos absolutos dentro */
+}
+
+
+.hero-logo-jd {
+    position: absolute;
+    top: 1.5rem;
+    left: 5.5vw;
+    z-index: 6;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: transparent;
+    // background: rgba(0, 0, 0, 0.45);       /* pequeño fondo glass */
+    // backdrop-filter: blur(14px);
+    // box-shadow: 0 14px 40px rgba(0,0,0,0.6);
+
+    img {
+        display: block;
+        width: 72px;
+        height: auto;
+
+        @media (max-width: 768px) {
+            width: 45px;
+        }        
+    }
+    
+    &::before {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 93px;
+        height: 93px;
+        /* background: red; */
+        border-radius: 50%;
+        border: 1.5px solid rgba(255,255,255,0.32); // Más transparente
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+
+        @media (max-width: 768px) {
+            width: 60px;
+            height: 60px;
+        }
+    }
+
+}
+
+
+
+/* Ajustes en pantallas pequeñas */
+@media (max-width: 768px) {
+    .hero-logo-jd {
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.25rem 0.7rem;
+        
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ======================
+   CTAs flotantes slider header
+   ====================== */
+
+/* El contenedor del slider debe ser relativo para posicionar los CTAs */
+#headerSlider {
+    position: relative;
+}
+
+/* Contenedor de los dos botones (desktop: pegados a la derecha, centrados verticalmente) */
+.header-slider-cta {
+    position: absolute;
+    top: 50%;
+    right: 4.5vw;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 5;
+}
+
+/* Botón base: pill, borde blanco, glassy */
+.header-slider-cta-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.18);
+    padding: 0.55rem 1.4rem;
+    font-size: 1.10rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
+    transition: all 0.18s ease-out;
+    white-space: nowrap;
+
+    @media (max-width: 575.98px) {
+        font-size: 0.92rem;
+        padding: 0.42rem 1rem;
+    }
+}
+
+
+
+.header-slider-cta-btn {
+    &.transparent {
+        background: transparent !important;
+        color: #fff !important;
+        font-size: 1.18rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 2px solid rgba(255,255,255,0.25);
+        border-radius: 2rem;
+        padding: 0.75rem 1.7rem;
+        // margin-right: 0.5rem;
+        // margin-bottom: 0.5rem;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+
+        @media (max-width: 575.98px) {
+            font-size: 0.92rem;
+            padding: 0.42rem 1rem;
+        }   
+        &:hover, &:focus {
+            background: rgba(255,255,255,0.10);
+            color: #fff;
+            border-color: #fff;
+            text-decoration: none;
+        }
+    }
+}
+
+.hero-stack-chips {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.hero-stack-chips span {
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(0,0,0,0.25);
+    font-size: 0.78rem;
+    color: #fff;
+}
+
+
+.header-slider-cta-btn i {
+    font-size: 0.9rem;
+}
+
+.header-slider-cta-btn:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+    box-shadow: 0 20px 55px rgba(0,0,0,0.7);
+}
+
+/* Variante outline (Descargar CV): se queda casi transparente */
+.header-slider-cta-outline {
+    background: rgba(0, 0, 0, 0.10);
+}
+
+/* Variante primaria (Contáctame): relleno degradado pero manteniendo borde blanco */
+.header-slider-cta-primary {
+    background: linear-gradient(135deg, #ff3660, #dd6978);
+    box-shadow: 0 18px 50px rgba(255, 54, 96, 0.55);
+}
+
+.header-slider-cta-primary:hover {
+    background: linear-gradient(135deg, #ff4b73, #ff9864);
+}
+
+/* Responsivo: en tablet/móvil los traemos hacia abajo y centrados */
+@media (max-width: 991.98px) {
+    .header-slider-cta {
+        top: auto;
+        bottom: 1.8rem;
+        right: 50%;
+        transform: translateX(50%); /* centrados horizontalmente */
+        align-items: center;
+    }
+
+    .header-slider-cta-btn {
+        width: 100%;
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 770px) {
+    // .header-slider-cta {
+    //     bottom: 55px;
+    //     gap: 0.55rem;
+
+    //     display:flex;
+    //     flex-direction: row;
+    //     width: 90%;
+    // }
+
+    .header-slider-cta-btn {
+        font-size: 0.82rem;
+        padding: 0.45rem 1.1rem;
+    }
+
+    .text-slide-container {
+        position: relative;
+        top: 3.5rem;
+    }
+}
+
+.text-slide-container {
+    position: relative;
+    z-index: 1; // Asegura que el contenido esté sobre el overlay
+    padding: 2.2rem 2.5rem 2rem 2.5rem;
+    width: 90%;
+    left: 1rem;
+    top: 2.75rem;
+
+    @media (max-width: 767.98px) {
+        padding: 1.1rem 1rem 1rem 1rem;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(28, 32, 38, 0.32);
+        border-radius: 1.5rem;
+        /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18); */
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: -1;
+        pointer-events: none;
+        transition: background 0.3s;
+        width: 72%;
+    }
+
+    // Responsive: menos padding y radio en mobile
+    @media (max-width: 767.98px) {
+        &::before {
+            border-radius: 1rem;
+            width: 95%;
+        }
+    }
+}
+
+
+.flip-logo-jd {
+  perspective: 900px;
+  cursor: pointer;
+  outline: none;
+  overflow: visible;
+  .flip-inner {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    transition: transform 0.7s cubic-bezier(.4,2,.3,1);
+    transform-style: preserve-3d;
+    overflow: visible;
+  }
+  .flip-front, .flip-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 50%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flip-front img, .flip-back img {
+    // width: 100%;
+    // height: 100%;
+    object-fit: cover;
+  }
+  .flip-back {
+    overflow: hidden;
+    transform: rotateY(180deg);
+    background: #fff;
+  }
+  &.flipped .flip-inner {
+    transform: rotateY(180deg);
+  }
+}
+
+@media (max-width: 768px) {
+    .flip-logo-jd .flip-inner {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 980px) {
+    .header-slider-cta {
+        bottom: 55px;
+        gap: 0.55rem;
+
+        display:flex;
+        flex-direction: row;
+        width: 90%;
+    }  
+}
+
+
+// AQUÍ AGREGA TU MEDIA QUERY PERSONALIZADA:
+@media (min-width: 770px) and (max-width: 980px) {
+  .text-slide-container {
+    top: 1rem;
+  }
+  .text-slide-container::before {
+    content: "";
+    width: 90%;
+  }
 }

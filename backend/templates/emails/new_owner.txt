@@ -1,0 +1,7 @@
+Nueva pregunta:
+De: {{ q.name }} <{{ q.email }}>
+Mensaje:
+{{ q.message }}
+
+Revisar/Responder:
+{{ url }}/ask/me/{{ q.id }}/

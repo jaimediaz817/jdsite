@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="es" class="html-jd">
+    <head>
+        <title>Jaime Díaz | Página personal</title>
+
+        <meta charset="UTF-8">
+
+        <meta name="referrer" content="origin" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <!-- ICO  -->
+        <!--<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}"/>-->
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
+
+        <!-- BOOTSTRAP   LIB -->
+        <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+
+        <!-- === AÑADE ESTA LÍNEA PARA SWEETALERT2 === -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <!-- ========================================== -->
+
+
+        <!-- SWIPER      LIB -->
+        <link rel="stylesheet" href="{% static 'css/lib/swiper.min.css' %}">
+
+        <!-- FONTAWESOME CDN -->
+        <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">-->
+
+        <!-- FONTAWESOME LIB -->
+        <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+
+        <!-- VENOBOX     LIB -->
+        {% comment %} <link rel="stylesheet" href="{% static 'css/lib/venobox.css' %}" type="text/css" media="screen"> {% endcomment %}
+
+        <!-- JARALLAX    LIB -->
+        <link rel="stylesheet" href="{% static 'css/lib/jarallax.css' %}" type="text/css" media="screen">
+
+        <!-- PICKADATE   LIB -->
+        <link rel="stylesheet" href="{% static 'js/lib/pickadate/themes/default.css' %}" type="text/css" media="screen">
+
+        <!-- PICKADATE   LIB -->
+        <!-- Date -->
+        <link rel="stylesheet" href="{% static 'js/lib/pickadate/themes/default.date.css' %}" type="text/css" media="screen">
+        <!-- Time -->
+        <link rel="stylesheet" href="{% static 'js/lib/pickadate/themes/default.time.css' %}" type="text/css" media="screen">
+
+        <!-- TOAST   LIB -->
+        <link rel="stylesheet" href="{% static 'css/lib/toast.css' %}" type="text/css" media="screen">        
+
+        <!-- CUSTOM  STYLES -->
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'css/home_custom.css' %}">
+        <link rel="stylesheet" href="{% static 'css/addons_2025.css' %}">
+
+        <!-- Fuentes -->
+        <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
+	    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        
+        <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+        
+    </head>
+
+    <body class="home-p">
+        <!-- CONTACT BAR-->
+        {% comment %} <section id="contact-info" class="section-contact-info bg-primary text-white text-center py-3 py-lg-1">
+            <div class="container">
+                <div class="row justify-content-sm-between align-items-sm-center">
+
+                    <div class="col-12 col-sm-auto">
+                        <i class="fas fa-map-marker-alt mr-1"></i><span>Armenia, Quindío.</span>
+                    </div>
+
+                    <div class="col-12 col-sm-auto">
+                        <ul class="social-network list-unstyled d-inline-flex mb-0">
+                            <!-- Facebook -->
+                            <li>
+                                <a href="https://facebook.com/jdiaz.817" target="_blank">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            </li>
+                            <!-- Twitter -->
+                            <li>
+                                <a href="https://twitter.com/JDiaz0017" target="_blank">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </li>
+                            <!-- Skype -->
+                            <li>
+                                <a href="skype:jdiaz.817?chat" target="_blank">
+                                    <i class="fab fa-skype"></i>
+                                </a>
+                            </li>
+                            <!-- CodePen -->
+                            <li>
+                                <a href="https://codepen.io/jdiaz0017" target="_blank">
+                                    <i class="fab fa-codepen"></i>
+                                </a>
+                            </li>
+                            <!-- PLunker -->
+                            <li>
+                                <a href="https://plnkr.co/users/jaimediaz817" target="_blank">
+                                    <i class="fa fa-arrow-down"></i>
+                                </a>
+                            </li>
+                            <!-- WhatsApp -->
+                            <li>
+                                <a href="https://wa.me/573207945514?text=Hola,%20quiero%20comunicarme%20contigo..." target="_blank">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section> {% endcomment %}
+
+
+
+        {% comment %} 
+        <section id="contact-info" class="bg-primary text-white text-center py-3 py-lg-1 d-none d-md-block">
+            <div class="container">
+                <div class="row justify-content-sm-between align-items-sm-center">
+                    <div class="col-12 col-md-auto mb-2 mb-md-0">
+                        <i class="fas fa-map-marker-alt mr-1"></i><span>Armenia, Quindío.</span>
+                    </div>
+                    <div class="col-12 col-md-auto mb-2 mb-md-0 contact-info-mini">
+                        <i class="fas fa-phone-alt mr-1"></i><span>+ 57 3207945514</span>
+                        <span class="mx-2 d-none d-sm-inline">·</span>
+                        <i class="fas fa-envelope mr-1"></i>
+                        <a href="mailto:jaimeivan0017@gmail.com" class="text-white">
+                            jaimeivan0017@gmail.com
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <!-- tus redes sociales como ya las tienes -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endcomment %}
+        {% comment %} <section id="contact-info" class="bg-primary text-white py-2 shadow-sm"> {% endcomment %}
+        <section id="contact-info" class="bg-primary text-white py-2 shadow-sm d-none d-md-block">
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+                <!-- Izquierda: Ubicación -->
+                <div class="col-auto d-flex align-items-center">
+                    <i class="fas fa-map-marker-alt fa-lg mr-2"></i>
+                    <span class="font-weight-bold h6 mb-0">Armenia, Quindío</span>
+                </div>
+                <!-- Centro: Teléfono y Email -->
+                <div class="col-auto d-flex align-items-center">
+                    <i class="fas fa-phone-alt fa-lg mr-2"></i>
+                    <span class="mr-3">+57 3207945514</span>
+                    <span class="mx-2 d-none d-sm-inline">·</span>
+                    <i class="fas fa-envelope fa-lg mr-2"></i>
+                    <a href="mailto:jaimeivan0017@gmail.com" class="text-white font-weight-bold">jaimeivan0017@gmail.com</a>
+                </div>
+                <!-- Derecha: Redes sociales -->
+                <div class="col-auto d-flex align-items-center">
+                    <!-- Ejemplo de iconos sociales -->
+                    <a href="#" class="text-white mx-1"><i class="fab fa-linkedin fa-lg"></i></a>
+                    <a href="#" class="text-white mx-1"><i class="fab fa-github fa-lg"></i></a>
+                    <a href="#" class="text-white mx-1"><i class="fab fa-whatsapp fa-lg"></i></a>
+                </div>
+                </div>
+            </div>
+        </section>        
+        {% comment %} <section id="contact-info" class="bg-primary text-white text-center py-3 py-lg-1">
+            <div class="container">
+                <div class="row justify-content-sm-between align-items-sm-center">
+
+                    <div class="col-12 col-md-auto mb-2 mb-md-0">
+                        <i class="fas fa-map-marker-alt mr-1"></i><span>Armenia, Quindío.</span>
+                    </div>
+
+                    <div class="col-12 col-md-auto mb-2 mb-md-0 contact-info-mini">
+                        <i class="fas fa-phone-alt mr-1"></i><span>+ 57 3207945514</span>
+                        <span class="mx-2 d-none d-sm-inline">·</span>
+                        <i class="fas fa-envelope mr-1"></i>
+                        <a href="mailto:jaimeivan0017@gmail.com" class="text-white">
+                            jaimeivan0017@gmail.com
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-md-auto">
+                        <!-- tus redes sociales como ya las tienes -->
+                    </div>
+                </div>
+            </div>
+        </section> {% endcomment %}
+                
+        <!-- DETAILS HEADER CONTACT -->
+        <section id="details-contact" class="bg-white d-none d-md-block py-3">
+            <div class="container">
+                <div class="row justify-content-md-between align-items-md-center">
+                    <div class="col-auto">
+                        <a href="javascript:;">
+                            <img src="{% static 'images/jd.svg' %}" alt="Logo" width="80" class="img-fluid">
+                        </a>
+                    </div>
+                    <!-- stack minimal (solo desktop) -->
+                    <div class="col d-none d-lg-block">
+                        <nav class="stack-min" aria-label="Stack principal">
+                            <a href="#skills" class="stack-item">Zoho Deluge</a>
+                            <a href="#skills" class="stack-item">WOZTELL</a>
+                            <a href="#skills" class="stack-item">Angular</a>
+                            <a href="#skills" class="stack-item">React</a>
+                            <a href="#skills" class="stack-item">FastAPI</a>
+                            <a href="#skills" class="stack-item">Nginx</a>
+                            <a href="#skills" class="stack-item">Docker</a>
+                        </nav>
+                    </div>
+
+                    <div class="col-auto ml-md-auto">
+                        <!-- Contac -->
+                        <i class="fas fa-phone fa-flip-horizontal fa-2x align-middle text-primary"></i>
+                        <span class="font-weight-bold h5 ml-1">+ 57 3207945514</span>                        
+                    </div>
+                    <div class="col-auto">
+                        <!-- Contac -->
+                        <i class="fas fa-envelope fa-2x align-middle text-primary"></i>
+                        <span class="font-weight-bold h5 ml-1">jaimeivan0017<span class="text-primary">@</span>gmail.com</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU NAV -->
+        <nav id="navigation-menu" class="navbar navbar-dark bg-secundary-light-1 navbar-expand-lg">
+            <div class="container section-menu-cta-buttons">
+                <a href="javascript:;" class="jd-logo-dark d-md-block jd-white pr-4">
+                    <img src="{% static 'images/jd_white.svg' %}" alt="Logo" width="40" class="img-fluid">
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#main-menu" aria-expanded="false" aria-label="Menú principal">
+                    <span class="icon-menu-custom"></span>
+                </button>
+                {% comment %} <div class="cta-buttons-container">
+                    <!-- PDF BUTTON -->
+                    <a href="{% static 'docs/Jaime_Diaz_Espaniol_2025.pdf' %}" class="btn lp btn-primary download-file-pdf btn-header-align order-md-1" download="Hoja_de_vida_Jaime_Diaz">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        <span class="show-text-md">Descargar CV</span>
+                        <span class="show-text-sm">Hoja de vida</span>
+                    </a>
+            
+                    <!-- Link CTA -->
+                    <a href="#contact" class="btn lp btn-tertiary contact-btn btn-header-align order-md-1">
+                        <span class="show-text-md">Contáctame si eres reclutador(a)</span>
+                        <span class="show-text-sm">Contáctame</span>
+                    </a>
+                </div> {% endcomment %}
+
+                <!-- Content -->
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="navbar-nav mt-3 mt-md-0">
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#contact-info" class="nav-link active">Inicio</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#welcome" class="nav-link swipe-item-home">Bienvenido</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#skills" class="nav-link swipe-item-home">Skills</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#projects" class="nav-link swipe-item-home">Proyectos</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#workflow" class="nav-link swipe-item-home">Cómo trabajo</a></li>
+
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#numeric" class="nav-link swipe-item-home">Mis números</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#costs" class="nav-link swipe-item-home">Tecnologías</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#contact" class="nav-link swipe-item-home">Contacto</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item"><a href="#footer" class="nav-link swipe-item-home">Soporte</a></li>                        
+
+                        <!-- Esconder en XL aparecen normal, en LG pasan a "Más" -->
+                        {% comment %} <li class="mb-1 mb-md-0 mr-md-1 nav-item d-none d-xl-inline-block"><a href="#numeric" class="nav-link swipe-item-home">Mis números</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-1 nav-item d-none d-xl-inline-block"><a href="#costs" class="nav-link swipe-item-home">Tecnologías</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item d-none d-xl-inline-block"><a href="#contact" class="nav-link swipe-item-home">Contacto</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item d-none d-xl-inline-block"><a href="#footer" class="nav-link swipe-item-home">Soporte</a></li> {% endcomment %}
+
+                        {% comment %} <li class="mb-1 mb-md-0 mr-md-0 nav-item d-none d-xl-inline-block"><a href="#costs" class="nav-link swipe-item-home">Tecnologías</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item d-none d-xl-inline-block"><a href="#contact" class="nav-link swipe-item-home">Contacto</a></li>
+                        <li class="mb-1 mb-md-0 mr-md-0 nav-item d-none d-xl-inline-block"><a href="#footer" class="nav-link swipe-item-home">Soporte</a></li> {% endcomment %}
+
+                        <!-- Dropdown “Más” para LG (y desaparece en XL) -->
+                        {% comment %} <li class="nav-item dropdown d-lg-block d-xl-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="navMore" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Más</a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navMore">
+                            <a class="dropdown-item" href="#numeric">Mis números</a>
+                            <a class="dropdown-item" href="#costs">Tecnologías</a>
+                            <a class="dropdown-item" href="#contact">Contacto</a>
+                            <a class="dropdown-item" href="#footer">Soporte</a>
+                            </div>
+                        </li>                         {% endcomment %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-chips d-none px-3 py-2 bg-secundary-light-1">
+            <div class="chips-scroll hide-mobile">
+                <a href="#welcome"   class="chip">Bienvenido</a>
+                <a href="#skills"    class="chip">Skills</a>
+                <a href="#projects"  class="chip">Proyectos</a>
+                <a href="#workflow"  class="chip">Cómo trabajo</a>
+                <a href="#contact"   class="chip">Contacto</a>
+            </div>
+        </div>        
+
+        <!-- SLIDER #1 -->
+        <div class="swiper-container" id="headerSlider">
+            <!-- LOGO FLOANTE SOBRE EL HERO -->
+            {% comment %} <div class="hero-logo-jd">
+                <img src="{% static 'images/jd_white.svg' %}" alt="Logo Jaime Díaz">
+            </div>             {% endcomment %}
+            <div class="hero-logo-jd flip-logo-jd" tabindex="0">
+                <div class="flip-inner">
+                    <div class="flip-front">
+                        <img src="{% static 'images/jd_white.svg' %}" alt="Logo Jaime Díaz">
+                    </div>
+                    <div class="flip-back">
+                        <img src="{% static 'images/jd-imagen.jpg' %}" alt="Foto Jaime Díaz">
+                    </div>
+                </div>
+            </div>            
+            <div class="swiper-wrapper">
+                <!-- Slide con VIDEO -->
+                <div class="swiper-slide video-slide flex-center-full" data-swiper-autoplay="20000">
+                    <!-- El video actúa como fondo -->
+                    <video autoplay muted loop playsinline class="bg-video">
+                        <source src="{% static 'videos/home/jd_hero_loop.mp4' %}" type="video/mp4">
+                    </video>
+
+                    <!-- Tu contenido de texto normal va aquí encima -->
+                    {% comment %} <div class="container text-slide-container">
+                        <div class="row justify-content-center">
+                            <div class="col-9 col-lg-10 text-center">
+                                <h2 class="text-white font-weight-bold">Hola, soy Jaime Díaz</h2>
+                                <p class="text-white-light lead">Desarrollador de Software & Especialista en Integraciones</p>
+                                <div class="hero-stack-chips d-none d-md-flex">
+                                    <span>Zoho Deluge</span>
+                                    <span>WOZTELL</span>
+                                    <span>FastAPI</span>
+                                    <span>Angular / React</span>
+                                    <span>Nginx · Docker</span>
+                                </div>                                
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <div class="container text-slide-container">
+                        <div class="row justify-content-md-start">
+                            <div class="col-12 col-lg-8 text-left">
+                                <h1 class="display-2 font-weight-bold text-white mb-3 animate__animated animate__fadeInDown">
+                                    Hola, soy Jaime Díaz
+                                </h1>
+                                <p class="lead text-white-light mb-4 animate__animated animate__fadeInUp">
+                                    Full-Stack Developer · Integraciones de negocio · Frontend moderno
+                                </p>
+                                <div class="hero-stack-chips animate__animated animate__fadeInUp">
+                                    <span>Zoho Deluge</span>
+                                    <span>WOZTELL</span>
+                                    <span>FastAPI</span>
+                                    <span>Angular / React</span>
+                                    <span>Nginx · Docker</span>
+                                </div>
+                                <p class="mt-4 text-white-50 animate__animated animate__fadeInUp" style="font-size:1.25rem;">
+                                    Transformo procesos de negocio en soluciones digitales robustas y escalables.
+                                </p>
+                                <a href="#contact" class="header-slider-cta-btn header-slider-cta-primary swipe-item-home btn-glow mt-4 animate__animated animate__fadeInUp">
+                                    <span>Contáctame si eres reclutador(a)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>                
+
+                <div class="swiper-slide img image1 flex-center-full" data-swiper-autoplay="5000">
+                    {% comment %} <div class="container text-slide-container">
+                        <div class="row  justify-content-center justify-content-md-start">
+                            <div class="col-9 col-sm-11 col-md-9">
+                                <!-- Texto completo solo en desktop/tablet -->
+                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-home d-none d-md-block text-left text-mobile-small">
+                                    Full-Stack JS/Python con foco en integraciones de negocio y Frontend moderno.<br class="d-none d-md-block">
+                                    Zoho CRM (Deluge), Angular/React, FastAPI/Node, DevOps (Nginx + Docker).
+                                </h2>
+                                <!-- Texto resumido solo en mobile -->
+                                <h2 class="h4 font-weight-bold text-white swipe-item-home d-block d-md-none text-mobile-small">
+                                    Full-Stack JS/Python · Integraciones de negocio · Frontend moderno.
+                                </h2>
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+                    <div class="container text-slide-container">
+                        <div class="row justify-content-center justify-content-md-start">
+                            <div class="col-12 col-lg-8 text-left">
+                                <h2 class="display-3 font-weight-bold text-white mb-3 animate__animated animate__fadeInDown">
+                                    Full-Stack JS/Python con foco en integraciones de negocio y Frontend moderno.
+                                </h2>
+                                <p class="lead text-white-light mb-3 animate__animated animate__fadeInUp">
+                                    Zoho CRM (Deluge), Angular/React, FastAPI/Node, DevOps (Nginx + Docker)
+                                </p>
+                                <div class="hero-stack-chips animate__animated animate__fadeInUp">
+                                    <span>Automatización</span>
+                                    <span>APIs</span>
+                                    <span>UI/UX</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+
+                <div class="swiper-slide img image2 flex-center-full swipe-item-home" data-swiper-autoplay="5000">
+                    <div class="container text-slide-container">
+                        <div class="row justify-content-center justify-content-md-start">
+                            <div class="col-12 col-lg-8 text-left">
+                                <h2 class="display-3 font-weight-bold text-white mb-3 animate__animated animate__fadeInDown">
+                                    Entregas continuas, métricas claras y comunicación efectiva con tu equipo.
+                                </h2>
+                                <p class="lead text-white-light mb-3 animate__animated animate__fadeInUp">
+                                    Metodologías ágiles, feedback temprano y resultados medibles.
+                                </p>
+                                <div class="hero-stack-chips animate__animated animate__fadeInUp">
+                                    <span>Scrum</span>
+                                    <span>Kanban</span>
+                                    <span>OKR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- last images -->                
+            </div>
+
+            <!-- CTAs FLOTANTES SOBRE EL SLIDER -->
+            <div class="header-slider-cta">
+                <!-- Descargar CV -->
+                <a href="{% static 'docs/Jaime_Diaz_Espaniol_2025.pdf' %}"
+                class="header-slider-cta-btn header-slider-cta-outline "
+                download="Hoja_de_vida_Jaime_Diaz">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span>Descargar CV</span>
+                </a>
+                <a href="{% static 'docs/Certificaciones_Completo_JaimeDiaz.pdf' %}"
+                    class="header-slider-cta-btn header-slider-cta-outline"
+                    download="Certificaciones_Jaime_Diaz"
+                    aria-label="Descargar certificaciones y cursos en PDF">
+                    {% comment %} <span class="btn-cert-icon"><i class="fas fa-award"></i></span> {% endcomment %}
+                    <span class="btn-cert-text  d-md-inline">Descargar ertificaciones</span>
+                </a>       
+                <!-- Contáctame si eres reclutador(a) -->
+                {% comment %} <a href="#contact"
+                class="header-slider-cta-btn header-slider-cta-primary  swipe-item-home">
+                    <span>Contáctame si eres reclutador(a)</span>
+                </a> {% endcomment %}
+            </div>        
+
+            <!-- Pagination -->
+            <div class="swiper-pagination"></div>
+
+            <!-- Navigation-->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+
+        <!-- WELCOME -->
+        <section id="welcome" class="py-5 mb-md-5">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-12 col-lg-6 swipe-item-home">
+                        <div class="video-container position-relative">
+                            <img src="{% static 'images/slides/slide_code.jpg' %}" alt="Imágen de bienvenida a mi Home page." class="img-fluid">                   
+                            <a
+                                data-fancybox
+                                href="https://www.youtube.com/watch?v=d6KleH5mLms"
+                                class="btn-play"
+                                >
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 pt-4 pt-lg-0 text-center text-lg-left swipe-item-home">
+                        <h2 class="txt-title display-4 font-weight-bold text-secundary mt-lg-n2">
+                            Soy  <span class="text-primary">Jaime Iván Díaz Gaona.</span>
+                        </h2>
+                        <h6 class="text-black-50 mb-lg-3">
+                        Full-Stack JS/Python · Frontend (Angular/React) · Zoho CRM (Deluge)
+                        </h6>
+
+                        <p class="mb-3">
+                        Desde 2012 he trabajado en proyectos del sector público y privado (RUNT, Caracol TV, DMS Tigo, Susuerte; 8Belts, Romy Mail)
+                        en compañías como Heinsohn, Ingeneo, PXSP, Venda Más Fácil, Outsourcing, IBG y SingleClick.
+                        </p>
+
+                        <div class="mb-3">
+                        <strong>Diferencial (Zoho + WhatsApp/WOZTELL):</strong>
+                        <ul class="mt-2 mb-3 pl-3">
+                            <li>Zoho CRM (Deluge): Functions, Schedules, Webhooks, Blueprints, Custom Views, Bulk Read/Write, REST API.</li>
+                            <li>Funciones Deluge expuestas como API REST seguras (tokens/API key) para FastAPI/Node y chatbots WOZTELL.</li>
+                            <li>Flujos bidireccionales Deluge ⇄ servicios propios/terceros con validaciones, auditoría, logs, reintentos, alertas y trazabilidad end-to-end.</li>
+                            <li>Chatbots WOZTELL en WhatsApp con menús interactivos y llamadas HTTP a Zoho/servicios externos para respuestas contextuales.</li>
+                        </ul>
+                        </div>
+
+                        <a href="#contact" class="btn lp btn-primary">Contáctame</a>
+
+                        <!-- Botón PDF Certificaciones (versión destacada) -->
+                        <a href="{% static 'docs/Certificaciones_Completo_JaimeDiaz.pdf' %}"
+                            class="btn btn-cert-pdf btn-cert-pdf--xl ml-lg-3 mt-3 mt-lg-0"
+                            download="Certificaciones_Jaime_Diaz"
+                            aria-label="Descargar certificaciones y cursos en PDF">
+                            <span class="btn-cert-icon"><i class="fas fa-award"></i></span>
+                            <span class="btn-cert-text">Certificaciones</span>
+                        </a>                          
+                    </div>               
+                </div>
+            </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section id="skills" class="skills-section py-5 bg-light">
+            <div class="container">
+                <div class="skills-surface p-4 p-md-5">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-12 col-lg-7">
+                            <h2 class="display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>
+                            <p class="lead text-muted mb-3">
+                                <strong class="text-primary">Frontend:</strong> Angular · React · Bootstrap · UX limpio<br>
+                                <strong class="text-primary">Backend:</strong> FastAPI · Node/Express · bases en Django<br>
+                                <strong class="text-primary">Integraciones:</strong> Zoho CRM (Deluge, REST, Blueprints, Webhooks, Bulk Read/Write)<br>
+                                <strong class="text-primary">Datos:</strong> PostgreSQL · MongoDB · SQL Server<br>
+                                <strong class="text-primary">Automatización / ETL:</strong> Python (Selenium, BeautifulSoup)<br>
+                                <strong class="text-primary">DevOps:</strong> Nginx · Docker · DigitalOcean/AWS · CI/CD
+                            </p>
+                            <div class="skill-filters mb-3">
+                                <button class="btn btn-sm btn-outline-primary active" data-filter="all">
+                                    <i class="fas fa-layer-group mr-1"></i>Todos
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="frontend">
+                                    <i class="fas fa-tv mr-1"></i>Frontend
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="backend">
+                                    <i class="fas fa-cogs mr-1"></i>Backend
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="integrations">
+                                    <i class="fas fa-plug mr-1"></i>Integraciones
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="data">
+                                    <i class="fas fa-database mr-1"></i>Datos
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="automation">
+                                    <i class="fas fa-robot mr-1"></i>Automatización
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-filter="devops">
+                                    <i class="fas fa-server mr-1"></i>DevOps
+                                </button>
+                            </div>
+
+                   
+
+                        </div>
+                        <div class="col-12 col-lg-5 mt-4 mt-lg-0">
+                            <div class="row no-gutters text-center skill-metrics">
+                                <div class="col-4">
+                                    <div class="metric-block">
+                                        <i class="fas fa-code text-primary mb-2"></i>
+                                        <div class="h4 mb-0 counter" data-counterup-time="800">13</div>
+                                        <small class="text-muted">Años</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="metric-block">
+                                        <i class="fas fa-project-diagram text-primary mb-2"></i>
+                                        <div class="h4 mb-0 counter" data-counterup-time="1200">48</div>
+                                        <small class="text-muted">Proyectos en cuenta github: jivan0017</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="metric-block">
+                                        <i class="fas fa-project-diagram text-primary mb-2"></i>
+                                        <div class="h4 mb-0 counter" data-counterup-time="1200">73</div>
+                                        <small class="text-muted">Proyectos en cuenta github: jaimediaz817</small>
+                                    </div>
+                                </div>                            
+                                <div class="col-4">
+                                    <div class="metric-block">
+                                        <i class="fas fa-sync-alt text-primary mb-2"></i>
+                                        <div class="h4 mb-0 counter" data-counterup-time="1500">100</div>
+                                        <small class="text-muted">% Entregas a tiempo</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRID DE SKILLS -->
+                    <div class="row skill-grid">
+                        <!-- Card -->
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fab fa-angular fa-2x text-danger mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Angular</h6>
+                                    <small class="text-muted">Componentes · RxJS · Lazy load</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fab fa-react fa-2x text-info mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">React</h6>
+                                    <small class="text-muted">Hooks · Context · SPA</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-fire fa-2x text-warning mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">FastAPI</h6>
+                                    <small class="text-muted">APIs rápidas · Pydantic</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fab fa-node-js fa-2x text-success mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Node / Express</h6>
+                                    <small class="text-muted">REST · Middlewares</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-plug fa-2x text-primary mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Zoho CRM</h6>
+                                    <small class="text-muted">Deluge · Blueprints · Webhooks</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">WOZTELL</h6>
+                                    <small class="text-muted">Chatbots WhatsApp · Menús</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">PostgreSQL</h6>
+                                    <small class="text-muted">Índices · Queries</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">MongoDB</h6>
+                                    <small class="text-muted">Colecciones · Aggregations</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="automation">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-robot fa-2x text-secondary mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Python ETL</h6>
+                                    <small class="text-muted">Selenium · BeautifulSoup</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-server fa-2x text-warning mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Nginx</h6>
+                                    <small class="text-muted">Reverse proxy · Static</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fab fa-docker fa-2x text-info mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">Docker</h6>
+                                    <small class="text-muted">Images · Compose</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-sync fa-2x text-warning mb-2"></i>
+                                    <h6 class="font-weight-bold mb-1">CI/CD</h6>
+                                    <small class="text-muted">Pipelines · Deploy</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badges resumen -->
+                    <div class="mt-3 skill-badges">
+                        <span class="badge badge-primary mr-1 mb-1">Deluge</span>
+                        <span class="badge badge-secondary mr-1 mb-1">WOZTELL</span>
+                        <span class="badge badge-dark mr-1 mb-1">Angular</span>
+                        <span class="badge badge-dark mr-1 mb-1">React</span>
+                        <span class="badge badge-info mr-1 mb-1">FastAPI</span>
+                        <span class="badge badge-info mr-1 mb-1">Node</span>
+                        <span class="badge badge-success mr-1 mb-1">PostgreSQL</span>
+                        <span class="badge badge-success mr-1 mb-1">MongoDB</span>
+                        <span class="badge badge-success mr-1 mb-1">SQL Server</span>
+                        <span class="badge badge-warning mr-1 mb-1">Nginx</span>
+                        <span class="badge badge-warning mr-1 mb-1">Docker</span>
+                        <span class="badge badge-warning mr-1 mb-1">CI/CD</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+
+        <!-- HOW CAN WE HELP YOU -->
+        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
+            <!-- PICTURE -->
+            <picture class="jarallax-img">
+                <source media="(min-width: 1200px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
+                <source media="(min-width: 768px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
+                <source media="(min-width: 480px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
+                <img src="{% static 'images/sections/help_resp_sm.jpg' %}" alt="Background mobile" class="w-100 img-fluid">
+            </picture>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-lg-6 py-5">
+                        <h2 class="display-4 font-weight-bold txt-title">¿Cómo podemos ayudarte?</h2>
+                        <p>
+                            Saber exactamente qué quieres, es el primer paso para iniciar de la mejor manera un proyecto, el éxito se basa principalmente en el análisis y seguimiento del <span class="market">dominio del problema</span> en las etapas iniciales
+                        </p>
+                        <a href="#contact" class="btn lp btn-primary">Deseo saber más información</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NUMERIC SECTION -->
+        <section class="numeric py-5 text-center" id="numeric">
+            <div class="container-fluid py-5">
+                <h2 class="display-4 font-weight-bold text-secondary">UN POCO SOBRE MIS NÚMEROS</h2>
+                <h6 class="text-black-50">TENGO ALGUNOS NÚMEROS QUE MOSTRARTE.</h6>
+
+                <div class="row numbers_bg">
+                    <div class="col-6 col-md-3 py-4 counter-container">
+                        <i class="far fa-calendar-alt text-primary display-4 mb-2"></i>
+                        <div class="font-weight-bold text-secondary display-4 h2">
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="500">{{ experience_years }}</span>
+                        </div>
+                        <h6>Años de experiencia</h6>
+                        <div class="counter-line"></div>
+                    </div>
+                    <div class="col-6 col-md-3 py-4 counter-container">
+                        <i class="fas fa-briefcase text-primary display-4 mb-2"></i>
+                        <div class="font-weight-bold text-secondary display-4 h2">
+                            {% comment %} TODO:  {% endcomment %}
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="1000">{{ total_hours }}</span>
+                        </div>
+                        <h6>Horas de trabajo acumuladas</h6>
+                        <div class="counter-line"></div>
+                    </div>
+                    <div class="col-6 col-md-3 py-4 counter-container">
+                        <i class="fas fa-award text-primary display-4 mb-2"></i>
+                        <div class="font-weight-bold text-secondary display-4 h2">
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="1500">100</span><i class="symbol text-tertiary">%</i>
+                        </div>
+                        <h6>Nivel de calidad en los desarrollos</h6>
+                        <div class="counter-line"></div>
+                    </div>
+                    <div class="col-6 col-md-3 py-4 counter-container">
+                        <i class="fab fa-angellist text-primary display-4 mb-2"></i>
+                        <div class="font-weight-bold text-secondary display-4 h2">
+                        <span class="counter" data-counterup-beginat="0" data-counterup-time="2000">100</span><i class="symbol text-tertiary">%</i>
+                        </div>
+                        <h6>Nivel de satisfacción de los clientes</h6>
+                        <div class="counter-line"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- COMO TRABAJO -->
+        <div class="jd-wave-top">
+            <svg viewBox="0 0 1440 90">
+                <path fill="#ffffff" 
+                    d="M0,64 C480,96 960,0 1440,64 L1440,0 L0,0 Z"></path>
+            </svg>
+        </div>        
+        <div class="jd-bg-tech"></div>
+
+        <section id="workflow" class="workflow-section py-5 position-relative">
+            <div class="container position-relative">
+                <div class="workflow-surface p-4 p-md-5" data-aos="fade-up">
+
+                    <div class="row align-items-center mb-5">
+                        <div class="col-lg-6">
+                            <h2 class="jd-title" data-aos="fade-right">¿Cómo trabajo?</h2>
+                            <p class="jd-subtitle" data-aos="fade-right" data-aos-delay="150">
+                                Proceso claro, escalable y enfocado en resultados.
+                            </p>
+                        </div>
+                        <div class="col-lg-6 text-lg-right" data-aos="fade-left">
+                            <a href="#contact" class="btn lp btn-primary mt-3 mt-lg-0">
+                                <i class="fas fa-paper-plane mr-1"></i>Iniciar conversación
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row workflow-steps">
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <h6 class="wf-title">Analizo el objetivo</h6>
+                                <p class="wf-text">Relevo requerimientos, analizo procesos y defino criterios de éxito claros y medibles.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon"><i class="fas fa-sitemap"></i></div>
+                                <h6 class="wf-title">Arquitectura</h6>
+                                <p class="wf-text">Defino la estructura del proyecto, selecciono tecnologías y organizo módulos según la solución requerida.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon"><i class="fas fa-code"></i></div>
+                                <h6 class="wf-title">Desarrollo modular</h6>
+                                <p class="wf-text">Aplico patrones de diseño, buenas prácticas, reutilización y tests para asegurar calidad y mantenibilidad.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                </div>
+                                <h6 class="wf-title">Versionado + PRs</h6>
+                                <p class="wf-text">
+                                    Experiencia con GitHub como gestor de versiones, manejo de ramas, pull requests y respaldos graduales de las aplicaciones.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon"><i class="fas fa-rocket"></i></div>
+                                <h6 class="wf-title">CI/CD + Deploy</h6>
+                                <p class="wf-text">
+                                    Pipelines, Docker + Nginx en DO/AWS, rollback seguro.<br>
+                                    Experiencia en entornos Ubuntu y manejo de AWS (EC2, S3).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon"><i class="fas fa-chart-line"></i></div>
+                                <h6 class="wf-title">Ciclo de vida</h6>
+                                <p class="wf-text">Métricas ágiles, retrospectivas, soporte y mejora continua en cada sprint.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="text-center mt-4" data-aos="fade">
+                        <small class="text-muted">Transparencia, comunicación y entregas iterativas desde el día 1.</small>
+                        <br>
+                        <span class="text-primary font-weight-bold">Responsable y proactivo</span> en el trabajo, siempre enfocado en alcanzar los objetivos laborales y aportar valor al equipo.
+                    </div>
+
+                </div>
+            </div>
+
+        </section>        
+        {% comment %} <section id="workflow" class="workflow-section py-5">
+            <div class="container">
+                <div class="workflow-surface p-4 p-md-5">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-12 col-lg-6">
+                            <h2 class="jd-title display-4 font-weight-bold text-secundary">¿Cómo trabajo?</h2>
+                            <p class="jd-subtitle text-muted mb-3">Proceso claro, repetible y con foco en resultados.</p>
+                        </div>
+                        <div class="col-12 col-lg-6 text-lg-right">
+                            <a href="#contact" class="btn lp btn-primary mt-3 mt-lg-0">
+                                <i class="fas fa-paper-plane mr-1"></i>Iniciar conversación
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row workflow-steps">
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-ear-listen"></i>
+                                </div>
+                                <h6 class="wf-title">Escucho el objetivo</h6>
+                                <p class="wf-text">Contexto, restricciones y criterios de éxito medibles.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <h6 class="wf-title">Arquitectura</h6>
+                                <p class="wf-text">Contratos de API, modelo de datos, seguridad y dependencias.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <h6 class="wf-title">Desarrollo modular</h6>
+                                <p class="wf-text">Estándares, reutilización, tests y cobertura básica.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-git-alt"></i>
+                                </div>
+                                <h6 class="wf-title">Versionado + PRs</h6>
+                                <p class="wf-text">Ramas claras, revisiones, evidencias y ambientes.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <h6 class="wf-title">CI/CD + Deploy</h6>
+                                <p class="wf-text">Pipelines, Docker + Nginx en DO/AWS y rollback seguro.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="wf-step h-100">
+                                <div class="wf-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h6 class="wf-title">Ciclo de vida</h6>
+                                <p class="wf-text">Métricas, soporte, logs, mejoras continuas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Transparencia, comunicación y entregas iterativas desde el día 1.</small>
+                    </div>
+                </div>
+            </div>
+        </section> {% endcomment %}
+
+
+        <!-- PROYECTOS REALES -->
+        <section id="projects" class="projects-section py-5">
+            <div class="container">
+                <div class="projects-surface p-4 p-md-5">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-12 col-lg-8">
+                            <h2 class="display-4 font-weight-bold text-secundary">Proyectos reales</h2>
+                            <p class="text-muted mb-0">
+                                Casos en producción y desarrollos personales que resumen foco en negocio, buen UX y trazabilidad técnica.
+                            </p>
+                        </div>
+                        <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right">
+                            <a href="#contact" class="btn lp btn-primary">
+                                <i class="fas fa-paper-plane mr-1"></i>Inicia tu proyecto
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row project-grid">
+                        <!-- CRQ -->
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm project-card">
+                                <div class="card-body">
+                                    <h5 class="font-weight-bold mb-1">CRQ – Gestión de Documentación por Ciclos</h5>
+                                    <p class="text-muted mb-2">Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.</p>
+                                    <ul class="pl-3 mb-3 small">
+                                        <li>Apertura/cierre de ciclos con indicadores y evidencias.</li>
+                                        <li>Flujos de revisión y control de versiones.</li>
+                                        <li>Roles y trazabilidad de acciones.</li>
+                                    </ul>
+                                    <div class="mb-3">
+                                        <span class="badge badge-info mr-1 mb-1">Laravel</span>
+                                        <span class="badge badge-dark mr-1 mb-1">Vue 2</span>
+                                        <span class="badge badge-secondary mr-1 mb-1">Bootstrap</span>
+                                        <span class="badge badge-success mr-1 mb-1">PostgreSQL/MySQL</span>
+                                    </div>
+                                    <a href="#contact"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-project="CRQ – Gestión de Documentación por Ciclos"
+                                        data-stack="Laravel + Vue 2 + Bootstrap + PostgreSQL/MySQL"
+                                        aria-label="Solicitar un proyecto similar usando Laravel, Vue 2 y PostgreSQL">
+                                        Quiero algo así (Laravel + Vue 2)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Football Center -->
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm project-card">
+                                <div class="card-body">
+                                    <h5 class="font-weight-bold mb-1">Football Center Academy – Reservas Canchas</h5>
+                                    <p class="text-muted mb-2">Portal de reservas. Backend Laravel · Frontend Vue 2.</p>
+                                    <ul class="pl-3 mb-3 small">
+                                        <li>Agenda en tiempo real con anti-colisiones.</li>
+                                        <li>Reglas transaccionales y notificaciones.</li>
+                                        <li>Usuarios, pagos y reportes básicos.</li>
+                                    </ul>
+                                    <div class="mb-3">
+                                        <span class="badge badge-info mr-1 mb-1">Laravel</span>
+                                        <span class="badge badge-dark mr-1 mb-1">Vue 2</span>
+                                        <span class="badge badge-secondary mr-1 mb-1">Calendario UX</span>
+                                        <span class="badge badge-success mr-1 mb-1">Transaccional</span>
+                                    </div>
+                                    <a href="#contact"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-project="Football Center Academy – Reservas Canchas"
+                                        data-stack="Laravel + Vue 2 + Calendario UX + Lógica Transaccional"
+                                        aria-label="Solicitar un sistema de reservas con Laravel y Vue 2">
+                                        Quiero algo así (Laravel + Vue 2)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Zoho + WOZTELL + SQL Server -->
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm project-card">
+                                <div class="card-body">
+                                    <h5 class="font-weight-bold mb-1">Integración Zoho CRM + WOZTELL + SQL Server (SAG)</h5>
+                                    <p class="text-muted mb-2">Gestión cartera y mensajería transaccional.</p>
+                                    <ul class="pl-3 mb-3 small">
+                                        <li>Functions Deluge con tokens y sincronización SAG ⇄ Zoho.</li>
+                                        <li>Flujos para envíos masivos WhatsApp.</li>
+                                        <li>Chatbot: facturas pendientes on-demand.</li>
+                                    </ul>
+                                    <div class="mb-3">
+                                        <span class="badge badge-primary mr-1 mb-1">Zoho Deluge</span>
+                                        <span class="badge badge-secondary mr-1 mb-1">WOZTELL</span>
+                                        <span class="badge badge-success mr-1 mb-1">SQL Server</span>
+                                        <span class="badge badge-warning mr-1 mb-1">Logs/Reintentos</span>
+                                    </div>
+                                    <a href="#contact"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                        data-stack="Zoho Deluge + WOZTELL + SQL Server + Logs/Reintentos"
+                                        aria-label="Solicitar integraciones Zoho CRM con WOZTELL y SQL Server">
+                                        Quiero algo así (Zoho + WOZTELL)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Huellitas Felices -->
+                        <div class="col-12 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm project-card">
+                                <div class="card-body">
+                                    <h5 class="font-weight-bold mb-1">Huellitas Felices – Rifas (3 y 4 cifras)</h5>
+                                    <p class="text-muted mb-2">Fundación. Backend Spring Boot · React · PostgreSQL.</p>
+                                    <ul class="pl-3 mb-3 small">
+                                        <li>Reserva remota de números y pagos.</li>
+                                        <li>Sorteo y publicación de ganadores.</li>
+                                        <li>Panel administrativo trazable.</li>
+                                    </ul>
+                                    <div class="mb-3">
+                                        <span class="badge badge-info mr-1 mb-1">Spring Boot</span>
+                                        <span class="badge badge-dark mr-1 mb-1">React</span>
+                                        <span class="badge badge-success mr-1 mb-1">PostgreSQL</span>
+                                        <span class="badge badge-secondary mr-1 mb-1">Panel Admin</span>
+                                    </div>
+                                    <a href="#contact"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                        data-stack="Spring Boot + React + PostgreSQL + Panel Admin"
+                                        aria-label="Solicitar aplicación tipo rifas con Spring Boot y React">
+                                        Quiero algo así (Spring Boot + React)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="projects-footer text-center mt-2">
+                        <small class="text-muted">Más casos disponibles bajo NDA o repos privados. Solicita detalles específicos.</small>
+                    </div>
+                </div>
+            </div>
+        </section>        
+
+        <!-- COSTS -->
+        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
+
+            <!-- PICTURE -->
+            <picture class="jarallax-img">
+                <source media="(min-width: 768px)" srcset="{% static 'images/sections/costs_lg.jpg' %}">
+                <img srcset="{% static 'images/sections/costs_xs.jpg' %}" alt="Background mobile" class="w-100 img-fluid">
+            </picture>
+
+            <div class="container">
+                <div class="row justify-content-md-end">
+                    <div class="col-12 col-md-8 py-5 font-weight-bold">
+                        <h2 class="">TECNOLOGÍAS EN LAS QUE CONFÍO</h2>
+                        <h6 class="text-white-50 my-2">Productividad, estabilidad y comunidad activa.</h6>
+                        <p class="mb-3">
+                        <span class="badge badge-light text-dark mr-1 mb-1">Angular</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">React</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">TypeScript</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">FastAPI</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">Node/Express</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">Zoho Deluge</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">PostgreSQL</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">MongoDB</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">SQL Server</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">Docker</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">Nginx</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">AWS</span>
+                        <span class="badge badge-light text-dark mr-1 mb-1">DigitalOcean</span>
+                        </p>
+                        <a href="#contact" class="btn lp btn-primary my-3">Cuéntame tu necesidad</a>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="contact">
+            <header class="py-5 bg-primary text-white text-center position-relative">
+                <h2 class="display-4 font-weight-bold">CONTÁCTANOS</h2>
+                <h6 class="text-white-50">ESTAMOS LISTOS PARA ATENDERTE</h6>
+                <div class="addon"></div>
+            </header>
+
+            <div class="container">
+                <div class="row pt-4">
+
+                    <!-- CONTACT -->
+                    <div class="col-12 col-lg-6 contact-container">
+                        <!-- text-md-left -->
+                        <h2 class="font-weight-bold text-center mb-4">Detalles de contacto:</h2>
+                        <ul class="list-unstyled">
+
+                            <li class="d-flex py-3">
+                                <i class="fas fa-globe fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">Dirección</h5>
+                                    {% comment %} TODO: dinamizar! {% endcomment %}
+                                    <p class="mb-0 text-light">Carrera 27 #27-20 barrio las Ferias, apto #201</p>
+                                </div>
+                            </li>
+                            <li class="d-flex py-3">
+                                <i class="fas fa-mobile-alt fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">Teléfonos</h5>
+                                    <p class="mb-0">
+                                        <span class="indicativo">(+57) </span><span class="number">320 794 55 14</span>,
+                                        <span class="indicativo"> (+57) </span><span class="number">7 42 34 01</span>
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="d-flex py-3">
+                                <i class="fas fa-envelope-open fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">Emails:</h5>
+                                    <p class="mb-1">
+                                        <span class="mail">jaimeivan0017<span class="text-primary">@</span>gmail.com</span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <span class="mail">jdsolutions817<span class="text-primary">@</span>gmail.com</span>
+                                    </p>
+                                </div>
+                            </li>
+
+                            <li class="d-inline-flex py-3 w-45">
+                                <i class="fab fa-skype fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">Skype</h5>
+                                    <p class="mb-0">jdiaz.817</p>
+                                </div>
+                            </li>
+
+                            <li class="d-inline-flex py-3 w-45 sec">
+                                <i class="fab fa-linkedin fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">LinkedIn</h5>
+                                    <p class="mb-0">
+                                        <a href="https://www.linkedin.com/in/jdiaz817" target="_blank">Ver perfil</a>
+                                    </p>
+                                </div>
+                            </li>
+
+                            <li class="d-flex py-3 repo-container">
+                                <i class="fas fa-code-branch fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <div>
+                                    <h5 class="font-weight-bold">Repositorios:</h5>
+                                    <div class="mb-0 row align-items-center">
+                                        <div class="col-12 d-flex justify-content-between mb-3 repos">
+                                            <a href="https://github.com/jivan0017" target="_blank" class="d-inline-flex">
+                                                <i class="fab mr-2 text-tertiary fa-fw fa-github repo-ico"></i> <span class="text-repo">jivan0017</span>
+                                            </a>
+                                            <a href="https://github.com/jaimediaz817" target="_blank" class="d-inline-flex">
+                                                <i class="fab mr-2 text-tertiary fa-fw fa-github repo-ico"></i> <span class="text-repo">jaimediaz.817</span>
+                                            </a>
+                                        </div>
+                                        <div class="col-12 d-flex justify-content-between repos">
+                                            <a href="https://gitlab.com/jdiaz.817" target="_blank" class="d-inline-flex">
+                                                <i class="fab mr-2 text-tertiary fa-fw fa-gitlab repo-ico"></i> <span class="text-repo">@jdiaz.817</span>
+                                            </a>
+                                            <a href="https://bitbucket.org/jdiaz0017/" target="_blank" class="d-inline-flex">
+                                                <i class="fab mr-2 text-tertiary fa-fw fa-bitbucket repo-ico"></i> <span class="text-repo">jdiaz0017</span>
+                                            </a>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </div>
+
+                    <!-- FORMULARIO -->
+                    <div class="col-12 col-lg-6 form-container">
+                        <div class="card-form-contact position-relative">
+                            <h2 class="display-4 font-weight-bold"></h2>
+                            <h2 class="font-weight-bold text-left mb-4 text-secondary mb-4">
+                                Coordina una reunión breve (o deja tu pregunta):
+                            </h2>
+
+                            <!-- AÑADE ESTE BLOQUE DE CÓDIGO -->
+                            <div class="form-loader-overlay" id="formLoader">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Enviando...</span>
+                                </div>
+                            </div>
+                            <!-- FIN DEL BLOQUE AÑADIDO -->                        
+
+                            {% include "inquiries/_form_public.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer id="footer" class="footer footer-section-one">
+            <div class="addon container-fluid">
+                <div class="row">
+                    <!--<div class="col-8 col-main"></div>-->
+                </div>
+            </div>
+
+            <div class="container">
+
+                <div class="row">
+                    <div class="col mr-auto">
+                        <span class="text-muted text-heaeder-foot"><i class="fa fa-user-circle pr-2" style="font-size: 22px;"></i>Contáctame a través de las redes sociales</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mr-auto pb-1">
+                        <div class="row social-content justify-content-center">
+                            <div class="col">
+                                <a href="https://www.facebook.com/jdiaz.817" class="fab fa-facebook-square"></a>
+                                <p class="social-text">
+                                    Contáctame a través de Facebook, escríbeme un mensaje privado o publicame algo en mi muro.
+                                    Con gusto me pondré en contacto contigo en la mayor brevedad posible.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://twitter.com/JDiaz0017" class="fab fa-twitter-square"></a>
+                                <p class="social-text">
+                                    Envíame un Tuit o publicame algo. Con gusto estaré atento ya con la opción de poder enviar mensajes directos.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://codepen.io/jdiaz0017/" class="fab fa-codepen"></a>
+                                <p class="social-text">
+                                    Si quieres ver al instante algún producto de maquetación no dudes en contactarme para compartir contigo un avance instantáneo de dicho producto. POdrás inspeccionar código y ser partícipe del mismo, evidenciando el poder de las buenas prácticas de codificación y convenciones.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://plus.google.com/u/4/107764142392043892596" class="fab fa-google-plus-g"></a>
+                                <p class="social-text">
+                                    Si tienes en mente algún proyecto podremos gestionar en la nube toda la documentación pertinente mediante el Drive de Google, y todo el Siute de herramientas que esta gran empresa posee. Trabajar en la nube nunca fue tan fácil y directo. Así que no lo pienses más. Contáctame a través de Google +
+                                </p>
+                            </div>
+                            <div class="col">
+                                <a href="https://github.com/jaimediaz817" class="fab fa-github-square">
+                                    <i class="fa fa-code-branch" style="font-size: 18px;"></i>
+                                </a>
+                                <p class="social-text">
+                                    Puedes navegar entre los diferentes repositorios públicos en los que he trabajado por Hobbie y/o probando alguna funcionalidad. Puedes ver también algunos proyectos desarrolados en algunos cursos de <strong>Platzi</strong>, experimentos y algo más.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row social-content justify-content-center">						
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://next.plnkr.co/users/jaimediaz817/plunks" class="fa fa-arrow-down" target="_blank"></a>
+                                <p class="social-text">
+                                    <strong>Plunker</strong> es un excelente sitio online en el que puedes ver mis proyectos/experimentos en la nube sin necesidad de desplegar una aplicación en un web hosting u otra plataforma como servicio. Podrás ver un poco de mi trabajo como maquetador web y programación del lado del Frontend.
+                                </p>
+                            </div>
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://www.linkedin.com/in/jdiaz817" class="fab fa-linkedin" target="_blank"></a>
+                                <p class="social-text">
+                                    Dentro de mi <strong>Perfil Linkedin</strong> adjunto últimamente mis certificados obtendidos tras lograr finalizar cursos en materia académica. Me gusta adquirir nuevos conocimientos técnicos en el ecosistema Javascript principalmente. En términos generales, busco construir un perfil Frontend y Backend. En esta red social pretendo llevar a cabo vínculos importantes con compañeros y/o posibles clientes.
+                                </p>
+                            </div>
+
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://bitbucket.org/jdiaz0017/" class="fab fa-bitbucket" target="_blank"></a>
+                                <p class="social-text">
+                                    Este es mi tercer repositorio donde suelo subir repositorios privados y colaborar con frameworks como <strong>FoxFramework</strong> propuesto por el Ing <strong>Plablo Bejarano</strong> de la Ciudad de cali. En dicho Framework tube la oportunidad de realizar aportes sustanciales en el Core de dicho framework solucionando un error en producción con el modelo. Próximamente estaré compartiendo dicho Framework de la casa.
+                                </p>
+                            </div>
+
+                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                <a href="https://github.com/jivan0017" class="fab fa-github-square" target="_blank"><span class="single-text">Perfil laboral <i class="fa fa-briefcase ml-1" style="color:#6c757d;font-size: 13px;"></i></span></a>
+                                <p class="social-text">
+                                    Esta es mi segunda cuenta Github que regularmente <strong>no</strong> comparto públicamente, no obstante, comparto esta cuenta con el fin de evidenciar mi actividad en los últimos 5 años, participando activamente en el proyecto en el cual laboro. Se trata de un repositorio privado pero se puede evidenciar la actividad constante y compromiso total de mi parte.
+                                </p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid pl-0 pr-0 sub-footer pt-2 pb-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6 col-md-6 col-lg-5 color-txt d-flex align-items-center justify-content-center">
+                            <p class="jd-text text-muted mb-0"><strong>Jaime Iván Díaz</strong>, Ing. de sistemas especialista en desarrollo web | Frontend & Backend Developer.</p>
+                        </div>
+
+                        <div class="col-6 col-md-6 col-lg-2 px-0 text-center align-items-center d-flex card-avatares">
+                            <div class="front-content mx-auto">
+                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                    <img src="{% static 'images/jd.png' %}" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
+                                </a>
+                            </div>
+                            <div class="back-content mx-auto">
+                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                    <img src="{% static 'images/jd-imagen.jpg' %}" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="text-sm-center text-lg-left col-12 col-md-12 col-lg-5 color-txt derechos text-left text-muted">
+                            Todos los derechos reservados {% now "Y" %} © Typsterbyte, Inc.
+                        </div>
+                    </div>
+                    
+                </div>			
+            </div>
+        </footer>
+
+
+        <!-- FOOTER -->
+        <footer id="footer" class="bg-dark text-white-light text-truncate">
+            <div class="container">
+                <div class="row align-items-center">
+
+                    <div class="col-12 col-md-6 col-xl-5 py-2 diagonal">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2 class="text-white font-weight-bold">Soporte</h2>
+                            </div>
+                            <div class="col-auto text-black-50">
+                                <i class="fas fa-laptop fa-4x"></i>
+                            </div>
+                            <div class="col-auto text-black-50 mt-3">
+                                <h3>(+ 57) 320 794 55 14</h3>
+                                <p>El servicio de contacto está disponible 24h/7</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-7 py-2 text-center text-md-right info">
+                        <ul class="list-unstyled d-inline-flex text-uppercase small">
+                            <li>
+                                <a href="javascript:;">Inicio</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">Nosotros</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">Politicas de privacidad</a>
+                            </li>
+                        </ul>
+                        <p class="small"> {% now "Y" %} ©. Todos los derechos reservados. Typsterbyte, Inc.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>        
+
+
+
+        <!-- Loader -->
+        <div class="loader-background hide">
+            <div class="spinner-border text-danger loader-component" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Botón flotante Ir arriba -->
+        <button id="btnTop" class="btn-top" type="button" aria-label="Ir arriba">
+            <i class="fas fa-arrow-up"></i>
+        </button>        
+
+        <!-- *********************************************************************** -->
+        <!-- JQUERY    LIB -->
+        <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+
+        <!-- POPPER    CDN -->
+        <!--https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js-->
+
+        <!-- POPPER    LIB -->
+        <script src="{% static 'js/jquery-plugins/popper.min.js' %}"></script>
+
+        <!-- BOOTSTRAP LIB -->
+        <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+
+        <!-- SWIPER    LIB -->
+        <script src="{% static 'js/lib/swiper.min.js' %}"></script>
+
+        <!-- VENOBOX   LIB -->
+
+
+        <!-- JARALLAX  LIB -->
+        <script src="{% static 'js/lib/jarallax.min.js' %}"></script>
+
+        <!-- WAY POINTS LIB -->
+        <script src="{% static 'js/jquery-plugins/jquery.waypoints.min.js' %}"></script>
+
+        <!-- COUNTERUP  LIB -->
+        <script src="{% static 'js/jquery-plugins/jquery.counterup.min.js' %}"></script>
+
+        <!-- PICKADATE   LIB | Crea selector de fecha y hora -->
+        <script src="{% static 'js/lib/pickadate/picker.js' %}"></script>
+        <!-- Fecha -->
+        <script src="{% static 'js/lib/pickadate/picker.date.js' %}"></script>
+        <!-- hora -->
+        <script src="{% static 'js/lib/pickadate/picker.time.js' %}"></script>
+
+        <!-- Validaciónes -->
+        <script src="{% static 'js/lib/parsley.min.js' %}"></script>
+        <script src="{% static 'js/lib/parsley.es.js' %}"></script>
+
+        <!-- Slider sticky -->
+        <script src="{% static 'js/jquery-plugins/jquery.stickit.min.js' %}"></script>
+        
+        <!-- Slider scroll -->
+        <script src="{% static 'js/jquery-plugins/jquery.malihu.PageScroll2id.min.js' %}"></script>
+        
+        <!-- Crea clases para identificar dispositivos -->
+        <script src="{% static 'js/lib/css_browser_selector.js' %}"></script>
+
+        <!-- TOAST -->
+        <script src="{% static 'js/lib/toast.js' %}"></script>
+
+        <!-- === AÑADE ESTA LÍNEA PARA SWEETALERT2 === -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- ========================================== -->
+
+        <script>
+        function getCookie(name){
+            const v=`; ${document.cookie}`.split(`; ${name}=`);
+            if (v.length===2) return decodeURIComponent(v.pop().split(';').shift());
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings){
+            if (!(/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type)) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+            }
+            }
+        });
+        </script>
+
+        <script>
+        window.JD_API = {
+            // submit: "/ask/api/submit/",
+            // blogs:  "/api/blogs/"
+            blogs: null
+        };
+        </script>
+
+        <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-quart',
+            once: true
+        });
+        </script>
+
+        <!-- FANCYBOX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>        
+
+        <!-- CUSTOM   PATH ******************* -->
+        <script src="{% static 'js/jdController.js' %}"></script>
+    </body>
+</html>

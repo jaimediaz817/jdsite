@@ -106,6 +106,7 @@ def api_submit_question(request):
     print("🔵 [DEBUG] Recibiendo petición POST en api_submit_question")
     # --- OBTENER EL SITIO ACTUAL ---
     current_site = get_current_site(request)
+    res_email = None
     # -------------------------------
 
     # --- VALIDAR FORMULARIO ---

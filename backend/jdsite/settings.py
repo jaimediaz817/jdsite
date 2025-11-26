@@ -129,7 +129,7 @@ REPLY_TO_EMAIL = os.getenv("REPLY_TO_EMAIL", EMAIL_HOST_USER)
 LOGIN_URL = "/me/login/"
 LOGIN_REDIRECT_URL = "/ask/admin/threads/"
 
-JD_AVATAR_URL = "https://jdiaz.tipsterbyte.com/static/jd-imagen.jpg"
+JD_AVATAR_URL = "https://jdiaz.tipsterbyte.com/static/images/jd-imagen.jpg"
 
 # --- AÑADIR ESTA LÍNEA AL FINAL ---
 SITE_ID = 1

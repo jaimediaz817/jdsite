@@ -84,6 +84,8 @@ def jd_send_email_html(to, subject, template, context):
         f"[JD][EMAIL] Enviado a {to} usando backend: {settings.EMAIL_BACKEND} (resultado: {result})"
     )
 
+    return result
+
 
 @require_POST
 def api_submit_question(request):
@@ -175,7 +177,7 @@ def api_submit_question(request):
             #     recipient_list=[settings.OWNER_EMAIL],
             #     fail_silently=False,
             # )
-            jd_send_email_html(
+            res_email = jd_send_email_html(
                 to=settings.OWNER_EMAIL,
                 subject=f"Nueva consulta de {recruiter.name}",
                 template="emails/owner_notification.html",
@@ -223,6 +225,7 @@ def api_submit_question(request):
                 "ok": True,
                 "success": "¡Recibido! Pronto recibirás respuesta.",
                 "status_url": f"/ask/t/{thread.code}/",
+                "res_email": res_email,
             }
         )
 

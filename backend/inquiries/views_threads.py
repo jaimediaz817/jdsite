@@ -177,7 +177,7 @@ def api_submit_question(request):
             #     recipient_list=[settings.OWNER_EMAIL],
             #     fail_silently=False,
             # )
-            res_email = jd_send_email_html(
+            jd_send_email_html(
                 to=settings.OWNER_EMAIL,
                 subject=f"Nueva consulta de {recruiter.name}",
                 template="emails/owner_notification.html",
@@ -203,7 +203,7 @@ def api_submit_question(request):
             #     recipient_list=[recruiter.email],  # Usamos el email del reclutador
             #     fail_silently=False,
             # )
-            jd_send_email_html(
+            res_email = jd_send_email_html(
                 to=recruiter.email,
                 subject="He recibido tu mensaje – Jaime Díaz",
                 template="emails/recruiter_welcome.html",

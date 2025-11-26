@@ -107,6 +107,7 @@ def api_submit_question(request):
     # --- OBTENER EL SITIO ACTUAL ---
     current_site = get_current_site(request)
     res_email = None
+    res_exception = None
     # -------------------------------
 
     # --- VALIDAR FORMULARIO ---
@@ -178,7 +179,7 @@ def api_submit_question(request):
             #     recipient_list=[settings.OWNER_EMAIL],
             #     fail_silently=False,
             # )
-            jd_send_email_html(
+            res_email = jd_send_email_html(
                 to=settings.OWNER_EMAIL,
                 subject=f"Nueva consulta de {recruiter.name}",
                 template="emails/owner_notification.html",
@@ -220,6 +221,7 @@ def api_submit_question(request):
 
         except Exception as e:
             print(f"🔴 [ERROR CRÍTICO] Falló el envío de correo: {e}")
+            res_exception = e
 
         return JsonResponse(
             {
@@ -227,6 +229,7 @@ def api_submit_question(request):
                 "success": "¡Recibido! Pronto recibirás respuesta.",
                 "status_url": f"/ask/t/{thread.code}/",
                 "res_email": res_email,
+                "res_exception": str(res_exception),
             }
         )
 

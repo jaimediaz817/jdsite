@@ -632,6 +632,9 @@ section {
 
         .container {
             ul.list-unstyled  {
+                div a {
+                    color: #6c757d;
+                }
                 &>li:not(.parsley-custom-error-message):not(.parsley-required) {
 
                     .social-icon {
@@ -665,6 +668,10 @@ section {
                 .repos {
                     a {
                         width: 50%;
+                        span {
+                            color: #6c757d;
+                        }
+
                         &:hover {
                             text-decoration: none;
                             cursor: pointer;

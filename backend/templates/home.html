@@ -447,7 +447,7 @@
         </div>
 
         <!-- WELCOME -->
-        <section id="welcome" class="py-5 mb-md-5">
+        {% comment %} <section id="welcome" class="py-5 mb-md-5">
             <div class="container">
                 <div class="row">
 
@@ -499,7 +499,123 @@
                     </div>               
                 </div>
             </div>
+        </section> {% endcomment %}
+
+        <!-- WELCOME -->
+        <section id="welcome" class="welcome-section py-5 mb-md-5">
+            <div class="container">
+                <div class="row"> 
+                    
+                    <!-- Columna izquierda: video / imagen -->
+                    {% comment %} <div class="col-12 col-lg-6 swipe-item-home mb-4 mb-lg-0">
+                        <div class="video-container position-relative welcome-media">
+                            <img src="{% static 'images/slides/slide_code.jpg' %}"
+                                alt="Imágen de bienvenida a mi Home page."
+                                class="img-fluid rounded-lg shadow-lg">
+
+                            <a  data-fancybox
+                                href="https://www.youtube.com/watch?v=d6KleH5mLms"
+                                class="btn-play btn-play-welcome">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                    </div> {% endcomment %}
+                    <div class="col-12 col-lg-6 swipe-item-home mb-4 mb-lg-0 d-flex">
+                        <div class="welcome-media-stack">
+                            <div class="video-container position-relative welcome-media">
+                                <img src="{% static 'images/slides/slide_code.jpg' %}"
+                                    alt="Imágen de bienvenida a mi Home page."
+                                    class="img-fluid rounded-lg shadow-lg">
+
+                                <a data-fancybox
+                                href="https://www.youtube.com/watch?v=d6KleH5mLms"
+                                class="btn-play btn-play-welcome">
+                                    <i class="fas fa-play"></i>
+                                </a>
+                            </div>
+
+                            <!-- NUEVA FRANJA INFERIOR -->
+                            <div class="welcome-media-footer">
+                                <video class="welcome-footer-video"
+                                    autoplay
+                                    muted
+                                    loop
+                                    playsinline>
+                                    <source src="{% static 'videos/home/jd_terminal_franja_welcome.mp4' %}" type="video/mp4">
+                                    Tu navegador no soporta el elemento de video.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Columna derecha: bio mejorada -->
+                    <div class="col-12 col-lg-6 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
+                        <div class="welcome-bio-card">
+                            <span class="welcome-pill">Full-Stack JS / Python · Integraciones de negocio</span>
+
+                            <h2 class="welcome-title mt-3">
+                                Soy <span class="text-primary">Jaime Iván Díaz Gaona</span>
+                            </h2>
+
+                            <p class="welcome-subtitle mb-3">
+                                Full-Stack JS/Python · Frontend (Angular / React) · Zoho CRM (Deluge)
+                            </p>
+
+                            <div class="welcome-meta mb-3">
+                                <div class="welcome-meta-item">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>+13 años construyendo productos digitales</span>
+                                </div>
+                                <div class="welcome-meta-item">
+                                    <i class="fas fa-building"></i>
+                                    <span>Sector público y privado · RUNT, Caracol TV, DMS Tigo, Susuerte, 8Belts, Romy Mail</span>
+                                </div>
+                            </div>
+
+                            <p class="welcome-body mb-3">
+                                Me enfoco en transformar procesos de negocio en soluciones digitales trazables,
+                                medibles y fáciles de mantener, desde el frontend hasta la capa de integraciones
+                                con APIs y automatizaciones.
+                            </p>
+
+                            <div class="welcome-highlight mb-3">
+                                <h6 class="text-uppercase small font-weight-bold text-primary mb-2">
+                                    Diferencial (Zoho + WhatsApp / WOZTELL)
+                                </h6>
+                                <ul class="welcome-list mb-0">
+                                    <li>Functions, Schedules, Webhooks, Blueprints, Custom Views, Bulk Read/Write, REST API en Zoho CRM.</li>
+                                    <li>APIs Deluge seguras para FastAPI / Node y chatbots WOZTELL (tokens / API key).</li>
+                                    <li>Flujos bidireccionales con validaciones, logs, reintentos, alertas y trazabilidad end-to-end.</li>
+                                    <li>Chatbots en WhatsApp con menús interactivos y respuestas contextuales contra Zoho y servicios externos.</li>
+                                </ul>
+                            </div>
+
+                            <div class="welcome-cta-row">
+                                <a href="#contact" class="btn lp btn-primary mb-2 mb-sm-0">
+                                    Contáctame si eres reclutador(a)
+                                </a>
+                                <a href="{% static 'docs/Certificaciones_Completo_JaimeDiaz.pdf' %}"
+                                class="btn lp btn-tertiary"
+                                download="Certificaciones_Jaime_Diaz"
+                                aria-label="Descargar certificaciones y cursos en PDF">
+                                    Certificaciones
+                                </a>
+                            </div>
+
+                            <div class="welcome-tags mt-3">
+                                <span>Zoho Deluge</span>
+                                <span>FastAPI</span>
+                                <span>Angular / React</span>
+                                <span>WOZTELL · WhatsApp</span>
+                                <span>Nginx · Docker · CI/CD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
+
 
         <!-- SKILLS -->
         <section id="skills" class="skills-section py-5 bg-light">

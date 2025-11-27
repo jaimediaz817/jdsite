@@ -45,7 +45,7 @@ $(function () {
         }
     );
 
-    // SWIPER
+    // SWIPERS
     var swiper = new Swiper("#headerSlider", {
         // params
         speed: 800,
@@ -68,6 +68,29 @@ $(function () {
             onlyInViewport: true,
         },
     });
+
+    // Carrusel de proyectos (4 tarjetas por slide)
+    var projectsSlider = new Swiper("#projectsSlider", {
+        slidesPerView: 1,
+        spaceBetween: 24,
+        loop: false,
+        autoHeight: true,
+        pagination: {
+            el: ".projects-pagination",
+            clickable: true,
+        },
+        navigation: {
+            nextEl: ".projects-next",
+            prevEl: ".projects-prev",
+        },
+        breakpoints: {
+            768: {
+                spaceBetween: 32,
+            },
+        },
+    });
+
+    // ---------------------------------------------------------------
 
     // COUNTER
     $(".counter").counterUp();
@@ -454,4 +477,66 @@ $(function () {
             $(this).toggleClass("flipped");
         });
     });
+
+    function setupProjectGallery() {
+        $(".project-gallery-trigger").each(function () {
+            var $btn = $(this);
+            var imagesStr = $btn.data("images");
+
+            if (!imagesStr) {
+                $btn.addClass("disabled project-gallery-disabled")
+                    .attr("disabled", true)
+                    .attr("title", "Sin capturas disponibles");
+                return;
+            }
+
+            $btn.on("click", function (e) {
+                // 👉 Esto evita que el anchor salte al id del modal
+                e.preventDefault();
+
+                var title = $btn.data("title") || "Capturas del proyecto";
+                var images = String(imagesStr).split("|").filter(Boolean);
+
+                if (!images.length) return;
+
+                var $modal = $("#projectGalleryModal");
+                var $carousel = $("#projectGalleryCarousel");
+                var $indicators = $carousel
+                    .find(".carousel-indicators")
+                    .empty();
+                var $inner = $carousel.find(".carousel-inner").empty();
+
+                images.forEach(function (src, index) {
+                    var activeClass = index === 0 ? "active" : "";
+
+                    $indicators.append(
+                        '<li data-target="#projectGalleryCarousel" data-slide-to="' +
+                            index +
+                            '" class="' +
+                            activeClass +
+                            '"></li>'
+                    );
+
+                    $inner.append(
+                        '<div class="carousel-item ' +
+                            activeClass +
+                            '">' +
+                            '<img src="' +
+                            src +
+                            '" class="d-block w-100 project-gallery-img" alt="' +
+                            title +
+                            " – captura " +
+                            (index + 1) +
+                            '">' +
+                            "</div>"
+                    );
+                });
+
+                $("#projectGalleryTitle").text(title);
+                $modal.modal("show");
+            });
+        });
+    }
+
+    $(setupProjectGallery);
 });

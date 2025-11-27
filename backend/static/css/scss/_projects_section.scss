@@ -1,0 +1,305 @@
+/* ============================
+   SECCIÓN PROYECTOS REALES
+   ============================ */
+
+.projects-section {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.projects-surface {
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+/* Cabecera */
+.projects-title {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.projects-subtitle {
+  font-size: 0.98rem;
+  color: #64748b;
+}
+
+/* Grid de proyectos */
+.project-grid {
+  margin-top: 0.5rem;
+}
+
+/* Card base */
+.project-card {
+  border-radius: 18px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+}
+
+/* Texto dentro de cada card */
+.project-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.project-meta {
+  font-size: 1rem;
+}
+
+.project-points {
+  font-size: 0.9rem;
+  color: #334155;
+  margin-bottom: 0;
+}
+
+.project-points li + li {
+  margin-top: 0.2rem;
+}
+
+/* Badges de tecnologías */
+.badge-tech {
+  font-size: 0.87rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Botón "Ver capturas" */
+.project-gallery-trigger {
+  font-size: 1rem;
+  border-radius: 999px;
+}
+
+.project-gallery-trigger i {
+  font-size: 0.9rem;
+}
+
+.project-gallery-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Texto de aviso al final */
+.projects-surface .small.text-muted {
+  font-size: 0.78rem;
+}
+
+button.project-gallery-trigger {
+    font-size: 1rem;
+}
+a.btn-addtext-to-form-opc1 {
+    font-size: 1rem;
+}
+
+
+/* ============================
+   MODAL + CARRUSEL DE CAPTURAS
+   ============================ */
+
+/* Ajuste general del modal */
+#projectGalleryModal .modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+#projectGalleryModal .modal-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+#projectGalleryModal .modal-title {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Imagen dentro del carrusel */
+.project-gallery-img {
+  max-height: 70vh;
+  object-fit: contain;
+  background: #020617;
+}
+
+/* Indicadores un poco más visibles */
+#projectGalleryCarousel .carousel-indicators li {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(148, 163, 184, 0.8);
+}
+
+#projectGalleryCarousel .carousel-indicators .active {
+  background-color: #0ea5e9;
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+
+/* Desktop / pantallas grandes */
+@media (min-width: 992px) {
+  .projects-title {
+    font-size: 3.5rem;
+  }
+
+  .projects-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .project-title {
+    font-size: 1.45rem;
+  }
+
+  .project-points {
+    font-size: 1rem;
+  }
+}
+
+/* Tablet y mobile (≤ 991.98px) */
+@media (max-width: 991.98px) {
+  .projects-surface {
+    padding: 1.8rem 1.3rem;
+  }
+
+  .projects-title {
+    font-size: 1.7rem;
+  }
+
+  .projects-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .project-title {
+    font-size: 1.03rem;
+  }
+
+  .project-meta {
+    font-size: 0.9rem;
+  }
+
+  .project-points {
+    font-size: 0.88rem;
+  }
+
+  .project-grid .col-12.col-md-6 {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Mobile pequeño (≤ 575.98px) */
+@media (max-width: 575.98px) {
+  .project-points {
+    font-size: 0.85rem;
+  }
+
+
+
+  .projects-surface {
+    padding: 1.5rem 1rem;
+  }
+
+
+  .projects-title {
+    font-size: 1.6rem;
+  }
+
+  .project-gallery-img {
+    max-height: 60vh;
+  }
+
+  .projects-surface .small.text-muted {
+    font-size: 0.72rem;
+  }
+}
+
+
+
+
+
+
+
+
+/* Controles del carrusel de proyectos */
+.projects-slider {
+  position: relative;
+  padding-bottom: 2.5rem; /* espacio para la paginación */
+}
+.projects-section {
+    /* Flechas del carrusel de proyectos más hacia los extremos */
+    .projects-prev,
+    .projects-next {
+        color: #0f172a;
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Moverlas hacia fuera del contenido */
+    .projects-prev {
+    left: 0;   /* prueba -20, -24 o -28 si quieres más fuera */
+    }
+
+    .projects-next {
+    right: 0;  /* idem: ajusta si quieres más separación */
+    }
+
+    /* Íconos centrados dentro del botón */
+    .projects-prev::after,
+    .projects-next::after {
+    font-size: 0.9rem;
+    }
+
+    .projects-pagination {
+    margin-top: 1rem;
+    }
+
+    /* En móviles ocultamos flechas y dejamos solo bullets */
+    @media (max-width: 575.98px) {
+        .projects-prev,
+        .projects-next {
+            display: none;
+        }
+    }
+
+    /* Botón "Ver capturas" – estilo profesional */
+    .project-gallery-trigger {
+        font-size: 0.8rem;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        box-shadow: none;
+    }
+
+    /* Hover / focus: ligero realce azul, sin sombras rojas */
+    .project-gallery-trigger:hover,
+    .project-gallery-trigger:focus {
+        background: #e0f2fe;
+        border-color: #38bdf8;
+        color: #0f172a;
+        box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.25);
+        outline: none;
+    }
+
+    /* Estado disabled (cuando no hay imágenes) */
+    .project-gallery-trigger.project-gallery-disabled,
+    .project-gallery-trigger:disabled {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #94a3b8;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+
+}

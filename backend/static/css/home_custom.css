@@ -17,10 +17,10 @@ border-color:#04939d;
 }
 
 .btn-outline-primary{
-color:var(--jd-primary);
-border-color:var(--jd-primary);
-background:rgba(0,173,181,.06);
-transition:.35s;
+    color:var(--jd-primary);
+    border-color:var(--jd-primary);
+    /* background:rgba(0,173,181,.06); */
+    transition:.35s;
 }
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
@@ -544,7 +544,7 @@ M E D I A  Q U E R I E S
         font-size:18px;
     }
 }            
-.btn {
+/* .btn {
 position: relative;
 transition: box-shadow .35s ease, transform .35s ease;
 }
@@ -553,7 +553,7 @@ box-shadow: 0 0 0.35rem rgba(255,255,255,.35),
             0 0 0.9rem rgba(246,54,79,.35),
             0 0 1.8rem rgba(246,54,79,.25);
 transform: translateY(-2px);
-}
+} */
 .btn:active {
 transform: translateY(0);
 box-shadow: 0 0 0.25rem rgba(246,54,79,.4);
@@ -696,66 +696,25 @@ SECCIÓN: CÓMO TRABAJO (JD)
     font-size: 1.1rem;
 }
 
-/* Tarjetas */
-.wf-step {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(6px);
-    padding: 25px;
-    border-radius: 16px;
-    transition: all .25s ease;
-    border-bottom: 3px solid transparent;
-    border-left: 1px solid rgba(0,0,0,0.05);
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Hover Pro */
-.wf-step:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.08);
-    border-bottom: 3px solid #0cc0c4; /* tu turquesa */
-}
-
-/* ICONOS */
-.wf-icon {
-    background: rgba(12,192,196,0.12);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    transition: .3s ease;
-}
-
-.wf-icon i {
-    font-size: 1.5rem;
-    color: #0cc0c4;
-}
-
-.wf-step:hover .wf-icon {
-    background: rgba(12,192,196,0.18);
-}
-
-/* Titulos y textos */
-.wf-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.wf-text {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
 
 
-/* Extra: Frase final */
-.workflow-section small {
-    color: #7a7a7a;
-    font-size: 0.95rem;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -820,61 +779,9 @@ SECCIÓN: CÓMO TRABAJO (JD)
     font-size: 1.1rem;
 }
 
-/* ===========================
-   TARJETAS MODERNAS
-=========================== */
-.wf-step {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(8px);
-    padding: 28px;
-    border-radius: 18px;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-bottom: 3px solid transparent;
-    transition: all .3s ease;
-    cursor: default;
-}
 
-/* Hover ultra pro */
-.wf-step:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.12);
-    border-bottom: 3px solid #0cc0c4;
-}
 
-/* ICONOS */
-.wf-icon {
-    background: rgba(12,192,196,0.12);
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    transition: .3s ease;
-}
 
-.wf-icon i {
-    font-size: 1.6rem;
-    color: #0cc0c4;
-}
-
-.wf-step:hover .wf-icon {
-    background: rgba(12,192,196,0.18);
-}
-
-/* TEXTOS */
-.wf-title {
-    font-weight: 700;
-    font-size: 1.15rem;
-    margin-bottom: 5px;
-}
-
-.wf-text {
-    color: #4b4b4b;
-    font-size: 0.96rem;
-    line-height: 1.45;
-}
 
 
 /* NAVEGACIÓN  */

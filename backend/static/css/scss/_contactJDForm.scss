@@ -49,3 +49,167 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 /* TODO: / onnOff Switch */
+
+
+
+
+
+
+
+
+/* ============================
+   FORM CONTACTO – Card moderna
+   ============================ */
+
+.form-container .card-form-contact {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+/* Titular del formulario */
+.form-container .card-form-contact h2.font-weight-bold {
+  font-size: 2rem;
+  line-height: 1.4;
+}
+
+/* Labels */
+.form-container .card-form-contact label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+}
+
+/* Inputs */
+.form-container .card-form-contact .form-control {
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.95rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+/* Textarea un poco menos “píldora” */
+.form-container .card-form-contact textarea.form-control {
+  border-radius: 14px;
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* Focus state */
+.form-container .card-form-contact .form-control:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 0.14rem rgba(14, 165, 233, 0.25);
+  background: #f9fafb;
+}
+
+/* Helper text */
+.form-container .card-form-contact .form-text {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+/* Separación vertical entre grupos */
+.form-container .card-form-contact .form-group {
+  margin-bottom: 1rem;
+}
+
+/* Botón principal */
+.form-container .card-form-contact .btn-primary,
+.form-container .card-form-contact .btn-danger {
+  border-radius: 999px;
+  padding: 0.7rem 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+}
+
+/* Centrar el CTA */
+.form-container .card-form-contact .submit-row {
+  text-align: center;
+}
+
+/* ============================
+   Toggle reunión inicial
+   ============================ */
+
+.meeting-toggle-wrapper {
+  margin-top: 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Switch estilo iOS simple */
+.meeting-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+}
+
+.meeting-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.meeting-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #e2e8f0;
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
+}
+
+.meeting-switch .slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  top: 3px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.3);
+  transition: transform 0.2s ease;
+}
+
+/* Checked */
+.meeting-switch input:checked + .slider {
+  background-color: #0ea5e9;
+}
+
+.meeting-switch input:checked + .slider::before {
+  transform: translateX(16px);
+}
+
+/* Campo de fecha/hora cuando se activa el switch */
+.meeting-datetime {
+  margin-top: 0.8rem;
+}
+
+/* ============================
+   Responsive
+   ============================ */
+
+@media (max-width: 767.98px) {
+  .form-container .card-form-contact {
+    padding: 1.6rem 1.2rem;
+  }
+
+  .meeting-toggle-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

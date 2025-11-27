@@ -7,3 +7,5 @@ env/
 venv/
 backend/db.sqlite3
 backend/staticfiles/
+*.pyc
+__pycache__/

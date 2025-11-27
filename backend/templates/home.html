@@ -62,6 +62,13 @@
 	    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
         
         <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+        {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer" /> {% endcomment %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/devicon.min.css">
+
+
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
         
@@ -321,30 +328,13 @@
                 </div>
             </div>            
             <div class="swiper-wrapper">
+
                 <!-- Slide con VIDEO -->
                 <div class="swiper-slide video-slide flex-center-full" data-swiper-autoplay="20000">
                     <!-- El video actúa como fondo -->
                     <video autoplay muted loop playsinline class="bg-video">
                         <source src="{% static 'videos/home/jd_hero_loop.mp4' %}" type="video/mp4">
                     </video>
-
-                    <!-- Tu contenido de texto normal va aquí encima -->
-                    {% comment %} <div class="container text-slide-container">
-                        <div class="row justify-content-center">
-                            <div class="col-9 col-lg-10 text-center">
-                                <h2 class="text-white font-weight-bold">Hola, soy Jaime Díaz</h2>
-                                <p class="text-white-light lead">Desarrollador de Software & Especialista en Integraciones</p>
-                                <div class="hero-stack-chips d-none d-md-flex">
-                                    <span>Zoho Deluge</span>
-                                    <span>WOZTELL</span>
-                                    <span>FastAPI</span>
-                                    <span>Angular / React</span>
-                                    <span>Nginx · Docker</span>
-                                </div>                                
-                            </div>
-                        </div>
-                    </div> {% endcomment %}
-
                     <div class="container text-slide-container">
                         <div class="row justify-content-md-start">
                             <div class="col-12 col-lg-8 text-left">
@@ -370,25 +360,18 @@
                             </div>
                         </div>
                     </div>
-
                 </div>                
 
-                <div class="swiper-slide img image1 flex-center-full" data-swiper-autoplay="5000">
-                    {% comment %} <div class="container text-slide-container">
-                        <div class="row  justify-content-center justify-content-md-start">
-                            <div class="col-9 col-sm-11 col-md-9">
-                                <!-- Texto completo solo en desktop/tablet -->
-                                <h2 class="display-4 display-md-4 font-weight-bold text-white swipe-item-home d-none d-md-block text-left text-mobile-small">
-                                    Full-Stack JS/Python con foco en integraciones de negocio y Frontend moderno.<br class="d-none d-md-block">
-                                    Zoho CRM (Deluge), Angular/React, FastAPI/Node, DevOps (Nginx + Docker).
-                                </h2>
-                                <!-- Texto resumido solo en mobile -->
-                                <h2 class="h4 font-weight-bold text-white swipe-item-home d-block d-md-none text-mobile-small">
-                                    Full-Stack JS/Python · Integraciones de negocio · Frontend moderno.
-                                </h2>
-                            </div>
-                        </div>
-                    </div> {% endcomment %}
+
+
+
+                {% comment %} <div class="swiper-slide img image1 flex-center-full" data-swiper-autoplay="5000"> {% endcomment %}
+                <div class="swiper-slide video-slide flex-center-full" data-swiper-autoplay="20000">
+                    <!-- El video actúa como fondo -->
+                    <video autoplay muted loop playsinline class="bg-video">
+                        <source src="{% static 'videos/home/jd_entorno_empresarial_v1.mp4' %}" type="video/mp4">
+                    </video>
+
                     <div class="container text-slide-container">
                         <div class="row justify-content-center justify-content-md-start">
                             <div class="col-12 col-lg-8 text-left">
@@ -408,7 +391,10 @@
                     </div>                    
                 </div>
 
-                <div class="swiper-slide img image2 flex-center-full swipe-item-home" data-swiper-autoplay="5000">
+
+
+
+                <div class="swiper-slide img image2 flex-center-full swipe-item-home" data-swiper-autoplay="5000">                
                     <div class="container text-slide-container">
                         <div class="row justify-content-center justify-content-md-start">
                             <div class="col-12 col-lg-8 text-left">
@@ -443,7 +429,6 @@
                     class="header-slider-cta-btn header-slider-cta-outline"
                     download="Certificaciones_Jaime_Diaz"
                     aria-label="Descargar certificaciones y cursos en PDF">
-                    {% comment %} <span class="btn-cert-icon"><i class="fas fa-award"></i></span> {% endcomment %}
                     <span class="btn-cert-text  d-md-inline">Descargar ertificaciones</span>
                 </a>       
                 <!-- Contáctame si eres reclutador(a) -->
@@ -506,10 +491,9 @@
 
                         <!-- Botón PDF Certificaciones (versión destacada) -->
                         <a href="{% static 'docs/Certificaciones_Completo_JaimeDiaz.pdf' %}"
-                            class="btn btn-cert-pdf btn-cert-pdf--xl ml-lg-3 mt-3 mt-lg-0"
+                            class="btn lp btn-tertiary"
                             download="Certificaciones_Jaime_Diaz"
                             aria-label="Descargar certificaciones y cursos en PDF">
-                            <span class="btn-cert-icon"><i class="fas fa-award"></i></span>
                             <span class="btn-cert-text">Certificaciones</span>
                         </a>                          
                     </div>               
@@ -524,7 +508,7 @@
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-lg-7">
                             <h2 class="display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>
-                            <p class="lead text-muted mb-3">
+                            <p class="lead text-muted mb-3 skills-summary">
                                 <strong class="text-primary">Frontend:</strong> Angular · React · Bootstrap · UX limpio<br>
                                 <strong class="text-primary">Backend:</strong> FastAPI · Node/Express · bases en Django<br>
                                 <strong class="text-primary">Integraciones:</strong> Zoho CRM (Deluge, REST, Blueprints, Webhooks, Bulk Read/Write)<br>
@@ -555,43 +539,55 @@
                                     <i class="fas fa-server mr-1"></i>DevOps
                                 </button>
                             </div>
-
-                   
-
                         </div>
-                        <div class="col-12 col-lg-5 mt-4 mt-lg-0">
-                            <div class="row no-gutters text-center skill-metrics">
-                                <div class="col-4">
-                                    <div class="metric-block">
-                                        <i class="fas fa-code text-primary mb-2"></i>
+
+                        <div class="col-12 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
+                            <video class="bg-video" autoplay muted loop playsinline>
+                                <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
+                            </video>
+
+                            <div class="video-overlay"></div>
+
+                            <div class="row no-gutters text-center skill-metrics metrics-content metrics-grid">
+                                <!-- 2x2 en vez de 3+1 -->
+                                <div class="metrics-grid">
+                                    <div class="metric-block" data-aos="fade-up" data-aos-delay="0">
+                                        <i class="fas fa-code icon-numeros mb-2 icon-numeros"></i>
                                         <div class="h4 mb-0 counter" data-counterup-time="800">13</div>
-                                        <small class="text-muted">Años</small>
+                                        <small class="text-muted">Años de experiencia</small>
                                     </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="metric-block">
-                                        <i class="fas fa-project-diagram text-primary mb-2"></i>
+                                    <div class="metric-block" data-aos="fade-up" data-aos-delay="100">
+                                        <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
                                         <div class="h4 mb-0 counter" data-counterup-time="1200">48</div>
-                                        <small class="text-muted">Proyectos en cuenta github: jivan0017</small>
+                                        <small class="text-muted">Proyectos en github: jivan0017</small>
                                     </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="metric-block">
-                                        <i class="fas fa-project-diagram text-primary mb-2"></i>
+                                    <div class="metric-block" data-aos="fade-up" data-aos-delay="200">
+                                        <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
                                         <div class="h4 mb-0 counter" data-counterup-time="1200">73</div>
-                                        <small class="text-muted">Proyectos en cuenta github: jaimediaz817</small>
+                                        <small class="text-muted">Proyectos en github: jaimediaz817</small>
                                     </div>
-                                </div>                            
-                                <div class="col-4">
-                                    <div class="metric-block">
-                                        <i class="fas fa-sync-alt text-primary mb-2"></i>
+                                    <div class="metric-block" data-aos="fade-up" data-aos-delay="300">
+                                        <i class="fas fa-sync-alt  mb-2 icon-numeros"></i>
                                         <div class="h4 mb-0 counter" data-counterup-time="1500">100</div>
-                                        <small class="text-muted">% Entregas a tiempo</small>
+                                        <small class="text-muted">% entregas a tiempo</small>
                                     </div>
+
                                 </div>
+
+                                {% comment %} <div class="col-6">
+
+                                </div>
+
+                                <div class="col-6">
+
+                                </div>
+
+                                <div class="col-6">
+
+                                </div> {% endcomment %}
                             </div>
                         </div>
-                    </div>
+
 
                     <!-- GRID DE SKILLS -->
                     <div class="row skill-grid">
@@ -743,9 +739,9 @@
 
             <div class="container">
                 <div class="row">
-                    <div class="col-12 col-lg-6 py-5">
+                    <div class="col-12 col-lg-8 py-5">
                         <h2 class="display-4 font-weight-bold txt-title">¿Cómo podemos ayudarte?</h2>
-                        <p>
+                        <p class="text-area-bg-dark pt-2 pb-2">
                             Saber exactamente qué quieres, es el primer paso para iniciar de la mejor manera un proyecto, el éxito se basa principalmente en el análisis y seguimiento del <span class="market">dominio del problema</span> en las etapas iniciales
                         </p>
                         <a href="#contact" class="btn lp btn-primary">Deseo saber más información</a>
@@ -760,52 +756,58 @@
                 <h2 class="display-4 font-weight-bold text-secondary">UN POCO SOBRE MIS NÚMEROS</h2>
                 <h6 class="text-black-50">TENGO ALGUNOS NÚMEROS QUE MOSTRARTE.</h6>
 
-                <div class="row numbers_bg">
+                <div class="row numbers_bg position-relative justify-content-center align-items-center" style="overflow:hidden;">
+                    <!-- VIDEO DE FONDO -->
+                    <video class="numbers-bg-video" autoplay muted loop playsinline>
+                        <source src="{% static 'videos/home/jd_entorno_empresarial_v1.mp4' %}" type="video/mp4">
+                    </video>
+                    <!-- OVERLAY OSCURO -->
+                    <div class="numbers-bg-overlay"></div>
+
+                    <!-- CONTENIDO NUMÉRICO -->
                     <div class="col-6 col-md-3 py-4 counter-container">
-                        <i class="far fa-calendar-alt text-primary display-4 mb-2"></i>
-                        <div class="font-weight-bold text-secondary display-4 h2">
+                        <i class="far fa-calendar-alt display-4 mb-2"></i>
+                        <div class="font-weight-bold display-4 h2 text-white counter-shadow">
                             <span class="counter" data-counterup-beginat="0" data-counterup-time="500">{{ experience_years }}</span>
                         </div>
-                        <h6>Años de experiencia</h6>
+                        <h6 class="text-white counter-shadow">Años de experiencia</h6>
                         <div class="counter-line"></div>
                     </div>
                     <div class="col-6 col-md-3 py-4 counter-container">
-                        <i class="fas fa-briefcase text-primary display-4 mb-2"></i>
-                        <div class="font-weight-bold text-secondary display-4 h2">
-                            {% comment %} TODO:  {% endcomment %}
+                        <i class="fas fa-briefcase display-4 mb-2"></i>
+                        <div class="font-weight-bold display-4 h2 text-white counter-shadow">
                             <span class="counter" data-counterup-beginat="0" data-counterup-time="1000">{{ total_hours }}</span>
                         </div>
-                        <h6>Horas de trabajo acumuladas</h6>
+                        <h6 class="text-white counter-shadow">Horas de trabajo acumuladas</h6>
                         <div class="counter-line"></div>
                     </div>
                     <div class="col-6 col-md-3 py-4 counter-container">
-                        <i class="fas fa-award text-primary display-4 mb-2"></i>
-                        <div class="font-weight-bold text-secondary display-4 h2">
-                            <span class="counter" data-counterup-beginat="0" data-counterup-time="1500">100</span><i class="symbol text-tertiary">%</i>
+                        <i class="fas fa-award display-4 mb-2"></i>
+                        <div class="font-weight-bold display-4 h2 text-white counter-shadow">
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="1500">100</span><i class="symbol">%</i>
                         </div>
-                        <h6>Nivel de calidad en los desarrollos</h6>
+                        <h6 class="text-white counter-shadow">Nivel de calidad en los desarrollos</h6>
                         <div class="counter-line"></div>
                     </div>
                     <div class="col-6 col-md-3 py-4 counter-container">
-                        <i class="fab fa-angellist text-primary display-4 mb-2"></i>
-                        <div class="font-weight-bold text-secondary display-4 h2">
-                        <span class="counter" data-counterup-beginat="0" data-counterup-time="2000">100</span><i class="symbol text-tertiary">%</i>
+                        <i class="fab fa-angellist display-4 mb-2"></i>
+                        <div class="font-weight-bold display-4 h2 text-white counter-shadow">
+                            <span class="counter" data-counterup-beginat="0" data-counterup-time="2000">100</span><i class="symbol">%</i>
                         </div>
-                        <h6>Nivel de satisfacción de los clientes</h6>
+                        <h6 class="text-white counter-shadow">Nivel de satisfacción de los clientes</h6>
                         <div class="counter-line"></div>
                     </div>
                 </div>
-
             </div>
         </section>
 
         <!-- COMO TRABAJO -->
-        <div class="jd-wave-top">
+        {% comment %} <div class="jd-wave-top">
             <svg viewBox="0 0 1440 90">
                 <path fill="#ffffff" 
                     d="M0,64 C480,96 960,0 1440,64 L1440,0 L0,0 Z"></path>
             </svg>
-        </div>        
+        </div>         {% endcomment %}
         <div class="jd-bg-tech"></div>
 
         <section id="workflow" class="workflow-section py-5 position-relative">
@@ -982,172 +984,375 @@
         </section> {% endcomment %}
 
 
-        <!-- PROYECTOS REALES -->
+
+
+
+
+
+
+
+
+
+
         <section id="projects" class="projects-section py-5">
             <div class="container">
                 <div class="projects-surface p-4 p-md-5">
+                    <!-- CABECERA -->
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-lg-8">
-                            <h2 class="display-4 font-weight-bold text-secundary">Proyectos reales</h2>
-                            <p class="text-muted mb-0">
-                                Casos en producción y desarrollos personales que resumen foco en negocio, buen UX y trazabilidad técnica.
-                            </p>
+                        <h2 class="projects-title mb-2">
+                            Proyectos reales
+                        </h2>
+                        <p class="projects-subtitle mb-0">
+                            Casos en producción y desarrollos personales que resumen foco en negocio,
+                            buen UX y trazabilidad técnica.
+                        </p>
                         </div>
-                        <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right">
-                            <a href="#contact" class="btn lp btn-primary">
-                                <i class="fas fa-paper-plane mr-1"></i>Inicia tu proyecto
-                            </a>
+                        <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right text-left">
+                        <a href="#contact" class="btn btn-primary">
+                            <i class="fas fa-paper-plane mr-1"></i>
+                            Inicia tu proyecto
+                        </a>
                         </div>
                     </div>
 
-                    <div class="row project-grid">
-                        <!-- CRQ -->
-                        <div class="col-12 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm project-card">
-                                <div class="card-body">
-                                    <h5 class="font-weight-bold mb-1">CRQ – Gestión de Documentación por Ciclos</h5>
-                                    <p class="text-muted mb-2">Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.</p>
-                                    <ul class="pl-3 mb-3 small">
-                                        <li>Apertura/cierre de ciclos con indicadores y evidencias.</li>
+                    <!-- CARRUSEL DE PROYECTOS (4 por slide) -->
+                    <div class="swiper-container projects-slider" id="projectsSlider">
+                        <div class="swiper-wrapper">
+
+                        <!-- SLIDE 1: tus 4 proyectos actuales -->
+                        <div class="swiper-slide">
+                            <div class="row project-grid">
+                                <!-- PROYECTO 1: CRQ -->
+                                <div class="col-12 col-md-6 mb-4">
+                                    <article class="card h-100 border-0 shadow-sm project-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="project-title mb-1">
+                                        CRQ – Gestión de Documentación por Ciclos
+                                        </h3>
+                                        <p class="project-meta text-muted mb-2">
+                                        Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
+                                        </p>
+
+                                        <ul class="pl-3 mb-3 project-points">
+                                        <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
                                         <li>Flujos de revisión y control de versiones.</li>
-                                        <li>Roles y trazabilidad de acciones.</li>
-                                    </ul>
-                                    <div class="mb-3">
-                                        <span class="badge badge-info mr-1 mb-1">Laravel</span>
-                                        <span class="badge badge-dark mr-1 mb-1">Vue 2</span>
-                                        <span class="badge badge-secondary mr-1 mb-1">Bootstrap</span>
-                                        <span class="badge badge-success mr-1 mb-1">PostgreSQL/MySQL</span>
+                                        <li>Roles, auditoría y trazabilidad de acciones.</li>
+                                        </ul>
+
+                                        <div class="mb-3">
+                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
+                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                        </div>
+
+                                        <div class="mt-auto d-flex flex-wrap align-items-center">
+                                        <a href="#contact"
+                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                            data-project="CRQ – Gestión de Documentación por Ciclos"
+                                            data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                            Quiero algo así (Laravel + Vue 2)
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                data-title="CRQ – Gestión de Documentación por Ciclos"
+                                                data-images="">
+                                                {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
+                                            <i class="fas fa-images mr-1"></i>
+                                            Ver capturas
+                                        </button>
+                                        </div>
                                     </div>
-                                    <a href="#contact"
-                                        class="btn btn-outline-primary btn-sm"
-                                        data-project="CRQ – Gestión de Documentación por Ciclos"
-                                        data-stack="Laravel + Vue 2 + Bootstrap + PostgreSQL/MySQL"
-                                        aria-label="Solicitar un proyecto similar usando Laravel, Vue 2 y PostgreSQL">
-                                        Quiero algo así (Laravel + Vue 2)
-                                    </a>
+                                    </article>
+                                </div>
+
+                                <!-- PROYECTO 2: Football Center -->
+                                <div class="col-12 col-md-6 mb-4">
+                                    <article class="card h-100 border-0 shadow-sm project-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="project-title mb-1">
+                                        Football Center Academy – Reservas Canchas
+                                        </h3>
+                                        <p class="project-meta text-muted mb-2">
+                                        Portal de reservas. Backend Laravel · Frontend Vue 2.
+                                        </p>
+
+                                        <ul class="pl-3 mb-3 project-points">
+                                        <li>Agenda en tiempo real con anti-colisiones para reservas de cancha.</li>
+                                        <li>Reglas transaccionales y notificaciones al usuario.</li>
+                                        <li>Gestión de usuarios, pagos y reportes básicos.</li>
+                                        </ul>
+
+                                        <div class="mb-3">
+                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Calendario UX</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Transaccional</span>
+                                        </div>
+
+                                        <div class="mt-auto d-flex flex-wrap align-items-center">
+                                        <a href="#contact"
+                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                            data-project="Football Center Academy – Reservas Canchas"
+                                            data-stack="Laravel · Vue 2 · Calendario UX · Lógica transaccional">
+                                            Quiero algo así (Laravel + Vue 2)
+                                        </a>
+
+                                        <!-- Sin capturas: se deshabilita por JS -->
+                                        <button type="button"
+                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                data-title="Football Center Academy – Reservas Canchas"
+                                                data-images="">
+                                            <i class="fas fa-images mr-1"></i>
+                                            Ver capturas
+                                        </button>
+                                        </div>
+                                    </div>
+                                    </article>
+                                </div>
+
+                                <!-- PROYECTO 3: Zoho + WOZTELL -->
+                                <div class="col-12 col-md-6 mb-4">
+                                    <article class="card h-100 border-0 shadow-sm project-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="project-title mb-1">
+                                        Integración Zoho CRM + WOZTELL + SQL Server (SAG)
+                                        </h3>
+                                        <p class="project-meta text-muted mb-2">
+                                        Gestión de cartera y mensajería transaccional.
+                                        </p>
+
+                                        <ul class="pl-3 mb-3 project-points">
+                                        <li>Funciones Deluge con tokens y sincronización SAG ↔ Zoho.</li>
+                                        <li>Flujos para envíos masivos WhatsApp (plantillas WOZTELL).</li>
+                                        <li>Dashboard de facturas pendientes y recordatorios de pago.</li>
+                                        </ul>
+
+                                        <div class="mb-3">
+                                        <span class="badge badge-tech mr-1 mb-1">Zoho Deluge</span>
+                                        <span class="badge badge-tech mr-1 mb-1">WOZTELL</span>
+                                        <span class="badge badge-tech mr-1 mb-1">SQL Server</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Logs/Reintentos</span>
+                                        </div>
+
+                                        <div class="mt-auto d-flex flex-wrap align-items-center">
+                                        <a href="#contact"
+                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                            data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                            data-stack="Zoho CRM · Deluge · WOZTELL · SQL Server">
+                                            Quiero algo así (Zoho + WOZTELL)
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                data-title="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                                data-images="">
+                                            <i class="fas fa-images mr-1"></i>
+                                            Ver capturas
+                                        </button>
+                                        </div>
+                                    </div>
+                                    </article>
+                                </div>
+
+                                <!-- PROYECTO 4: Huellitas Felices -->
+                                <div class="col-12 col-md-6 mb-4">
+                                    <article class="card h-100 border-0 shadow-sm project-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="project-title mb-1">
+                                        Huellitas Felices – Rifas (3 y 4 cifras)
+                                        </h3>
+                                        <p class="project-meta text-muted mb-2">
+                                        Fundación. Backend Spring Boot · React · PostgreSQL.
+                                        </p>
+
+                                        <ul class="pl-3 mb-3 project-points">
+                                        <li>Reserva remota de números y pagos en línea.</li>
+                                        <li>Control de sorteos y publicación de ganadores.</li>
+                                        <li>Panel administrativo trazable para rifas y donaciones.</li>
+                                        </ul>
+
+                                        <div class="mb-3">
+                                        <span class="badge badge-tech mr-1 mb-1">Spring Boot</span>
+                                        <span class="badge badge-tech mr-1 mb-1">React</span>
+                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Panel Admin</span>
+                                        </div>
+
+                                        <div class="mt-auto d-flex flex-wrap align-items-center">
+                                        <a href="#contact"
+                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                            data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                            data-stack="Spring Boot · React · PostgreSQL · Panel Admin">
+                                            Quiero algo así (Spring Boot + React)
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                data-title="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                                data-images="">
+                                            <i class="fas fa-images mr-1"></i>
+                                            Ver capturas
+                                        </button>
+                                        </div>
+                                    </div>
+                                    </article>
                                 </div>
                             </div>
                         </div>
-                        <!-- Football Center -->
-                        <div class="col-12 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm project-card">
-                                <div class="card-body">
-                                    <h5 class="font-weight-bold mb-1">Football Center Academy – Reservas Canchas</h5>
-                                    <p class="text-muted mb-2">Portal de reservas. Backend Laravel · Frontend Vue 2.</p>
-                                    <ul class="pl-3 mb-3 small">
-                                        <li>Agenda en tiempo real con anti-colisiones.</li>
-                                        <li>Reglas transaccionales y notificaciones.</li>
-                                        <li>Usuarios, pagos y reportes básicos.</li>
-                                    </ul>
-                                    <div class="mb-3">
-                                        <span class="badge badge-info mr-1 mb-1">Laravel</span>
-                                        <span class="badge badge-dark mr-1 mb-1">Vue 2</span>
-                                        <span class="badge badge-secondary mr-1 mb-1">Calendario UX</span>
-                                        <span class="badge badge-success mr-1 mb-1">Transaccional</span>
+
+                        <!-- SLIDE 2 (ejemplo): aquí metes proyectos 5–8 -->
+                        <div class="swiper-slide">
+                            <div class="row project-grid">
+                                <div class="col-12 col-md-6 mb-4">
+                                    <article class="card h-100 border-0 shadow-sm project-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="project-title mb-1">
+                                        CRQ – Gestión de Documentación por Ciclos
+                                        </h3>
+                                        <p class="project-meta text-muted mb-2">
+                                        Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
+                                        </p>
+
+                                        <ul class="pl-3 mb-3 project-points">
+                                        <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
+                                        <li>Flujos de revisión y control de versiones.</li>
+                                        <li>Roles, auditoría y trazabilidad de acciones.</li>
+                                        </ul>
+
+                                        <div class="mb-3">
+                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                        <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
+                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                        </div>
+
+                                        <div class="mt-auto d-flex flex-wrap align-items-center">
+                                        <a href="#contact"
+                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                            data-project="CRQ – Gestión de Documentación por Ciclos"
+                                            data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                            Quiero algo así (Laravel + Vue 2)
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                data-title="CRQ – Gestión de Documentación por Ciclos"
+                                                data-images="">
+                                                {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
+                                            <i class="fas fa-images mr-1"></i>
+                                            Ver capturas
+                                        </button>
+                                        </div>
                                     </div>
-                                    <a href="#contact"
-                                        class="btn btn-outline-primary btn-sm"
-                                        data-project="Football Center Academy – Reservas Canchas"
-                                        data-stack="Laravel + Vue 2 + Calendario UX + Lógica Transaccional"
-                                        aria-label="Solicitar un sistema de reservas con Laravel y Vue 2">
-                                        Quiero algo así (Laravel + Vue 2)
-                                    </a>
+                                    </article>
                                 </div>
                             </div>
                         </div>
-                        <!-- Zoho + WOZTELL + SQL Server -->
-                        <div class="col-12 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm project-card">
-                                <div class="card-body">
-                                    <h5 class="font-weight-bold mb-1">Integración Zoho CRM + WOZTELL + SQL Server (SAG)</h5>
-                                    <p class="text-muted mb-2">Gestión cartera y mensajería transaccional.</p>
-                                    <ul class="pl-3 mb-3 small">
-                                        <li>Functions Deluge con tokens y sincronización SAG ⇄ Zoho.</li>
-                                        <li>Flujos para envíos masivos WhatsApp.</li>
-                                        <li>Chatbot: facturas pendientes on-demand.</li>
-                                    </ul>
-                                    <div class="mb-3">
-                                        <span class="badge badge-primary mr-1 mb-1">Zoho Deluge</span>
-                                        <span class="badge badge-secondary mr-1 mb-1">WOZTELL</span>
-                                        <span class="badge badge-success mr-1 mb-1">SQL Server</span>
-                                        <span class="badge badge-warning mr-1 mb-1">Logs/Reintentos</span>
-                                    </div>
-                                    <a href="#contact"
-                                        class="btn btn-outline-primary btn-sm"
-                                        data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
-                                        data-stack="Zoho Deluge + WOZTELL + SQL Server + Logs/Reintentos"
-                                        aria-label="Solicitar integraciones Zoho CRM con WOZTELL y SQL Server">
-                                        Quiero algo así (Zoho + WOZTELL)
-                                    </a>
-                                </div>
-                            </div>
+
                         </div>
-                        <!-- Huellitas Felices -->
-                        <div class="col-12 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm project-card">
-                                <div class="card-body">
-                                    <h5 class="font-weight-bold mb-1">Huellitas Felices – Rifas (3 y 4 cifras)</h5>
-                                    <p class="text-muted mb-2">Fundación. Backend Spring Boot · React · PostgreSQL.</p>
-                                    <ul class="pl-3 mb-3 small">
-                                        <li>Reserva remota de números y pagos.</li>
-                                        <li>Sorteo y publicación de ganadores.</li>
-                                        <li>Panel administrativo trazable.</li>
-                                    </ul>
-                                    <div class="mb-3">
-                                        <span class="badge badge-info mr-1 mb-1">Spring Boot</span>
-                                        <span class="badge badge-dark mr-1 mb-1">React</span>
-                                        <span class="badge badge-success mr-1 mb-1">PostgreSQL</span>
-                                        <span class="badge badge-secondary mr-1 mb-1">Panel Admin</span>
-                                    </div>
-                                    <a href="#contact"
-                                        class="btn btn-outline-primary btn-sm"
-                                        data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
-                                        data-stack="Spring Boot + React + PostgreSQL + Panel Admin"
-                                        aria-label="Solicitar aplicación tipo rifas con Spring Boot y React">
-                                        Quiero algo así (Spring Boot + React)
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+
+                        <!-- Controles del carrusel -->
+                        <div class="swiper-button-prev projects-prev"></div>
+                        <div class="swiper-button-next projects-next"></div>
+                        <div class="swiper-pagination projects-pagination"></div>
                     </div>
 
-                    <div class="projects-footer text-center mt-2">
-                        <small class="text-muted">Más casos disponibles bajo NDA o repos privados. Solicita detalles específicos.</small>
-                    </div>
+                    <p class="text-center small text-muted mt-3 mb-0">
+                        Más casos disponibles bajo NDA o repos privados. Solicita detalles específicos.
+                    </p>
                 </div>
             </div>
-        </section>        
+        </section>
 
         <!-- COSTS -->
         <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
 
-            <!-- PICTURE -->
-            <picture class="jarallax-img">
-                <source media="(min-width: 768px)" srcset="{% static 'images/sections/costs_lg.jpg' %}">
-                <img srcset="{% static 'images/sections/costs_xs.jpg' %}" alt="Background mobile" class="w-100 img-fluid">
-            </picture>
+            <!-- VIDEO DE FONDO -->
+            <video class="costs-bg-video" autoplay muted loop playsinline>
+                <source src="{% static 'videos/home/jd_techs.mp4' %}" type="video/mp4">
+            </video>
+            <!-- OVERLAY OSCURO -->
+            <div class="costs-bg-overlay"></div>
 
             <div class="container">
-                <div class="row justify-content-md-end">
-                    <div class="col-12 col-md-8 py-5 font-weight-bold">
-                        <h2 class="">TECNOLOGÍAS EN LAS QUE CONFÍO</h2>
-                        <h6 class="text-white-50 my-2">Productividad, estabilidad y comunidad activa.</h6>
-                        <p class="mb-3">
-                        <span class="badge badge-light text-dark mr-1 mb-1">Angular</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">React</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">TypeScript</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">FastAPI</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">Node/Express</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">Zoho Deluge</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">PostgreSQL</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">MongoDB</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">SQL Server</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">Docker</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">Nginx</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">AWS</span>
-                        <span class="badge badge-light text-dark mr-1 mb-1">DigitalOcean</span>
-                        </p>
-                        <a href="#contact" class="btn lp btn-primary my-3">Cuéntame tu necesidad</a>
+                <div class="row justify-content-md-center">
+                    <div class="col-12 col-md-10 py-5 font-weight-bold costs-inner">
+                        <div class="container">
+                            <h2 class="tech-title">Tecnologías en las que confío</h2>
+                            {% comment %} <p class="tech-subtitle">
+                            Productividad, estabilidad y comunidad activa.
+                            </p> {% endcomment %}
+                            <h6 class="lp-home-subtitle my-2">Productividad, estabilidad y comunidad activa.</h6>
+                        </div>
+
+                        <!-- GRID DE LOGOS (INFRA / DB / CLOUD) -->
+                        <div class="tech-icons-grid">
+                            <!-- Cloud / Infra -->
+                            <div class="tech-icon-item">
+                                <i class="devicon-amazonwebservices-plain-wordmark colored"></i>
+                                <span>AWS</span>
+                            </div>
+
+                            <div class="tech-icon-item">
+                                <i class="devicon-digitalocean-original colored"></i>
+                                <span>DigitalOcean</span>
+                            </div>
+
+                            <!-- Bases de datos -->
+                            <div class="tech-icon-item">
+                                <i class="devicon-mysql-original colored"></i>
+                                <span>MySQL</span>
+                            </div>
+
+                            <div class="tech-icon-item">
+                                <i class="devicon-python-plain colored colored"></i>
+                                <span>PostgreSQL</span>
+                            </div>
+
+                            <!-- Contenedores -->
+                            <div class="tech-icon-item">
+                                <i class="devicon-docker-plain colored"></i>
+                                <span>Docker</span>
+                            </div>
+
+                            <!-- Frontend -->
+                            <div class="tech-icon-item">
+                                <i class="devicon-angularjs-plain colored"></i>
+                                <span>Angular</span>
+                            </div>
+
+                            <div class="tech-icon-item">
+                                <i class="devicon-react-original colored"></i>
+                                <span>React</span>
+                            </div>
+
+                            <!-- Backend / lenguaje -->
+                            <div class="tech-icon-item">
+                                <i class="devicon-python-plain colored"></i>
+                                <span>Python</span>
+                            </div>
+
+                            <div class="tech-icon-item">
+                                <i class="devicon-javascript-plain colored"></i>
+                                <span>JavaScript</span>
+                            </div>
+
+                            <div class="tech-icon-item">
+                                <i class="devicon-ubuntu-plain colored"></i>
+                                <span>Entornos Linux/Ubuntu</span>
+                            </div>
+                            <div class="tech-icon-item">
+                                <i class="devicon-microsoftsqlserver-plain colored"></i>
+                                <span>SQL Server</span>
+                            </div>      
+                        </div>
+
+                        <a href="#contact" class="btn lp btn-tertiary my-4">
+                            Cuéntame tu necesidad
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1158,8 +1363,8 @@
         <!-- CONTACT SECTION -->
         <section id="contact" class="contact">
             <header class="py-5 bg-primary text-white text-center position-relative">
-                <h2 class="display-4 font-weight-bold">CONTÁCTANOS</h2>
-                <h6 class="text-white-50">ESTAMOS LISTOS PARA ATENDERTE</h6>
+                <h2 class="display-4 font-weight-bold">CONTÁCTAME</h2>
+                <h6 class="text-white-50">Pongámonos de acuerdo y hablemos de proyectos u oportunidades laboraes</h6>
                 <div class="addon"></div>
             </header>
 
@@ -1169,7 +1374,10 @@
                     <!-- CONTACT -->
                     <div class="col-12 col-lg-6 contact-container">
                         <!-- text-md-left -->
-                        <h2 class="font-weight-bold text-center mb-4">Detalles de contacto:</h2>
+                        <h2 class="font-weight-bold mb-1 contact-title">Detalles de contacto</h2>
+                        <p class="contact-lead mb-3">
+                            Canales directos para coordinar entrevistas, proyectos o resolver dudas.
+                        </p>
                         <ul class="list-unstyled">
 
                             <li class="d-flex py-3">
@@ -1181,12 +1389,11 @@
                                 </div>
                             </li>
                             <li class="d-flex py-3">
-                                <i class="fas fa-mobile-alt fa-3x text-primary mr-4 fa-fw social-icon"></i>
+                                <i class="fab fa-whatsapp fa-3x text-primary mr-4 fa-fw social-icon"></i>
                                 <div>
                                     <h5 class="font-weight-bold">Teléfonos</h5>
                                     <p class="mb-0">
-                                        <span class="indicativo">(+57) </span><span class="number">320 794 55 14</span>,
-                                        <span class="indicativo"> (+57) </span><span class="number">7 42 34 01</span>
+                                        <span class="indicativo">(+57) </span><span class="number">320 7945514</span>
                                     </p>
                                 </div>
                             </li>
@@ -1254,7 +1461,7 @@
                         <div class="card-form-contact position-relative">
                             <h2 class="display-4 font-weight-bold"></h2>
                             <h2 class="font-weight-bold text-left mb-4 text-secondary mb-4">
-                                Coordina una reunión breve (o deja tu pregunta):
+                                Coordinemos una reunión y dialoguemos:
                             </h2>
 
                             <!-- AÑADE ESTE BLOQUE DE CÓDIGO -->
@@ -1440,6 +1647,40 @@
         <button id="btnTop" class="btn-top" type="button" aria-label="Ir arriba">
             <i class="fas fa-arrow-up"></i>
         </button>        
+
+
+
+        <!-- MODAL CARRUSEL DE CAPTURAS DE PROYECTO -->
+        <div class="modal fade" id="projectGalleryModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title mb-0" id="projectGalleryTitle">Capturas del proyecto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="projectGalleryCarousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators"></ol>
+                        <div class="carousel-inner"></div>
+
+                        <a class="carousel-control-prev" href="#projectGalleryCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a class="carousel-control-next" href="#projectGalleryCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Siguiente</span>
+                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
 
         <!-- *********************************************************************** -->
         <!-- JQUERY    LIB -->

@@ -1,0 +1,262 @@
+.jd-tooltip-wrapper {
+    display: inline-flex;
+    align-items: center;
+
+    &.jd-tooltip-absolute {
+        position: absolute;
+    }
+    &.jd-tooltip-relative {
+        position: relative;
+    }
+    &.bottom--2-5-rem {
+        bottom: -2.5rem;        
+    }
+    &.top-1-rem {
+        top: 1rem;        
+    }
+    &.right-0-75-rem {
+        right: 0.75rem;        
+    }
+}
+
+/* ------------------ BOTÓN TRIGGER ------------------ */
+.jd-tooltip-trigger {
+    background: #ff3b3b;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(255, 0, 70, 0.4);
+    }
+}
+
+/* ------------------ PANEL ------------------ */
+.jd-tooltip-panel {
+    position: fixed;
+    z-index: 99999;
+    min-width: 260px;
+    max-width: 310px;
+    background: #0d0f14;
+    color: #d9e1e8;
+    border-radius: 6px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, .35);
+    padding: 12px 20px;
+
+    /* 👇 NUEVO: borde para destacar sobre fondos oscuros */
+    border: 1px solid rgba(148, 163, 184, 0.65);
+
+    /* En vez de display:none */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    /* Estado inicial para animación */
+    transform: translateY(6px) scale(0.96);
+
+    /* Animación suave premium */
+    transition: 
+        opacity .22s cubic-bezier(0.16, 1, 0.3, 1),
+        transform .22s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0s linear .22s;
+}
+
+/* CUANDO ESTÁ VISIBLE */
+.jd-tooltip-visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+
+    /* Llega suave */
+    transform: translateY(0) scale(1);
+
+    /* Eliminar retardo de visibilidad */
+    transition-delay: 0s;
+}
+
+
+/* ------------------ HEADER ------------------ */
+.jd-tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+
+    .jd-tooltip-title {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .jd-tooltip-close {
+        background: transparent;
+        border: none;
+        color: #78e0f8;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+
+        top: -0.5rem;
+        position: relative;        
+
+        &:hover {
+            color: #9df3ff;
+            transform: scale(1.2);
+            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    }
+}
+
+/* ------------------ BODY ------------------ */
+.jd-tooltip-body {
+    line-height: 1.5;
+    font-size: 13px;
+    font-family: 'Open Sans';
+    font-weight: 300;    
+}
+
+
+/* ------------------ FOOTER ------------------ */
+.jd-tooltip-footer {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #9ba7b4;
+}
+
+
+/* ------------------ FLECHA ------------------ */
+/* AUTO-POSICIÓN DESDE JS */
+.jd-pos-top .jd-tooltip-arrow {
+    bottom: -6px;
+    left: calc(50% - 6px);
+}
+
+.jd-pos-bottom .jd-tooltip-arrow {
+    top: -6px;
+    left: calc(50% - 6px);
+}
+
+.jd-pos-left .jd-tooltip-arrow {
+    right: -6px;
+    top: calc(50% - 6px);
+}
+
+.jd-pos-right .jd-tooltip-arrow {
+    left: -6px;
+    top: calc(50% - 6px);
+}
+
+
+
+
+
+
+
+
+
+// .jd-tooltip-arrow {
+//     width: 12px;
+//     height: 12px;
+//     background: #0d0f14;
+//     position: absolute;
+//     transform: rotate(45deg);
+//     z-index: -1;
+
+//     /* 👇 NUEVO: pseudo-borde alrededor de la flecha */
+//     &::before {
+//         content: "";
+//         position: absolute;
+//         inset: -1px; /* 1px más grande por cada lado */
+//         border-radius: 4px;
+//         border: 1px solid rgba(148, 163, 184, 0.65);
+//     }
+// }
+
+
+/* Flecha general */
+.jd-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* 🔽 Flecha cuando el tooltip está encima del botón (arrow abajo) */
+.jd-tooltip-panel.jd-pos-top .jd-tooltip-arrow {
+    bottom: -8px;
+    left: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+
+    /* cuerpo real de la flecha */
+    border-top: 8px solid #0d0f14;
+
+    /* borde */
+    // filter: drop-shadow(0px 0px 1px rgba(148, 163, 184, 0.85));
+}
+
+/* 🔼 Flecha cuando el tooltip está debajo del botón (arrow arriba) */
+.jd-tooltip-panel.jd-pos-bottom .jd-tooltip-arrow {
+    top: -8px;
+    left: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+
+    border-bottom: 8px solid #0d0f14;
+
+    // filter: drop-shadow(0px 0px 1px rgba(148, 163, 184, 0.85));
+}
+
+/* ◀ Flecha izquierda */
+.jd-tooltip-panel.jd-pos-right .jd-tooltip-arrow {
+    left: -8px;
+    top: 20px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+
+    border-left: 8px solid #0d0f14;
+
+    // filter: drop-shadow(0px 0px 1px rgba(148, 163, 184, 0.85));
+}
+
+/* ▶ Flecha derecha */
+.jd-tooltip-panel.jd-pos-left .jd-tooltip-arrow {
+    right: -8px;
+    top: 20px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+
+    border-right: 8px solid #0d0f14;
+
+    // filter: drop-shadow(0px 0px 1px rgba(148, 163, 184, 0.85));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Ajustes para cada orientación */
+.jd-pos-bottom .jd-tooltip-arrow { top: -6px; }
+.jd-pos-top .jd-tooltip-arrow { bottom: -6px; }
+.jd-pos-left .jd-tooltip-arrow { right: -6px; }
+.jd-pos-right .jd-tooltip-arrow { left: -6px; }

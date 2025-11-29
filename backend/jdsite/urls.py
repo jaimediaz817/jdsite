@@ -17,4 +17,6 @@ urlpatterns = [
     ),
     path("me/logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("inq/", include(("inquiries.urls", "inquiries"), namespace="inquiries")),
+    # ... otras URLs
+    path("api/", include("core.urls")),
 ]

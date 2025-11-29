@@ -1,0 +1,348 @@
+/* ========== TERMINAL WELCOME JD ========== */
+
+.jd-terminal-wrapper {
+    margin-top: 1.5rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(10, 15, 25, 0.96), rgba(15, 20, 35, 0.98));
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    color: #e6edf3;
+    font-family: "Fira Code", "JetBrains Mono", Menlo, Consolas, monospace;
+/* 🔑 CONFIRMAR: Esta línea permite animar todos los cambios */
+    transition: all 0.3s ease-in-out;    
+}
+
+/* “Ventana” mac */
+.jd-terminal-mac {
+    display: flex;
+    flex-direction: column;
+    height: 180px;              /* altura base desktop */
+    /* 🔑 AÑADIR/MODIFICAR ESTA LÍNEA para animar la altura */
+    transition: height 0.3s ease-in-out;
+}
+
+/* Cabecera estilo Mac */
+.jd-terminal-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, #2b3038, #20242c);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: #9fa6b8;
+}
+
+.jd-terminal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.jd-term-btn {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s;
+}
+
+.jd-term-btn-close {
+    background: #ff5f57;
+}
+
+.jd-term-btn-min {
+    background: #febc2e;
+}
+
+.jd-term-btn-max {
+    background: #28c840;
+}
+
+.jd-term-btn:hover {
+    transform: translateY(-0.5px);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+.jd-terminal-title {
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.jd-terminal-drag {
+    justify-self: end;
+    width: 30px;
+    height: 12px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 55%);
+    opacity: 0.3;
+}
+
+/* Área de contenido (con scroll) */
+.jd-terminal-body {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #d8dee9;
+    background: radial-gradient(circle at 0 0, rgba(95, 167, 255, 0.1), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 94, 148, 0.13), transparent 55%),
+        #171b22;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #3b4252 transparent;
+}
+
+/* Scrollbar (WebKit) */
+.jd-terminal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.jd-terminal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.jd-terminal-body::-webkit-scrollbar-thumb {
+    background: #3b4252;
+    border-radius: 999px;
+}
+
+/* Líneas de la terminal */
+.jd-terminal-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* prompt tipo terminal */
+.jd-term-prompt {
+    color: #7ee787; /* verde suave estilo GitHub Codespaces */
+    margin-right: 4px;
+}
+
+/* caret animado */
+.jd-term-caret {
+    display: inline-block;
+    margin-left: 1px;
+    color: #e5e9f0;
+    animation: jd-terminal-caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes jd-terminal-caret-blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    50.01%, 100% {
+        opacity: 0;
+    }
+}
+
+/* Link “repo” dentro de la terminal */
+.jd-term-link {
+    color: #9cdcff;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(156, 220, 255, 0.6);
+    padding-bottom: 1px;
+}
+
+.jd-term-link:hover {
+    color: #e6f7ff;
+    border-bottom-style: solid;
+}
+
+
+
+/* Estado minimizado: solo se ve la cabecera */
+
+// Mejora: transición suave y cabecera compacta al minimizar
+// .jd-terminal-wrapper.jd-terminal-minimized .jd-terminal-body {
+//     height: 0 !important;
+//     min-height: 0 !important;
+//     max-height: 0 !important;
+//     padding-top: 0 !important;
+//     padding-bottom: 0 !important;
+//     opacity: 0;
+//     overflow: hidden;
+//     transition: height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+// }
+
+// .jd-terminal-wrapper.jd-terminal-minimized .jd-terminal-mac {
+//     height: 38px !important; // solo cabecera visible
+//     min-height: 38px !important;
+//     max-height: 38px !important;
+//     transition: height 0.35s cubic-bezier(0.4,0,0.2,1);
+// }
+.jd-terminal-wrapper.jd-terminal-minimized {
+    // Estas propiedades serán animadas gracias al 'transition: all 0.3s'
+    width: 300px; /* Ancho más pequeño */
+    height: auto;
+    // position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s, border-radius 0.3s;
+    
+    /* Opcional: Ocultar el cuerpo y mantener solo la cabecera */
+    .jd-terminal-mac {
+        height: 32px; /* Solo queda visible la altura de la cabecera */
+        overflow: hidden;
+    }
+}
+
+
+.jd-term-btn-min {
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+.jd-term-btn-min:active {
+    box-shadow: 0 0 0 2px #febc2e;
+    transform: scale(0.92);
+}
+.jd-terminal-line {
+    /* ... otras propiedades ... */
+    white-space: pre-wrap; /* Mantiene el formato (espacios) y permite que la línea salte */
+}
+/* CSS Adicional para que se vea como link de terminal */
+.jd-terminal-line .jd-terminal-link {
+    color: #12bac3; /* Color verde brillante para destacar */
+    text-decoration: underline;
+    cursor: pointer;
+    white-space: pre-wrap; /* Mantiene la pre-formato (padEnd) */
+}
+
+/* Opcional: efecto al pasar el ratón */
+.jd-terminal-line .jd-terminal-link:hover {
+    color: #ffffff;
+}
+
+.jd-terminal-body {
+    .jd-terminal-line {
+        /* Estilo para el número del repositorio */
+        .jd-repo-number {
+            color: #f27474;
+            font-weight: bold;            
+            // color: #f7b731; /* Ejemplo: Color amarillo brillante */
+            // font-weight: bold;
+        }
+    }
+}
+
+/* Estado “max”: un poco más alto, simulando agrandar ventana */
+.jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+    height: 280px;
+}
+
+
+
+/* Animación de titileo */
+@keyframes term-blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Aplicar la animación al cursor en pausa */
+.jd-term-caret-blinking {
+    animation: term-blink 1s step-end infinite;
+}
+
+/* Asegúrate de que el cursor ▌ normal no titile si no está en pausa */
+.jd-term-caret {
+    /* Mantiene el color y fuente */
+    display: inline-block;
+    width: 1ch;
+    /* ... */
+}
+@keyframes term-blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+.jd-term-caret-blinking {
+    animation: term-blink 1s step-end infinite;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+    .jd-terminal-mac {
+        height: 160px;
+    }
+
+    .jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+        height: 210px;
+    }
+
+    .jd-terminal-title {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .jd-terminal-mac {
+        height: 150px;
+    }
+
+    .jd-terminal-body {
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .jd-terminal-mac {
+        height: 140px;
+    }
+
+    .jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+        height: 190px;
+    }
+}

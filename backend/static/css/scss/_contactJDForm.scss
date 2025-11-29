@@ -199,9 +199,22 @@ input:checked + .slider:before {
   margin-top: 0.8rem;
 }
 
-/* ============================
+.jd-icon-reunion-container {
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    right: 0.5rem;
+    justify-content: center;
+  .jd-icon-reunion {
+    border: 1px solid transparent;
+    background: none;    
+  }
+}
+
+/*============================
    Responsive
-   ============================ */
+============================ */
 
 @media (max-width: 767.98px) {
   .form-container .card-form-contact {

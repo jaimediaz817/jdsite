@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     # apps tuyas
     "inquiries",
+    "core",
     # "blog",
 ]
 
@@ -123,6 +124,27 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX", "[JD] ")
 SITE_BASE_URL = os.getenv("SITE_BASE_URL", "http://localhost:8000")
 REPLY_TO_EMAIL = os.getenv("REPLY_TO_EMAIL", EMAIL_HOST_USER)
+
+# GUTHUB SETTINGS
+JDIAZ817_GITHUB_PAT = os.getenv("JDIAZ817_GITHUB_PAT")
+JDIAZ817_GITHUB_USERNAME = os.getenv("JDIAZ817_GITHUB_USERNAME")
+
+JIVAN0017_GITHUB_PAT = os.getenv("JIVAN0017_GITHUB_PAT")
+JIVAN0017_GITHUB_USERNAME = os.getenv("JIVAN0017_GITHUB_USERNAME")
+
+# Lista de cuentas para iterar fácilmente
+GITHUB_ACCOUNTS = [
+    {
+        "owner": "profesional",
+        "username": JDIAZ817_GITHUB_USERNAME,
+        "pat": JDIAZ817_GITHUB_PAT,
+    },
+    {
+        "owner": "personal",
+        "username": JIVAN0017_GITHUB_USERNAME,
+        "pat": JIVAN0017_GITHUB_PAT,
+    },
+]
 
 # --- REDIRECCIÓN DE LOGIN ---
 # Esto le dice a Django dónde ir cuando @login_required bloquea a un usuario

@@ -1,3 +1,10 @@
+import { initJdTooltips } from "./components/tooltip/jdTooltip.js";
+
+// Cuando cargue la vista
+document.addEventListener("DOMContentLoaded", () => {
+    initJdTooltips();
+});
+
 $(function () {
     // TODO: evaluar para quitart
     function getCookie(name) {
@@ -170,7 +177,8 @@ $(function () {
         formatSubmit: "HH:i", // Esto es lo que se envía (ej: 17:00)
         // -------------------------
         interval: 60,
-        min: [6, 0],
+        min: [9, 0],
+        max: [20, 0],
     });
 
     $.trim($("#message").text());
@@ -539,4 +547,69 @@ $(function () {
     }
 
     $(setupProjectGallery);
+
+    // =====================================================================================
+    // LIBRERÍA TERMINAL DE BIENVENIDA
+    // =====================================================================================
+
+    // Definimos un fallback de repositorios por si la API falla completamente
+    const FALLBACK_REPOS = [
+        {
+            name: "jdsite",
+            label: "jdsite                   · Python · [PRO] · Portafolio personal",
+            url: "#",
+        },
+        {
+            name: "rpa-zoho-api",
+            label: "rpa-zoho-api             · Python · [PRO] · Integraciones con Zoho",
+            url: "#",
+        },
+        {
+            name: "tipsterbyte_fx",
+            label: "tipsterbyte_fx           · Python · [P] · Stats futbol",
+            url: "#",
+        },
+    ];
+
+    if (window.loadGitHubData && window.JDWelcomeTerminal) {
+        console.log("🔄 Cargando API de GitHub para la terminal...");
+        // 1. Llama a la API de forma asíncrona
+        window
+            .loadGitHubData()
+            .then((data) => {
+                // 💡 Recibe el objeto { groups, counts }
+                // Éxito: Inicializa con el objeto de datos
+                JDWelcomeTerminal.init("#welcome-terminal", {
+                    user: "jaimediaz",
+                    host: "jd-vps-digitalocean",
+                    path: "~/portfolio",
+                    repos: data.groups, // <-- Pasamos el objeto agrupado
+                    counts: data.counts, // <-- Pasamos el conteo
+                });
+            })
+            .catch((error) => {
+                // 3. Fallo: Inicializa con los repositorios de FALLBACK
+                console.error(
+                    "🔴 No se pudo cargar la API de GitHub para la terminal:",
+                    error
+                );
+                JDWelcomeTerminal.init("#welcome-terminal", {
+                    user: "jaimediaz",
+                    host: "jd-vps-digitalocean",
+                    path: "~/portfolio",
+                    repos: FALLBACK_REPOS, // <-- DATOS DE FALLBACK
+                });
+            });
+    } else if (window.JDWelcomeTerminal) {
+        console.log(
+            "⚠️ loadGitHubData no está disponible. Usando repositorios de FALLBACK para la terminal."
+        );
+        // Fallback si por alguna razón loadGitHubData no se cargó
+        JDWelcomeTerminal.init("#welcome-terminal", {
+            user: "jaimediaz",
+            host: "jd-vps-digitalocean",
+            path: "~/portfolio",
+            repos: FALLBACK_REPOS,
+        });
+    }
 });

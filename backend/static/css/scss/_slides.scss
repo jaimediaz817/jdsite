@@ -1,3 +1,6 @@
+:root {
+    --jd-container-max: 1120px;
+}
 // SLIDES
 .swiper-container {
     .swiper-slide {
@@ -170,7 +173,7 @@
             position: absolute;
             width: 182px;
             height: 56px;
-            right: 7.25rem;
+            right: calc((100% - var(--jd-container-max)) / 2);; //7.25rem;
             bottom: 35px;
             display: block;
             background: url(../images/jd_firma.png) no-repeat center;
@@ -215,7 +218,10 @@
 .hero-logo-jd {
     position: absolute;
     top: 1.5rem;
-    left: 5.5vw;
+    // left: 5.5vw;
+   /* lo importante: lo alineamos al borde izquierdo del container */
+    left: calc((100% - var(--jd-container-max)) / 2);
+    /* ajústalo según la altura que quieras */   
     z-index: 6;
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
@@ -294,8 +300,9 @@
 /* Contenedor de los dos botones (desktop: pegados a la derecha, centrados verticalmente) */
 .header-slider-cta {
     position: absolute;
-    top: 50%;
-    right: 4.5vw;
+    top: 80px; // 50%;
+    // right: 4.5vw;
+    right: calc((100% - var(--jd-container-max)) / 2);
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;

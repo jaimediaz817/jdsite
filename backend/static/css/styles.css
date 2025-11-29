@@ -249,11 +249,6 @@
 #contact-info .fa-lg {
   opacity: 0.85;
 }
-#contact-info .container .row {
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
-}
-
 @media (min-width: 0) {
   section .social-network li a i {
     color: #FFFFFF;
@@ -274,6 +269,7 @@
     opacity: 0;
     transform: scale(0);
     transition: all 0.6s ease-in-out;
+    width: 0;
   }
   #navigation-menu .navbar-toggler {
     padding: 0;
@@ -290,6 +286,7 @@
     width: 100% !important;
   }
   #navigation-menu.stick-menu .jd-white {
+    width: auto;
     opacity: 1;
     transform: scale(1);
     left: 45%;
@@ -396,6 +393,10 @@
     display: block !important;
   }
 }
+:root {
+  --jd-container-max: 1120px;
+}
+
 .swiper-container .swiper-slide.img {
   background-size: cover;
   background-position: center center;
@@ -525,7 +526,7 @@
     position: absolute;
     width: 182px;
     height: 56px;
-    right: 7.25rem;
+    right: calc((100% - var(--jd-container-max)) / 2);
     bottom: 35px;
     display: block;
     background: url(../images/jd_firma.png) no-repeat center;
@@ -551,7 +552,9 @@
 .hero-logo-jd {
   position: absolute;
   top: 1.5rem;
-  left: 5.5vw;
+  /* lo importante: lo alineamos al borde izquierdo del container */
+  left: calc((100% - var(--jd-container-max)) / 2);
+  /* ajústalo según la altura que quieras */
   z-index: 6;
   padding: 0.35rem 0.9rem;
   border-radius: 999px;
@@ -607,8 +610,8 @@
 /* Contenedor de los dos botones (desktop: pegados a la derecha, centrados verticalmente) */
 .header-slider-cta {
   position: absolute;
-  top: 50%;
-  right: 4.5vw;
+  top: 80px;
+  right: calc((100% - var(--jd-container-max)) / 2);
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -1696,9 +1699,22 @@ input:checked + .slider:before {
   margin-top: 0.8rem;
 }
 
-/* ============================
+.jd-icon-reunion-container {
+  position: absolute;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  right: 0.5rem;
+  justify-content: center;
+}
+.jd-icon-reunion-container .jd-icon-reunion {
+  border: 1px solid transparent;
+  background: none;
+}
+
+/*============================
    Responsive
-   ============================ */
+============================ */
 @media (max-width: 767.98px) {
   .form-container .card-form-contact {
     padding: 1.6rem 1.2rem;
@@ -2024,7 +2040,7 @@ input:checked + .slider:before {
   /* Cabecera */
 }
 .projects-section .projects-title {
-  font-size: 2.1rem;
+  font-size: 2.6rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #0f172a;
@@ -2422,7 +2438,7 @@ input:checked + .slider:before {
   background: rgba(255, 255, 255, 0.85);
   border-radius: 0;
   padding: 1.1rem 1.4rem;
-  border-left: 4px solid #0ea5e9;
+  border-left: 2px solid #00adb5;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
   font-size: 0.98rem;
   line-height: 1.7;
@@ -2475,5 +2491,480 @@ input:checked + .slider:before {
     font-size: 1rem;
   }
 }
+/* ========== TERMINAL WELCOME JD ========== */
+.jd-terminal-wrapper {
+  margin-top: 1.5rem;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(10, 15, 25, 0.96), rgba(15, 20, 35, 0.98));
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  color: #e6edf3;
+  font-family: "Fira Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* 🔑 CONFIRMAR: Esta línea permite animar todos los cambios */
+  transition: all 0.3s ease-in-out;
+}
 
-/*# sourceMappingURL=data:application/json;charset=utf-8,%7B%22version%22:3,%22sourceRoot%22:%22%22,%22sources%22:%5B%22scss/_vars.scss%22,%22scss/_typography.scss%22,%22scss/_commons.scss%22,%22scss/_libs.scss%22,%22scss/_header.scss%22,%22scss/_slides.scss%22,%22scss/_homePage.scss%22,%22scss/_contactJDForm.scss%22,%22scss/_metodologia_trabajo.scss%22,%22scss/_videos_slide_container.scss%22,%22scss/_projects_section.scss%22,%22scss/_skills_habilidades_tech.scss%22%5D,%22names%22:%5B%5D,%22mappings%22:%22;AA6BA;AAAA;AAAA;AC5BQ;AAMR;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAMJ;EACI;EACA;EACA;EAIA;EACA;;ACnGJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI,OFDQ;;;AEMZ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAMJ;EACI;EACA;EACA;EACA;EACA;;AAEA;EACI,kBF1CE;EE2CF,cF3CE;EE4CF;EACA;EACA;;AAEA;EACI,kBFhCJ;EEiCI,cFlDF;EEmDE,OFhDA;EEiDA;;AAEA;EACI;EACA,OFxDN;;AE4DE;EACI;EACA;EACA;;AAGR;EACI;EACA;;AAEJ;EACI;;AAIJ;EACI;EACA;EACA;EACA,YF9DJ;EE+DI;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAIR;EACI,kBF9FG;EE+FH,cF/FG;EEgGH;EACA;EACA;EACA,OFxFA;;AE0FA;EACI,kBF3FJ;EE4FI,cFvGD;EEwGC,OF3GA;EE4GA;;AAEA;EACI;EACA,OF7GL;;AEiHC;EACI;EACA;EACA;;AAGR;EACI;EACA;;AAEJ;EACI;;AAIJ;EACI;EACA;EACA;EACA,YFzHJ;EE0HI;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;;AAMZ;EACI;IACI;;;AAGR;EACE;IACE;IACA;IACA;;;AC9KJ;EACI;EACA;;;ACFJ;EACI;EACA;EACA;EACA;EACA;;AACA;EAAI;;AACJ;EAAS;;AAGL;EACI;EACA;;;AAOZ;EAEI;IACI;IACA;IACA;IACA;IACA;;EAEA;IACI;IACA;;EAKR;IACI,OJxBK;IIyBL;;EAOA;IACI;IACA;IACA;;EAIJ;IACI;IACA;IACA;IACA;IACA;IACA;;EAIJ;IACI;IACA;IAEA;IACA;;EAGA;IACI;IACA;IACA;;EAMJ;IACI;IACA;IACA;IACA;IACA,OJ7DR;II8DQ;IACA;IACA;;EAMA;IACI;;EASJ;IACI;;EAEI;IACI,kBJrGlB;;EIwGU;IACI;;EAKR;IACI;IACA;IACA;IACA;;EAEA;IACI,OJpGhB;IIqGgB;;EAEA;IACI;;EAGR;IACI;IACA;IACA;IACA;;EAGJ;IACI;;;AAaxB;EASgB;IACI;;EAGJ;IACI;IACA;;EAEA;IACI;;;AAaxB;EACE;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;;;AAEF;EACE;EACA;;;AAIF;EACE;IACE;IACA;;EAEF;IACE;IACA;;EAEF;IACE;;EAEF;IACE;IACA;;;AAOJ;EACE;IACE;;EAKI;IACI;IAEA;;;AClOJ;EACI;EACA;EACA;EACA;;AAEJ;EACI,kBACA;;AAEJ;EACI,kBACA;;AAKJ;EAGI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAGJ;EACI;EACA;;AAGA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;;AAMZ;EACI;EACA;EACA;EACA;EACA;EACA;EACA,OLrDA;EKsDA;EACA;EACA;EACA;EACA;;AAEA;EACI,OL9EF;EK+EE;EACA;;AAGR;EACI;EACA;EACA;;AAGJ;EACI;EACA;EACA;;AAKA;EACI;EACA;EACA;EACA;EACA;;;AAMZ;EAGQ;AACI;AAAA;AAAA;AAAA;IAIA;;EAGI;IACI;;EAEJ;IACI;;;AAGJ;EACA;IACI;IACA;;;AArBpB;EA2BQ;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;;AASZ;EAGQ;IACI;;EAGJ;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;;AAKZ;EAGQ;IACI;;;AAKZ;EAGQ;IACI;;;AAaZ;AACA;EACI;;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAKA;EACI;EACA;EACA;;AAEA;EALJ;IAMQ;;;AAIR;EACI;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EAbJ;IAcQ;IACA;;;;AAQZ;AACA;EACI;IACI;IACA;IACA;IACA;;;AAmBR;AAAA;AAAA;AAIA;AACA;EACI;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EAlBJ;IAmBQ;IACA;;;;AAOJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EAGA;;AAEA;EAbJ;IAcQ;IACA;;;AAEJ;EACI;EACA;EACA;EACA;;;AAKZ;EACI;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;;;AAIJ;EACI;;;AAGJ;EACI;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;;;AAGJ;AACA;EACI;EACA;;;AAGJ;EACI;;;AAGJ;AACA;EACI;IACI;IACA;IACA;IACA;IACA;;EAGJ;IACI;IACA;;;AAIR;EAUI;IACI;IACA;;EAGJ;IACI;IACA;;;AAIR;EACI;EACA;EACA;EACA;EACA;EACA;;AAEA;EARJ;IASQ;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;IACI;IACA;;;;AAMZ;EACE;EACA;EACA;EACA;;AACA;EACE;EACA;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;;AAEF;EAGE;;AAEF;EACE;EACA;EACA;;AAEF;EACE;;;AAIJ;EACI;IACI;IACA;;;AAIR;EACI;IACI;IACA;IAEA;IACA;IACA;;;AAMR;EACE;IACE;;EAEF;IACE;IACA;;;AC/hBJ;EACI;EACA,YNUgB;;;AMRpB;EACI;;;AAQJ;EACI;EACA;EACA;EAEA;;AAEA;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEJ;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEJ;EACI;EACA;AACA;EACA;EACA;EACA;;AAGJ;AAAA;EAEA;EACA;EACA;;AAGA;EACI;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EAEA;;AAEJ;EACI;EACA;;AAEJ;EACI;;;AAYR;AAAA;AAAA;AAIA;EACE;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;AAAA;AAAA;AAIA;AACA;EACE;IACE;;;AAIJ;AACA;EACE;IACE;IACA;;EAGF;IACE;IACA;;EAGF;IACE;;EAGF;IACE;IACA;IACA;;EAGF;IACE;IACA;;EAGF;IACE;;EAGF;IACE;IACA;IACA;IACA;;;AAIJ;AACA;EACE;IACE;IACA;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAqBJ;EACE;EACA;EACA;;;AAQF;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAIF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAsBJ;EACE;EACA;EACA;;AAEA;EACE;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEF;EACE;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEF;EACE;EACA;;AAEF;EACE;EACA;;AAEF;EACE;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;;;AAIJ;EACE;IACE;;EACA;IACE;IACA;;;AAiCN;EACI;IACI;IACA;;EACA;IACI;;EAEJ;IACI;;;AAOZ;EACI;IACI;;EAKA;IACI;IACA;IACA;;EAEJ;IACI;;EAQJ;IACI;IACA;IACA;IACA;IACA;;EAGA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IAEA;IACA;IACA;IACA;IACA;IACA;;EAEA;IACI;IACA,kBNnfV;;EMqfU;IACI,ONrehB;;EMweQ;IACI;IACA;IACA,ON5fV;;EMigBE;IACI;;EAGA;IACI;;EAYJ;IACI;IACA;;EAQZ;IACI;IACA;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA,kBNpiBJ;;EMsiBA;IACI;;EAOR;IACI;IACA;IACA;IACA;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;;EAKA;IACI;IACA,kBN9jBT;;EMikBC;IACI;;EAEJ;IACI,kBN3kBN;IM4kBM;IACA;IACA;IACA;IACA;IACA;IACA;;EAMZ;IACI;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;;EAOJ;IACI;IACA;IACA;IACA;IACA;IACA;IACA,kBN/mBF;;EMonBM;IACI;;EAIA;IACI;IACA;IACA;IACA;IACA;;EAPR;IAUI;IACA;IACA;IACA;IACA;;EAEA;IACI;;EAIA;IACI;IACA;;EAQR;IACI;;EACA;IACI;;EAGJ;IACI;IACA;IACA,ONnpBhB;;EMqpBY;IACI;;EAMhB;IACI;IACA;;EAGJ;IACI;IACA;IACA;;EAGI;IACI;;EAKJ;IACI,YNzqBhB;;EM2qBY;IACI,YN5qBhB;;EMirBQ;IACI;;EAIR;IACI;IACA;;EAIJ;IACI;;EACA;IACI;IACA;;EAEJ;IACI;IACA;IACA;IACA;;EAIJ;IACI;IACA;;EAEJ;IACI;IACA;;EAKJ;IACI;;EAEJ;IACI;IACA,ON1tBZ;IM2tBY,YN5uBV;;EM8uBM;IACI,YN/uBV;IMgvBU,ON/tBZ;;EMmuBQ;IACI;IACA;;EACA;IACI,YN5uBZ;IM6uBY,cN7uBZ;IM8uBY;IACA;IACA;;EAIZ;IACI,YNjwBN;;EMkwBM;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;EASZ;IACI;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA,kBN5xBN;;EMiyBE;IACI;IACA;;EAEI;IACI;IACA;IACA;IACA;;EACA;IACI;;;AAe5B;EAIQ;IACI;IACA;;EAWQ;IACI;;EAEA;IACI;;EAKhB;IACI;;EAEJ;IACI;IACA;;EAQJ;IACI;IACA;IACA,kBNp2BN;IMq2BM;;;AAUhB;EACI;IACI;;EAKA;IACI;;;AC73BZ;AACA;EACI;EACA;EACA;EACA;;;AAEJ;AACA;EAAe;;;AACf;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEJ;EACE;;;AAEF;EACE;;;AAEF;EACE;EACA;EACA;;;AAEF;AACA;EACE;;;AAEF;EACE;;;AAEF;AASA;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;;;AAGF;AACA;AAAA;EAEE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;;;AAGF;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;;;AAGF;EACE;;;AAGF;AACA;EACE;;;AAGF;AAAA;AAAA;AAIA;EACE;IACE;;EAGF;IACE;IACA;;;ACnNJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;;;AAGJ;EACI;;;AAGJ;AACA;EACI;EACA;EACA;;;AAGJ;EACI;EACA;EACA;;;AAIJ;AACA;EACI;EACA;;;AAGJ;AAAA;AAAA;AAGA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAYA;AAAA;AAAA;AAAA;AAAA;AAMA;AACA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAqBA;AACA;AAAA;AAAA;AAAA;AAAA;AAMA;AAAA;AAAA;AAAA;AAAA;AChHI;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEJ;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;AACA;EACA;;AAEJ;EACI,OTjBW;ESkBX;EACA;EACA;;AAEJ;EACI;EACA;EACA;;AAEA;EACA;EACA;;;AAIR;EACI;EACA;EACA;EACA;EACA;;;AAGJ;EACE;EACA;EACA;EACA;EACA;EACA;EACC;EACD;;;AAGF;EACE;EACA;EACA;;;AAKF;EACG;;;AAGH;EACE;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;IACA;;EAGF;IACE;;EAGF;IACE;;;AAKJ;EACE;IACE;;;AAKJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;;AAIF;EAA6B;;AAC7B;EAA6B;;AAC7B;EAA6B;;AAC7B;EAA6B;;;AAI/B;EACE;IACE;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;EAEF;IACE;IACA;IACA;IACA;IACA;IACA;;;ACrLJ;AAAA;AAAA;AAII;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;EACA;;AAbJ;AAgBI;;AACA;EACA;EACA;EACA;EACA;;AAGA;EACA;EACA;;AA1BJ;AA6BI;;AACA;EACA;;AA/BJ;AAkCI;;AACA;EACA;EACA;;AAGA;EACA;EACA;;AA1CJ;AA6CI;;AACA;EACA;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;EACA;;AAGA;EACA;;AA/DJ;AAkEI;;AACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAzEJ;AA4EI;;AACA;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;;AAxFJ;AA2FI;;AACA;EACA;;AAGA;EACI;;AAEJ;EACI;;;AAOR;AAAA;AAAA;AAIA;AACA;EACE;EACA;;;AAGF;EACE;;;AAGF;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;AAAA;AAAA;AAIA;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAIJ;AACA;EACE;IACE;;EAKF;IACE;;EAIF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAIJ;EACE;IACE;IACA;;EAEF;IACE;IACA;IACA;;;AAIJ;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAQJ;AACA;EACE;EACA;;;AAEF;AACI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAXR;AAcI;;AACA;EACA;;AAGA;EACA;;AApBJ;AAuBI;;AACA;AAAA;EAEA;;AAGA;EACA;;AA9BJ;AAiCI;;AACA;EACI;AAAA;IAEI;;;AArCZ;AAyCI;;AACA;EACI;EACA;EACA;EACA;EACA;EACA;;AAhDR;AAmDI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;;AA1DR;AA6DI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;;;AC7TR;AAAA;AAAA;AAIA;AACA;EACI;;;AAGJ;AACA;EACI;IACI;IACA;IACA;;EAGJ;IACI;IACA;;AAGJ;EACA;IACI;;;AAIR;AACA;EACI;EACA;EACA;;;AAGJ;EACI;IACI;IACA;IACA;IACA;IACA;;;AAIR;AAAA;AAAA;AAIA;EACI;;;AAGJ;EACI;;;AAGJ;AACA;EACI;IACI;IACA;;EAGJ;IACI;IACA;;EAGJ;IACI;IACA;IACA;;;AAIR;AACA;EACI;;;AAGJ;EACI;EACA;;;AAGJ;AAAA;AAAA;AAIA;EACI;EACA;EACA;;;AAGJ;EACI;IACI;IACA;;;AAIR;AACA;EACI;;;AAGJ;AAAA;AAAA;AAAA;AAKA;EACI;IACI;;EAGJ;IACI;;EAGJ;IACI;;EAGJ;IACI;;EAGJ;IACI;;;AAaR;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;IACA;;;AAIJ;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;IACE;;;AAKJ;AAAA;AAAA;AAIA;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;IACE;;;AAIJ;AACA;EACE;IACE;;;AAMJ;EACE;IACE%22,%22file%22:%22styles.css%22%7D */
+/* “Ventana” mac */
+.jd-terminal-mac {
+  display: flex;
+  flex-direction: column;
+  height: 180px; /* altura base desktop */
+  /* 🔑 AÑADIR/MODIFICAR ESTA LÍNEA para animar la altura */
+  transition: height 0.3s ease-in-out;
+}
+
+/* Cabecera estilo Mac */
+.jd-terminal-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, #2b3038, #20242c);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: #9fa6b8;
+}
+
+.jd-terminal-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jd-term-btn {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s;
+}
+
+.jd-term-btn-close {
+  background: #ff5f57;
+}
+
+.jd-term-btn-min {
+  background: #febc2e;
+}
+
+.jd-term-btn-max {
+  background: #28c840;
+}
+
+.jd-term-btn:hover {
+  transform: translateY(-0.5px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+.jd-terminal-title {
+  text-align: center;
+  font-size: 11px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jd-terminal-drag {
+  justify-self: end;
+  width: 30px;
+  height: 12px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 55%);
+  opacity: 0.3;
+}
+
+/* Área de contenido (con scroll) */
+.jd-terminal-body {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #d8dee9;
+  background: radial-gradient(circle at 0 0, rgba(95, 167, 255, 0.1), transparent 60%), radial-gradient(circle at 100% 100%, rgba(255, 94, 148, 0.13), transparent 55%), #171b22;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3b4252 transparent;
+}
+
+/* Scrollbar (WebKit) */
+.jd-terminal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.jd-terminal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.jd-terminal-body::-webkit-scrollbar-thumb {
+  background: #3b4252;
+  border-radius: 999px;
+}
+
+/* Líneas de la terminal */
+.jd-terminal-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* prompt tipo terminal */
+.jd-term-prompt {
+  color: #7ee787; /* verde suave estilo GitHub Codespaces */
+  margin-right: 4px;
+}
+
+/* caret animado */
+.jd-term-caret {
+  display: inline-block;
+  margin-left: 1px;
+  color: #e5e9f0;
+  animation: jd-terminal-caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes jd-terminal-caret-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
+    opacity: 0;
+  }
+}
+/* Link “repo” dentro de la terminal */
+.jd-term-link {
+  color: #9cdcff;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(156, 220, 255, 0.6);
+  padding-bottom: 1px;
+}
+
+.jd-term-link:hover {
+  color: #e6f7ff;
+  border-bottom-style: solid;
+}
+
+/* Estado minimizado: solo se ve la cabecera */
+.jd-terminal-wrapper.jd-terminal-minimized {
+  width: 300px; /* Ancho más pequeño */
+  height: auto;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, border-radius 0.3s;
+  /* Opcional: Ocultar el cuerpo y mantener solo la cabecera */
+}
+.jd-terminal-wrapper.jd-terminal-minimized .jd-terminal-mac {
+  height: 32px; /* Solo queda visible la altura de la cabecera */
+  overflow: hidden;
+}
+
+.jd-term-btn-min {
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.jd-term-btn-min:active {
+  box-shadow: 0 0 0 2px #febc2e;
+  transform: scale(0.92);
+}
+
+.jd-terminal-line {
+  /* ... otras propiedades ... */
+  white-space: pre-wrap; /* Mantiene el formato (espacios) y permite que la línea salte */
+}
+
+/* CSS Adicional para que se vea como link de terminal */
+.jd-terminal-line .jd-terminal-link {
+  color: #12bac3; /* Color verde brillante para destacar */
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: pre-wrap; /* Mantiene la pre-formato (padEnd) */
+}
+
+/* Opcional: efecto al pasar el ratón */
+.jd-terminal-line .jd-terminal-link:hover {
+  color: #ffffff;
+}
+
+.jd-terminal-body .jd-terminal-line {
+  /* Estilo para el número del repositorio */
+}
+.jd-terminal-body .jd-terminal-line .jd-repo-number {
+  color: #f27474;
+  font-weight: bold;
+}
+
+/* Estado “max”: un poco más alto, simulando agrandar ventana */
+.jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+  height: 280px;
+}
+
+/* Animación de titileo */
+@keyframes term-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+/* Aplicar la animación al cursor en pausa */
+.jd-term-caret-blinking {
+  animation: term-blink 1s step-end infinite;
+}
+
+/* Asegúrate de que el cursor ▌ normal no titile si no está en pausa */
+.jd-term-caret {
+  /* Mantiene el color y fuente */
+  display: inline-block;
+  width: 1ch;
+  /* ... */
+}
+
+@keyframes term-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.jd-term-caret-blinking {
+  animation: term-blink 1s step-end infinite;
+}
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+  .jd-terminal-mac {
+    height: 160px;
+  }
+  .jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+    height: 210px;
+  }
+  .jd-terminal-title {
+    font-size: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .jd-terminal-mac {
+    height: 150px;
+  }
+  .jd-terminal-body {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}
+@media (max-width: 576px) {
+  .jd-terminal-mac {
+    height: 140px;
+  }
+  .jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+    height: 190px;
+  }
+}
+.jd-tooltip-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+.jd-tooltip-wrapper.jd-tooltip-absolute {
+  position: absolute;
+}
+.jd-tooltip-wrapper.jd-tooltip-relative {
+  position: relative;
+}
+.jd-tooltip-wrapper.bottom--2-5-rem {
+  bottom: -2.5rem;
+}
+.jd-tooltip-wrapper.top-1-rem {
+  top: 1rem;
+}
+.jd-tooltip-wrapper.right-0-75-rem {
+  right: 0.75rem;
+}
+
+/* ------------------ BOTÓN TRIGGER ------------------ */
+.jd-tooltip-trigger {
+  background: #ff3b3b;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.jd-tooltip-trigger:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 0, 70, 0.4);
+}
+
+/* ------------------ PANEL ------------------ */
+.jd-tooltip-panel {
+  position: fixed;
+  z-index: 99999;
+  min-width: 260px;
+  max-width: 310px;
+  background: #0d0f14;
+  color: #d9e1e8;
+  border-radius: 6px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+  padding: 12px 20px;
+  /* 👇 NUEVO: borde para destacar sobre fondos oscuros */
+  border: 1px solid rgba(148, 163, 184, 0.65);
+  /* En vez de display:none */
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  /* Estado inicial para animación */
+  transform: translateY(6px) scale(0.96);
+  /* Animación suave premium */
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.22s;
+}
+
+/* CUANDO ESTÁ VISIBLE */
+.jd-tooltip-visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  /* Llega suave */
+  transform: translateY(0) scale(1);
+  /* Eliminar retardo de visibilidad */
+  transition-delay: 0s;
+}
+
+/* ------------------ HEADER ------------------ */
+.jd-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+.jd-tooltip-header .jd-tooltip-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+.jd-tooltip-header .jd-tooltip-close {
+  background: transparent;
+  border: none;
+  color: #78e0f8;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  top: -0.5rem;
+  position: relative;
+}
+.jd-tooltip-header .jd-tooltip-close:hover {
+  color: #9df3ff;
+  transform: scale(1.2);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------ BODY ------------------ */
+.jd-tooltip-body {
+  line-height: 1.5;
+  font-size: 13px;
+  font-family: "Open Sans";
+  font-weight: 300;
+}
+
+/* ------------------ FOOTER ------------------ */
+.jd-tooltip-footer {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #9ba7b4;
+}
+
+/* ------------------ FLECHA ------------------ */
+/* AUTO-POSICIÓN DESDE JS */
+.jd-pos-top .jd-tooltip-arrow {
+  bottom: -6px;
+  left: calc(50% - 6px);
+}
+
+.jd-pos-bottom .jd-tooltip-arrow {
+  top: -6px;
+  left: calc(50% - 6px);
+}
+
+.jd-pos-left .jd-tooltip-arrow {
+  right: -6px;
+  top: calc(50% - 6px);
+}
+
+.jd-pos-right .jd-tooltip-arrow {
+  left: -6px;
+  top: calc(50% - 6px);
+}
+
+/* Flecha general */
+.jd-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* 🔽 Flecha cuando el tooltip está encima del botón (arrow abajo) */
+.jd-tooltip-panel.jd-pos-top .jd-tooltip-arrow {
+  bottom: -8px;
+  left: 20px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  /* cuerpo real de la flecha */
+  border-top: 8px solid #0d0f14;
+  /* borde */
+}
+
+/* 🔼 Flecha cuando el tooltip está debajo del botón (arrow arriba) */
+.jd-tooltip-panel.jd-pos-bottom .jd-tooltip-arrow {
+  top: -8px;
+  left: 20px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #0d0f14;
+}
+
+/* ◀ Flecha izquierda */
+.jd-tooltip-panel.jd-pos-right .jd-tooltip-arrow {
+  left: -8px;
+  top: 20px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #0d0f14;
+}
+
+/* ▶ Flecha derecha */
+.jd-tooltip-panel.jd-pos-left .jd-tooltip-arrow {
+  right: -8px;
+  top: 20px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #0d0f14;
+}
+
+/* Ajustes para cada orientación */
+.jd-pos-bottom .jd-tooltip-arrow {
+  top: -6px;
+}
+
+.jd-pos-top .jd-tooltip-arrow {
+  bottom: -6px;
+}
+
+.jd-pos-left .jd-tooltip-arrow {
+  right: -6px;
+}
+
+.jd-pos-right .jd-tooltip-arrow {
+  left: -6px;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8,%7B%22version%22:3,%22sourceRoot%22:%22%22,%22sources%22:%5B%22scss/_vars.scss%22,%22scss/_typography.scss%22,%22scss/_commons.scss%22,%22scss/_libs.scss%22,%22scss/_header.scss%22,%22scss/_slides.scss%22,%22scss/_homePage.scss%22,%22scss/_contactJDForm.scss%22,%22scss/_metodologia_trabajo.scss%22,%22scss/_videos_slide_container.scss%22,%22scss/_projects_section.scss%22,%22scss/_skills_habilidades_tech.scss%22,%22scss/lib/_terminal_landing.scss%22,%22scss/components/tooltip/_jd_tooltip.scss%22%5D,%22names%22:%5B%5D,%22mappings%22:%22;AA6BA;AAAA;AAAA;AC5BQ;AAMR;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;;AAMJ;EACI;EACA;EACA;EAIA;EACA;;ACnGJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI,OFDQ;;;AEMZ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAEJ;EACI;;;AAMJ;EACI;EACA;EACA;EACA;EACA;;AAEA;EACI,kBF1CE;EE2CF,cF3CE;EE4CF;EACA;EACA;;AAEA;EACI,kBFhCJ;EEiCI,cFlDF;EEmDE,OFhDA;EEiDA;;AAEA;EACI;EACA,OFxDN;;AE4DE;EACI;EACA;EACA;;AAGR;EACI;EACA;;AAEJ;EACI;;AAIJ;EACI;EACA;EACA;EACA,YF9DJ;EE+DI;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAIR;EACI,kBF9FG;EE+FH,cF/FG;EEgGH;EACA;EACA;EACA,OFxFA;;AE0FA;EACI,kBF3FJ;EE4FI,cFvGD;EEwGC,OF3GA;EE4GA;;AAEA;EACI;EACA,OF7GL;;AEiHC;EACI;EACA;EACA;;AAGR;EACI;EACA;;AAEJ;EACI;;AAIJ;EACI;EACA;EACA;EACA,YFzHJ;EE0HI;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;;AAMZ;EACI;IACI;;;AAGR;EACE;IACE;IACA;IACA;;;AC9KJ;EACI;EACA;;;ACFJ;EACI;EACA;EACA;EACA;EACA;;AACA;EAAI;;AACJ;EAAS;;AAYb;EAEI;IACI;IACA;IACA;IACA;IACA;;EAEA;IACI;IACA;;EAKR;IACI,OJxBK;IIyBL;;EAOA;IACI;IACA;IACA;IACA;;EAIJ;IACI;IACA;IACA;IACA;IACA;IACA;;EAIJ;IACI;IACA;IAEA;IACA;;EAGA;IACI;IACA;IACA;IACA;;EAMJ;IACI;IACA;IACA;IACA;IACA,OJ/DR;IIgEQ;IACA;IACA;;EAMA;IACI;;EASJ;IACI;;EAEI;IACI,kBJvGlB;;EI0GU;IACI;;EAKR;IACI;IACA;IACA;IACA;;EAEA;IACI,OJtGhB;IIuGgB;;EAEA;IACI;;EAGR;IACI;IACA;IACA;IACA;;EAGJ;IACI;;;AAaxB;EASgB;IACI;;EAGJ;IACI;IACA;;EAEA;IACI;;;AAaxB;EACE;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;;;AAEF;EACE;EACA;;;AAIF;EACE;IACE;IACA;;EAEF;IACE;IACA;;EAEF;IACE;;EAEF;IACE;IACA;;;AAOJ;EACE;IACE;;EAKI;IACI;IAEA;;;ACxOZ;EACI;;;AAMI;EACI;EACA;EACA;EACA;;AAEJ;EACI,kBACA;;AAEJ;EACI,kBACA;;AAKJ;EAGI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAGJ;EACI;EACA;;AAGA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;;AAMZ;EACI;EACA;EACA;EACA;EACA;EACA;EACA,OLxDA;EKyDA;EACA;EACA;EACA;EACA;;AAEA;EACI,OLjFF;EKkFE;EACA;;AAGR;EACI;EACA;EACA;;AAGJ;EACI;EACA;EACA;;AAKA;EACI;EACA;EACA;EACA;EACA;;;AAMZ;EAGQ;AACI;AAAA;AAAA;AAAA;IAIA;;EAGI;IACI;;EAEJ;IACI;;;AAGJ;EACA;IACI;IACA;;;AArBpB;EA2BQ;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;;AASZ;EAGQ;IACI;;EAGJ;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;;AAKZ;EAGQ;IACI;;;AAKZ;EAGQ;IACI;;;AAaZ;AACA;EACI;;;AAIJ;EACI;EACA;AAED;EACC;AACA;EACA;EACA;EACA;EACA;;AAKA;EACI;EACA;EACA;;AAEA;EALJ;IAMQ;;;AAIR;EACI;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EAbJ;IAcQ;IACA;;;;AAQZ;AACA;EACI;IACI;IACA;IACA;IACA;;;AAmBR;AAAA;AAAA;AAIA;AACA;EACI;;;AAGJ;AACA;EACI;EACA;EAEA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EAlBJ;IAmBQ;IACA;;;;AAOJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EAGA;;AAEA;EAbJ;IAcQ;IACA;;;AAEJ;EACI;EACA;EACA;EACA;;;AAKZ;EACI;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;;;AAIJ;EACI;;;AAGJ;EACI;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;;;AAGJ;AACA;EACI;EACA;;;AAGJ;EACI;;;AAGJ;AACA;EACI;IACI;IACA;IACA;IACA;IACA;;EAGJ;IACI;IACA;;;AAIR;EAUI;IACI;IACA;;EAGJ;IACI;IACA;;;AAIR;EACI;EACA;EACA;EACA;EACA;EACA;;AAEA;EARJ;IASQ;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAIJ;EACI;IACI;IACA;;;;AAMZ;EACE;EACA;EACA;EACA;;AACA;EACE;EACA;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;;AAEF;EAGE;;AAEF;EACE;EACA;EACA;;AAEF;EACE;;;AAIJ;EACI;IACI;IACA;;;AAIR;EACI;IACI;IACA;IAEA;IACA;IACA;;;AAMR;EACE;IACE;;EAEF;IACE;IACA;;;ACtiBJ;EACI;EACA,YNUgB;;;AMRpB;EACI;;;AAQJ;EACI;EACA;EACA;EAEA;;AAEA;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEJ;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEJ;EACI;EACA;AACA;EACA;EACA;EACA;;AAGJ;AAAA;EAEA;EACA;EACA;;AAGA;EACI;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EAEA;;AAEJ;EACI;EACA;;AAEJ;EACI;;;AAYR;AAAA;AAAA;AAIA;EACE;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;AAAA;AAAA;AAIA;AACA;EACE;IACE;;;AAIJ;AACA;EACE;IACE;IACA;;EAGF;IACE;IACA;;EAGF;IACE;;EAGF;IACE;IACA;IACA;;EAGF;IACE;IACA;;EAGF;IACE;;EAGF;IACE;IACA;IACA;IACA;;;AAIJ;AACA;EACE;IACE;IACA;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAqBJ;EACE;EACA;EACA;;;AAQF;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAIF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAsBJ;EACE;EACA;EACA;;AAEA;EACE;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEF;EACE;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEF;EACE;EACA;;AAEF;EACE;EACA;;AAEF;EACE;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;;;AAIJ;EACE;IACE;;EACA;IACE;IACA;;;AAiCN;EACI;IACI;IACA;;EACA;IACI;;EAEJ;IACI;;;AAOZ;EACI;IACI;;EAKA;IACI;IACA;IACA;;EAEJ;IACI;;EAQJ;IACI;IACA;IACA;IACA;IACA;;EAGA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IACA;IAEA;IACA;IACA;IACA;IACA;IACA;;EAEA;IACI;IACA,kBNnfV;;EMqfU;IACI,ONrehB;;EMweQ;IACI;IACA;IACA,ON5fV;;EMigBE;IACI;;EAGA;IACI;;EAYJ;IACI;IACA;;EAQZ;IACI;IACA;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA,kBNpiBJ;;EMsiBA;IACI;;EAOR;IACI;IACA;IACA;IACA;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;;EAKA;IACI;IACA,kBN9jBT;;EMikBC;IACI;;EAEJ;IACI,kBN3kBN;IM4kBM;IACA;IACA;IACA;IACA;IACA;IACA;;EAMZ;IACI;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA;;EAOJ;IACI;IACA;IACA;IACA;IACA;IACA;IACA,kBN/mBF;;EMonBM;IACI;;EAIA;IACI;IACA;IACA;IACA;IACA;;EAPR;IAUI;IACA;IACA;IACA;IACA;;EAEA;IACI;;EAIA;IACI;IACA;;EAQR;IACI;;EACA;IACI;;EAGJ;IACI;IACA;IACA,ONnpBhB;;EMqpBY;IACI;;EAMhB;IACI;IACA;;EAGJ;IACI;IACA;IACA;;EAGI;IACI;;EAKJ;IACI,YNzqBhB;;EM2qBY;IACI,YN5qBhB;;EMirBQ;IACI;;EAIR;IACI;IACA;;EAIJ;IACI;;EACA;IACI;IACA;;EAEJ;IACI;IACA;IACA;IACA;;EAIJ;IACI;IACA;;EAEJ;IACI;IACA;;EAKJ;IACI;;EAEJ;IACI;IACA,ON1tBZ;IM2tBY,YN5uBV;;EM8uBM;IACI,YN/uBV;IMgvBU,ON/tBZ;;EMmuBQ;IACI;IACA;;EACA;IACI,YN5uBZ;IM6uBY,cN7uBZ;IM8uBY;IACA;IACA;;EAIZ;IACI,YNjwBN;;EMkwBM;IACI;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;EASZ;IACI;;EACA;IACI;IACA;IACA;IACA;IACA;IACA;IACA,kBN5xBN;;EMiyBE;IACI;IACA;;EAEI;IACI;IACA;IACA;IACA;;EACA;IACI;;;AAe5B;EAIQ;IACI;IACA;;EAWQ;IACI;;EAEA;IACI;;EAKhB;IACI;;EAEJ;IACI;IACA;;EAQJ;IACI;IACA;IACA,kBNp2BN;IMq2BM;;;AAUhB;EACI;IACI;;EAKA;IACI;;;AC73BZ;AACA;EACI;EACA;EACA;EACA;;;AAEJ;AACA;EAAe;;;AACf;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEJ;EACE;;;AAEF;EACE;;;AAEF;EACE;EACA;EACA;;;AAEF;AACA;EACE;;;AAEF;EACE;;;AAEF;AASA;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;;;AAGF;AACA;EACE;;;AAGF;AACA;AAAA;EAEE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;;;AAGF;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;;;AAGF;EACE;;;AAGF;AACA;EACE;;;AAGF;EACI;EACA;EACA;EACA;EACA;EACA;;AACF;EACE;EACA;;;AAIJ;AAAA;AAAA;AAIA;EACE;IACE;;EAGF;IACE;IACA;;;AChOJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;;;AAGJ;EACI;;;AAGJ;AACA;EACI;EACA;EACA;;;AAGJ;EACI;EACA;EACA;;;AAIJ;AACA;EACI;EACA;;;AAGJ;AAAA;AAAA;AAGA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAYA;AAAA;AAAA;AAAA;AAAA;AAMA;AACA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAqBA;AACA;AAAA;AAAA;AAAA;AAAA;AAMA;AAAA;AAAA;AAAA;AAAA;AChHI;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;EACA;;AAEJ;EACI;EACA;EAAQ;EAAS;EAAa;EAC9B;EACA;EACA;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;;AAEJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;AACA;EACA;;AAEJ;EACI,OTjBW;ESkBX;EACA;EACA;;AAEJ;EACI;EACA;EACA;;AAEA;EACA;EACA;;;AAIR;EACI;EACA;EACA;EACA;EACA;;;AAGJ;EACE;EACA;EACA;EACA;EACA;EACA;EACC;EACD;;;AAGF;EACE;EACA;EACA;;;AAKF;EACG;;;AAGH;EACE;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;IACA;;EAGF;IACE;;EAGF;IACE;;;AAKJ;EACE;IACE;;;AAKJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;;AAEF;EACE;EACA;EACA;EACA;EACA;AACA;EACA;EACA;EACA;;AAIF;EAA6B;;AAC7B;EAA6B;;AAC7B;EAA6B;;AAC7B;EAA6B;;;AAI/B;EACE;IACE;IACA;IACA;IACA;IACA;IACA;IACA;IACA;;EAEF;IACE;IACA;IACA;IACA;IACA;IACA;;;ACrLJ;AAAA;AAAA;AAII;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;EACA;;AAbJ;AAgBI;;AAEA;EACA;EACA;EACA;EACA;;AAGA;EACA;EACA;;AA3BJ;AA8BI;;AACA;EACA;;AAhCJ;AAmCI;;AACA;EACA;EACA;;AAGA;EACA;EACA;;AA3CJ;AA8CI;;AACA;EACA;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;EACA;;AAGA;EACA;;AAhEJ;AAmEI;;AACA;EACA;EACA;EACA;EACA;EACA;EACA;;AA1EJ;AA6EI;;AACA;EACA;EACA;;AAGA;EACA;;AAGA;EACA;EACA;;AAzFJ;AA4FI;;AACA;EACA;;AAGA;EACI;;AAEJ;EACI;;;AAOR;AAAA;AAAA;AAIA;AACA;EACE;EACA;;;AAGF;EACE;;;AAGF;EACE;EACA;;;AAGF;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;AAAA;AAAA;AAIA;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAIJ;AACA;EACE;IACE;;EAKF;IACE;;EAIF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAIJ;EACE;IACE;IACA;;EAEF;IACE;IACA;IACA;;;AAIJ;AACA;EACE;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;EAGF;IACE;;;AAQJ;AACA;EACE;EACA;;;AAEF;AACI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAXR;AAcI;;AACA;EACA;;AAGA;EACA;;AApBJ;AAuBI;;AACA;AAAA;EAEA;;AAGA;EACA;;AA9BJ;AAiCI;;AACA;EACI;AAAA;IAEI;;;AArCZ;AAyCI;;AACA;EACI;EACA;EACA;EACA;EACA;EACA;;AAhDR;AAmDI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;;AA1DR;AA6DI;;AACA;AAAA;EAEI;EACA;EACA;EACA;EACA;;;AC9TR;AAAA;AAAA;AAIA;AACA;EACI;;;AAGJ;AACA;EACI;IACI;IACA;IACA;;EAGJ;IACI;IACA;;AAGJ;EACA;IACI;;;AAIR;AACA;EACI;EACA;EACA;;;AAGJ;EACI;IACI;IACA;IACA;IACA;IACA;;;AAIR;AAAA;AAAA;AAIA;EACI;;;AAGJ;EACI;;;AAGJ;AACA;EACI;IACI;IACA;;EAGJ;IACI;IACA;;EAGJ;IACI;IACA;IACA;;;AAIR;AACA;EACI;;;AAGJ;EACI;EACA;;;AAGJ;AAAA;AAAA;AAIA;EACI;EACA;EACA;;;AAGJ;EACI;IACI;IACA;;;AAIR;AACA;EACI;;;AAGJ;AAAA;AAAA;AAAA;AAKA;EACI;IACI;;EAGJ;IACI;;EAGJ;IACI;;EAGJ;IACI;;EAGJ;IACI;;;AAaR;AAAA;AAAA;AAIA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;AACA;EACE;IACE;IACA;;;AAIJ;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;IACE;;;AAKJ;AAAA;AAAA;AAIA;AACA;EACE;EACA;EACA;;;AAGF;AACA;EACE;IACE;;;AAIJ;AACA;EACE;IACE;;;AAMJ;EACE;IACE;;;AClNJ;AAEA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;AACJ;EACI;;;AAGJ;AACA;EACI;EACA;EACA;AACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;EACA;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;;;AAGJ;EACI;;;AAGJ;EACI;;;AAGJ;EACI;EACA;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EAGA;EACA;EACA;;;AAGJ;AACA;EACI;;;AAGJ;EACI;;;AAGJ;EACI;EACA;;;AAGJ;AACA;EACI;EACA;;;AAGJ;AACA;EACI;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;;;AAGJ;EACI;IACI;;EAEJ;IACI;;;AAIR;AACA;EACI;EACA;EACA;EACA;;;AAGJ;EACI;EACA;;;AAKJ;AAoBA;EAEI;EACA;EAEA;EACA;EACA;EACA;AAEA;;AACA;EACI;EACA;;;AAKR;EACI;EACA;;;AAEJ;EACI;EACA;;;AAEJ;AACI;EACA;;;AAEJ;AACA;EACI;EACA;EACA;EACA;;;AAGJ;AACA;EACI;;;AAIA;AACI;;AACA;EACI;EACA;;;AAOZ;AACA;EACI;;;AAKJ;AACA;EACI;IACI;;EAEJ;IACI;;;AAIR;AACA;EACI;;;AAGJ;AACA;AACI;EACA;EACA;AACA;;;AAEJ;EACI;IACI;;EAEJ;IACI;;;AAIR;EACI;;;AAsCJ;AACA;EACI;IACI;;EAGJ;IACI;;EAGJ;IACI;;;AAIR;EACI;IACI;;EAGJ;IACI;IACA;;;AAIR;EACI;IACI;;EAGJ;IACI;;;ACzVR;EACI;EACA;;AAEA;EACI;;AAEJ;EACI;;AAEJ;EACI;;AAEJ;EACI;;AAEJ;EACI;;;AAIR;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACI;EACA;;;AAIR;AACA;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;AAEA;EACA;AAEA;EACA;EACA;EACA;AAEA;EACA;AAEA;EACA,YACI;;;AAKR;AACA;EACI;EACA;EACA;AAEA;EACA;AAEA;EACA;;;AAIJ;AACA;EACI;EACA;EACA;EACA;EACA;;AAEA;EACI;EACA;;AAGJ;EACI;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;;AAEA;EACI;EACA;EACA;;;AAKZ;AACA;EACI;EACA;EACA;EACA;;;AAIJ;AACA;EACI;EACA;EACA;;;AAIJ;AACA;AACA;EACI;EACA;;;AAGJ;EACI;EACA;;;AAGJ;EACI;EACA;;;AAGJ;EACI;EACA;;;AA8BJ;AACA;EACI;EACA;EACA;;;AAGJ;AACA;EACI;EACA;EACA;EACA;AAEA;EACA;AAEA;;;AAIJ;AACA;EACI;EACA;EACA;EACA;EAEA;;;AAKJ;AACA;EACI;EACA;EACA;EACA;EAEA;;;AAKJ;AACA;EACI;EACA;EACA;EACA;EAEA;;;AAoBJ;AACA;EAAmC;;;AACnC;EAAgC;;;AAChC;EAAiC;;;AACjC;EAAkC%22,%22file%22:%22styles.css%22%7D */

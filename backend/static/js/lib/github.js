@@ -113,7 +113,7 @@ window.loadGitHubData = function () {
                     renderGitHubRepos(response); // Renderiza la sección web
 
                     // --- PREPARACIÓN PARA LA TERMINAL ---
-                    const MAX_NAME_LENGTH = 28; // Longitud fija para la columna del nombre
+                    const MAX_NAME_LENGTH = 55; // Longitud fija para la columna del nombre
                     let terminalGroups = {}; // Objeto que contendrá los repos agrupados
 
                     for (const ownerTag in response.projects_grouped) {
@@ -149,7 +149,7 @@ window.loadGitHubData = function () {
 
                                 const language = repo.language || "N/A";
                                 const description = repo.description
-                                    ? repo.description.substring(0, 45) + "..."
+                                    ? repo.description
                                     : "Sin descripción....";
 
                                 return {
@@ -158,7 +158,7 @@ window.loadGitHubData = function () {
                                     // ¡Importante!: Esto ahora contiene código HTML no escapado
                                     label: `${numberedPrefix}${name} · ${language.padEnd(
                                         10
-                                    )} · [${ownerPrefix}] · ${description}`,
+                                    )} · ${description}`,
                                     url: repo.html_url,
                                     html_url: repo.html_url,
                                 };

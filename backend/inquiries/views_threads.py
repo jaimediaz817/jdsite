@@ -13,6 +13,8 @@ from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.views.decorators.http import require_POST
 
+from core.github_utils import get_all_github_repos
+
 from .forms import InquiryForm
 from .models import InquiryMessage, InquiryThread, Recruiter
 from .utils import calculate_work_hours
@@ -58,9 +60,13 @@ def home_view(request):
         )
     )
 
+    grouped_repos, repos_counts = get_all_github_repos()
+
     context = {
         "experience_years": experience_years,
         "total_hours": f"{total_hours_worked:,}".replace(",", "."),
+        "github_counts": repos_counts,
+        "github_repos_grouped": grouped_repos,
     }
     return render(request, "home.html", context)
 

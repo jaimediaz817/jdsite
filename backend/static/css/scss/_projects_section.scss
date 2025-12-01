@@ -176,8 +176,6 @@
     font-size: 0.85rem;
   }
 
-
-
   .projects-surface {
     padding: 1.5rem 1rem;
   }
@@ -193,6 +191,14 @@
 
   .projects-surface .small.text-muted {
     font-size: 0.72rem;
+  }
+
+  .projects-slider {
+    .project-grid > .col-12.col-md-6  {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+      }
   }
 }
 

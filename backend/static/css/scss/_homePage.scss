@@ -424,25 +424,10 @@ section {
 // FORM - CONTACTAME - COL IZQ
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media (max-width: 767.98px) {
     .numbers_bg {
         min-height: 220px;
-        border-radius: 1rem;
+        border-radius: 0;
         .counter-container {
             padding: 1.2rem 0.2rem;
         }
@@ -451,7 +436,11 @@ section {
         }
     }
 }
-
+@media (max-width: 575.98px) {
+    .numbers_bg {
+        border-radius: 0;
+    }
+}
 
 // Medias
 @media(min-width: 0) {

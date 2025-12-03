@@ -5,6 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Descargar CV – Jaime Díaz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">    
     <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
     <!-- Fuente Open Sans Ultra Light -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -37,8 +39,13 @@
             Gracias por tu interés en mi perfil profesional.  
             Haz clic en el botón para iniciar la descarga.
         </p>
+        <div id="cv-info-message" class="jd-info-message" style="display:none;">
+            <div class="jd-info-icon">✔</div>
+            <span>El CV está disponible en tu carpeta de Descargas.</span>
+        </div>       
 
         <div class="jd-buttons-container">
+            <img src="{% static 'images/gifs/descargar.gif' %}" alt="Descarga animada" style="height:38px;vertical-align:middle;margin-right:10px;">
             <!-- Botón principal con loader -->
             <button id="btnDescargar" class="jd-btn-primary">
                 <span id="btnTexto">Descargar CV</span>
@@ -54,40 +61,13 @@
     </div>
 
     <!-- Script de comportamiento -->
-    {% comment %} <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const btn = document.getElementById("btnDescargar");
-            const texto = document.getElementById("btnTexto");
-            const loader = document.getElementById("loader");
-            const check = document.getElementById("check");
-
-            btn.addEventListener("click", () => {
-                // Cambiar a modo cargando
-                texto.style.display = "none";
-                loader.style.display = "inline-block";
-
-                // Iniciar descarga
-                setTimeout(() => {
-                    window.location.href = "{% static 'docs/Jaime_Diaz_Espaniol_2025.pdf' %}";
-                }, 800);
-
-                // Mostrar check cuando termine un momento después
-                setTimeout(() => {
-                    loader.style.display = "none";
-                    check.style.display = "inline-block";
-                    texto.textContent = "Descargado";
-                    texto.style.display = "inline-block";
-                }, 1800);
-            });
-        });
-    </script> {% endcomment %}
-    <!-- Script de comportamiento -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const btn = document.getElementById("btnDescargar");
             const texto = document.getElementById("btnTexto");
             const loader = document.getElementById("loader");
             const check = document.getElementById("check");
+            const msgDescarga = document.getElementById("cv-info-message");
 
             btn.addEventListener("click", () => {
                 // 1. Cambiar a modo cargando
@@ -117,6 +97,8 @@
                     texto.textContent = "Descargado";
                     texto.style.display = "inline-block";
                     btn.disabled = false;
+                    // Mostrar mensaje de descarga
+                    msgDescarga.style.display = "flex";                    
                 }, 2500);
             });
         });

@@ -1,0 +1,15 @@
+<svg width="120" height="120" viewBox="0 0 120 120"
+     xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Punto cuadrado de 6px con esquinas suavizadas -->
+    <rect id="dot" width="6" height="6" fill="#00adb5" rx="1" ry="1"/>
+
+    <!-- Patrón repetido cada 24px -->
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <use href="#dot" x="0" y="0"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo completo rellenado con el patrón -->
+  <rect width="120" height="120" fill="url(#dot-grid)"/>
+</svg>

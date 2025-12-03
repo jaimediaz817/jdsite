@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sass:watch": "sass --embed-source-map --quiet --no-error-css backend/static/css/scss/styles.scss backend/static/css/styles.css --watch",
-    "sass:build": "sass --style=compressed backend/static/css/scss/styles.scss backend/static/css/styles.css"    
+    "sass:build": "sass --style=compressed backend/static/css/scss/styles.scss backend/static/css/styles.css"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +13,8 @@
   "description": "",
   "devDependencies": {
     "sass": "^1.94.2"
+  },
+  "dependencies": {
+    "intro.js": "^8.3.2"
   }
 }

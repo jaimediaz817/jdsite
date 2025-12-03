@@ -11,7 +11,6 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <!-- ICO  -->
-        <!--<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}"/>-->
         <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
 
         <!-- BOOTSTRAP   LIB -->
@@ -46,6 +45,10 @@
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
         <link rel="stylesheet" href="{% static 'css/home_custom.css' %}">
         <link rel="stylesheet" href="{% static 'css/addons_2025.css' %}">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+
+
 
         <!-- Fuentes -->
         <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
@@ -285,13 +288,14 @@
         </div>
 
         <!-- WELCOME -->
-        <section id="welcome" class="welcome-section py-5 mb-md-5">
+        <section id="welcome" class="welcome-section py-5 mb-md-5 with-dots-square-left with-dots-square-blue-right">
+            <div class="addon-bg-degradado"></div>
             <div class="container">
                 <div class="row"> 
                     <div class="col-12 col-lg-6 swipe-item-home mb-4 mb-lg-0 d-flex">
                         <div class="welcome-media-stack">
                             <div class="video-container position-relative welcome-media">
-                                <img src="{% static 'images/slides/slide_code.jpg' %}"
+                                <img src="{% static 'images/jd-imagen-office-v2.png' %}"
                                     alt="Imágen de bienvenida a mi Home page."
                                     class="img-fluid rounded-lg shadow-lg">
 
@@ -304,10 +308,8 @@
 
                             <!-- NUEVA FRANJA INFERIOR -->
                             <div class="welcome-media-footer">
-
                                 <!-- TERMINAL JAIME DÍAZ -->
                                 <div id="welcome-terminal" class="jd-terminal-wrapper">
-
                                     <div class="jd-terminal-mac">
                                         <div class="jd-terminal-header">
                                             <div class="jd-terminal-buttons">
@@ -330,7 +332,7 @@
 
                                 <!-- TOOLTIP INFO TERMINAL -->
                                 <div class="jd-tooltip-wrapper bottom--2-5-rem jd-tooltip-absolute" data-jd-pos="auto">
-                                    <button class="jd-tooltip-trigger">i</button>
+                                    <button id="jd-tooltip-id" class="jd-tooltip-trigger">i</button>
 
                                     <div class="jd-tooltip-panel">
                                         <div class="jd-tooltip-arrow"></div>
@@ -347,11 +349,17 @@
                                         </div>
 
                                         <div class="jd-tooltip-footer">
+                                            <button id="btn-terminal-help" class="btn btn-sm btn-outline-light">
+                                                ¿Qué es esta terminal?
+                                            </button>
                                             <small>100% autónoma · JS puro</small>
                                         </div>
                                     </div>
                                 </div>
 
+                                {% comment %} <button id="btn-terminal-help" class="btn btn-sm btn-outline-light">
+                                ¿Qué es esta terminal?
+                                </button>                                 {% endcomment %}
                             </div>
                         </div>
                     </div>
@@ -366,32 +374,32 @@
                                 Soy <span class="text-primary">Jaime Iván Díaz Gaona</span>
                             </h2>
 
-                            <p class="welcome-subtitle mb-3">
-                                Full-Stack JS/Python · Frontend (Angular / React) · Zoho CRM (Deluge)
+                            <p class="welcome-subtitle mb-3 lp-titulo-home">
+                                Full-Stack JS/Python · Frontend (Angular/React) · Zoho CRM (Deluge)
                             </p>
 
                             <div class="welcome-meta mb-3">
                                 <div class="welcome-meta-item">
                                     <i class="far fa-calendar-alt"></i>
-                                    <span>+13 años construyendo productos digitales</span>
+                                    <span class="lp-parrafo-home">+{{ experience_years }} años construyendo productos digitales</span>
                                 </div>
                                 <div class="welcome-meta-item">
                                     <i class="fas fa-building"></i>
-                                    <span>Sector público y privado · RUNT, Caracol TV, DMS Tigo, Susuerte, 8Belts, Romy Mail</span>
+                                    <span class="lp-parrafo-home">Sector público y privado · RUNT, Caracol TV, DMS Tigo, Susuerte, 8Belts, Romy Mail</span>
                                 </div>
                             </div>
 
-                            <p class="welcome-body mb-3">
+                            <p class="welcome-body mb-3 lp-parrafo-home">
                                 Me enfoco en transformar procesos de negocio en soluciones digitales trazables,
                                 medibles y fáciles de mantener, desde el frontend hasta la capa de integraciones
                                 con APIs y automatizaciones.
                             </p>
 
                             <div class="welcome-highlight mb-3">
-                                <h6 class="text-uppercase small font-weight-bold text-primary mb-2">
+                                <h6 class="text-uppercase small font-weight-bold text-primary mb-2 lp-titulo-home">
                                     Diferencial (Zoho + WhatsApp / WOZTELL)
                                 </h6>
-                                <ul class="welcome-list mb-0">
+                                <ul class="welcome-list mb-0 lp-parrafo-home">
                                     <li>Functions, Schedules, Webhooks, Blueprints, Custom Views, Bulk Read/Write, REST API en Zoho CRM.</li>
                                     <li>APIs Deluge seguras para FastAPI / Node y chatbots WOZTELL (tokens / API key).</li>
                                     <li>Flujos bidireccionales con validaciones, logs, reintentos, alertas y trazabilidad end-to-end.</li>
@@ -411,7 +419,7 @@
                                 </a>
                             </div>
 
-                            <div class="welcome-tags mt-3">
+                            <div class="welcome-tags mt-3 lp-skills-home">
                                 <span>Zoho Deluge</span>
                                 <span>FastAPI</span>
                                 <span>Angular / React</span>
@@ -426,219 +434,241 @@
 
 
         <!-- SKILLS -->
-        <section id="skills" class="skills-section py-5 bg-light">
+        <section id="skills" class="jd-accordion-section       skills-section py-5 bg-light with-addons add-left">
             <div class="container">
                 <div class="skills-surface p-4 p-md-5">
-                    <div class="row align-items-center mb-4">
-                        <div class="col-12 col-lg-7">
-                            <h2 class="display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>                           
-                            <p class="lead text-muted mb-3 skills-summary">
-                                <strong class="text-primary">Frontend:</strong> Angular · React · Bootstrap · UX limpio<br>
-                                <strong class="text-primary">Backend:</strong> FastAPI · Node/Express · bases en Django<br>
-                                <strong class="text-primary">Integraciones:</strong> Zoho CRM (Deluge, REST, Blueprints, Webhooks, Bulk Read/Write)<br>
-                                <strong class="text-primary">Datos:</strong> PostgreSQL · MongoDB · SQL Server<br>
-                                <strong class="text-primary">Automatización / ETL:</strong> Python (Selenium, BeautifulSoup)<br>
-                                <strong class="text-primary">DevOps:</strong> Nginx · Docker · DigitalOcean/AWS · CI/CD
-                            </p>
-                            <div class="skill-filters mb-3">
-                                <button class="btn btn-sm btn-outline-secondary active" data-filter="all">
-                                    <i class="fas fa-layer-group mr-1"></i>Todos
+                    <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
+                    <div class="jd-accordion-header">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6  ">
+                                <h2 class="jd-acordion-title-section     display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>
+                            </div>
+                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                                <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección" id="acordion-section-skills">
+                                    <span class="jd-acc-label">Ocultar</span>
+                                    <!-- icono SVG moderno -->
+                                    <svg class="jd-acc-arrow" width="16" height="16" viewBox="0 0 24 24">
+                                        <path d="M6 9l6 6 6-6" stroke="currentColor"
+                                            stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    </svg>
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="frontend">
-                                    <i class="fas fa-tv mr-1"></i>Frontend
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="backend">
-                                    <i class="fas fa-cogs mr-1"></i>Backend
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="integrations">
-                                    <i class="fas fa-plug mr-1"></i>Integraciones
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="data">
-                                    <i class="fas fa-database mr-1"></i>Datos
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="automation">
-                                    <i class="fas fa-robot mr-1"></i>Automatización
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" data-filter="devops">
-                                    <i class="fas fa-server mr-1"></i>DevOps
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
-                            <video class="bg-video" autoplay muted loop playsinline>
-                                <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
-                            </video>
-                            {% comment %} OVERLAY  {% endcomment %}
-                            <div class="video-overlay"></div>
-                            <div class="row no-gutters text-center skill-metrics metrics-content metrics-grid">
-                                <div class="metric-block" data-aos="fade-up" data-aos-delay="0">
-                                    <i class="fas fa-code icon-numeros mb-2 icon-numeros"></i>
-                                    <div class="h4 mb-0 counter" data-counterup-time="800">{{ experience_years }}</div>
-                                    <small class="text-muted">Años de experiencia</small>
-                                </div>
-                                {% for username, count in github_counts.items %}
-                                <div class="metric-block" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
-                                    <i class="fas fa-project-diagram mb-2 icon-numeros"></i>
-                                    <div class="h4 mb-0 counter" data-counterup-time="1200">{{ count }}</div>
-                                    <small class="text-muted">Proyectos en github: {{ username }}</small>
-                                </div>
-                                {% endfor %}                                
-                                {% comment %} <div class="metric-block" data-aos="fade-up" data-aos-delay="100">
-                                    <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
-                                    <div class="h4 mb-0 counter" data-counterup-time="1200">48</div>
-                                    <small class="text-muted">Proyectos en github: jivan0017</small>
-                                </div>
-                                <div class="metric-block" data-aos="fade-up" data-aos-delay="200">
-                                    <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
-                                    <div class="h4 mb-0 counter" data-counterup-time="1200">73</div>
-                                    <small class="text-muted">Proyectos en github: jaimediaz817</small>
-                                </div> {% endcomment %}
-                                <div class="metric-block" data-aos="fade-up" data-aos-delay="300">
-                                    <i class="fas fa-sync-alt  mb-2 icon-numeros"></i>
-                                    <div class="h4 mb-0 counter" data-counterup-time="1500">100</div>
-                                    <small class="text-muted">% entregas a tiempo</small>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    <!-- GRID DE SKILLS -->
-                    <div class="row skill-grid">
-                        <!-- Card -->
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fab fa-angular fa-2x text-danger mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Angular</h6>
-                                    <small class="text-muted">Componentes · RxJS · Lazy load</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fab fa-react fa-2x text-info mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">React</h6>
-                                    <small class="text-muted">Hooks · Context · SPA</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-fire fa-2x text-warning mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">FastAPI</h6>
-                                    <small class="text-muted">APIs rápidas · Pydantic</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fab fa-node-js fa-2x text-success mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Node / Express</h6>
-                                    <small class="text-muted">REST · Middlewares</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-plug fa-2x text-primary mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Zoho CRM</h6>
-                                    <small class="text-muted">Deluge · Blueprints · Webhooks</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-comments fa-2x text-primary mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">WOZTELL</h6>
-                                    <small class="text-muted">Chatbots WhatsApp · Menús</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">PostgreSQL</h6>
-                                    <small class="text-muted">Índices · Queries</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">MongoDB</h6>
-                                    <small class="text-muted">Colecciones · Aggregations</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="automation">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-robot fa-2x text-secondary mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Python ETL</h6>
-                                    <small class="text-muted">Selenium · BeautifulSoup</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-server fa-2x text-warning mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Nginx</h6>
-                                    <small class="text-muted">Reverse proxy · Static</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fab fa-docker fa-2x text-info mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">Docker</h6>
-                                    <small class="text-muted">Images · Compose</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-sync fa-2x text-warning mb-2"></i>
-                                    <h6 class="font-weight-bold mb-1">CI/CD</h6>
-                                    <small class="text-muted">Pipelines · Deploy</small>
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Badges resumen -->
-                    <div class="mt-3 skill-badges d-none">
-                        <span class="badge badge-primary mr-1 mb-1">Deluge</span>
-                        <span class="badge badge-secondary mr-1 mb-1">WOZTELL</span>
-                        <span class="badge badge-dark mr-1 mb-1">Angular</span>
-                        <span class="badge badge-dark mr-1 mb-1">React</span>
-                        <span class="badge badge-info mr-1 mb-1">FastAPI</span>
-                        <span class="badge badge-info mr-1 mb-1">Node</span>
-                        <span class="badge badge-success mr-1 mb-1">PostgreSQL</span>
-                        <span class="badge badge-success mr-1 mb-1">MongoDB</span>
-                        <span class="badge badge-success mr-1 mb-1">SQL Server</span>
-                        <span class="badge badge-warning mr-1 mb-1">Nginx</span>
-                        <span class="badge badge-warning mr-1 mb-1">Docker</span>
-                        <span class="badge badge-warning mr-1 mb-1">CI/CD</span>
+                    <!-- ENVUELVE EL CONTENIDO EN 'jd-accordion-body' -->
+                    <div class="jd-accordion-body">
+                        <div class="jd-accordion-content-wrapper">
+                            <div class="row align-items-center mb-4">
+                                <div class="col-12 col-lg-7">
+                                    <p class="lead text-muted mb-3 skills-summary">
+                                        <strong class="text-primary">Frontend:</strong> Angular · React · Bootstrap · UX limpio<br>
+                                        <strong class="text-primary">Backend:</strong> FastAPI · Node/Express · bases en Django<br>
+                                        <strong class="text-primary">Integraciones:</strong> Zoho CRM (Deluge, REST, Blueprints, Webhooks, Bulk Read/Write)<br>
+                                        <strong class="text-primary">Datos:</strong> PostgreSQL · MongoDB · SQL Server<br>
+                                        <strong class="text-primary">Automatización / ETL:</strong> Python (Selenium, BeautifulSoup)<br>
+                                        <strong class="text-primary">DevOps:</strong> Nginx · Docker · DigitalOcean/AWS · CI/CD
+                                    </p>
+                                    <div class="skill-filters mb-3">
+                                        <button class="btn btn-sm btn-outline-secondary active" data-filter="all">
+                                            <i class="fas fa-layer-group mr-1"></i>Todos
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="frontend">
+                                            <i class="fas fa-tv mr-1"></i>Frontend
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="backend">
+                                            <i class="fas fa-cogs mr-1"></i>Backend
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="integrations">
+                                            <i class="fas fa-plug mr-1"></i>Integraciones
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="data">
+                                            <i class="fas fa-database mr-1"></i>Datos
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="automation">
+                                            <i class="fas fa-robot mr-1"></i>Automatización
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" data-filter="devops">
+                                            <i class="fas fa-server mr-1"></i>DevOps
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
+                                    <video class="bg-video" autoplay muted loop playsinline>
+                                        <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
+                                    </video>
+                                    {% comment %} OVERLAY  {% endcomment %}
+                                    <div class="video-overlay"></div>
+                                    <div class="row no-gutters text-center skill-metrics metrics-content metrics-grid">
+                                        <div class="metric-block" data-aos="fade-up" data-aos-delay="0">
+                                            <i class="fas fa-code icon-numeros mb-2 icon-numeros"></i>
+                                            <div class="h4 mb-0 counter" data-counterup-time="800">{{ experience_years }}</div>
+                                            <small class="text-muted">Años de experiencia</small>
+                                        </div>
+                                        {% for username, count in github_counts.items %}
+                                        <div class="metric-block" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+                                            <i class="fas fa-project-diagram mb-2 icon-numeros"></i>
+                                            <div class="h4 mb-0 counter" data-counterup-time="1200">{{ count }}</div>
+                                            <small class="text-muted">Proyectos en github: {{ username }}</small>
+                                        </div>
+                                        {% endfor %}                                
+                                        {% comment %} <div class="metric-block" data-aos="fade-up" data-aos-delay="100">
+                                            <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
+                                            <div class="h4 mb-0 counter" data-counterup-time="1200">48</div>
+                                            <small class="text-muted">Proyectos en github: jivan0017</small>
+                                        </div>
+                                        <div class="metric-block" data-aos="fade-up" data-aos-delay="200">
+                                            <i class="fas fa-project-diagram  mb-2 icon-numeros"></i>
+                                            <div class="h4 mb-0 counter" data-counterup-time="1200">73</div>
+                                            <small class="text-muted">Proyectos en github: jaimediaz817</small>
+                                        </div> {% endcomment %}
+                                        <div class="metric-block" data-aos="fade-up" data-aos-delay="300">
+                                            <i class="fas fa-sync-alt  mb-2 icon-numeros"></i>
+                                            <div class="h4 mb-0 counter" data-counterup-time="1500">100</div>
+                                            <small class="text-muted">% entregas a tiempo</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- GRID DE SKILLS -->
+                                <div class="row skill-grid">
+                                    <!-- Card -->
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fab fa-angular fa-2x text-danger mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Angular</h6>
+                                                <small class="text-muted">Componentes · RxJS · Lazy load</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="frontend">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fab fa-react fa-2x text-info mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">React</h6>
+                                                <small class="text-muted">Hooks · Context · SPA</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-fire fa-2x text-warning mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">FastAPI</h6>
+                                                <small class="text-muted">APIs rápidas · Pydantic</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="backend">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fab fa-node-js fa-2x text-success mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Node / Express</h6>
+                                                <small class="text-muted">REST · Middlewares</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-plug fa-2x text-primary mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Zoho CRM</h6>
+                                                <small class="text-muted">Deluge · Blueprints · Webhooks</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="integrations">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">WOZTELL</h6>
+                                                <small class="text-muted">Chatbots WhatsApp · Menús</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-database fa-2x text-success mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">PostgreSQL</h6>
+                                                <small class="text-muted">Índices · Queries</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="data">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-database fa-2x text-success mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">MongoDB</h6>
+                                                <small class="text-muted">Colecciones · Aggregations</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="automation">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-robot fa-2x text-secondary mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Python ETL</h6>
+                                                <small class="text-muted">Selenium · BeautifulSoup</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-server fa-2x text-warning mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Nginx</h6>
+                                                <small class="text-muted">Reverse proxy · Static</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fab fa-docker fa-2x text-info mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">Docker</h6>
+                                                <small class="text-muted">Images · Compose</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-4 skill-card" data-group="devops">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-sync fa-2x text-warning mb-2"></i>
+                                                <h6 class="font-weight-bold mb-1">CI/CD</h6>
+                                                <small class="text-muted">Pipelines · Deploy</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Badges resumen -->
+                                <div class="mt-3 skill-badges d-none">
+                                    <span class="badge badge-primary mr-1 mb-1">Deluge</span>
+                                    <span class="badge badge-secondary mr-1 mb-1">WOZTELL</span>
+                                    <span class="badge badge-dark mr-1 mb-1">Angular</span>
+                                    <span class="badge badge-dark mr-1 mb-1">React</span>
+                                    <span class="badge badge-info mr-1 mb-1">FastAPI</span>
+                                    <span class="badge badge-info mr-1 mb-1">Node</span>
+                                    <span class="badge badge-success mr-1 mb-1">PostgreSQL</span>
+                                    <span class="badge badge-success mr-1 mb-1">MongoDB</span>
+                                    <span class="badge badge-success mr-1 mb-1">SQL Server</span>
+                                    <span class="badge badge-warning mr-1 mb-1">Nginx</span>
+                                    <span class="badge badge-warning mr-1 mb-1">Docker</span>
+                                    <span class="badge badge-warning mr-1 mb-1">CI/CD</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-        
+        </section>        
 
 
         <!-- HOW CAN WE HELP YOU -->
@@ -654,7 +684,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-lg-8 py-5">
-                        <h2 class="display-4 font-weight-bold txt-title">¿Cómo podemos ayudarte?</h2>
+                        <h2 class="display-4 font-weight-bold txt-title">¿Cómo puedo ayudarte?</h2>
                         <p class="text-area-bg-dark pt-2 pb-2">
                             Saber exactamente qué quieres, es el primer paso para iniciar de la mejor manera un proyecto, el éxito se basa principalmente en el análisis y seguimiento del <span class="market">dominio del problema</span> en las etapas iniciales
                         </p>
@@ -716,372 +746,408 @@
         </section>
 
         <!-- COMO TRABAJO -->
-        {% comment %} <div class="jd-wave-top">
-            <svg viewBox="0 0 1440 90">
-                <path fill="#ffffff" 
-                    d="M0,64 C480,96 960,0 1440,64 L1440,0 L0,0 Z"></path>
-            </svg>
-        </div>         {% endcomment %}
         <div class="jd-bg-tech"></div>
 
-        <section id="workflow" class="workflow-section py-5 position-relative">
+        <section id="workflow" class="jd-accordion-section      workflow-section py-5 position-relative with-addons add-right">
             <div class="container position-relative">
                 <div class="workflow-surface p-4 p-md-5" data-aos="fade-up">
 
-                    <div class="row align-items-center mb-5">
-                        <div class="col-lg-6">
-                            <h2 class="jd-title" data-aos="fade-right">¿Cómo trabajo?</h2>
-                            <p class="jd-subtitle" data-aos="fade-right" data-aos-delay="150">
-                                Proceso claro, escalable y enfocado en resultados.
-                            </p>
-                        </div>
-                        <div class="col-lg-6 text-lg-right" data-aos="fade-left">
-                            <a href="#contact" class="btn lp btn-primary mt-3 mt-lg-0">
-                                <i class="fas fa-paper-plane mr-1"></i>Iniciar conversación
-                            </a>
+                    <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
+                    <div class="jd-accordion-header">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6  ">
+                                <h2 class="jd-acordion-title-section     jd-title mb-0" data-aos="fade-right">¿Cómo trabajo?</h2>
+                            </div>
+                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                                <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección">
+                                    <span class="jd-acc-label">Ocultar</span>
+                                    <!-- icono SVG moderno -->
+                                    <svg class="jd-acc-arrow" width="16" height="16" viewBox="0 0 24 24">
+                                        <path d="M6 9l6 6 6-6" stroke="currentColor"
+                                            stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row workflow-steps">
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon">
-                                    <i class="fas fa-comments"></i>
+                    <!-- ENVUELVE EL CONTENIDO EN 'jd-accordion-body' -->
+                    <div class="jd-accordion-body">
+                        <div class="jd-accordion-content-wrapper">
+                            <div class="row align-items-center mb-5">
+                                <div class="col-lg-6">
+                                    <p class="jd-subtitle" data-aos="fade-right" data-aos-delay="150">
+                                        Proceso claro, escalable y enfocado en resultados.
+                                    </p>
                                 </div>
-                                <h6 class="wf-title">Analizo el objetivo</h6>
-                                <p class="wf-text">Relevo requerimientos, analizo procesos y defino criterios de éxito claros y medibles.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon"><i class="fas fa-sitemap"></i></div>
-                                <h6 class="wf-title">Arquitectura</h6>
-                                <p class="wf-text">Defino la estructura del proyecto, selecciono tecnologías y organizo módulos según la solución requerida.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon"><i class="fas fa-code"></i></div>
-                                <h6 class="wf-title">Desarrollo modular</h6>
-                                <p class="wf-text">Aplico patrones de diseño, buenas prácticas, reutilización y tests para asegurar calidad y mantenibilidad.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon">
-                                    <i class="fas fa-code-branch"></i>
+                                <div class="col-lg-6 text-lg-right" data-aos="fade-left">
+                                    <a href="#contact" class="btn lp btn-primary mt-3 mt-lg-0">
+                                        <i class="fas fa-paper-plane mr-1"></i>Iniciar conversación
+                                    </a>
                                 </div>
-                                <h6 class="wf-title">Versionado + PRs</h6>
-                                <p class="wf-text">
-                                    Experiencia con GitHub como gestor de versiones, manejo de ramas, pull requests y respaldos graduales de las aplicaciones.
-                                </p>
+                            </div>
+
+                            <div class="row workflow-steps">
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon">
+                                            <i class="fas fa-comments"></i>
+                                        </div>
+                                        <h6 class="wf-title">Analizo el objetivo</h6>
+                                        <p class="wf-text">Relevo requerimientos, analizo procesos y defino criterios de éxito claros y medibles.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon"><i class="fas fa-sitemap"></i></div>
+                                        <h6 class="wf-title">Arquitectura</h6>
+                                        <p class="wf-text">Defino la estructura del proyecto, selecciono tecnologías y organizo módulos según la solución requerida.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon"><i class="fas fa-code"></i></div>
+                                        <h6 class="wf-title">Desarrollo modular</h6>
+                                        <p class="wf-text">Aplico patrones de diseño, buenas prácticas, reutilización y tests para asegurar calidad y mantenibilidad.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon">
+                                            <i class="fas fa-code-branch"></i>
+                                        </div>
+                                        <h6 class="wf-title">Versionado + PRs</h6>
+                                        <p class="wf-text">
+                                            Experiencia con GitHub como gestor de versiones, manejo de ramas, pull requests y respaldos graduales de las aplicaciones.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon"><i class="fas fa-rocket"></i></div>
+                                        <h6 class="wf-title">CI/CD + Deploy</h6>
+                                        <p class="wf-text">
+                                            Pipelines, Docker + Nginx en DO/AWS, rollback seguro.<br>
+                                            Experiencia en entornos Ubuntu y manejo de AWS (EC2, S3).
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                    <div class="wf-step h-100">
+                                        <div class="wf-icon"><i class="fas fa-chart-line"></i></div>
+                                        <h6 class="wf-title">Ciclo de vida</h6>
+                                        <p class="wf-text">Métricas ágiles, retrospectivas, soporte y mejora continua en cada sprint.</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="text-center mt-4" data-aos="fade">
+                                <small class="text-muted">Transparencia, comunicación y entregas iterativas desde el día 1.</small>
+                                <br>
+                                <span class="text-primary font-weight-bold">Responsable y proactivo</span> en el trabajo, siempre enfocado en alcanzar los objetivos laborales y aportar valor al equipo.
                             </div>
                         </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon"><i class="fas fa-rocket"></i></div>
-                                <h6 class="wf-title">CI/CD + Deploy</h6>
-                                <p class="wf-text">
-                                    Pipelines, Docker + Nginx en DO/AWS, rollback seguro.<br>
-                                    Experiencia en entornos Ubuntu y manejo de AWS (EC2, S3).
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
-                            <div class="wf-step h-100">
-                                <div class="wf-icon"><i class="fas fa-chart-line"></i></div>
-                                <h6 class="wf-title">Ciclo de vida</h6>
-                                <p class="wf-text">Métricas ágiles, retrospectivas, soporte y mejora continua en cada sprint.</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="text-center mt-4" data-aos="fade">
-                        <small class="text-muted">Transparencia, comunicación y entregas iterativas desde el día 1.</small>
-                        <br>
-                        <span class="text-primary font-weight-bold">Responsable y proactivo</span> en el trabajo, siempre enfocado en alcanzar los objetivos laborales y aportar valor al equipo.
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- PROJECTS -->
-        <section id="projects" class="projects-section py-5">
+        <section id="projects" class="jd-accordion-section      projects-section py-5 with-dots-square-left with-dots-square-blue-right">
             <div class="container">
                 <div class="projects-surface p-4 p-md-5">
-                    <!-- CABECERA -->
-                    <div class="row align-items-center mb-4">
-                        <div class="col-12 col-lg-8">
-                        <h2 class="projects-title mb-2">
-                            Proyectos reales
-                        </h2>
-                        <p class="projects-subtitle mb-0">
-                            Casos en producción y desarrollos personales que resumen foco en negocio,
-                            buen UX y trazabilidad técnica.
-                        </p>
-                        </div>
-                        <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right text-left">
-                        <a href="#contact" class="btn btn-primary">
-                            <i class="fas fa-paper-plane mr-1"></i>
-                            Inicia tu proyecto
-                        </a>
+
+
+                    <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
+                    <div class="jd-accordion-header">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6  ">
+                                <h2 class="jd-acordion-title-section     projects-title mb-2">Proyectos reales</h2>
+                            </div>
+                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                                <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección">
+                                    <span class="jd-acc-label">Ocultar</span>
+                                    <!-- icono SVG moderno -->
+                                    <svg class="jd-acc-arrow" width="16" height="16" viewBox="0 0 24 24">
+                                        <path d="M6 9l6 6 6-6" stroke="currentColor"
+                                            stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- CARRUSEL DE PROYECTOS (4 por slide) -->
-                    <div class="swiper-container projects-slider" id="projectsSlider">
-                        <div class="swiper-wrapper">
-
-                        <!-- SLIDE 1: tus 4 proyectos actuales -->
-                        <div class="swiper-slide">
-                            <div class="row project-grid">
-                                <!-- PROYECTO 1: CRQ -->
-                                <div class="col-12 col-md-6 mb-4">
-                                    <article class="card h-100 border-0 shadow-sm project-card">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="project-title mb-1">
-                                        CRQ – Gestión de Documentación por Ciclos
-                                        </h3>
-                                        <p class="project-meta text-muted mb-2">
-                                        Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
-                                        </p>
-
-                                        <ul class="pl-3 mb-3 project-points">
-                                        <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
-                                        <li>Flujos de revisión y control de versiones.</li>
-                                        <li>Roles, auditoría y trazabilidad de acciones.</li>
-                                        </ul>
-
-                                        <div class="mb-3">
-                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
-                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
-                                        </div>
-
-                                        <div class="mt-auto d-flex flex-wrap align-items-center">
-                                        <a href="#contact"
-                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                            data-project="CRQ – Gestión de Documentación por Ciclos"
-                                            data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
-                                            Quiero algo así (Laravel + Vue 2)
-                                        </a>
-
-                                        <button type="button"
-                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                data-title="CRQ – Gestión de Documentación por Ciclos"
-                                                data-images="">
-                                                {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
-                                            <i class="fas fa-images mr-1"></i>
-                                            Ver capturas
-                                        </button>
-                                        </div>
-                                    </div>
-                                    </article>
+                    <div class="jd-accordion-body">
+                        <div class="jd-accordion-content-wrapper">
+                            <!-- CABECERA -->
+                            <div class="row align-items-center mb-4">
+                                <div class="col-12 col-lg-8">
+                                    <p class="projects-subtitle mb-0">
+                                        Casos en producción y desarrollos personales que resumen foco en negocio,
+                                        buen UX y trazabilidad técnica.
+                                    </p>
                                 </div>
-
-                                <!-- PROYECTO 2: Football Center -->
-                                <div class="col-12 col-md-6 mb-4">
-                                    <article class="card h-100 border-0 shadow-sm project-card">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="project-title mb-1">
-                                        Football Center Academy – Reservas Canchas
-                                        </h3>
-                                        <p class="project-meta text-muted mb-2">
-                                        Portal de reservas. Backend Laravel · Frontend Vue 2.
-                                        </p>
-
-                                        <ul class="pl-3 mb-3 project-points">
-                                        <li>Agenda en tiempo real con anti-colisiones para reservas de cancha.</li>
-                                        <li>Reglas transaccionales y notificaciones al usuario.</li>
-                                        <li>Gestión de usuarios, pagos y reportes básicos.</li>
-                                        </ul>
-
-                                        <div class="mb-3">
-                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Calendario UX</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Transaccional</span>
-                                        </div>
-
-                                        <div class="mt-auto d-flex flex-wrap align-items-center">
-                                        <a href="#contact"
-                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                            data-project="Football Center Academy – Reservas Canchas"
-                                            data-stack="Laravel · Vue 2 · Calendario UX · Lógica transaccional">
-                                            Quiero algo así (Laravel + Vue 2)
-                                        </a>
-
-                                        <!-- Sin capturas: se deshabilita por JS -->
-                                        <button type="button"
-                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                data-title="Football Center Academy – Reservas Canchas"
-                                                data-images="">
-                                            <i class="fas fa-images mr-1"></i>
-                                            Ver capturas
-                                        </button>
-                                        </div>
-                                    </div>
-                                    </article>
-                                </div>
-
-                                <!-- PROYECTO 3: Zoho + WOZTELL -->
-                                <div class="col-12 col-md-6 mb-4">
-                                    <article class="card h-100 border-0 shadow-sm project-card">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="project-title mb-1">
-                                        Integración Zoho CRM + WOZTELL + SQL Server (SAG)
-                                        </h3>
-                                        <p class="project-meta text-muted mb-2">
-                                        Gestión de cartera y mensajería transaccional.
-                                        </p>
-
-                                        <ul class="pl-3 mb-3 project-points">
-                                        <li>Funciones Deluge con tokens y sincronización SAG ↔ Zoho.</li>
-                                        <li>Flujos para envíos masivos WhatsApp (plantillas WOZTELL).</li>
-                                        <li>Dashboard de facturas pendientes y recordatorios de pago.</li>
-                                        </ul>
-
-                                        <div class="mb-3">
-                                        <span class="badge badge-tech mr-1 mb-1">Zoho Deluge</span>
-                                        <span class="badge badge-tech mr-1 mb-1">WOZTELL</span>
-                                        <span class="badge badge-tech mr-1 mb-1">SQL Server</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Logs/Reintentos</span>
-                                        </div>
-
-                                        <div class="mt-auto d-flex flex-wrap align-items-center">
-                                        <a href="#contact"
-                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                            data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
-                                            data-stack="Zoho CRM · Deluge · WOZTELL · SQL Server">
-                                            Quiero algo así (Zoho + WOZTELL)
-                                        </a>
-
-                                        <button type="button"
-                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                data-title="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
-                                                data-images="">
-                                            <i class="fas fa-images mr-1"></i>
-                                            Ver capturas
-                                        </button>
-                                        </div>
-                                    </div>
-                                    </article>
-                                </div>
-
-                                <!-- PROYECTO 4: Huellitas Felices -->
-                                <div class="col-12 col-md-6 mb-4">
-                                    <article class="card h-100 border-0 shadow-sm project-card">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="project-title mb-1">
-                                        Huellitas Felices – Rifas (3 y 4 cifras)
-                                        </h3>
-                                        <p class="project-meta text-muted mb-2">
-                                        Fundación. Backend Spring Boot · React · PostgreSQL.
-                                        </p>
-
-                                        <ul class="pl-3 mb-3 project-points">
-                                        <li>Reserva remota de números y pagos en línea.</li>
-                                        <li>Control de sorteos y publicación de ganadores.</li>
-                                        <li>Panel administrativo trazable para rifas y donaciones.</li>
-                                        </ul>
-
-                                        <div class="mb-3">
-                                        <span class="badge badge-tech mr-1 mb-1">Spring Boot</span>
-                                        <span class="badge badge-tech mr-1 mb-1">React</span>
-                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Panel Admin</span>
-                                        </div>
-
-                                        <div class="mt-auto d-flex flex-wrap align-items-center">
-                                        <a href="#contact"
-                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                            data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
-                                            data-stack="Spring Boot · React · PostgreSQL · Panel Admin">
-                                            Quiero algo así (Spring Boot + React)
-                                        </a>
-
-                                        <button type="button"
-                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                data-title="Huellitas Felices – Rifas (3 y 4 cifras)"
-                                                data-images="">
-                                            <i class="fas fa-images mr-1"></i>
-                                            Ver capturas
-                                        </button>
-                                        </div>
-                                    </div>
-                                    </article>
+                                <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right text-left">
+                                    <a href="#contact" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane mr-1"></i>
+                                        Inicia tu proyecto
+                                    </a>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- SLIDE 2 (ejemplo): aquí metes proyectos 5–8 -->
-                        <div class="swiper-slide">
-                            <div class="row project-grid">
-                                <div class="col-12 col-md-6 mb-4">
-                                    <article class="card h-100 border-0 shadow-sm project-card">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="project-title mb-1">
-                                        CRQ – Gestión de Documentación por Ciclos
-                                        </h3>
-                                        <p class="project-meta text-muted mb-2">
-                                        Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
-                                        </p>
+                            <!-- CARRUSEL DE PROYECTOS (4 por slide) -->
+                            <div class="swiper-container projects-slider" id="projectsSlider">
+                                <div class="swiper-wrapper">
 
-                                        <ul class="pl-3 mb-3 project-points">
-                                        <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
-                                        <li>Flujos de revisión y control de versiones.</li>
-                                        <li>Roles, auditoría y trazabilidad de acciones.</li>
-                                        </ul>
+                                    <!-- SLIDE 1: tus 4 proyectos actuales -->
+                                    <div class="swiper-slide">
+                                        <div class="row project-grid">
+                                            <!-- PROYECTO 1: CRQ -->
+                                            <div class="col-12 col-md-6 mb-4">
+                                                <article class="card h-100 border-0 shadow-sm project-card">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="project-title mb-1">
+                                                    CRQ – Gestión de Documentación por Ciclos
+                                                    </h3>
+                                                    <p class="project-meta text-muted mb-2">
+                                                    Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
+                                                    </p>
 
-                                        <div class="mb-3">
-                                        <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                        <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
-                                        <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
-                                        </div>
+                                                    <ul class="pl-3 mb-3 project-points">
+                                                    <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
+                                                    <li>Flujos de revisión y control de versiones.</li>
+                                                    <li>Roles, auditoría y trazabilidad de acciones.</li>
+                                                    </ul>
 
-                                        <div class="mt-auto d-flex flex-wrap align-items-center">
-                                        <a href="#contact"
-                                            class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                            data-project="CRQ – Gestión de Documentación por Ciclos"
-                                            data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
-                                            Quiero algo así (Laravel + Vue 2)
-                                        </a>
+                                                    <div class="mb-3">
+                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                                    </div>
 
-                                        <button type="button"
-                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                data-title="CRQ – Gestión de Documentación por Ciclos"
-                                                data-images="">
-                                                {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
-                                            <i class="fas fa-images mr-1"></i>
-                                            Ver capturas
-                                        </button>
+                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
+                                                    <a href="#contact"
+                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                        data-project="CRQ – Gestión de Documentación por Ciclos"
+                                                        data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                                        Quiero algo así (Laravel + Vue 2)
+                                                    </a>
+
+                                                    <button type="button"
+                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                            data-title="CRQ – Gestión de Documentación por Ciclos"
+                                                            data-images="">
+                                                            {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
+                                                        <i class="fas fa-images mr-1"></i>
+                                                        Ver capturas
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                                </article>
+                                            </div>
+
+                                            <!-- PROYECTO 2: Football Center -->
+                                            <div class="col-12 col-md-6 mb-4">
+                                                <article class="card h-100 border-0 shadow-sm project-card">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="project-title mb-1">
+                                                    Football Center Academy – Reservas Canchas
+                                                    </h3>
+                                                    <p class="project-meta text-muted mb-2">
+                                                    Portal de reservas. Backend Laravel · Frontend Vue 2.
+                                                    </p>
+
+                                                    <ul class="pl-3 mb-3 project-points">
+                                                    <li>Agenda en tiempo real con anti-colisiones para reservas de cancha.</li>
+                                                    <li>Reglas transaccionales y notificaciones al usuario.</li>
+                                                    <li>Gestión de usuarios, pagos y reportes básicos.</li>
+                                                    </ul>
+
+                                                    <div class="mb-3">
+                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Calendario UX</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Transaccional</span>
+                                                    </div>
+
+                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
+                                                    <a href="#contact"
+                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                        data-project="Football Center Academy – Reservas Canchas"
+                                                        data-stack="Laravel · Vue 2 · Calendario UX · Lógica transaccional">
+                                                        Quiero algo así (Laravel + Vue 2)
+                                                    </a>
+
+                                                    <!-- Sin capturas: se deshabilita por JS -->
+                                                    <button type="button"
+                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                            data-title="Football Center Academy – Reservas Canchas"
+                                                            data-images="">
+                                                        <i class="fas fa-images mr-1"></i>
+                                                        Ver capturas
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                                </article>
+                                            </div>
+
+                                            <!-- PROYECTO 3: Zoho + WOZTELL -->
+                                            <div class="col-12 col-md-6 mb-4">
+                                                <article class="card h-100 border-0 shadow-sm project-card">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="project-title mb-1">
+                                                    Integración Zoho CRM + WOZTELL + SQL Server (SAG)
+                                                    </h3>
+                                                    <p class="project-meta text-muted mb-2">
+                                                    Gestión de cartera y mensajería transaccional.
+                                                    </p>
+
+                                                    <ul class="pl-3 mb-3 project-points">
+                                                    <li>Funciones Deluge con tokens y sincronización SAG ↔ Zoho.</li>
+                                                    <li>Flujos para envíos masivos WhatsApp (plantillas WOZTELL).</li>
+                                                    <li>Dashboard de facturas pendientes y recordatorios de pago.</li>
+                                                    </ul>
+
+                                                    <div class="mb-3">
+                                                    <span class="badge badge-tech mr-1 mb-1">Zoho Deluge</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">WOZTELL</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">SQL Server</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Logs/Reintentos</span>
+                                                    </div>
+
+                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
+                                                    <a href="#contact"
+                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                        data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                                        data-stack="Zoho CRM · Deluge · WOZTELL · SQL Server">
+                                                        Quiero algo así (Zoho + WOZTELL)
+                                                    </a>
+
+                                                    <button type="button"
+                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                            data-title="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                                            data-images="">
+                                                        <i class="fas fa-images mr-1"></i>
+                                                        Ver capturas
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                                </article>
+                                            </div>
+
+                                            <!-- PROYECTO 4: Huellitas Felices -->
+                                            <div class="col-12 col-md-6 mb-4">
+                                                <article class="card h-100 border-0 shadow-sm project-card">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="project-title mb-1">
+                                                    Huellitas Felices – Rifas (3 y 4 cifras)
+                                                    </h3>
+                                                    <p class="project-meta text-muted mb-2">
+                                                    Fundación. Backend Spring Boot · React · PostgreSQL.
+                                                    </p>
+
+                                                    <ul class="pl-3 mb-3 project-points">
+                                                    <li>Reserva remota de números y pagos en línea.</li>
+                                                    <li>Control de sorteos y publicación de ganadores.</li>
+                                                    <li>Panel administrativo trazable para rifas y donaciones.</li>
+                                                    </ul>
+
+                                                    <div class="mb-3">
+                                                    <span class="badge badge-tech mr-1 mb-1">Spring Boot</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">React</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Panel Admin</span>
+                                                    </div>
+
+                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
+                                                    <a href="#contact"
+                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                        data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                                        data-stack="Spring Boot · React · PostgreSQL · Panel Admin">
+                                                        Quiero algo así (Spring Boot + React)
+                                                    </a>
+
+                                                    <button type="button"
+                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                            data-title="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                                            data-images="">
+                                                        <i class="fas fa-images mr-1"></i>
+                                                        Ver capturas
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                                </article>
+                                            </div>
                                         </div>
                                     </div>
-                                    </article>
+
+                                    <!-- SLIDE 2 (ejemplo): aquí metes proyectos 5–8 -->
+                                    <div class="swiper-slide">
+                                        <div class="row project-grid">
+                                            <div class="col-12 col-md-6 mb-4">
+                                                <article class="card h-100 border-0 shadow-sm project-card">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="project-title mb-1">
+                                                    CRQ – Gestión de Documentación por Ciclos
+                                                    </h3>
+                                                    <p class="project-meta text-muted mb-2">
+                                                    Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
+                                                    </p>
+
+                                                    <ul class="pl-3 mb-3 project-points">
+                                                    <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
+                                                    <li>Flujos de revisión y control de versiones.</li>
+                                                    <li>Roles, auditoría y trazabilidad de acciones.</li>
+                                                    </ul>
+
+                                                    <div class="mb-3">
+                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
+                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                                    </div>
+
+                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
+                                                    <a href="#contact"
+                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                        data-project="CRQ – Gestión de Documentación por Ciclos"
+                                                        data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                                        Quiero algo así (Laravel + Vue 2)
+                                                    </a>
+
+                                                    <button type="button"
+                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                            data-title="CRQ – Gestión de Documentación por Ciclos"
+                                                            data-images="">
+                                                            {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
+                                                        <i class="fas fa-images mr-1"></i>
+                                                        Ver capturas
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                                </article>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <!-- Controles del carrusel -->
+                                <div class="swiper-button-prev projects-prev"></div>
+                                <div class="swiper-button-next projects-next"></div>
+                                <div class="swiper-pagination projects-pagination"></div>
                             </div>
+                            <p class="text-center small text-muted mt-3 mb-0">
+                                Más casos disponibles bajo NDA o repos privados. Solicita detalles específicos.
+                            </p>
                         </div>
-
-                        </div>
-
-                        <!-- Controles del carrusel -->
-                        <div class="swiper-button-prev projects-prev"></div>
-                        <div class="swiper-button-next projects-next"></div>
-                        <div class="swiper-pagination projects-pagination"></div>
                     </div>
-
-                    <p class="text-center small text-muted mt-3 mb-0">
-                        Más casos disponibles bajo NDA o repos privados. Solicita detalles específicos.
-                    </p>
                 </div>
             </div>
         </section>
@@ -1375,6 +1441,7 @@
                                     Puedes navegar entre los diferentes repositorios públicos en los que he trabajado por Hobbie y/o probando alguna funcionalidad. Puedes ver también algunos proyectos desarrolados en algunos cursos de <strong>Platzi</strong>, experimentos y algo más.
                                 </p>
                             </div>
+                            {% comment %} <a href="https://www.flaticon.es/iconos-animados-gratis/conversacion" title="conversacion iconos animados">Conversacion iconos animados creados por Freepik - Flaticon</a> {% endcomment %}
                         </div>
                         <div class="row social-content justify-content-center">						
                             <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
@@ -1580,25 +1647,25 @@
         <!-- ========================================== -->
 
         <script>
-        function getCookie(name){
-            const v=`; ${document.cookie}`.split(`; ${name}=`);
-            if (v.length===2) return decodeURIComponent(v.pop().split(';').shift());
-        }
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings){
-                if (!(/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type)) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-                }
+            function getCookie(name){
+                const v=`; ${document.cookie}`.split(`; ${name}=`);
+                if (v.length===2) return decodeURIComponent(v.pop().split(';').shift());
             }
-        });
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings){
+                    if (!(/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type)) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    }
+                }
+            });
         </script>
 
         <script>
-        window.JD_API = {
-            // submit: "/ask/api/submit/",
-            // blogs:  "/api/blogs/"
-            blogs: null
-        };
+            window.JD_API = {
+                // submit: "/ask/api/submit/",
+                // blogs:  "/api/blogs/"
+                blogs: null
+            };
         </script>
         <script>
             window.JD_API = {
@@ -1625,6 +1692,13 @@
         <!-- WELCOME TERMINAL  -->
         <script src="{% static 'js/lib/jdWelcomeTerminal.js' %}"></script>
         <script src="{% static 'js/lib/github.js' %}"></script>
+        <!-- libs -->
+        {% comment %} <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>         {% endcomment %}
+        <script src="https://cdn.jsdelivr.net/npm/shepherd.js/dist/js/shepherd.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+
+        <script src="{% static 'js/lib/intro/minified/intro.min.js' %}"></script>
         <!-- ============================================================================================ -->
 
         <!-- CUSTOM   PATH ******************* -->

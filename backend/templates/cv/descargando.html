@@ -1,0 +1,125 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Descargar CV – Jaime Díaz</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
+    <!-- Fuente Open Sans Ultra Light -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tus estilos -->
+    <link rel="stylesheet" href="{% static 'css/jd_cv.css' %}">
+</head>
+
+<body class="jd-cv-bg">
+
+    <div class="jd-cv-container animate-pop">
+
+        <!-- Banner moderno -->
+        <div class="jd-mini-banner">CV listo para descargar</div>
+
+        <!-- LOGO + Nombre -->
+        <div class="jd-logo-wrapper">
+            <img src="{% static 'images/jd.svg' %}" alt="Logo JD">
+            <div class="jd-nombre">Jaime Díaz</div>
+        </div>
+
+        <!-- Separador elegante -->
+        <div class="jd-separador"></div>
+
+        <!-- Título -->
+        <h2>Descargar mi CV</h2>
+
+        <!-- Texto principal -->
+        <p>
+            Gracias por tu interés en mi perfil profesional.  
+            Haz clic en el botón para iniciar la descarga.
+        </p>
+
+        <div class="jd-buttons-container">
+            <!-- Botón principal con loader -->
+            <button id="btnDescargar" class="jd-btn-primary">
+                <span id="btnTexto">Descargar CV</span>
+                <div id="loader" class="jd-loader"></div>
+                <span id="check" class="jd-check">✔</span>
+            </button>
+
+            <!-- Botón secundario -->
+            <a href="{{site_domain}}" class="jd-btn-secondary">
+                Visitar mi sitio web
+            </a>
+        </div>
+    </div>
+
+    <!-- Script de comportamiento -->
+    {% comment %} <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("btnDescargar");
+            const texto = document.getElementById("btnTexto");
+            const loader = document.getElementById("loader");
+            const check = document.getElementById("check");
+
+            btn.addEventListener("click", () => {
+                // Cambiar a modo cargando
+                texto.style.display = "none";
+                loader.style.display = "inline-block";
+
+                // Iniciar descarga
+                setTimeout(() => {
+                    window.location.href = "{% static 'docs/Jaime_Diaz_Espaniol_2025.pdf' %}";
+                }, 800);
+
+                // Mostrar check cuando termine un momento después
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    check.style.display = "inline-block";
+                    texto.textContent = "Descargado";
+                    texto.style.display = "inline-block";
+                }, 1800);
+            });
+        });
+    </script> {% endcomment %}
+    <!-- Script de comportamiento -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("btnDescargar");
+            const texto = document.getElementById("btnTexto");
+            const loader = document.getElementById("loader");
+            const check = document.getElementById("check");
+
+            btn.addEventListener("click", () => {
+                // 1. Cambiar a modo cargando
+                texto.style.display = "none";
+                loader.style.display = "inline-block";
+                btn.disabled = true; // Evitar doble click
+
+                // 2. Iniciar descarga usando un iframe oculto
+                // Esto evita que la página actual cambie o se ponga en blanco
+                setTimeout(() => {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    // Apuntamos a la URL de Django que tiene as_attachment=True
+                    iframe.src = "{% url 'descargar_cv_real' %}"; 
+                    document.body.appendChild(iframe);
+                    
+                    // Limpieza del iframe después de un tiempo prudencial
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 60000);
+                }, 800);
+
+                // 3. Mostrar check de éxito visualmente
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    check.style.display = "inline-block";
+                    texto.textContent = "Descargado";
+                    texto.style.display = "inline-block";
+                    btn.disabled = false;
+                }, 2500);
+            });
+        });
+    </script>
+</body>
+</html>

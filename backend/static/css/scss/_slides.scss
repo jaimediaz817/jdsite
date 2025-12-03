@@ -312,21 +312,24 @@
 
 /* Botón base: pill, borde blanco, glassy */
 .header-slider-cta-btn {
-    border-radius: 999px;
+    border-radius: 40px;
     border: 1px solid rgba(255, 255, 255, 0.9);
     color: #ffffff;
     background: rgba(0, 0, 0, 0.18);
     padding: 0.55rem 1.4rem;
-    font-size: 1.10rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 200;
+    font-family: 'AvenirLTStdLight';
     letter-spacing: 0.5px;
     display: inline-flex;
     align-items: center;
+    height: 34px;
     justify-content: center;
     text-decoration: none;
     backdrop-filter: blur(14px);
     box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
-    transition: all 0.18s ease-out;
+    transition: all 0.18s 
+ease-out;
     white-space: nowrap;
 
     @media (max-width: 575.98px) {

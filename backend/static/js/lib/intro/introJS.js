@@ -1,0 +1,41 @@
+export function initLibIntroJS() {
+    // API correcta para Intro.js v8.3.2
+    const tour = introJs.tour();
+
+    tour.setOptions({
+        steps: [
+            {
+                element: "#welcome-terminal",
+                title: "Terminal interactiva",
+                intro: `
+                    Esta es mi terminal interactiva.<br>
+                    Aquí muestro automáticamente los repositorios de mis
+                    cuentas de GitHub y proporciono enlaces para abrirlos
+                    en una pestaña nueva.
+                `,
+                position: "auto",
+            },
+            {
+                element: "#acordion-section-skills",
+                title: "Acordeones minimalistas personalizados",
+                intro: `
+                    He integrado estos acordeones minimalistas personalizados para mejorar la experiencia de usuario dado la cantidad de contenido y elementos en mi web personal.
+                `,
+                position: "auto",
+            },
+        ],
+        nextLabel: "Siguiente ›",
+        prevLabel: "‹ Anterior",
+        doneLabel: "Entendido",
+        skipLabel: "Saltar",
+        showStepNumbers: false,
+        showBullets: false,
+        overlayOpacity: 0.75,
+    });
+
+    // Botón para lanzar el tour manualmente
+    const helpBtn = document.getElementById("btn-terminal-help");
+    if (helpBtn) {
+        helpBtn.addEventListener("click", () => tour.start());
+    }
+}

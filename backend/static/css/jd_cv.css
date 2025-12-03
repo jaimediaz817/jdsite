@@ -1,0 +1,273 @@
+/* Fondo general */
+.jd-cv-bg {
+    background: linear-gradient(135deg, #e6f5f7 0%, #ffffff 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: "Open Sans", sans-serif;
+}
+
+/* CARD PRINCIPAL */
+.jd-cv-container {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(25px);
+    padding: 55px 50px;
+    border-radius: 28px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.13);
+    border: 1px solid rgba(255,255,255,0.55);
+    position: relative;
+    animation: fadeZoom 0.7s ease forwards;
+
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
+}
+
+/* entrada suave */
+@keyframes fadeZoom {
+    0% { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* LOGO */
+.jd-logo-wrapper {
+    width: 120px;
+    height: 110px;
+    margin-bottom: 10px;
+    animation: logoFade 0.9s ease forwards;
+}
+
+@keyframes logoFade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.jd-logo-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+/* Nombre bajo el logo */
+.jd-nombre {
+    margin-top: 4px;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,0.70);
+    font-weight: 300;
+}
+
+/* Separador elegante */
+.jd-separador {
+    width: 70%;
+    height: 1px;
+    margin: 18px auto 25px;
+    background: linear-gradient(90deg, transparent, #b8c9d1, transparent);
+}
+
+/* TÍTULO */
+.jd-cv-container h2 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #5c5c5c;
+    font-size: 1.65rem;
+}
+
+/* Texto descriptivo */
+.jd-cv-container p {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 28px;
+}
+
+/* BOTÓN PRIMARIO */
+.jd-btn-primary {
+    background: #00adb5;
+    color: white;
+    border: none;
+    padding: 0;
+    border-radius: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 250px;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    transition: 0.25s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 10px rgba(0, 173, 181, 0.25);
+}
+
+.jd-btn-primary:hover {
+    background: #019ca2;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,173,181,0.35);
+}
+
+/* Loader */
+.jd-loader {
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 0.8s linear infinite;
+    display: none;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Check */
+.jd-check {
+    display: none;
+    font-size: 1.35rem;
+    color: #ffffff;
+    font-weight: 800;
+}
+
+/* BOTÓN SECUNDARIO */
+.jd-btn-secondary {
+    background: #df6576;
+    color: white;
+    padding: 0;
+    border-radius: 14px;
+    font-weight: 600;
+    display: inline-block;
+    text-decoration: none;
+    transition: 0.25s;
+    margin-top: 5px;
+    width: 250px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.jd-btn-secondary:hover {
+    background: #c65365;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(223,101,118,0.30);
+}
+
+/* Banner animado */
+.jd-mini-banner {
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    background: #00adb5;
+    padding: 6px 14px;
+    color: white;
+    border-radius: 12px;
+    font-size: 13px;
+    box-shadow: 0 4px 10px rgba(0,173,181,0.30);
+    animation: bannerFloat 2.5s ease-in-out infinite;
+    letter-spacing: 0.5px;
+}
+
+@keyframes bannerFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+
+
+
+/* ===============================================
+   📱 FIX REAL PARA MOBILE (<= 480px)
+   =============================================== */
+@media (max-width: 720px) {
+    .jd-cv-bg {
+        padding: 0;
+    }
+}
+@media (max-width: 480px) {
+
+    /* El fondo sin tanto espacio */
+    .jd-cv-bg {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    /* Card más grande, más ancho, más visible */
+    .jd-cv-container {
+        width: 92%;
+        max-width: none;
+        margin-top: 40px;
+        padding: 35px 20px;
+        border-radius: 20px;
+    }
+
+    /* Logo más grande en móvil */
+    .jd-logo-wrapper {
+        width: 110px;
+        margin-bottom: 8px;
+    }
+
+    .jd-nombre {
+        font-size: 14px;
+        letter-spacing: 1.4px;
+    }
+
+    /* Separador */
+    .jd-separador {
+        width: 70%;
+        margin: 15px auto 22px;
+    }
+
+    /* Título más grande */
+    .jd-cv-container h2 {
+        font-size: 1.45rem;
+    }
+
+    /* Texto principal */
+    .jd-cv-container p {
+        font-size: 1rem;
+        line-height: 1.55;
+        margin-bottom: 25px;
+        padding: 0 4px;
+    }
+
+    /* Botones más grandes */
+    .jd-btn-primary,
+    .jd-btn-secondary {
+        width: 100%;
+        padding: 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Banner ajustado */
+    .jd-mini-banner {
+        top: -12px;
+        right: 10px;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+}
+
+/* ===============================================
+   📱 TABLETS PEQUEÑAS (481px – 768px)
+   =============================================== */
+@media (min-width: 481px) and (max-width: 768px) {
+    .jd-cv-container {
+        width: 70%;
+        padding: 45px 32px;
+    }
+
+    .jd-logo-wrapper {
+        width: 120px;
+    }
+}

@@ -1,19 +1,17 @@
 # --- VISTAS ADICIONALES (MOVIMOS HOME AQUÍ) ---
+import os
 from datetime import date
 
+from core.github_utils import get_all_github_repos
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.db import transaction
-from django.http import JsonResponse
+from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
-from django.templatetags.static import static
 from django.views.decorators.http import require_POST
-
-from core.github_utils import get_all_github_repos
 
 from .forms import InquiryForm
 from .models import InquiryMessage, InquiryThread, Recruiter
@@ -375,4 +373,19 @@ def api_admin_reply(request):
             "content": msg.content,
             "date": msg.created_at.strftime("%H:%M"),
         }
+    )
+
+
+def descargar_cv(request):
+    current_site = get_current_site(request)
+    site_domain = current_site.domain
+    return render(request, "cv/descargando.html", {"site_domain": site_domain})
+
+
+def descargar_cv_real(request):
+    file_path = os.path.join(
+        settings.STATIC_ROOT, "docs/Jaime_Diaz_Espaniol_2025.pdf"
+    )
+    return FileResponse(
+        open(file_path, "rb"), as_attachment=True, filename="Jaime_Diaz_CV.pdf"
     )

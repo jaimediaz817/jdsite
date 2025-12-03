@@ -1,9 +1,45 @@
 import { initJdTooltips } from "./components/tooltip/jdTooltip.js";
+import { initJdAccordions } from "./components/acordion/jdAccordion.js";
+import { initLibIntroJS } from "./lib/intro/introJS.js";
 
 // Cuando cargue la vista
 document.addEventListener("DOMContentLoaded", () => {
     initJdTooltips();
+    initScrollAnimations();
+    initJdAccordions();
+    initLibIntroJS();
 });
+
+function initScrollAnimations() {
+    const animatedElements = document.querySelectorAll(".tech-icons-grid");
+
+    if (!animatedElements.length) {
+        return;
+    }
+
+    const observer = new IntersectionObserver(
+        (entries, observerInstance) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const gridItems =
+                        entry.target.querySelectorAll(".tech-icon-item");
+                    gridItems.forEach((item) => {
+                        item.classList.add("is-visible");
+                    });
+                    // Una vez animado, dejamos de observar para no repetir
+                    observerInstance.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.1, // La animación se dispara cuando el 10% del elemento es visible
+        }
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
 
 $(function () {
     // TODO: evaluar para quitart

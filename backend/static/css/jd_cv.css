@@ -101,7 +101,7 @@
     width: 250px;
     height: 40px;
     line-height: 40px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     font-size: 1rem;
     transition: 0.25s;
     display: flex;
@@ -190,7 +190,6 @@
     font-size: 0.98rem;
     font-weight: 500;
     border-radius: 14px;
-    width: 100%;
     max-width: 550px;
     margin: 0 auto 20px auto;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
@@ -288,8 +287,7 @@
     /* Botones más grandes */
     .jd-btn-primary,
     .jd-btn-secondary {
-        width: 100%;
-        padding: 16px;
+        padding: 0;
         font-size: 1rem;
         border-radius: 12px;
     }

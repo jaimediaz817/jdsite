@@ -23,6 +23,15 @@ export function initLibIntroJS() {
                 `,
                 position: "auto",
             },
+            {
+                element: "#formContact",
+                title: "Formulario de contacto",
+                intro: `
+                    Aquí puedes enviarme un mensaje directamente desde la web.<br>
+                    Utilizo AWS SES (por ahora modo SANDBOX) para gestionar el envío de correos usando templates personalizados (DJANGO).
+                `,
+                position: "auto",
+            },
         ],
         nextLabel: "Siguiente ›",
         prevLabel: "‹ Anterior",

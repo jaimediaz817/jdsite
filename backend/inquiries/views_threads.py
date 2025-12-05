@@ -389,3 +389,14 @@ def descargar_cv_real(request):
     return FileResponse(
         open(file_path, "rb"), as_attachment=True, filename="Jaime_Diaz_CV.pdf"
     )
+
+
+def descargar_certificaciones_real(request):
+    file_path = os.path.join(
+        settings.STATIC_ROOT, "docs/Certificaciones_Completo_JaimeDiaz.pdf"
+    )
+    return FileResponse(
+        open(file_path, "rb"),
+        as_attachment=True,
+        filename="Jaime_Diaz_Certificaciones.pdf",
+    )

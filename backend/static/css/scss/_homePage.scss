@@ -7,11 +7,6 @@ body {
 }
 html, body {
     position: relative;
-    //height: 100%;
-}
-section {
-    // background-color: $primary;
-    // color: $white_ultra_light;
 }
 
 .numbers_bg {
@@ -296,22 +291,6 @@ nav#navigation-menu:before {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .tech-stack-section {
   padding: 4rem 0;
   color: #fff;
@@ -408,23 +387,6 @@ nav#navigation-menu:before {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .costs {
   position: relative;
   overflow: hidden;
@@ -466,8 +428,6 @@ nav#navigation-menu:before {
   .tech-title {
     letter-spacing: -0.03em;
     text-shadow: 0 4px 18px rgba(0,0,0,0.45), 0 1px 0 #222;
-    font-size: 3.5rem;
-    font-weight: 800;
   }
   .lp-home-subtitle {
     font-family: "AvenirLTStdLight", Open Sans, sans-serif, Arial;
@@ -486,6 +446,42 @@ nav#navigation-menu:before {
     font-weight: 600;
     text-shadow: 0 2px 8px rgba(0,0,0,0.45);
   }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .welcome-section {
+        .welcome-bio-card {
+            margin-bottom: 1.5rem;
+        }
+        .welcome-media-stack {
+            flex-direction: row;
+
+            .video-container {
+                width: 70%;
+            }
+        }
+        .welcome-media-footer {
+            height: 100%;
+            margin-top: 0;
+            width: 100%;
+            flex-grow: 0;
+            display: flex;
+            flex-shrink: 1;
+            max-height: 350px;
+            margin-left: 10px;
+
+            .jd-terminal-wrapper {
+                margin-top: 0;
+                width: 100%;
+            }
+        }
+        .container {
+            .row {
+                flex-direction: column-reverse;
+            }
+        }
+    }
+
 }
 
 @media (max-width: 767.98px) {
@@ -903,10 +899,6 @@ nav#navigation-menu:before {
 
 
 
-@media(min-width: 576px) {
-    
-}
-
 @media(min-width: 768px) {
     
     // COSTS SECTION
@@ -916,7 +908,6 @@ nav#navigation-menu:before {
             line-height: 1.35;
         }
     }
-
 
     // CONTACT SECTION
     section.contact {
@@ -957,9 +948,6 @@ nav#navigation-menu:before {
 
 }
 
-
-
-
 @media(min-width: 992px) {
     html {
         font-size: 16px;
@@ -984,10 +972,10 @@ nav#navigation-menu:before {
                 content: "";
                 position: absolute;
                 left: 1.5rem;
-                top: 2.75rem;
+                top: 0rem;
                 /* transform: translateY(-50%); */
-                width: 150px;
-                height: 340px;
+                width: 100px;
+                height: 80px;
                 background-image: url(../images/addons/addon_personas_trabajando.png);
                 background-size: contain;
                 background-repeat: no-repeat;
@@ -1018,13 +1006,11 @@ nav#navigation-menu:before {
         }
     }
 }
-
-@media(min-width: 1450px) {
-
-}
-
 @media(max-width: 1200px) {
     .welcome-media img {
         object-fit: cover;
     }    
+}
+@media(min-width: 1450px) {
+
 }

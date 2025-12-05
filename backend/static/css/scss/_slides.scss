@@ -1,5 +1,7 @@
 :root {
     --jd-container-max: 1120px;
+    --jd-container-max-md: 960px;
+    --jd-container-max-992: 90%;
 }
 // SLIDES
 .swiper-container {
@@ -21,7 +23,7 @@
         }
     
         // Opacity
-        // Overlay para slides de imagen
+        // Overlay para slides de imagen/víedo
         &.img:before,
         &.image1:before,
         &.image2:before {
@@ -31,8 +33,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: -1;
-            background: rgba($grey_dark, 0.89);
+            z-index: -1;  
+            background: rgba($grey_dark, 0.89);          
         }
 
         // Overlay para slide de video
@@ -44,7 +46,8 @@
             left: 0;
             right: 0;
             z-index: -1;
-            background: rgba($grey_dark, 0.70);
+            // background: rgba($grey_dark, 0.70);
+            background: linear-gradient(135deg, rgba($grey_dark, 0.64) 0%, rgba($grey_dark, 0.85) 100%);
         }
         // CLASE NUEVA PARA EL VIDEO
         &.video-slide {
@@ -127,7 +130,7 @@
 
             .container {
                 h2 {
-                    font-size: 2.5rem;                    
+                    // font-size: 2.5rem;                    
                 }
                 .text-left {
                     text-align: left;
@@ -157,40 +160,7 @@
     }    
 }
 
-@media(min-width: 576px) {
-    
-}
 
-@media(min-width: 768px) {
-    // SLIDES
-    .swiper-container {
-        .swiper-slide {
-            height: 37.5rem; // 600px / 16px origin
-        }
-
-        &:after {
-            content: "";
-            position: absolute;
-            width: 182px;
-            height: 56px;
-            right: calc((100% - var(--jd-container-max)) / 2);; //7.25rem;
-            bottom: 35px;
-            display: block;
-            background: url(../images/jd_firma.png) no-repeat center;
-            background-size: contain;
-            z-index: 999;
-        }
-    }    
-}
-
-@media(min-width: 992px) {
-    // SLIDES
-    .swiper-container {
-        .swiper-slide {
-            height: 37.5rem;
-        }    
-    }
-}
 
 @media(min-width: 1200px) {
     // SLIDES
@@ -199,12 +169,47 @@
             height: 44rem;
         }    
     }
+    .hero-logo-jd {
+        left: calc((100% - var(--jd-container-max-md)) / 2);
+    }    
 }
 
-@media(min-width: 1450px) {
-
+@media(min-width: 768px) {
+    // SLIDES
+    .swiper-container {
+        .swiper-slide {
+            height: 37.5rem; // 600px / 16px origin
+        }
+    }    
 }
 
+@media(min-width: 1450px) {}
+
+
+@media(min-width: 992px) {
+    // SLIDES
+    .swiper-container {
+        .swiper-slide {
+            height: 37.5rem;
+        }
+        &:after {
+            content: "";
+            position: absolute;
+            width: 182px;
+            height: 56px;
+            bottom: 35px;
+            display: block;
+            background: url(../images/jd_firma.png) no-repeat center;
+            background-size: contain;
+            z-index: 999;
+        }        
+    }
+}
+
+
+@media(min-width: 576px) {
+    
+}
 
 
 
@@ -220,7 +225,7 @@
     top: 1.5rem;
     // left: 5.5vw;
    /* lo importante: lo alineamos al borde izquierdo del container */
-    left: calc((100% - var(--jd-container-max)) / 2);
+    // left: calc((100% - var(--jd-container-max)) / 2);
     /* ajústalo según la altura que quieras */   
     z-index: 6;
     padding: 0.35rem 0.9rem;
@@ -300,14 +305,12 @@
 /* Contenedor de los dos botones (desktop: pegados a la derecha, centrados verticalmente) */
 .header-slider-cta {
     position: absolute;
-    top: 80px; // 50%;
-    // right: 4.5vw;
-    right: calc((100% - var(--jd-container-max)) / 2);
-    transform: translateY(-50%);
+    top: 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     z-index: 5;
+   
 }
 
 /* Botón base: pill, borde blanco, glassy */
@@ -415,11 +418,11 @@ ease-out;
 /* Responsivo: en tablet/móvil los traemos hacia abajo y centrados */
 @media (max-width: 991.98px) {
     .header-slider-cta {
-        top: auto;
-        bottom: 1.8rem;
-        right: 50%;
-        transform: translateX(50%); /* centrados horizontalmente */
-        align-items: center;
+        // top: auto;
+        // bottom: 1.8rem;
+        // right: 50%;
+        // transform: translateX(50%); /* centrados horizontalmente */
+        // align-items: center;
     }
 
     .header-slider-cta-btn {
@@ -481,10 +484,7 @@ ease-out;
 
     // Responsive: menos padding y radio en mobile
     @media (max-width: 767.98px) {
-        &::before {
-            border-radius: 1rem;
-            width: 95%;
-        }
+
     }
 }
 
@@ -537,12 +537,9 @@ ease-out;
 
 @media (max-width: 980px) {
     .header-slider-cta {
-        bottom: 55px;
+        // bottom: 55px;
         gap: 0.55rem;
-
-        display:flex;
-        flex-direction: row;
-        width: 90%;
+        display:flex;        
     }  
 }
 

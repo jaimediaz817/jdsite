@@ -42,9 +42,7 @@
         background-size: cover;
         opacity: 1;
         display: block;
-        width: 100px;
         transform: translateY(50%);
-        height: 100px;
         top: 0%;
         right: 0;
     }
@@ -407,6 +405,9 @@
       }
     }
 }
+
+
+
 
 /* 
 Escena 1 (0–6 segundos):

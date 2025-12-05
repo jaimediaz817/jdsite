@@ -9,35 +9,36 @@
     color: #e6edf3;
     font-family: "Fira Code", "JetBrains Mono", Menlo, Consolas, monospace;
 /* 🔑 CONFIRMAR: Esta línea permite animar todos los cambios */
-    transition: all 0.3s ease-in-out;    
-}
+    transition: all 0.3s ease-in-out;
+    height: 180px; /* altura base desktop */
 
-/* “Ventana” mac */
-.jd-terminal-mac {
-    display: flex;
-    flex-direction: column;
-    height: 180px;              /* altura base desktop */
-    /* 🔑 AÑADIR/MODIFICAR ESTA LÍNEA para animar la altura */
-    transition: height 0.3s ease-in-out;
-}
+    /* “Ventana” mac */
+    .jd-terminal-mac {
+        display: flex;
+        flex-direction: column;       
+        height: 100%; 
+        /* 🔑 AÑADIR/MODIFICAR ESTA LÍNEA para animar la altura */
+        transition: height 0.3s ease-in-out;
 
-/* Cabecera estilo Mac */
-.jd-terminal-header {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    padding: 6px 10px;
-    background: linear-gradient(180deg, #2b3038, #20242c);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    color: #9fa6b8;
-}
+        /* Cabecera estilo Mac */
+        .jd-terminal-header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            padding: 6px 10px;
+            background: linear-gradient(180deg, #2b3038, #20242c);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 11px;
+            letter-spacing: 0.03em;
+            color: #9fa6b8;
 
-.jd-terminal-buttons {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+            .jd-terminal-buttons {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }            
+        }
+    }
 }
 
 .jd-term-btn {
@@ -188,10 +189,10 @@
     right: 20px;
     z-index: 100;
     transition: width 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s, border-radius 0.3s;
-    
+    height: 32px; /* Solo queda visible la altura de la cabecera */
     /* Opcional: Ocultar el cuerpo y mantener solo la cabecera */
     .jd-terminal-mac {
-        height: 32px; /* Solo queda visible la altura de la cabecera */
+        // height: 32px; /* Solo queda visible la altura de la cabecera */
         overflow: hidden;
     }
 }
@@ -235,8 +236,12 @@
 }
 
 /* Estado “max”: un poco más alto, simulando agrandar ventana */
-.jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
+.jd-terminal-wrapper.jd-terminal-max {
     height: 280px;
+
+    .jd-terminal-mac {
+
+    }
 }
 
 
@@ -313,12 +318,14 @@
 
 /* Responsive tweaks */
 @media (max-width: 991px) {
-    .jd-terminal-mac {
+    .jd-terminal-wrapper {
         height: 160px;
+        .jd-terminal-mac {
+            height: 100%;
+        }
     }
-
     .jd-terminal-wrapper.jd-terminal-max .jd-terminal-mac {
-        height: 210px;
+        // height: 210px;
     }
 
     .jd-terminal-title {
@@ -327,8 +334,11 @@
 }
 
 @media (max-width: 768px) {
+    .jd-terminal-wrapper.jd-terminal-max {
+        height: 230px;
+    }    
     .jd-terminal-mac {
-        height: 150px;
+        // height: 150px;
     }
 
     .jd-terminal-body {

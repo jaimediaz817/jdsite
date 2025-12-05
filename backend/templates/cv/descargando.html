@@ -41,7 +41,7 @@
         </p>
         <div id="cv-info-message" class="jd-info-message" style="display:none;">
             <div class="jd-info-icon">✔</div>
-            <span>El CV está disponible en tu carpeta de Descargas.</span>
+            <span id="msg-descarga">El CV está disponible en tu carpeta de Descargas.</span>
         </div>       
 
         <div class="jd-buttons-container">
@@ -51,6 +51,11 @@
                 <span id="btnTexto">Descargar CV</span>
                 <div id="loader" class="jd-loader"></div>
                 <span id="check" class="jd-check">✔</span>
+            </button>
+            <button id="btnDescargarcertificados" class="jd-btn-primary">
+                <span id="btnTextoCertificados">Descargar Certificados</span>
+                <div id="loader-certificaciones" class="jd-loader"></div>
+                <span id="check-certificaciones" class="jd-check">✔</span>
             </button>
 
             <!-- Botón secundario -->
@@ -63,23 +68,29 @@
     <!-- Script de comportamiento -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const btn = document.getElementById("btnDescargar");
+            const btnCV = document.getElementById("btnDescargar");
+            const btnCertificados = document.getElementById("btnDescargarcertificados");
             const texto = document.getElementById("btnTexto");
+            const textoCertificados = document.getElementById("btnTextoCertificados");
             const loader = document.getElementById("loader");
             const check = document.getElementById("check");
+            const loaderCertificaciones = document.getElementById("loader-certificaciones");
+            const checkCertificaciones = document.getElementById("check-certificaciones");            
             const msgDescarga = document.getElementById("cv-info-message");
 
-            btn.addEventListener("click", () => {
+            const msgDescargaText = document.getElementById("msg-descarga");
+
+            btnCV.addEventListener("click", () => {
                 // 1. Cambiar a modo cargando
                 texto.style.display = "none";
                 loader.style.display = "inline-block";
-                btn.disabled = true; // Evitar doble click
-
+                btnCV.disabled = true; // Evitar doble click
                 // 2. Iniciar descarga usando un iframe oculto
                 // Esto evita que la página actual cambie o se ponga en blanco
                 setTimeout(() => {
                     const iframe = document.createElement('iframe');
                     iframe.style.display = 'none';
+                    check.style.display = "none";
                     // Apuntamos a la URL de Django que tiene as_attachment=True
                     iframe.src = "{% url 'descargar_cv_real' %}"; 
                     document.body.appendChild(iframe);
@@ -94,13 +105,50 @@
                 setTimeout(() => {
                     loader.style.display = "none";
                     check.style.display = "inline-block";
+                    checkCertificaciones.style.display = "none";
                     texto.textContent = "Descargado";
                     texto.style.display = "inline-block";
-                    btn.disabled = false;
+                    btnCV.disabled = false;
                     // Mostrar mensaje de descarga
-                    msgDescarga.style.display = "flex";                    
+                    msgDescarga.style.display = "flex";     
+                    msgDescargaText.textContent = "El CV está disponible en tu carpeta de Descargas.";               
                 }, 2500);
             });
+
+            btnCertificados.addEventListener("click", () => {
+                // 1. Cambiar a modo cargando
+                textoCertificados.style.display = "none";
+                loaderCertificaciones.style.display = "inline-block";
+                btnCertificados.disabled = true; // Evitar doble click
+                // 2. Iniciar descarga usando un iframe oculto
+                // Esto evita que la página actual cambie o se ponga en blanco
+                setTimeout(() => {
+                    checkCertificaciones.style.display = "none";
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    // Apuntamos a la URL de Django que tiene as_attachment=True
+                    iframe.src = "{% url 'descargar_certificaciones_real' %}"; 
+                    document.body.appendChild(iframe);
+                    
+                    // Limpieza del iframe después de un tiempo prudencial
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 60000);
+                }, 800);
+
+                // 3. Mostrar check de éxito visualmente
+                setTimeout(() => {
+                    loaderCertificaciones.style.display = "none";
+                    checkCertificaciones.style.display = "inline-block";
+                    check.style.display = "none";
+                    textoCertificados.textContent = "Descargado";
+                    textoCertificados.style.display = "inline-block";
+                    btnCertificados.disabled = false;
+                    // Mostrar mensaje de descarga
+                    msgDescarga.style.display = "flex";                    
+                    msgDescargaText.textContent = "Las certificaciones están disponibles en tu carpeta de Descargas.";
+                }, 2500);
+            });            
         });
     </script>
 </body>

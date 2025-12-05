@@ -60,7 +60,8 @@
     </head>
 
     <body class="home-p">
-        <!-- CONTACT INFO TOP BAR -->        <section id="contact-info" class="bg-primary text-white py-2 shadow-sm d-none d-md-block">
+        <!-- CONTACT INFO TOP BAR -->        
+        <section id="contact-info" class="jd-section bg-primary text-white py-2 shadow-sm d-none d-md-block">
             <div class="container">
                 <div class="row align-items-center justify-content-between">
                 <!-- Izquierda: Ubicación -->
@@ -88,7 +89,7 @@
         </section>        
                 
         <!-- DETAILS HEADER CONTACT -->
-        <section id="details-contact" class="bg-white d-none d-md-block py-3">
+        <section id="details-contact" class="jd-section bg-white d-none d-md-block py-3">
             <div class="container">
                 <div class="row justify-content-md-between align-items-md-center">
                     <div class="col-auto">
@@ -124,7 +125,7 @@
         </section>
 
         <!-- MENU NAV -->
-        <nav id="navigation-menu" class="navbar navbar-dark bg-secundary-light-1 navbar-expand-lg">
+        <nav id="navigation-menu" class="jd-section navbar navbar-dark bg-secundary-light-1 navbar-expand-lg">
             <div class="container section-menu-cta-buttons">
                 <a href="javascript:;" class="jd-logo-dark d-md-block jd-white pr-4">
                     <img src="{% static 'images/jd_white.svg' %}" alt="Logo" width="40" class="img-fluid">
@@ -150,6 +151,7 @@
                 </div>
             </div>
         </nav>
+
         <div class="nav-chips d-none px-3 py-2 bg-secundary-light-1">
             <div class="chips-scroll hide-mobile">
                 <a href="#welcome"   class="chip">Bienvenido</a>
@@ -161,7 +163,7 @@
         </div>        
 
         <!-- SLIDER #1 -->
-        <div class="swiper-container" id="headerSlider">
+        <div class="jd-section swiper-container" id="headerSlider">
             <!-- LOGO FLOANTE SOBRE EL HERO -->
             {% comment %} <div class="hero-logo-jd">
                 <img src="{% static 'images/jd_white.svg' %}" alt="Logo Jaime Díaz">
@@ -288,11 +290,11 @@
         </div>
 
         <!-- WELCOME -->
-        <section id="welcome" class="welcome-section py-5 mb-md-5 with-dots-square-left with-dots-square-blue-right">
+        <section id="welcome" class="jd-section welcome-section py-5 mb-md-5 with-dots-square-left with-dots-square-blue-right">
             <div class="addon-bg-degradado"></div>
             <div class="container">
                 <div class="row"> 
-                    <div class="col-12 col-lg-6 swipe-item-home mb-4 mb-lg-0 d-flex">
+                    <div class="col-12 col-lg-5 swipe-item-home mb-4 mb-lg-0 d-flex">
                         <div class="welcome-media-stack">
                             <div class="video-container position-relative welcome-media">
                                 <img src="{% static 'images/jd-imagen-office-v2.png' %}"
@@ -309,7 +311,7 @@
                             <!-- NUEVA FRANJA INFERIOR -->
                             <div class="welcome-media-footer">
                                 <!-- TERMINAL JAIME DÍAZ -->
-                                <div id="welcome-terminal" class="jd-terminal-wrapper">
+                                <div id="welcome-terminal" class="jd-terminal-wrapper jd-terminal-max">
                                     <div class="jd-terminal-mac">
                                         <div class="jd-terminal-header">
                                             <div class="jd-terminal-buttons">
@@ -366,7 +368,7 @@
 
 
                     <!-- Columna derecha: bio mejorada -->
-                    <div class="col-12 col-lg-6 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
+                    <div class="col-12 col-lg-7 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
                         <div class="welcome-bio-card">
                             <span class="welcome-pill">Full-Stack JS / Python · Integraciones de negocio</span>
 
@@ -432,9 +434,8 @@
             </div>
         </section>
 
-
         <!-- SKILLS -->
-        <section id="skills" class="jd-accordion-section       skills-section py-5 bg-light with-addons add-left">
+        <section id="skills" class="jd-section jd-accordion-section       skills-section py-5 bg-light with-addons add-left">
             <div class="container">
                 <div class="skills-surface p-4 p-md-5">
                     <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
@@ -443,7 +444,7 @@
                             <div class="col-lg-6  ">
                                 <h2 class="jd-acordion-title-section     display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>
                             </div>
-                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                            <div class="jd-acordion-btn-container col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
                                 <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección" id="acordion-section-skills">
                                     <span class="jd-acc-label">Ocultar</span>
                                     <!-- icono SVG moderno -->
@@ -458,9 +459,10 @@
 
                     <!-- ENVUELVE EL CONTENIDO EN 'jd-accordion-body' -->
                     <div class="jd-accordion-body">
-                        <div class="jd-accordion-content-wrapper">
-                            <div class="row align-items-center mb-4">
-                                <div class="col-12 col-lg-7">
+                        <div class="jd-accordion-content-wrapper container-fluid">
+                            <div class="jd-skills-number-container row align-items-center mb-4">
+                                <!-- NOTE: COL-1 -->
+                                <div class="col-12 col-md-6 col-lg-6">
                                     <p class="lead text-muted mb-3 skills-summary">
                                         <strong class="text-primary">Frontend:</strong> Angular · React · Bootstrap · UX limpio<br>
                                         <strong class="text-primary">Backend:</strong> FastAPI · Node/Express · bases en Django<br>
@@ -494,7 +496,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
+                                <!-- NOTE: COL-2 -->
+                                <div class="col-12 col-md-6 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
                                     <video class="bg-video" autoplay muted loop playsinline>
                                         <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
                                     </video>
@@ -670,9 +673,8 @@
             </div>
         </section>        
 
-
         <!-- HOW CAN WE HELP YOU -->
-        <section class="help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
+        <section class="jd-section help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
             <!-- PICTURE -->
             <picture class="jarallax-img">
                 <source media="(min-width: 1200px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
@@ -695,7 +697,7 @@
         </section>
 
         <!-- NUMERIC SECTION -->
-        <section class="numeric py-5 text-center" id="numeric">
+        <section class="jd-section numeric py-5 text-center" id="numeric">
             <div class="container-fluid py-5">
                 <h2 class="display-4 font-weight-bold text-secondary">UN POCO SOBRE MIS NÚMEROS</h2>
                 <h6 class="text-black-50">TENGO ALGUNOS NÚMEROS QUE MOSTRARTE.</h6>
@@ -748,7 +750,7 @@
         <!-- COMO TRABAJO -->
         <div class="jd-bg-tech"></div>
 
-        <section id="workflow" class="jd-accordion-section      workflow-section py-5 position-relative with-addons add-right">
+        <section id="workflow" class="jd-section jd-accordion-section      workflow-section py-5 position-relative with-addons add-right">
             <div class="container position-relative">
                 <div class="workflow-surface p-4 p-md-5" data-aos="fade-up">
 
@@ -789,7 +791,7 @@
 
                             <div class="row workflow-steps">
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon">
                                             <i class="fas fa-comments"></i>
@@ -799,7 +801,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-sitemap"></i></div>
                                         <h6 class="wf-title">Arquitectura</h6>
@@ -807,7 +809,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-code"></i></div>
                                         <h6 class="wf-title">Desarrollo modular</h6>
@@ -815,7 +817,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon">
                                             <i class="fas fa-code-branch"></i>
@@ -827,7 +829,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-rocket"></i></div>
                                         <h6 class="wf-title">CI/CD + Deploy</h6>
@@ -838,7 +840,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-chart-line"></i></div>
                                         <h6 class="wf-title">Ciclo de vida</h6>
@@ -860,7 +862,7 @@
         </section>
 
         <!-- PROJECTS -->
-        <section id="projects" class="jd-accordion-section      projects-section py-5 with-dots-square-left with-dots-square-blue-right">
+        <section id="projects" class="jd-section jd-accordion-section      projects-section py-5 with-dots-square-left with-dots-square-blue-right">
             <div class="container">
                 <div class="projects-surface p-4 p-md-5">
 
@@ -1153,8 +1155,7 @@
         </section>
 
         <!-- COSTS -->
-        <section id="costs" class="costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
-
+        <section id="costs" class="jd-section costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
             <!-- VIDEO DE FONDO -->
             <video class="costs-bg-video" autoplay muted loop playsinline>
                 <source src="{% static 'videos/home/jd_techs.mp4' %}" type="video/mp4">
@@ -1248,9 +1249,8 @@
 
         </section>
 
-
         <!-- CONTACT SECTION -->
-        <section id="contact" class="contact">
+        <section id="contact" class="jd-section contact">
             <header class="py-5 bg-primary text-white text-center position-relative">
                 <h2 class="display-4 font-weight-bold">CONTÁCTAME</h2>
                 <h6 class="text-white-50">Pongámonos de acuerdo y hablemos de proyectos u oportunidades laboraes</h6>
@@ -1388,9 +1388,8 @@
             </div>
         </section>
 
-
         <!-- FOOTER -->
-        <footer id="footer" class="footer footer-section-one">
+        <footer id="footer" class="jd-section footer footer-section-one">
             <div class="addon container-fluid">
                 <div class="row">
                     <!--<div class="col-8 col-main"></div>-->
@@ -1506,7 +1505,7 @@
         </footer>
 
         <!-- FOOTER -->
-        <footer id="footer" class="bg-dark text-white-light text-truncate">
+        <footer id="footer" class="jd-section bg-dark text-white-light text-truncate">
             <div class="container">
                 <div class="row align-items-center">
 
@@ -1545,6 +1544,10 @@
 
 
 
+
+
+
+
         <!-- Loader -->
         <div class="loader-background hide">
             <div class="spinner-border text-danger loader-component" role="status">
@@ -1556,8 +1559,6 @@
         <button id="btnTop" class="btn-top" type="button" aria-label="Ir arriba">
             <i class="fas fa-arrow-up"></i>
         </button>        
-
-
 
         <!-- MODAL CARRUSEL DE CAPTURAS DE PROYECTO -->
         <div class="modal fade" id="projectGalleryModal" tabindex="-1" aria-hidden="true">
@@ -1587,6 +1588,13 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
 
 
 

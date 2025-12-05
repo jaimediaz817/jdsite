@@ -4,7 +4,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views.generic import TemplateView
-from inquiries.views_threads import descargar_cv, descargar_cv_real, home_view
+from inquiries.views_threads import (
+    descargar_certificaciones_real,
+    descargar_cv,
+    descargar_cv_real,
+    home_view,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),  # admin Django (opcional)
@@ -26,6 +31,11 @@ urlpatterns = [
     path("api/", include("core.urls")),
     path("cv/", descargar_cv, name="descargar_cv"),
     path("cv-file/", descargar_cv_real, name="descargar_cv_real"),
+    path(
+        "cv-file-certificaciones/",
+        descargar_certificaciones_real,
+        name="descargar_certificaciones_real",
+    ),
     path(
         "cv-gracias/",
         TemplateView.as_view(template_name="cv/descargando.html"),

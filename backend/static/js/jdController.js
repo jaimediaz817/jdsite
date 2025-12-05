@@ -48,6 +48,7 @@ $(function () {
         if (v.length === 2)
             return decodeURIComponent(v.pop().split(";").shift());
     }
+
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
             if (
@@ -119,12 +120,13 @@ $(function () {
         loop: false,
         autoHeight: true,
         pagination: {
-            el: ".projects-pagination",
+            el: ".swiper-pagination",
+            type: "bullets",
             clickable: true,
         },
         navigation: {
-            nextEl: ".projects-next",
-            prevEl: ".projects-prev",
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
         },
         breakpoints: {
             768: {

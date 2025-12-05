@@ -1,0 +1,294 @@
+/* Mobile First Media Queries (min-width) */
+@media (min-width: 320px) {
+    // Estilos para dispositivos muy pequeños (teléfonos pequeños)
+    .jd-section {
+        h2 {
+            font-size: 1.75rem;
+        }
+
+        &.with-dots-square-blue-right {
+            &::after {
+                width: 35px;
+                height: 35px;
+            }
+        }    
+        &.with-dots-square-left {
+            &::before {    
+                width: 35px;
+                height: 35px;
+            }
+        }
+        h6 {
+            font: 1rem;
+        }
+    }
+    .swiper-container {
+        .header-slider-cta {
+            width: auto;
+            flex-direction: row;
+            left: 50%;
+            transform: translateX(-50%);
+            top: inherit;
+            bottom: 3.75rem;
+        }
+        .text-slide-container {
+            &::before {
+                width: 100%;
+            }            
+        }          
+    }
+
+    .skills-section {
+        .jd-accordion-header {
+            .jd-acordion-btn-container {
+                text-align: end;
+            }
+            button.jd-accordion-toggle {
+                right: 1rem;
+                position: relative;
+                border-radius: 18px;
+                padding: 5px 14px;
+                border: 2px solid #eebdc4;
+            }
+        }
+    }
+
+    .projects-section {
+        .swiper-pagination {
+            bottom: 7.55rem;
+        }
+    }
+}
+
+@media (min-width: 375px) {
+    // Teléfonos móviles estándar
+}
+
+@media (min-width: 425px) {
+    // Teléfonos móviles grandes    
+}
+
+@media (min-width: 480px) {
+    // Teléfonos móviles extra grandes
+    .jd-section {
+        &.with-dots-square-blue-right {
+            &::after {
+                width: 35px;
+                height: 35px;
+            }
+        }    
+        &.with-dots-square-left {
+            &::before {    
+                width: 35px;
+                height: 35px;
+            }
+        }     
+    }
+    .skills-section {
+        .jd-accordion-header {
+            button.jd-accordion-toggle {
+                right: inherit;
+                position: relative;
+                border-radius: 18px;
+                padding: 5px 14px;
+                border: 2px solid #eebdc4;
+            }
+        }
+    }    
+
+}
+
+@media (min-width: 600px) {
+    // Tablets pequeñas
+    .jd-section {
+        h2 {
+            font-size: 2.25rem;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    // Tablets estándar
+    .jd-section {
+        &.with-dots-square-blue-right {
+            &::after {
+                width: 45px;
+                height: 45px;
+            }
+        }    
+        &.with-dots-square-left {
+            &::before {    
+                width: 45px;
+                height: 45px;
+            }
+        }     
+    }    
+    .swiper-container {
+        .hero-logo-jd {
+            left: calc((100% - var(--jd-container-max-992)) / 2);
+        }
+        // SLIDES
+        &:after {
+            right: calc((100% - var(--jd-container-max-992)) / 2);
+        }
+
+        .text-slide-container {
+            &::before {
+                width: 95%;
+            }            
+        }            
+    }    
+
+    .projects-section {
+        .swiper-pagination {
+            bottom: 7.55rem;
+        }
+    }    
+}
+
+@media (min-width: 992px) {
+    // Laptops pequeñas
+    .jd-section {
+        h2 {
+            font-size: 2.75rem;
+        }
+        &.with-dots-square-blue-right {
+            &::after {
+                width: 55px;
+                height: 55px;
+            }
+        }    
+        &.with-dots-square-left {
+            &::before {    
+                width: 55px;
+                height: 55px;
+            }
+        }           
+    }
+    .swiper-container {
+        .hero-logo-jd {
+            /* lo importante: lo alineamos al borde izquierdo del container */
+            left: calc((100% - var(--jd-container-max-md)) / 2);
+        }
+        // SLIDES
+        &:after {
+            right: calc((100% - var(--jd-container-max-md)) / 2);
+        }
+
+        .header-slider-cta {
+            right: calc((100% - var(--jd-container-max-md)) / 2);
+            flex-direction: column;
+            left: inherit;
+            transform: translateX(0);
+            top: 1.5rem;
+            bottom: inherit;            
+        }
+
+        .text-slide-container {
+            &::before {
+                width: 75%;
+            }            
+        }           
+    }
+}
+
+@media (min-width: 1200px) {
+    // Laptops/Desktops medianos
+    .jd-section {
+        &.with-dots-square-blue-right {
+            &::after {
+                width: 70px;
+                height: 70px;
+            }
+        }    
+        &.with-dots-square-left {
+            &::before {    
+                width: 70px;
+                height: 70px;
+            }
+        }
+    }        
+    .swiper-container {
+        .hero-logo-jd {
+            /* lo importante: lo alineamos al borde izquierdo del container */
+            left: calc((100% - var(--jd-container-max)) / 2);
+        }
+        // SLIDES
+        &:after {
+            right: calc((100% - var(--jd-container-max)) / 2);
+        }
+        .header-slider-cta {
+            right: calc((100% - var(--jd-container-max)) / 2);             
+        }        
+    }
+
+    .projects-section {
+        .swiper-pagination {
+            bottom: 3.55rem;
+        }
+    }      
+}
+
+@media (min-width: 1400px) {
+    // Pantallas grandes
+
+
+    
+}
+
+/* Desktop First Media Queries (max-width) */
+/* El orden correcto es de mayor a menor para max-width */
+@media (max-width: 1400px) {
+    // Pantallas grandes
+}
+
+@media (max-width: 1200px) {
+    // Laptops/Desktops medianos
+}
+
+@media (max-width: 992px) {
+    // Laptops pequeñas
+}
+
+@media (max-width: 768px) {
+    // Tablets estándar
+    .swiper-container {
+        .header-slider-cta {
+            // right: calc((100% - var(--jd-container-max-992)) / 2);
+            // width: auto;
+            // flex-direction: row;
+            // right: inherit;
+            // left: 50%;
+            // transform: translateX(-50%);
+            // top: 1.5rem;
+            // bottom: inherit;
+        }
+
+        .text-slide-container {
+            &::before {
+                // border-radius: 1rem;
+                // width: 80%;
+            }            
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    // Tablets pequeñas
+}
+
+@media (max-width: 480px) {
+    // Teléfonos móviles extra grandes
+}
+
+@media (max-width: 425px) {
+    // Teléfonos móviles grandes
+}
+
+@media (max-width: 375px) {
+    // Teléfonos móviles estándar
+}
+
+@media (max-width: 320px) {
+    // Dispositivos muy pequeños (teléfonos pequeños)
+}

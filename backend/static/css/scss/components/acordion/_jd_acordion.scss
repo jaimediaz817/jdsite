@@ -1,11 +1,37 @@
 /* ============================
    COMPONENTE ACORDEÓN REUTILIZABLE
    ============================ */
+.jd-accordion-section {
+    &.dark {
+        .projects-surface {
+            padding: 0;
+        }
+        .container > div {
+            padding: 0;
+        }
+        .jd-accordion-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            height: 0;
+            padding-bottom: 0;
+            margin-bottom: 0;
 
-.jd-accordion-header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding-bottom: 1rem;
+            .jd-acordion-btn-container {
+                top: 0;
+                z-index: 999;
+                .jd-accordion-toggle {
+                    height: 32px;
+                    background: #343a40;
+                    color: #ffffff;     
+                    top: -2.15rem;
+                    right: 2.75rem;
+                    span {
+                        height: inherit;
+                        line-height: 32px;
+                    }
+                }
+            }
+        }    
+    }
 }
 
 .jd-accordion-toggle {
@@ -138,38 +164,7 @@
     overflow: hidden;
     opacity: 0;
 }
-.introjs-tooltip {
-    background: rgba(255, 255, 255, 0.80) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.35) !important;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2) !important;
-}
 
-
-
-
-
-
-
-
-.introjs-tooltip {
-    max-width: 400px !important; /* más ancho */
-    padding: 18px 22px !important;
-    border-radius: 12px !important;
-    font-size: 15px !important;
-    line-height: 1.5 !important;
-}
-.introjs-tooltipbuttons {
-    display: flex !important;
-    justify-content: flex-end !important;
-    gap: 10px !important;
-    padding-top: 10px !important;
-}
-
-.introjs-button {
-    border-radius: 6px !important;
-    padding: 6px 12px !important;
-}
 
 
 
@@ -192,7 +187,7 @@
 @media (max-width: 513px) {
     .jd-accordion-header {
         .jd-acordion-title-section {
-            font-size: 2.25rem;
+            // font-size: 2.25rem;
         }
     }
 }

@@ -10,6 +10,38 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+
+
+        <!-- SEO BÁSICO -->
+        <meta name="description"
+            content="Jaime Díaz, Full-Stack Developer JS/Python en Colombia. Especialista en Zoho CRM (Deluge), integraciones con WhatsApp (WOZTELL), FastAPI, Angular/React, Docker y Nginx. Disponible para proyectos remotos y roles de desarrollo de software.">
+        <meta name="keywords"
+            content="Jaime Diaz, Full-Stack Developer, Zoho Deluge, WOZTELL, FastAPI, Angular, React, Python, Integraciones, WhatsApp, CRM, Colombia, Remoto, Desarrollador de software">
+        <meta name="author" content="Jaime Iván Díaz Gaona">
+        <meta name="robots" content="index,follow">
+
+        <!-- CANONICAL -->
+        <link rel="canonical" href="https://jdiaz.tipsterbyte.com/">
+
+        <!-- OPEN GRAPH (para LinkedIn, Facebook, etc.) -->
+        <meta property="og:title"
+            content="Jaime Díaz | Full-Stack JS/Python · Integraciones Zoho · Frontend moderno">
+        <meta property="og:description"
+            content="Ayudo a equipos y empresas a integrar Zoho CRM, WhatsApp (WOZTELL) y APIs en soluciones web escalables con FastAPI, Angular/React y Docker.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://jdiaz.tipsterbyte.com/">
+        <meta property="og:image" content="{% static 'images/og-social-share.jpg' %}">
+        <meta property="og:locale" content="es_CO">
+
+        <!-- TWITTER CARDS (X) -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title"
+            content="Jaime Díaz | Full-Stack JS/Python · Integraciones de negocio">
+        <meta name="twitter:description"
+            content="Desarrollador Full-Stack especializado en Zoho CRM (Deluge), WOZTELL, FastAPI, Angular/React, Nginx y Docker.">
+        <meta name="twitter:image" content="{% static 'images/jd-imagen-office.png' %}">
+
+
         <!-- ICO  -->
         <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
 
@@ -49,14 +81,47 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
 
-
         <!-- Fuentes -->
         <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
 	    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/devicon.min.css">
 
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>        
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Jaime Iván Díaz Gaona",
+                "alternateName": "Jaime Díaz",
+                "jobTitle": "Full-Stack Developer JS/Python",
+                "url": "https://jdiaz.tipsterbyte.com/",
+                "image": "https://jdiaz.tipsterbyte.com/static/images/jd-imagen.jpg",
+                "description": "Desarrollador Full-Stack especializado en Zoho CRM (Deluge), integraciones con WhatsApp (WOZTELL), FastAPI, Angular/React, Nginx y Docker.",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Calarcá",
+                    "addressRegion": "Quindío",
+                    "addressCountry": "CO"
+                },
+                "sameAs": [
+                    "https://www.linkedin.com/in/tu-perfil-aqui",
+                    "https://github.com/jaimediaz817",
+                    "https://github.com/jivan0017"
+                ],
+                "knowsAbout": [
+                    "Zoho CRM",
+                    "Deluge",
+                    "FastAPI",
+                    "Angular",
+                    "React",
+                    "Docker",
+                    "Nginx",
+                    "WhatsApp integrations",
+                    "WOZTELL"
+                ]
+            }
+        </script>        
     </head>
 
     <body class="home-p">
@@ -94,7 +159,7 @@
                 <div class="row justify-content-md-between align-items-md-center">
                     <div class="col-auto">
                         <a href="javascript:;">
-                            <img src="{% static 'images/jd.svg' %}" alt="Logo" width="80" class="img-fluid">
+                            <img src="{% static 'images/jd.svg' %}" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina" width="80" class="img-fluid">
                         </a>
                     </div>
                     <!-- stack minimal (solo desktop) -->
@@ -128,7 +193,7 @@
         <nav id="navigation-menu" class="jd-section navbar navbar-dark bg-secundary-light-1 navbar-expand-lg">
             <div class="container section-menu-cta-buttons">
                 <a href="javascript:;" class="jd-logo-dark d-md-block jd-white pr-4">
-                    <img src="{% static 'images/jd_white.svg' %}" alt="Logo" width="40" class="img-fluid">
+                    <img src="{% static 'images/jd_white.svg' %}" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina" width="40" class="img-fluid">
                 </a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#main-menu" aria-expanded="false" aria-label="Menú principal">
                     <span class="icon-menu-custom"></span>
@@ -171,10 +236,10 @@
             <div class="hero-logo-jd flip-logo-jd" tabindex="0">
                 <div class="flip-inner">
                     <div class="flip-front">
-                        <img src="{% static 'images/jd_white.svg' %}" alt="Logo Jaime Díaz">
+                        <img src="{% static 'images/jd_white.svg' %}" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina">
                     </div>
                     <div class="flip-back">
-                        <img src="{% static 'images/jd-imagen.jpg' %}" alt="Foto Jaime Díaz">
+                        <img src="{% static 'images/jd-imagen.jpg' %}" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina">
                     </div>
                 </div>
             </div>            
@@ -298,7 +363,7 @@
                         <div class="welcome-media-stack">
                             <div class="video-container position-relative welcome-media">
                                 <img src="{% static 'images/jd-imagen-office-v2.png' %}"
-                                    alt="Imágen de bienvenida a mi Home page."
+                                    alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina"
                                     class="img-fluid rounded-lg shadow-lg">
 
                                 <a data-fancybox
@@ -441,10 +506,10 @@
                     <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
                     <div class="jd-accordion-header">
                         <div class="row align-items-center">
-                            <div class="col-lg-6  ">
+                            <div class="col-12 col-sm-12 col-md-10 col-lg-6  ">
                                 <h2 class="jd-acordion-title-section     display-4 font-weight-bold text-secundary">Skills en un vistazo</h2>
                             </div>
-                            <div class="jd-acordion-btn-container col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                            <div class="jd-acordion-btn-container col-12 col-sm-12 col-md-2 col-lg-6      text-right">
                                 <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección" id="acordion-section-skills">
                                     <span class="jd-acc-label">Ocultar</span>
                                     <!-- icono SVG moderno -->
@@ -680,7 +745,7 @@
                 <source media="(min-width: 1200px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
                 <source media="(min-width: 768px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
                 <source media="(min-width: 480px)" srcset="{% static 'images/sections/help_lg.jpg' %}">
-                <img src="{% static 'images/sections/help_resp_sm.jpg' %}" alt="Background mobile" class="w-100 img-fluid">
+                <img src="{% static 'images/sections/help_resp_sm.jpg' %}" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina" class="w-100 img-fluid">
             </picture>
 
             <div class="container">
@@ -752,15 +817,15 @@
 
         <section id="workflow" class="jd-section jd-accordion-section      workflow-section py-5 position-relative with-addons add-right">
             <div class="container position-relative">
-                <div class="workflow-surface p-4 p-md-5" data-aos="fade-up">
+                <div class="workflow-surface" data-aos="fade-up">
 
                     <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
                     <div class="jd-accordion-header">
                         <div class="row align-items-center">
-                            <div class="col-lg-6  ">
+                            <div class="col-12 col-sm-12 col-md-10 col-lg-6  ">
                                 <h2 class="jd-acordion-title-section     jd-title mb-0" data-aos="fade-right">¿Cómo trabajo?</h2>
                             </div>
-                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                            <div class="jd-acordion-btn-container col-12 col-sm-12 col-md-2 col-lg-6      text-right">
                                 <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección">
                                     <span class="jd-acc-label">Ocultar</span>
                                     <!-- icono SVG moderno -->
@@ -865,15 +930,17 @@
         <section id="projects" class="jd-section jd-accordion-section      projects-section py-5 with-dots-square-left with-dots-square-blue-right">
             <div class="container">
                 <div class="projects-surface p-4 p-md-5">
-
-
                     <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
                     <div class="jd-accordion-header">
                         <div class="row align-items-center">
-                            <div class="col-lg-6  ">
+                            <div class="col-12 col-sm-12 col-md-10 col-lg-6  ">
                                 <h2 class="jd-acordion-title-section     projects-title mb-2">Proyectos reales</h2>
-                            </div>
-                            <div class="col-lg-6 col-md-3 col-sm-3 col-4       text-lg-right">
+                                <p class="projects-subtitle mb-0">
+                                    Casos en producción y desarrollos personales que resumen foco en negocio,
+                                    buen UX y trazabilidad técnica.
+                                </p>                                
+                            </div>                          
+                            <div class="jd-acordion-btn-container col-12 col-sm-12 col-md-2 col-lg-6      text-right">
                                 <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección">
                                     <span class="jd-acc-label">Ocultar</span>
                                     <!-- icono SVG moderno -->
@@ -890,14 +957,8 @@
                         <div class="jd-accordion-content-wrapper">
                             <!-- CABECERA -->
                             <div class="row align-items-center mb-4">
-                                <div class="col-12 col-lg-8">
-                                    <p class="projects-subtitle mb-0">
-                                        Casos en producción y desarrollos personales que resumen foco en negocio,
-                                        buen UX y trazabilidad técnica.
-                                    </p>
-                                </div>
                                 <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right text-left">
-                                    <a href="#contact" class="btn btn-primary">
+                                    <a href="#contact" class="btn lp btn-primary">
                                         <i class="fas fa-paper-plane mr-1"></i>
                                         Inicia tu proyecto
                                     </a>
@@ -1389,118 +1450,135 @@
         </section>
 
         <!-- FOOTER -->
-        <footer id="footer" class="jd-section footer footer-section-one">
-            <div class="addon container-fluid">
-                <div class="row">
-                    <!--<div class="col-8 col-main"></div>-->
-                </div>
-            </div>
-
-            <div class="container">
-
-                <div class="row">
-                    <div class="col mr-auto">
-                        <span class="text-muted text-heaeder-foot"><i class="fa fa-user-circle pr-2" style="font-size: 22px;"></i>Contáctame a través de las redes sociales</span>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12 mr-auto pb-1">
-                        <div class="row social-content justify-content-center">
-                            <div class="col">
-                                <a href="https://www.facebook.com/jdiaz.817" class="fab fa-facebook-square"></a>
-                                <p class="social-text">
-                                    Contáctame a través de Facebook, escríbeme un mensaje privado o publicame algo en mi muro.
-                                    Con gusto me pondré en contacto contigo en la mayor brevedad posible.
-                                </p>
-                            </div>
-                            <div class="col">
-                                <a href="https://twitter.com/JDiaz0017" class="fab fa-twitter-square"></a>
-                                <p class="social-text">
-                                    Envíame un Tuit o publicame algo. Con gusto estaré atento ya con la opción de poder enviar mensajes directos.
-                                </p>
-                            </div>
-                            <div class="col">
-                                <a href="https://codepen.io/jdiaz0017/" class="fab fa-codepen"></a>
-                                <p class="social-text">
-                                    Si quieres ver al instante algún producto de maquetación no dudes en contactarme para compartir contigo un avance instantáneo de dicho producto. POdrás inspeccionar código y ser partícipe del mismo, evidenciando el poder de las buenas prácticas de codificación y convenciones.
-                                </p>
-                            </div>
-                            <div class="col">
-                                <a href="https://plus.google.com/u/4/107764142392043892596" class="fab fa-google-plus-g"></a>
-                                <p class="social-text">
-                                    Si tienes en mente algún proyecto podremos gestionar en la nube toda la documentación pertinente mediante el Drive de Google, y todo el Siute de herramientas que esta gran empresa posee. Trabajar en la nube nunca fue tan fácil y directo. Así que no lo pienses más. Contáctame a través de Google +
-                                </p>
-                            </div>
-                            <div class="col">
-                                <a href="https://github.com/jaimediaz817" class="fab fa-github-square">
-                                    <i class="fa fa-code-branch" style="font-size: 18px;"></i>
-                                </a>
-                                <p class="social-text">
-                                    Puedes navegar entre los diferentes repositorios públicos en los que he trabajado por Hobbie y/o probando alguna funcionalidad. Puedes ver también algunos proyectos desarrolados en algunos cursos de <strong>Platzi</strong>, experimentos y algo más.
-                                </p>
-                            </div>
-                            {% comment %} <a href="https://www.flaticon.es/iconos-animados-gratis/conversacion" title="conversacion iconos animados">Conversacion iconos animados creados por Freepik - Flaticon</a> {% endcomment %}
-                        </div>
-                        <div class="row social-content justify-content-center">						
-                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
-                                <a href="https://next.plnkr.co/users/jaimediaz817/plunks" class="fa fa-arrow-down" target="_blank"></a>
-                                <p class="social-text">
-                                    <strong>Plunker</strong> es un excelente sitio online en el que puedes ver mis proyectos/experimentos en la nube sin necesidad de desplegar una aplicación en un web hosting u otra plataforma como servicio. Podrás ver un poco de mi trabajo como maquetador web y programación del lado del Frontend.
-                                </p>
-                            </div>
-                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
-                                <a href="https://www.linkedin.com/in/jdiaz817" class="fab fa-linkedin" target="_blank"></a>
-                                <p class="social-text">
-                                    Dentro de mi <strong>Perfil Linkedin</strong> adjunto últimamente mis certificados obtendidos tras lograr finalizar cursos en materia académica. Me gusta adquirir nuevos conocimientos técnicos en el ecosistema Javascript principalmente. En términos generales, busco construir un perfil Frontend y Backend. En esta red social pretendo llevar a cabo vínculos importantes con compañeros y/o posibles clientes.
-                                </p>
-                            </div>
-
-                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
-                                <a href="https://bitbucket.org/jdiaz0017/" class="fab fa-bitbucket" target="_blank"></a>
-                                <p class="social-text">
-                                    Este es mi tercer repositorio donde suelo subir repositorios privados y colaborar con frameworks como <strong>FoxFramework</strong> propuesto por el Ing <strong>Plablo Bejarano</strong> de la Ciudad de cali. En dicho Framework tube la oportunidad de realizar aportes sustanciales en el Core de dicho framework solucionando un error en producción con el modelo. Próximamente estaré compartiendo dicho Framework de la casa.
-                                </p>
-                            </div>
-
-                            <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
-                                <a href="https://github.com/jivan0017" class="fab fa-github-square" target="_blank"><span class="single-text">Perfil laboral <i class="fa fa-briefcase ml-1" style="color:#6c757d;font-size: 13px;"></i></span></a>
-                                <p class="social-text">
-                                    Esta es mi segunda cuenta Github que regularmente <strong>no</strong> comparto públicamente, no obstante, comparto esta cuenta con el fin de evidenciar mi actividad en los últimos 5 años, participando activamente en el proyecto en el cual laboro. Se trata de un repositorio privado pero se puede evidenciar la actividad constante y compromiso total de mi parte.
-                                </p>
-                            </div>
-                            
+        <footer id="footer" class="jd-section footer jd-accordion-section dark footer-section-one">
+            <div class="projects-surface">
+                <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
+                <div class="jd-accordion-header">
+                    <div class="row align-items-center">
+                        {% comment %} <div class="col-12 col-sm-12 col-md-10 col-lg-6  ">
+                            <h2 class="jd-acordion-title-section     projects-title mb-2">Contacto</h2>
+                        </div> {% endcomment %}
+                        <div class="jd-acordion-btn-container col-12 text-right">
+                            <button type="button" class="jd-accordion-toggle" aria-label="Contraer sección">
+                                <span class="jd-acc-label">Ocultar</span>
+                                <!-- icono SVG moderno -->
+                                <svg class="jd-acc-arrow" width="16" height="16" viewBox="0 0 24 24">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="container-fluid pl-0 pr-0 sub-footer pt-2 pb-2">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-6 col-md-6 col-lg-5 color-txt d-flex align-items-center justify-content-center">
-                            <p class="jd-text text-muted mb-0"><strong>Jaime Iván Díaz</strong>, Ing. de sistemas especialista en desarrollo web | Frontend & Backend Developer.</p>
+                <div class="jd-accordion-body">
+                    <div class="jd-accordion-content-wrapper">                
+                        <div class="container">
+                            <div class="row">
+                                <div class="col mr-auto">
+                                    <span class="text-muted text-heaeder-foot"><i class="fa fa-user-circle pr-2" style="font-size: 22px;"></i>Contáctame a través de las redes sociales</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mr-auto pb-1">
+                                    <div class="row social-content justify-content-center">
+                                        <div class="col">
+                                            <a href="https://www.facebook.com/jdiaz.817" class="fab fa-facebook-square"></a>
+                                            <p class="social-text">
+                                                Contáctame a través de Facebook, escríbeme un mensaje privado o publicame algo en mi muro.
+                                                Con gusto me pondré en contacto contigo en la mayor brevedad posible.
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <a href="https://twitter.com/JDiaz0017" class="fab fa-twitter-square"></a>
+                                            <p class="social-text">
+                                                Envíame un Tuit o publicame algo. Con gusto estaré atento ya con la opción de poder enviar mensajes directos.
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <a href="https://codepen.io/jdiaz0017/" class="fab fa-codepen"></a>
+                                            <p class="social-text">
+                                                Si quieres ver al instante algún producto de maquetación no dudes en contactarme para compartir contigo un avance instantáneo de dicho producto. POdrás inspeccionar código y ser partícipe del mismo, evidenciando el poder de las buenas prácticas de codificación y convenciones.
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <a href="https://plus.google.com/u/4/107764142392043892596" class="fab fa-google-plus-g"></a>
+                                            <p class="social-text">
+                                                Si tienes en mente algún proyecto podremos gestionar en la nube toda la documentación pertinente mediante el Drive de Google, y todo el Siute de herramientas que esta gran empresa posee. Trabajar en la nube nunca fue tan fácil y directo. Así que no lo pienses más. Contáctame a través de Google +
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <a href="https://github.com/jaimediaz817" class="fab fa-github-square">
+                                                <i class="fa fa-code-branch" style="font-size: 18px;"></i>
+                                            </a>
+                                            <p class="social-text">
+                                                Puedes navegar entre los diferentes repositorios públicos en los que he trabajado por Hobbie y/o probando alguna funcionalidad. Puedes ver también algunos proyectos desarrolados en algunos cursos de <strong>Platzi</strong>, experimentos y algo más.
+                                            </p>
+                                        </div>
+                                        {% comment %} <a href="https://www.flaticon.es/iconos-animados-gratis/conversacion" title="conversacion iconos animados">Conversacion iconos animados creados por Freepik - Flaticon</a> {% endcomment %}
+                                    </div>
+                                    <div class="row social-content justify-content-center">						
+                                        <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                            <a href="https://next.plnkr.co/users/jaimediaz817/plunks" class="fa fa-arrow-down" target="_blank"></a>
+                                            <p class="social-text">
+                                                <strong>Plunker</strong> es un excelente sitio online en el que puedes ver mis proyectos/experimentos en la nube sin necesidad de desplegar una aplicación en un web hosting u otra plataforma como servicio. Podrás ver un poco de mi trabajo como maquetador web y programación del lado del Frontend.
+                                            </p>
+                                        </div>
+                                        <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                            <a href="https://www.linkedin.com/in/jdiaz817" class="fab fa-linkedin" target="_blank"></a>
+                                            <p class="social-text">
+                                                Dentro de mi <strong>Perfil Linkedin</strong> adjunto últimamente mis certificados obtendidos tras lograr finalizar cursos en materia académica. Me gusta adquirir nuevos conocimientos técnicos en el ecosistema Javascript principalmente. En términos generales, busco construir un perfil Frontend y Backend. En esta red social pretendo llevar a cabo vínculos importantes con compañeros y/o posibles clientes.
+                                            </p>
+                                        </div>
+
+                                        <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                            <a href="https://bitbucket.org/jdiaz0017/" class="fab fa-bitbucket" target="_blank"></a>
+                                            <p class="social-text">
+                                                Este es mi tercer repositorio donde suelo subir repositorios privados y colaborar con frameworks como <strong>FoxFramework</strong> propuesto por el Ing <strong>Plablo Bejarano</strong> de la Ciudad de cali. En dicho Framework tube la oportunidad de realizar aportes sustanciales en el Core de dicho framework solucionando un error en producción con el modelo. Próximamente estaré compartiendo dicho Framework de la casa.
+                                            </p>
+                                        </div>
+
+                                        <div class="col col-12 col-md-6 col-lg-3 border-top-custom">
+                                            <a href="https://github.com/jivan0017" class="fab fa-github-square" target="_blank"><span class="single-text">Perfil laboral <i class="fa fa-briefcase ml-1" style="color:#6c757d;font-size: 13px;"></i></span></a>
+                                            <p class="social-text">
+                                                Esta es mi segunda cuenta Github que regularmente <strong>no</strong> comparto públicamente, no obstante, comparto esta cuenta con el fin de evidenciar mi actividad en los últimos 5 años, participando activamente en el proyecto en el cual laboro. Se trata de un repositorio privado pero se puede evidenciar la actividad constante y compromiso total de mi parte.
+                                            </p>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="col-6 col-md-6 col-lg-2 px-0 text-center align-items-center d-flex card-avatares">
-                            <div class="front-content mx-auto">
-                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
-                                    <img src="{% static 'images/jd.png' %}" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
-                                </a>
-                            </div>
-                            <div class="back-content mx-auto">
-                                <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
-                                    <img src="{% static 'images/jd-imagen.jpg' %}" alt="Platzi Logo" srcset="" alt="Jaime Díaz.">
-                                </a>
-                            </div>
-                        </div>
+                        <div class="container-fluid pl-0 pr-0 sub-footer pt-2 pb-2">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-6 col-md-6 col-lg-5 color-txt d-flex align-items-center justify-content-center">
+                                        <p class="jd-text text-muted mb-0"><strong>Jaime Iván Díaz</strong>, Ing. de sistemas especialista en desarrollo web | Frontend & Backend Developer.</p>
+                                    </div>
 
-                        <div class="text-sm-center text-lg-left col-12 col-md-12 col-lg-5 color-txt derechos text-left text-muted">
-                            Todos los derechos reservados {% now "Y" %} © Typsterbyte, Inc.
+                                    <div class="col-6 col-md-6 col-lg-2 px-0 text-center align-items-center d-flex card-avatares">
+                                        <div class="front-content mx-auto">
+                                            <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                                <img src="{% static 'images/jd.png' %}" srcset="" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina">
+                                            </a>
+                                        </div>
+                                        <div class="back-content mx-auto">
+                                            <a href="JavaScript:;" class="jd-container text-center mr-auto ml-auto">
+                                                <img src="{% static 'images/jd-imagen.jpg' %}" srcset="" alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina">
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-sm-center text-lg-left col-12 col-md-12 col-lg-5 color-txt derechos text-left text-muted">
+                                        Todos los derechos reservados {% now "Y" %} © Typsterbyte, Inc.
+                                    </div>
+                                </div>
+                                
+                            </div>			
                         </div>
                     </div>
-                    
-                </div>			
+                </div>
             </div>
         </footer>
 
@@ -1541,6 +1619,10 @@
                 </div>
             </div>
         </footer>        
+
+
+
+
 
 
 

@@ -2,7 +2,11 @@ from django.contrib import admin
 
 # from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
-from django.urls import include, path
+from django.contrib.sitemaps import Sitemap
+
+# IMPORTACIONES SEO
+from django.contrib.sitemaps.views import sitemap
+from django.urls import include, path, reverse
 from django.views.generic import TemplateView
 from inquiries.views_threads import (
     descargar_certificaciones_real,
@@ -10,6 +14,23 @@ from inquiries.views_threads import (
     descargar_cv_real,
     home_view,
 )
+
+
+# 1. Definir la clase Sitemap para tu Home
+class StaticViewSitemap(Sitemap):
+    priority = 1.0
+    changefreq = "monthly"
+
+    def items(self):
+        return ["home"]  # Asegúrate de que tu URL name sea 'home'
+
+    def location(self, item):
+        return reverse(item)
+
+
+sitemaps = {
+    "static": StaticViewSitemap,
+}
 
 urlpatterns = [
     path("admin/", admin.site.urls),  # admin Django (opcional)
@@ -40,5 +61,20 @@ urlpatterns = [
         "cv-gracias/",
         TemplateView.as_view(template_name="cv/descargando.html"),
         name="cv_gracias",
+    ),
+    # --- RUTAS SEO ---
+    # Robots.txt directo
+    path(
+        "robots.txt",
+        TemplateView.as_view(
+            template_name="robots.txt", content_type="text/plain"
+        ),
+    ),
+    # Sitemap.xml
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
     ),
 ]

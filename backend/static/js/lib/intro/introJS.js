@@ -47,4 +47,15 @@ export function initLibIntroJS() {
     if (helpBtn) {
         helpBtn.addEventListener("click", () => tour.start());
     }
+
+    // NUEVO: Botón para ir directamente al paso del formulario de contacto (paso 3)
+    const contactHelpBtn = document.getElementById("show-contact-help");
+
+    // HTML Y JS: - IR A UNA EXPLICACION DIRECTA
+    // <button id="show-contact-help">Ayuda del formulario</button>
+    // if (contactHelpBtn) {
+    //     contactHelpBtn.addEventListener("click", () => {
+    //         tour.start().goToStep(3);
+    //     });
+    // }
 }

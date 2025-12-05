@@ -486,7 +486,7 @@ M E D I A  Q U E R I E S
 @media (max-width: 767.98px) {
     .skills-surface {
         border-radius: 20px;
-        padding: 2rem 1.25rem !important;
+        /* padding: 2rem 1.25rem !important; */
     }
 }
 

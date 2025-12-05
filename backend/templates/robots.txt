@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /inq/api/
+Disallow: /ask/
+
+Sitemap: https://jdiaz.tipsterbyte.com/sitemap.xml

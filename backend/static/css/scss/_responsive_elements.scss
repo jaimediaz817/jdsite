@@ -1,6 +1,51 @@
+:root {
+    --jd-container-max: 1120px;
+    --jd-container-max-md: 960px;
+    --jd-container-max-992: 90%;
+    --jd-container-max-min: 100%;
+}
+
+.jd-accordion-section {
+    .jd-accordion-header {
+        .jd-acordion-btn-container {
+            position: absolute;
+        }
+        .row {
+            flex-direction: column-reverse;
+        }
+    }
+    .jd-accordion-body {
+        margin-top: 1rem;
+    }
+    .jd-accordion-toggle {
+        // right: calc((100% - var(--jd-container-min)) / 2);
+    }    
+    .container {
+        > div {
+            padding: 0 1.5rem 1.5rem;
+        }
+    }
+    .jd-accordion-toggle {
+        // right: 1rem;
+        position: relative;
+        padding: 0.25rem 1rem;
+    }
+}
+
 /* Mobile First Media Queries (min-width) */
 @media (min-width: 320px) {
     // Estilos para dispositivos muy pequeños (teléfonos pequeños)
+
+    .jd-accordion-section {
+        .jd-accordion-toggle {
+            position: relative;
+            border-radius: 18px;
+            padding: 5px 14px;
+            border: 2px solid #028d95;            
+            right: calc((100% - var(--jd-container-min)) / 2);
+        }
+    }
+
     .jd-section {
         h2 {
             font-size: 1.75rem;
@@ -22,6 +67,7 @@
             font: 1rem;
         }
     }
+
     .swiper-container {
         .header-slider-cta {
             width: auto;
@@ -43,19 +89,12 @@
             .jd-acordion-btn-container {
                 text-align: end;
             }
-            button.jd-accordion-toggle {
-                right: 1rem;
-                position: relative;
-                border-radius: 18px;
-                padding: 5px 14px;
-                border: 2px solid #eebdc4;
-            }
         }
     }
 
     .projects-section {
         .swiper-pagination {
-            bottom: 7.55rem;
+            // bottom: 7.55rem;
         }
     }
 }
@@ -70,6 +109,7 @@
 
 @media (min-width: 480px) {
     // Teléfonos móviles extra grandes
+
     .jd-section {
         &.with-dots-square-blue-right {
             &::after {
@@ -83,19 +123,24 @@
                 height: 35px;
             }
         }     
-    }
-    .skills-section {
-        .jd-accordion-header {
-            button.jd-accordion-toggle {
-                right: inherit;
-                position: relative;
-                border-radius: 18px;
-                padding: 5px 14px;
-                border: 2px solid #eebdc4;
-            }
-        }
-    }    
+    } 
+}
 
+@media (min-width: 520px) {
+    // Teléfonos móviles muy grandes
+}
+
+@media (min-width: 576px) {
+    
+    // Móviles grandes / Phablets
+    .jd-accordion-section {
+        .jd-accordion-header {
+
+        }
+        .jd-accordion-body {
+            margin-top: 0;
+        }        
+    }
 }
 
 @media (min-width: 600px) {
@@ -109,6 +154,25 @@
 
 @media (min-width: 768px) {
     // Tablets estándar
+    .jd-accordion-section {
+        .jd-accordion-header {
+            .jd-acordion-btn-container {
+                position: relative;
+            }            
+            .row {
+                flex-direction: row;
+            }
+        }
+    }
+
+    .jd-accordion-section {
+        .container {
+            > div {
+                padding: 3rem 3rem 3rem;
+            }
+        }
+    }
+    
     .jd-section {
         &.with-dots-square-blue-right {
             &::after {
@@ -141,7 +205,7 @@
 
     .projects-section {
         .swiper-pagination {
-            bottom: 7.55rem;
+            // bottom: 7.55rem;
         }
     }    
 }
@@ -224,7 +288,7 @@
 
     .projects-section {
         .swiper-pagination {
-            bottom: 3.55rem;
+            // bottom: 3.55rem;
         }
     }      
 }

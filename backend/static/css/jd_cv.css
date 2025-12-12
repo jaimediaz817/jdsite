@@ -1,6 +1,25 @@
+:root {
+    --jd-primary: #00adb5;
+    --jd-primary-dark: #019ca2;
+    --jd-secondary: #df6576;
+    --jd-secondary-dark: #c65365;
+    --jd-bg-gradient-start: #e6f5f7;
+    --jd-bg-gradient-end: #ffffff;
+    --jd-separator: #b8c9d1;
+    --jd-info-bg: #e7faf8;
+    --jd-info-border: #00adb5;
+    --jd-info-text: #00828a;
+    --jd-shadow-primary: rgba(0, 173, 181, 0.25);
+    --jd-shadow-secondary: rgba(223,101,118,0.30);
+    --jd-shadow-card: rgba(0,0,0,0.13);
+    --jd-shadow-info: rgba(0, 0, 0, 0.06);
+    --jd-text-main: #555;
+    --jd-title: #5c5c5c;
+    --jd-nombre: rgba(0,0,0,0.70);
+}
 /* Fondo general */
 .jd-cv-bg {
-    background: linear-gradient(135deg, #e6f5f7 0%, #ffffff 100%);
+    background: linear-gradient(135deg, var(--jd-bg-gradient-start) 0%, var(--jd-bg-gradient-end) 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -18,7 +37,7 @@
     max-width: 520px;
     width: 100%;
     text-align: center;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.13);
+    box-shadow: 0 18px 40px var(--jd-shadow-card);
     border: 1px solid rgba(255,255,255,0.55);
     position: relative;
     animation: fadeZoom 0.7s ease forwards;
@@ -53,7 +72,7 @@
     width: 100%;
     height: auto;
     display: block;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    filter: drop-shadow(0 2px 4px var(--jd-shadow-card));
 }
 
 /* Nombre bajo el logo */
@@ -61,7 +80,7 @@
     margin-top: 4px;
     font-size: 15px;
     letter-spacing: 2px;
-    color: rgba(0,0,0,0.70);
+    color: var(--jd-nombre);
     font-weight: 300;
 }
 
@@ -70,20 +89,20 @@
     width: 70%;
     height: 1px;
     margin: 18px auto 25px;
-    background: linear-gradient(90deg, transparent, #b8c9d1, transparent);
+    background: linear-gradient(90deg, transparent, var(--jd-separator), transparent);
 }
 
 /* TÍTULO */
 .jd-cv-container h2 {
     font-weight: 700;
     margin-bottom: 8px;
-    color: #5c5c5c;
+    color: var(--jd-title);
     font-size: 1.65rem;
 }
 
 /* Texto descriptivo */
 .jd-cv-container p {
-    color: #555;
+    color: var(--jd-text-main);
     font-size: 1rem;
     line-height: 1.55;
     margin-bottom: 28px;
@@ -91,7 +110,7 @@
 
 /* BOTÓN PRIMARIO */
 .jd-btn-primary {
-    background: #00adb5;
+    background: var(--jd-primary);
     color: white;
     border: none;
     padding: 0;
@@ -109,13 +128,13 @@
     align-items: center;
     gap: 10px;
     letter-spacing: 0.2px;
-    box-shadow: 0 4px 10px rgba(0, 173, 181, 0.25);
+    box-shadow: 0 4px 10px var(--jd-shadow-primary);
 }
 
 .jd-btn-primary:hover {
-    background: #019ca2;
+    background: var(--jd-primary-dark);
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,173,181,0.35);
+    box-shadow: 0 6px 16px rgba(0,173,181,0.35); /* No variable for this shadow */
 }
 
 /* Loader */
@@ -141,7 +160,7 @@
 
 /* BOTÓN SECUNDARIO */
 .jd-btn-secondary {
-    background: #df6576;
+    background: var(--jd-secondary);
     color: white;
     padding: 0;
     border-radius: 14px;
@@ -155,9 +174,9 @@
 }
 
 .jd-btn-secondary:hover {
-    background: #c65365;
+    background: var(--jd-secondary-dark);
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(223,101,118,0.30);
+    box-shadow: 0 6px 16px var(--jd-shadow-secondary);
 }
 
 /* Banner animado */
@@ -165,12 +184,12 @@
     position: absolute;
     top: -18px;
     right: -8px;
-    background: #00adb5;
+    background: var(--jd-primary);
     padding: 6px 14px;
     color: white;
     border-radius: 12px;
     font-size: 13px;
-    box-shadow: 0 4px 10px rgba(0,173,181,0.30);
+    box-shadow: 0 4px 10px var(--jd-shadow-primary);
     animation: bannerFloat 2.5s ease-in-out infinite;
     letter-spacing: 0.5px;
 }
@@ -183,15 +202,15 @@
     align-items: center;
     gap: 10px;
     padding: 14px 18px;
-    background: #e7faf8;
-    border: 1px solid #00adb5;
-    color: #00828a;
+    background: var(--jd-info-bg);
+    border: 1px solid var(--jd-info-border);
+    color: var(--jd-info-text);
     font-size: 0.98rem;
     font-weight: 500;
     border-radius: 14px;
     max-width: 550px;
     margin: 0 auto 20px auto;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 18px var(--jd-shadow-info);
 
     opacity: 0;
     transform: translateY(10px);
@@ -202,7 +221,7 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: #00adb5;
+    background: var(--jd-primary);
     color: white;
     display: flex;
     align-items: center;

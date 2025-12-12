@@ -247,7 +247,7 @@ $(function () {
     $(".skills-surface").css("opacity", 0).animate({ opacity: 1 }, 600);
 
     // Prefill mensaje desde proyectos
-    $(".project-card .btn").on("click", function () {
+    $(".project-card .btn-addtext-to-form-opc1").on("click", function () {
         const project = $(this).data("project");
         const stack = $(this).data("stack");
         const baseMsg = `Hola Jaime, me interesa un proyecto similar a "${project}" basado en: ${stack}. ¿Podemos conversar?`;
@@ -258,7 +258,6 @@ $(function () {
         );
         $("#message").focus();
     });
-
     // asignar el text area en blanco por defecto
     $("#message").val("");
 
@@ -524,67 +523,270 @@ $(function () {
         });
     });
 
-    function setupProjectGallery() {
+    // =================================================================
+    //  INICIO: LÓGICA DE LA GALERÍA DE PROYECTOS
+    //  (Pega todo este bloque en tu archivo)
+    // =================================================================
+
+    // 1. DATOS DE LOS PROYECTOS
+    // Aquí centralizamos toda la información.
+    // NOTA: Las rutas a las imágenes deben ser estáticas, sin etiquetas de Django.
+    const projectsData = {
+        "app-storybook-ficohsa-seguros": {
+            title: "StoryBooks (catálogo de componentes UI) para Ficohsa Seguros",
+            media: [
+                {
+                    type: "video",
+                    src: "/static/videos/proyectos/app-storybooks-ficosha-seguros.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
+                    alt: "Demo en video del flujo documental",
+                    description:
+                        "Video demostrativo del flujo documental y la interfaz de usuario desarrollada para el proyecto Ficohsa Seguros., el requerimiento consistió en crear un catálogo de componentes en 2.5 semanas donde tenía que contemplar todos los componentes necesarios para armar la apliucación móvil luego, incluyendo componentes de todo tipo para cumplir luego con las etapas siguientes, se usó un dispositivo virtual de Android Studio para poder grabar esta demostración",
+                },
+            ],
+        },
+        "app-crq-gestion": {
+            title: "CRQ – Gestión de Documentación por Ciclos (Módulos indicadores y PAI)",
+            media: [],
+        },
+        "app-football-center": {
+            title: "Football Center Academy – Reservas Canchas",
+            media: [],
+        },
+        "app-automation-zoho-woztell": {
+            title: "Integración Zoho CRM + WOZTELL + SQL Server (SAG)",
+            media: [], // Array vacío, el botón se deshabilitará
+        },
+        "app-huellitas-felices": {
+            title: "Huellitas Felices – Rifas (3 y 4 cifras)",
+            media: [], // Array vacío, el botón se deshabilitará
+        },
+    };
+
+    // 2. FUNCIÓN PARA ACTUALIZAR EL ESTADO DE LOS BOTONES
+    function _updateGalleryButtonsState() {
         $(".project-gallery-trigger").each(function () {
-            var $btn = $(this);
-            var imagesStr = $btn.data("images");
+            const button = $(this);
+            const projectId = button.data("project-id");
+            const project = projectsData[projectId];
 
-            if (!imagesStr) {
-                $btn.addClass("disabled project-gallery-disabled")
-                    .attr("disabled", true)
-                    .attr("title", "Sin capturas disponibles");
-                return;
+            // Deshabilita el botón si el proyecto no existe o no tiene medios
+            if (project && project.media && project.media.length > 0) {
+                button.prop("disabled", false);
+            } else {
+                button.prop("disabled", true);
             }
-
-            $btn.on("click", function (e) {
-                // 👉 Esto evita que el anchor salte al id del modal
-                e.preventDefault();
-
-                var title = $btn.data("title") || "Capturas del proyecto";
-                var images = String(imagesStr).split("|").filter(Boolean);
-
-                if (!images.length) return;
-
-                var $modal = $("#projectGalleryModal");
-                var $carousel = $("#projectGalleryCarousel");
-                var $indicators = $carousel
-                    .find(".carousel-indicators")
-                    .empty();
-                var $inner = $carousel.find(".carousel-inner").empty();
-
-                images.forEach(function (src, index) {
-                    var activeClass = index === 0 ? "active" : "";
-
-                    $indicators.append(
-                        '<li data-target="#projectGalleryCarousel" data-slide-to="' +
-                            index +
-                            '" class="' +
-                            activeClass +
-                            '"></li>'
-                    );
-
-                    $inner.append(
-                        '<div class="carousel-item ' +
-                            activeClass +
-                            '">' +
-                            '<img src="' +
-                            src +
-                            '" class="d-block w-100 project-gallery-img" alt="' +
-                            title +
-                            " – captura " +
-                            (index + 1) +
-                            '">' +
-                            "</div>"
-                    );
-                });
-
-                $("#projectGalleryTitle").text(title);
-                $modal.modal("show");
-            });
         });
     }
 
-    $(setupProjectGallery);
+    // 3. FUNCIÓN PARA RELLENAR EL MODAL (ACTUALIZADA PARA VIDEO)
+    function _populateProjectModal(projectId) {
+        const projectData = projectsData[projectId];
+        if (
+            !projectData ||
+            !projectData.media ||
+            projectData.media.length === 0
+        ) {
+            return;
+        }
+
+        const modal = $("#projectGalleryModal");
+        const carouselInner = modal.find(".carousel-inner");
+        const carouselIndicators = modal.find(".carousel-indicators");
+
+        modal.find("#projectGalleryTitle").text(projectData.title);
+        carouselInner.empty();
+        carouselIndicators.empty();
+
+        projectData.media.forEach((item, index) => {
+            const indicator = $("<li></li>")
+                .attr("data-target", "#projectGalleryCarousel")
+                .attr("data-slide-to", index);
+
+            let mediaElement;
+            // Genera <video> o <img> según el tipo
+            if (item.type === "video") {
+                mediaElement = `
+                    <video controls preload="metadata" class="d-block w-100 project-gallery-video">
+                        <source src="${item.src}"  autoplay muted controls type="video/mp4">
+                        Tu navegador no soporta el elemento de video.
+                    </video>
+                `;
+            } else {
+                mediaElement = `<img src="${
+                    item.src
+                }" class="d-block w-100 project-gallery-img" alt="${
+                    item.alt || projectData.title
+                }">`;
+            }
+
+            const carouselItem = $(`
+                <div class="carousel-item">
+                    <div class="project-image-wrapper">
+                        ${mediaElement}
+                        ${
+                            item.description
+                                ? `
+                            <button class="btn-image-info" aria-label="Ver descripción">
+                                <div class="icon-container">
+                                    <i class="fa fa-info-circle"></i>
+                                    <i class="fa fa-times"></i>
+                                </div>
+                            </button>
+                            <div class="image-description-panel">
+                                <p class="mb-0">${item.description}</p>
+                            </div>
+                        `
+                                : ""
+                        }
+                    </div>
+                </div>
+            `);
+
+            if (index === 0) {
+                indicator.addClass("active");
+                carouselItem.addClass("active");
+            }
+
+            carouselIndicators.append(indicator);
+            carouselInner.append(carouselItem);
+        });
+
+        modal.find(".carousel").carousel(0);
+    }
+
+    // 4. ASIGNACIÓN DE EVENTOS (CON LÓGICA PARA PAUSAR VIDEO)
+    // $(".project-gallery-trigger").on("click", function (e) {
+    //     e.preventDefault();
+    //     if ($(this).is(":disabled")) return;
+
+    //     const projectId = $(this).data("project-id");
+    //     _populateProjectModal(projectId);
+    //     $("#projectGalleryModal").modal("show");
+    // });
+
+    // $("#projectGalleryCarousel").on("click", ".btn-image-info", function (e) {
+    //     e.stopPropagation();
+    //     const button = $(this);
+    //     const panel = button.siblings(".image-description-panel");
+    //     button.toggleClass("active");
+    //     panel.toggleClass("is-visible");
+    // });
+
+    // $("#projectGalleryModal").on("hidden.bs.modal", function () {
+    //     // Pausa todos los videos al cerrar el modal
+    //     $(this)
+    //         .find("video")
+    //         .each(function () {
+    //             this.pause();
+    //         });
+    //     // Resetea los paneles de info
+    //     $(this).find(".btn-image-info").removeClass("active");
+    //     $(this).find(".image-description-panel").removeClass("is-visible");
+    // });
+
+    // $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
+    //     // Pausa el video del slide que se está abandonando
+    //     const previousSlide = $(this).find(".carousel-item").eq(e.from);
+    //     let video = previousSlide.find("video");
+    //     if (video.length > 0) {
+    //         video[0].play();
+    //     }
+
+    //     // Resetea el panel de info
+    //     $(this).find(".btn-image-info").removeClass("active");
+    //     $(this).find(".image-description-panel").removeClass("is-visible");
+    // });
+
+    $(".project-gallery-trigger").on("click", function (e) {
+        e.preventDefault();
+        if ($(this).is(":disabled")) return;
+
+        const projectId = $(this).data("project-id");
+        _populateProjectModal(projectId);
+        $("#projectGalleryModal").modal("show");
+    });
+
+    $("#projectGalleryCarousel").on("click", ".btn-image-info", function (e) {
+        e.stopPropagation();
+        const button = $(this);
+        const panel = button.siblings(".image-description-panel");
+        button.toggleClass("active");
+        panel.toggleClass("is-visible");
+    });
+
+    // CORRECCIÓN: Evita que el clic en el video se propague al carrusel
+    $("#projectGalleryCarousel").on("click", "video", function (e) {
+        e.stopPropagation();
+    });
+
+    // --- INICIO: LÓGICA DE REPRODUCCIÓN AUTOMÁTICA MEJORADA ---
+
+    // Evento que se dispara CUANDO EL MODAL SE HA MOSTRADO COMPLETAMENTE
+    $("#projectGalleryModal").on("shown.bs.modal", function () {
+        // Busca si el PRIMER slide (el activo) tiene un video y lo reproduce.
+        const firstVideo = $(this).find(".carousel-item.active video");
+        if (firstVideo.length > 0) {
+            firstVideo[0]
+                .play()
+                .catch((error) =>
+                    console.log(
+                        "Autoplay fue bloqueado por el navegador. Se requiere interacción del usuario."
+                    )
+                );
+        }
+    });
+
+    // Evento que se dispara CUANDO EL MODAL SE CIERRA
+    $("#projectGalleryModal").on("hidden.bs.modal", function () {
+        // Pausa TODOS los videos al cerrar para limpiar el estado.
+        $(this)
+            .find("video")
+            .each(function () {
+                this.pause();
+            });
+        // Resetea los paneles de info
+        $(this).find(".btn-image-info").removeClass("active");
+        $(this).find(".image-description-panel").removeClass("is-visible");
+    });
+
+    // Evento que se dispara ANTES de que un slide cambie
+    $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
+        // Pausa el video del slide que se está abandonando
+        const previousSlide = $(this).find(".carousel-item").eq(e.from);
+        const video = previousSlide.find("video");
+        if (video.length > 0) {
+            video[0].pause();
+        }
+    });
+
+    // Evento que se dispara DESPUÉS de que un slide ha cambiado
+    $("#projectGalleryCarousel").on("slid.bs.carousel", function (e) {
+        // Reproduce el video del nuevo slide activo
+        const currentSlide = $(this).find(".carousel-item").eq(e.to);
+        const video = currentSlide.find("video");
+        if (video.length > 0) {
+            video[0]
+                .play()
+                .catch((error) =>
+                    console.log("Autoplay fue bloqueado por el navegador.")
+                );
+        }
+        // Resetea el panel de info del slide anterior
+        $(this).find(".btn-image-info").removeClass("active");
+        $(this).find(".image-description-panel").removeClass("is-visible");
+    });
+
+    // 5. EJECUCIÓN INICIAL
+    _updateGalleryButtonsState();
+
+    // Desactiva el autoplay del carrusel
+    $("#projectGalleryCarousel").carousel({
+        interval: false,
+    });
+
+    // =================================================================
+    //  FIN: LÓGICA DE LA GALERÍA DE PROYECTOS
+    // =================================================================
 
     // =====================================================================================
     // LIBRERÍA TERMINAL DE BIENVENIDA
@@ -650,4 +852,58 @@ $(function () {
             repos: FALLBACK_REPOS,
         });
     }
+
+    const dialog = document.getElementById("projectGalleryDialog");
+    const bodyGrid = document.getElementById("projectDialogBody");
+    const titleEl = document.getElementById("projectDialogTitle");
+    const closeBtn = dialog?.querySelector(".jd-project-dialog__close");
+
+    if (!dialog || !bodyGrid || !titleEl) return;
+
+    // Abrir desde botones
+    document.querySelectorAll(".project-gallery-trigger").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const title =
+                btn.getAttribute("data-title") || "Capturas del proyecto";
+            const imagesRaw = btn.getAttribute("data-images") || "";
+            // Admite separador por pipes, comas o espacios
+            const images = imagesRaw.split(/[|,]\s*|[\s]+/).filter(Boolean);
+
+            // Limpia y renderiza
+            bodyGrid.innerHTML = "";
+            titleEl.textContent = title;
+            if (!images.length) {
+                bodyGrid.innerHTML =
+                    "<p class='text-white-50'>Sin imágenes para mostrar.</p>";
+            } else {
+                images.forEach((src) => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.alt = title;
+                    bodyGrid.appendChild(img);
+                });
+            }
+
+            // Muestra sin mover scroll del contenido principal
+            dialog.showModal();
+        });
+    });
+
+    // Cerrar
+    closeBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        dialog.close();
+    });
+
+    // Cerrar con backdrop click (opcional)
+    dialog.addEventListener("click", (e) => {
+        const rect = dialog.getBoundingClientRect();
+        const inDialog =
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom;
+        if (!inDialog) dialog.close();
+    });
 });

@@ -5,7 +5,7 @@
     backdrop-filter: blur(6px);
     padding: 25px;
     border-bottom: 1px solid #f2f2f2;
-    border-radius: 0;
+    border-radius: 12px;
     border-right: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.25s ease;
     border-left: 1px solid rgba(0, 0, 0, 0.05);
@@ -60,59 +60,3 @@
     color: #7a7a7a;
     font-size: 0.95rem;
 }
-
-/* ===========================
-   TARJETAS MODERNAS
-=========================== */
-/* .wf-step {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(8px);
-    padding: 28px;
-    border-radius: 18px;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-bottom: 3px solid transparent;
-    transition: all .3s ease;
-    cursor: default;
-}
-
-/* Hover ultra pro */
-/* .wf-step:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.12);
-    border-bottom: 3px solid #0cc0c4;
-} */
-
-/* ICONOS */
-/* .wf-icon {
-    background: rgba(12,192,196,0.12);
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    transition: .3s ease;
-}
-
-.wf-icon i {
-    font-size: 1.6rem;
-    color: #0cc0c4;
-}
-
-.wf-step:hover .wf-icon {
-    background: rgba(12,192,196,0.18);
-} */
-
-/* TEXTOS */
-/* .wf-title {
-    font-weight: 700;
-    font-size: 1.15rem;
-    margin-bottom: 5px;
-} */
-
-/* .wf-text {
-    color: #4b4b4b;
-    font-size: 0.96rem;
-    line-height: 1.45;
-} */

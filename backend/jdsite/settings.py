@@ -3,6 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+# from django.conf import settings
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
@@ -151,7 +153,7 @@ GITHUB_ACCOUNTS = [
 LOGIN_URL = "/me/login/"
 LOGIN_REDIRECT_URL = "/ask/admin/threads/"
 
-JD_AVATAR_URL = "https://jdiaz.tipsterbyte.com/static/images/jd-imagen.jpg"
+JD_AVATAR_URL = f"{SITE_URL}/static/images/jd-imagen.jpg"
 
 # --- AÑADIR ESTA LÍNEA AL FINAL ---
 SITE_ID = 1

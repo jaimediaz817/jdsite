@@ -7,38 +7,56 @@
     <title>{% block subject %}JD Notification{% endblock %}</title>
 
     <style>
+        :root {
+            --primary-gradient-start: #0057FF;
+            --primary-gradient-end: #00ADB5;
+            --background-main: #f5f7fa;
+            --container-bg: #ffffff;
+            --container-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+            --header-title-color: #ffffff;
+            --header-sub-color: rgba(255,255,255,0.85);
+            --avatar-border: rgba(255,255,255,0.9);
+            --body-text: #333;
+            --cta-bg: #0057FF;
+            --cta-text: #fff;
+            --cta-shadow: 0 4px 14px rgba(0,87,255,0.25);
+            --footer-bg: #fafafa;
+            --footer-border: #eee;
+            --footer-text: #999;
+        }
+
         /* ===== RESET ===== */
         body,table,td,p {
             margin: 0;
             padding: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            color: #2d2d2d;
+            color: var(--body-text);
         }
 
         body {
-            background: #f5f7fa;
+            background: var(--background-main);
             padding: 40px 0;
         }
 
         /* ===== CONTAINER ===== */
         .email-wrapper {
             width: 100%;
-            background: #f5f7fa;
+            background: var(--background-main);
             padding: 10px;
         }
 
         .email-container {
             max-width: 620px;
             margin: auto;
-            background: #ffffff;
+            background: var(--container-bg);
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+            box-shadow: var(--container-shadow);
         }
 
         /* ===== HEADER ===== */
         .header {
-            background: linear-gradient(135deg, #0057FF, #00ADB5);
+            background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
             text-align: center;
             padding: 35px 20px;
         }
@@ -47,7 +65,7 @@
             width: 82px;
             height: 82px;
             border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.9);
+            border: 3px solid var(--avatar-border);
             margin-bottom: 12px;
             overflow: hidden;
         }
@@ -61,14 +79,14 @@
         .header-title {
             font-size: 22px;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--header-title-color);
             margin-bottom: 4px;
             letter-spacing: 0.4px;
         }
 
         .header-sub {
             font-size: 13px;
-            color: rgba(255,255,255,0.85);
+            color: var(--header-sub-color);
         }
 
         /* ===== BODY ===== */
@@ -76,7 +94,7 @@
             padding: 40px 35px;
             line-height: 1.55;
             font-size: 15px;
-            color: #333;
+            color: var(--body-text);
         }
 
         /* ===== CTA ===== */
@@ -86,8 +104,8 @@
         }
 
         .cta-btn {
-            background: #0057FF;
-            color: #fff !important;
+            background: var(--cta-bg);
+            color: var(--cta-text) !important;
             padding: 14px 32px;
             border-radius: 50px;
             text-decoration: none;
@@ -95,7 +113,7 @@
             font-size: 14px;
             font-weight: 600;
             letter-spacing: .4px;
-            box-shadow: 0 4px 14px rgba(0,87,255,0.25);
+            box-shadow: var(--cta-shadow);
         }
 
         /* ===== FOOTER ===== */
@@ -103,19 +121,19 @@
             font-size: 12px;
             padding: 20px 30px;
             text-align: center;
-            background: #fafafa;
-            border-top: 1px solid #eee;
-            color: #999;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--footer-border);
+            color: var(--footer-text);
             line-height: 1.5;
         }
 
         @media(max-width:480px) {
             .body-section {
-                padding: 28px 22px;
+            padding: 28px 22px;
             }
 
             .cta-btn {
-                padding: 12px 26px;
+            padding: 12px 26px;
             }
         }
     </style>

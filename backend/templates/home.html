@@ -21,7 +21,7 @@
         <meta name="robots" content="index,follow">
 
         <!-- CANONICAL -->
-        <link rel="canonical" href="https://jdiaz.tipsterbyte.com/">
+        <link rel="canonical" href="https://jaimediaz.dev/">
 
         <!-- OPEN GRAPH (para LinkedIn, Facebook, etc.) -->
         <meta property="og:title"
@@ -29,8 +29,8 @@
         <meta property="og:description"
             content="Ayudo a equipos y empresas a integrar Zoho CRM, WhatsApp (WOZTELL) y APIs en soluciones web escalables con FastAPI, Angular/React y Docker.">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="https://jdiaz.tipsterbyte.com/">
-        <meta property="og:image" content="https://jdiaz.tipsterbyte.com{% static 'images/og-social-share.jpg' %}">
+        <meta property="og:url" content="https://jaimediaz.dev/">
+        <meta property="og:image" content="https://jaimediaz.dev{% static 'images/og-social-share.jpg' %}">
         <meta property="og:locale" content="es_CO">
 
         <!-- TWITTER CARDS (X) -->
@@ -39,11 +39,35 @@
             content="Jaime Díaz | Full-Stack JS/Python · Integraciones de negocio">
         <meta name="twitter:description"
             content="Desarrollador Full-Stack especializado en Zoho CRM (Deluge), WOZTELL, FastAPI, Angular/React, Nginx y Docker.">
-        <meta name="twitter:image" content="https://jdiaz.tipsterbyte.com{% static 'images/og-social-share.jpg' %}">
+        <meta name="twitter:image" content="https://jaimediaz.dev{% static 'images/og-social-share.jpg' %}">
 
 
         <!-- ICO  -->
-        <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>
+        {% comment %} <link rel="shortcut icon" type="image/png" href="{% static 'images/jd_ico.png' %}"/>1 {% endcomment %}
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="64x64.png" href="{% static 'images/favicon/favicon-64x64.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'images/favicon/site.webmanifest' %}">
+
+        <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/favicon/apple-icon-57x57.png' %}">
+        <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/favicon/apple-icon-60x60.png' %}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/favicon/apple-icon-72x72.png' %}">
+        <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/favicon/apple-icon-76x76.png' %}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/favicon/apple-icon-114x114.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/favicon/apple-icon-120x120.png' %}">
+        <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/favicon/apple-icon-144x144.png' %}">
+        <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/favicon/apple-icon-152x152.png' %}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-icon-180x180.png' %}">
+        <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'images/favicon/android-icon-192x192.png' %}">
+        {% comment %} <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}"> {% endcomment %}
+        {% comment %} <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon/favicon-96x96.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}"> {% endcomment %}
+        <link rel="manifest" href="{% static 'images/favicon/manifest.json' %}">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">        
+
 
         <!-- BOOTSTRAP   LIB -->
         <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
@@ -76,7 +100,6 @@
         <!-- CUSTOM  STYLES -->
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
         <link rel="stylesheet" href="{% static 'css/home_custom.css' %}">
-        <link rel="stylesheet" href="{% static 'css/addons_2025.css' %}">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
@@ -95,8 +118,8 @@
                 "name": "Jaime Iván Díaz Gaona",
                 "alternateName": "Jaime Díaz",
                 "jobTitle": "Full-Stack Developer JS/Python",
-                "url": "https://jdiaz.tipsterbyte.com/",
-                "image": "https://jdiaz.tipsterbyte.com/static/images/jd-imagen.jpg",
+                "url": "https://jaimediaz.dev/",
+                "image": "https://jaimediaz.dev/static/images/jd-imagen.jpg",
                 "description": "Desarrollador Full-Stack especializado en Zoho CRM (Deluge), integraciones con WhatsApp (WOZTELL), FastAPI, Angular/React, Nginx y Docker.",
                 "address": {
                     "@type": "PostalAddress",
@@ -399,7 +422,7 @@
 
                                 <!-- TOOLTIP INFO TERMINAL -->
                                 <div class="jd-tooltip-wrapper bottom--2-5-rem jd-tooltip-absolute" data-jd-pos="auto">
-                                    <button id="jd-tooltip-id" class="jd-tooltip-trigger">i</button>
+                                    <button id="jd-tooltip-id" class="jd-tooltip-trigger jd-tooltip-red">i</button>
 
                                     <div class="jd-tooltip-panel">
                                         <div class="jd-tooltip-arrow"></div>
@@ -562,7 +585,7 @@
                                 </div>
 
                                 <!-- NOTE: COL-2 -->
-                                <div class="col-12 col-md-6 col-lg-5 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
+                                <div class="col-12 col-md-6 col-lg-6 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
                                     <video class="bg-video" autoplay muted loop playsinline>
                                         <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
                                     </video>
@@ -762,7 +785,7 @@
         </section>
 
         <!-- NUMERIC SECTION -->
-        <section class="jd-section numeric py-5 text-center" id="numeric">
+        <section class="jd-section numeric pt-3 pb-0 text-center" id="numeric">
             <div class="container-fluid py-5">
                 <h2 class="display-4 font-weight-bold text-secondary">UN POCO SOBRE MIS NÚMEROS</h2>
                 <h6 class="text-black-50">TENGO ALGUNOS NÚMEROS QUE MOSTRARTE.</h6>
@@ -841,7 +864,7 @@
                     <!-- ENVUELVE EL CONTENIDO EN 'jd-accordion-body' -->
                     <div class="jd-accordion-body">
                         <div class="jd-accordion-content-wrapper">
-                            <div class="row align-items-center mb-5">
+                            <div class="row align-items-center mb-2 mt-3">
                                 <div class="col-lg-6">
                                     <p class="jd-subtitle" data-aos="fade-right" data-aos-delay="150">
                                         Proceso claro, escalable y enfocado en resultados.
@@ -856,7 +879,7 @@
 
                             <div class="row workflow-steps">
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon">
                                             <i class="fas fa-comments"></i>
@@ -866,7 +889,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-sitemap"></i></div>
                                         <h6 class="wf-title">Arquitectura</h6>
@@ -874,7 +897,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-code"></i></div>
                                         <h6 class="wf-title">Desarrollo modular</h6>
@@ -882,7 +905,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon">
                                             <i class="fas fa-code-branch"></i>
@@ -894,7 +917,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-rocket"></i></div>
                                         <h6 class="wf-title">CI/CD + Deploy</h6>
@@ -905,7 +928,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
                                     <div class="wf-step h-100">
                                         <div class="wf-icon"><i class="fas fa-chart-line"></i></div>
                                         <h6 class="wf-title">Ciclo de vida</h6>
@@ -956,9 +979,9 @@
                     <div class="jd-accordion-body">
                         <div class="jd-accordion-content-wrapper">
                             <!-- CABECERA -->
-                            <div class="row align-items-center mb-4">
-                                <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-right text-left">
-                                    <a href="#contact" class="btn lp btn-primary">
+                            <div class="row align-items-center mb-2">
+                                <div class="col-12 col-lg-4 mt-3 mt-lg-0 text-lg-left text-left">
+                                    <a href="#contact" class="btn lp btn-primary mt-3">
                                         <i class="fas fa-paper-plane mr-1"></i>
                                         Inicia tu proyecto
                                     </a>
@@ -975,178 +998,178 @@
                                             <!-- PROYECTO 1: CRQ -->
                                             <div class="col-12 col-md-6 mb-4">
                                                 <article class="card h-100 border-0 shadow-sm project-card">
-                                                <div class="card-body d-flex flex-column">
-                                                    <h3 class="project-title mb-1">
-                                                    CRQ – Gestión de Documentación por Ciclos
-                                                    </h3>
-                                                    <p class="project-meta text-muted mb-2">
-                                                    Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
-                                                    </p>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h3 class="project-title mb-1">
+                                                        StoryBooks (catálogo de componentes UI) para Ficohsa Seguros
+                                                        </h3>
+                                                        <p class="project-meta text-muted mb-2">
+                                                        Banco Ficosha - Catálogo de componentes Con React Native
+                                                        </p>
+                                                        <span class="card-title-descripcion">Características del proyecto:</span>
+                                                        <ul class="pl-3 mb-3 project-points">
+                                                            <li>Catálogo de componentes UI para Ficohsa Seguros usando RC</li>
+                                                            <li>Fácil ejecución para entornos Android, IOS usando EXPO</li>
+                                                            <li>Maquetación de componentes a partir de plantilla de diseño en FIGMA compartido</li>
+                                                            <li>A través de una lista ordenada de components se visualizan según la seleción desde el menú principal</li>
+                                                        </ul>
 
-                                                    <ul class="pl-3 mb-3 project-points">
-                                                    <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
-                                                    <li>Flujos de revisión y control de versiones.</li>
-                                                    <li>Roles, auditoría y trazabilidad de acciones.</li>
-                                                    </ul>
+                                                        <div class="mb-3">
+                                                            <span class="badge badge-tech mr-1 mb-1">Storybook para React Native con EXPO</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Yarn</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">TypeScript</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Native StyleSheet</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Compilación en tiempo real con Expo - Adroid</span>
+                                                        </div>
 
-                                                    <div class="mb-3">
-                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                                        <div class="actions-project-container mt-auto d-flex flex-wrap align-items-center">
+                                                            <a href="#contact"
+                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                data-project="StoryBooks (catálogo de componentes UI) para Ficohsa Seguros con React Native"
+                                                                data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                                                Quiero algo así (StoryBooks con React Native)
+                                                            </a>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                                data-project-id="app-storybook-ficohsa-seguros"
+                                                                tabindex="-1">
+                                                                <i class="fas fa-images mr-1"></i>
+                                                                Ver capturas
+                                                            </button>                                                         
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
-                                                    <a href="#contact"
-                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                        data-project="CRQ – Gestión de Documentación por Ciclos"
-                                                        data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
-                                                        Quiero algo así (Laravel + Vue 2)
-                                                    </a>
-
-                                                    <button type="button"
-                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                            data-title="CRQ – Gestión de Documentación por Ciclos"
-                                                            data-images="">
-                                                            {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
-                                                        <i class="fas fa-images mr-1"></i>
-                                                        Ver capturas
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </article>
+                                                </article>                                                
                                             </div>
 
                                             <!-- PROYECTO 2: Football Center -->
                                             <div class="col-12 col-md-6 mb-4">
                                                 <article class="card h-100 border-0 shadow-sm project-card">
-                                                <div class="card-body d-flex flex-column">
-                                                    <h3 class="project-title mb-1">
-                                                    Football Center Academy – Reservas Canchas
-                                                    </h3>
-                                                    <p class="project-meta text-muted mb-2">
-                                                    Portal de reservas. Backend Laravel · Frontend Vue 2.
-                                                    </p>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h3 class="project-title mb-1">
+                                                        Football Center Academy – Reservas Canchas
+                                                        </h3>
+                                                        <p class="project-meta text-muted mb-2">
+                                                        Portal de reservas. Backend Laravel · Frontend Vue 2.
+                                                        </p>
+                                                        <span class="card-title-descripcion">Características del proyecto:</span>
+                                                        <ul class="pl-3 mb-3 project-points">
+                                                            <li>Agenda en tiempo real con anti-colisiones para reservas de cancha.</li>
+                                                            <li>Reglas transaccionales y notificaciones al usuario.</li>
+                                                            <li>Gestión de usuarios, pagos y reportes básicos.</li>
+                                                        </ul>
 
-                                                    <ul class="pl-3 mb-3 project-points">
-                                                    <li>Agenda en tiempo real con anti-colisiones para reservas de cancha.</li>
-                                                    <li>Reglas transaccionales y notificaciones al usuario.</li>
-                                                    <li>Gestión de usuarios, pagos y reportes básicos.</li>
-                                                    </ul>
+                                                        <div class="mb-3">
+                                                            <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Calendario UX</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Transaccional</span>
+                                                        </div>
 
-                                                    <div class="mb-3">
-                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Calendario UX</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Transaccional</span>
+                                                        <div class="actions-project-container mt-auto d-flex flex-wrap align-items-center">
+                                                            <a href="#contact"
+                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                data-project="Football Center Academy – Reservas Canchas"
+                                                                data-stack="Laravel · Vue 2 · Calendario UX · Lógica transaccional">
+                                                                Quiero algo así (Laravel + Vue 2)
+                                                            </a>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                                data-project-id="app-football-center"
+                                                                tabindex="-1">
+                                                                <i class="fas fa-images mr-1"></i>
+                                                                Ver capturas
+                                                            </button>                                                             
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
-                                                    <a href="#contact"
-                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                        data-project="Football Center Academy – Reservas Canchas"
-                                                        data-stack="Laravel · Vue 2 · Calendario UX · Lógica transaccional">
-                                                        Quiero algo así (Laravel + Vue 2)
-                                                    </a>
-
-                                                    <!-- Sin capturas: se deshabilita por JS -->
-                                                    <button type="button"
-                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                            data-title="Football Center Academy – Reservas Canchas"
-                                                            data-images="">
-                                                        <i class="fas fa-images mr-1"></i>
-                                                        Ver capturas
-                                                    </button>
-                                                    </div>
-                                                </div>
                                                 </article>
                                             </div>
 
                                             <!-- PROYECTO 3: Zoho + WOZTELL -->
                                             <div class="col-12 col-md-6 mb-4">
                                                 <article class="card h-100 border-0 shadow-sm project-card">
-                                                <div class="card-body d-flex flex-column">
-                                                    <h3 class="project-title mb-1">
-                                                    Integración Zoho CRM + WOZTELL + SQL Server (SAG)
-                                                    </h3>
-                                                    <p class="project-meta text-muted mb-2">
-                                                    Gestión de cartera y mensajería transaccional.
-                                                    </p>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h3 class="project-title mb-1">
+                                                        Integración Zoho CRM + WOZTELL + SQL Server (SAG)
+                                                        </h3>
+                                                        <p class="project-meta text-muted mb-2">
+                                                        Gestión de cartera y mensajería transaccional.
+                                                        </p>
+                                                        <span class="card-title-descripcion">Características del proyecto:</span>
+                                                        <ul class="pl-3 mb-3 project-points">
+                                                            <li>Funciones Deluge con tokens y sincronización SAG ↔ Zoho.</li>
+                                                            <li>Flujos para envíos masivos WhatsApp (plantillas WOZTELL).</li>
+                                                            <li>Dashboard de facturas pendientes y recordatorios de pago.</li>
+                                                        </ul>
 
-                                                    <ul class="pl-3 mb-3 project-points">
-                                                    <li>Funciones Deluge con tokens y sincronización SAG ↔ Zoho.</li>
-                                                    <li>Flujos para envíos masivos WhatsApp (plantillas WOZTELL).</li>
-                                                    <li>Dashboard de facturas pendientes y recordatorios de pago.</li>
-                                                    </ul>
+                                                        <div class="mb-3">
+                                                            <span class="badge badge-tech mr-1 mb-1">Zoho Deluge</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">WOZTELL</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">SQL Server</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Logs/Reintentos</span>
+                                                        </div>
 
-                                                    <div class="mb-3">
-                                                    <span class="badge badge-tech mr-1 mb-1">Zoho Deluge</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">WOZTELL</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">SQL Server</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Logs/Reintentos</span>
+                                                        <div class="actions-project-container mt-auto d-flex flex-wrap align-items-center">
+                                                            <a href="#contact"
+                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
+                                                                data-stack="Zoho CRM · Deluge · WOZTELL · SQL Server">
+                                                                Quiero algo así (Zoho + WOZTELL)
+                                                            </a>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                                data-project-id="app-automation-zoho-woztell"
+                                                                tabindex="-1">
+                                                                <i class="fas fa-images mr-1"></i>
+                                                                Ver capturas
+                                                            </button>                                                           
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
-                                                    <a href="#contact"
-                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                        data-project="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
-                                                        data-stack="Zoho CRM · Deluge · WOZTELL · SQL Server">
-                                                        Quiero algo así (Zoho + WOZTELL)
-                                                    </a>
-
-                                                    <button type="button"
-                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                            data-title="Integración Zoho CRM + WOZTELL + SQL Server (SAG)"
-                                                            data-images="">
-                                                        <i class="fas fa-images mr-1"></i>
-                                                        Ver capturas
-                                                    </button>
-                                                    </div>
-                                                </div>
                                                 </article>
                                             </div>
 
                                             <!-- PROYECTO 4: Huellitas Felices -->
                                             <div class="col-12 col-md-6 mb-4">
                                                 <article class="card h-100 border-0 shadow-sm project-card">
-                                                <div class="card-body d-flex flex-column">
-                                                    <h3 class="project-title mb-1">
-                                                    Huellitas Felices – Rifas (3 y 4 cifras)
-                                                    </h3>
-                                                    <p class="project-meta text-muted mb-2">
-                                                    Fundación. Backend Spring Boot · React · PostgreSQL.
-                                                    </p>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h3 class="project-title mb-1">
+                                                        Huellitas Felices – Rifas (3 y 4 cifras)
+                                                        </h3>
+                                                        <p class="project-meta text-muted mb-2">
+                                                        Fundación. Backend Spring Boot · React · PostgreSQL.
+                                                        </p>
+                                                        <span class="card-title-descripcion">Características del proyecto:</span>
+                                                        <ul class="pl-3 mb-3 project-points">
+                                                            <li>Reserva remota de números y pagos en línea.</li>
+                                                            <li>Control de sorteos y publicación de ganadores.</li>
+                                                            <li>Panel administrativo trazable para rifas y donaciones.</li>
+                                                        </ul>
 
-                                                    <ul class="pl-3 mb-3 project-points">
-                                                    <li>Reserva remota de números y pagos en línea.</li>
-                                                    <li>Control de sorteos y publicación de ganadores.</li>
-                                                    <li>Panel administrativo trazable para rifas y donaciones.</li>
-                                                    </ul>
+                                                        <div class="mb-3">
+                                                            <span class="badge badge-tech mr-1 mb-1">Spring Boot</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">React</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">PostgreSQL</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Panel Admin</span>
+                                                        </div>
 
-                                                    <div class="mb-3">
-                                                    <span class="badge badge-tech mr-1 mb-1">Spring Boot</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">React</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Panel Admin</span>
+                                                        <div class="actions-project-container mt-auto d-flex flex-wrap align-items-center">
+                                                            <a href="#contact"
+                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
+                                                                data-stack="Spring Boot · React · PostgreSQL · Panel Admin">
+                                                                Quiero algo así (Spring Boot + React)
+                                                            </a>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                                data-project-id="app-huellitas-felices"
+                                                                tabindex="-1">
+                                                                <i class="fas fa-images mr-1"></i>
+                                                                Ver capturas
+                                                            </button>                                                         
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
-                                                    <a href="#contact"
-                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                        data-project="Huellitas Felices – Rifas (3 y 4 cifras)"
-                                                        data-stack="Spring Boot · React · PostgreSQL · Panel Admin">
-                                                        Quiero algo así (Spring Boot + React)
-                                                    </a>
-
-                                                    <button type="button"
-                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                            data-title="Huellitas Felices – Rifas (3 y 4 cifras)"
-                                                            data-images="">
-                                                        <i class="fas fa-images mr-1"></i>
-                                                        Ver capturas
-                                                    </button>
-                                                    </div>
-                                                </div>
                                                 </article>
                                             </div>
                                         </div>
@@ -1157,45 +1180,44 @@
                                         <div class="row project-grid">
                                             <div class="col-12 col-md-6 mb-4">
                                                 <article class="card h-100 border-0 shadow-sm project-card">
-                                                <div class="card-body d-flex flex-column">
-                                                    <h3 class="project-title mb-1">
-                                                    CRQ – Gestión de Documentación por Ciclos
-                                                    </h3>
-                                                    <p class="project-meta text-muted mb-2">
-                                                    Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
-                                                    </p>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h3 class="project-title mb-1">
+                                                        CRQ – Gestión de Documentación por Ciclos (Módulos indicadores y PAI)
+                                                        </h3>
+                                                        <p class="project-meta text-muted mb-2">
+                                                        Gobierno (Corporación Autónoma Quindío). Backend Laravel · Frontend Vue 2.
+                                                        </p>
+                                                        <span class="card-title-descripcion">Características del proyecto:</span>
+                                                        <ul class="pl-3 mb-3 project-points">
+                                                            <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
+                                                            <li>Flujos de revisión y control de versiones.</li>
+                                                            <li>Roles, auditoría y trazabilidad de acciones.</li>
+                                                        </ul>
 
-                                                    <ul class="pl-3 mb-3 project-points">
-                                                    <li>Apertura y cierre de ciclos con indicadores y evidencias.</li>
-                                                    <li>Flujos de revisión y control de versiones.</li>
-                                                    <li>Roles, auditoría y trazabilidad de acciones.</li>
-                                                    </ul>
+                                                        <div class="mb-3">
+                                                            <span class="badge badge-tech mr-1 mb-1">Laravel</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
+                                                            <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                                        </div>
 
-                                                    <div class="mb-3">
-                                                    <span class="badge badge-tech mr-1 mb-1">Laravel</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Vue 2</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">Bootstrap</span>
-                                                    <span class="badge badge-tech mr-1 mb-1">PostgreSQL/MySQL</span>
+                                                        <div class="actions-project-container mt-auto d-flex flex-wrap align-items-center">
+                                                            <a href="#contact"
+                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                data-project="CRQ – Gestión de Documentación por Ciclos"
+                                                                data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                                                Quiero algo así (Laravel + Vue 2)
+                                                            </a>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
+                                                                data-project-id="app-crq-gestion"
+                                                                tabindex="-1">
+                                                                <i class="fas fa-images mr-1"></i>
+                                                                Ver capturas
+                                                            </button>                                                        
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mt-auto d-flex flex-wrap align-items-center">
-                                                    <a href="#contact"
-                                                        class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                        data-project="CRQ – Gestión de Documentación por Ciclos"
-                                                        data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
-                                                        Quiero algo así (Laravel + Vue 2)
-                                                    </a>
-
-                                                    <button type="button"
-                                                            class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                            data-title="CRQ – Gestión de Documentación por Ciclos"
-                                                            data-images="">
-                                                            {% comment %} data-images="{% static 'images/slides/slide_code.jpg' %}|{% static 'images/slides/slide_group_work.jpg' %}"> {% endcomment %}
-                                                        <i class="fas fa-images mr-1"></i>
-                                                        Ver capturas
-                                                    </button>
-                                                    </div>
-                                                </div>
                                                 </article>
                                             </div>
                                         </div>
@@ -1416,7 +1438,7 @@
 
                             <!-- TOOLTIP INFO TERMINAL -->
                             <div class="jd-tooltip-wrapper top-1-rem right-0-75-rem jd-tooltip-absolute" data-jd-pos="auto">
-                                <button class="jd-tooltip-trigger">i</button>
+                                <button class="jd-tooltip-trigger jd-tooltip-red">i</button>
                                 <div class="jd-tooltip-panel">
                                     <div class="jd-tooltip-arrow"></div>
                                     <div class="jd-tooltip-header">
@@ -1453,7 +1475,7 @@
         <footer id="footer" class="jd-section footer jd-accordion-section dark footer-section-one">
             <div class="projects-surface">
                 <!-- ESTE ES EL NUEVO CABECERO DEL ACORDEÓN -->
-                <div class="jd-accordion-header">
+                <div class="jd-accordion-header container-fluid">
                     <div class="row align-items-center">
                         {% comment %} <div class="col-12 col-sm-12 col-md-10 col-lg-6  ">
                             <h2 class="jd-acordion-title-section     projects-title mb-2">Contacto</h2>
@@ -1649,7 +1671,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title mb-0" id="projectGalleryTitle">Capturas del proyecto</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -1670,8 +1692,6 @@
                 </div>
             </div>
         </div>
-
-
 
 
 

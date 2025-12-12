@@ -8,7 +8,8 @@
 .jd-accordion-section {
     .jd-accordion-header {
         .jd-acordion-btn-container {
-            position: absolute;
+            // TODO: correción posición botón acordeón en móvil
+            // position: absolute;
         }
         .row {
             flex-direction: column-reverse;
@@ -343,6 +344,19 @@
 
 @media (max-width: 600px) {
     // Tablets pequeñas
+}
+
+@media (max-width: 568px) {
+    // Tablets pequeñas
+    .workflow-section {
+        .workflow-steps {
+            > div {
+                .wf-step {
+                    padding: 1rem 0 0 1rem;
+                }
+            }
+        }
+    }
 }
 
 @media (max-width: 480px) {

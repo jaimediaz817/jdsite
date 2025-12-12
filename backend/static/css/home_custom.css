@@ -114,22 +114,6 @@ box-shadow:none;
 a.btn.lp.btn-primary.download-file-pdf span {
     padding-right: 1rem;
 }    
-            
-.btn-header-align {
-
-}  
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* FOOTER */
@@ -515,10 +499,9 @@ M E D I A  Q U E R I E S
 .btn-top.show{
     opacity:.95;
     transform: translateY(0);
-    /* right: 0.52rem;
-    bottom: 1.5rem; */
     pointer-events:auto;
     border: 2px solid white;
+    z-index: 999;
 }
 .btn-top:hover{
     box-shadow:0 12px 28px -8px rgba(0,173,181,.45);
@@ -538,17 +521,7 @@ M E D I A  Q U E R I E S
             font-size: 1.25rem;            
         }
     }
-}            
-/* .btn {
-position: relative;
-transition: box-shadow .35s ease, transform .35s ease;
 }
-.btn:hover {
-box-shadow: 0 0 0.35rem rgba(255,255,255,.35),
-            0 0 0.9rem rgba(246,54,79,.35),
-            0 0 1.8rem rgba(246,54,79,.25);
-transform: translateY(-2px);
-} */
 .btn:active {
 transform: translateY(0);
 box-shadow: 0 0 0.25rem rgba(246,54,79,.4);
@@ -691,33 +664,6 @@ SECCIÓN: CÓMO TRABAJO (JD)
     font-size: 1.1rem;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ===========================
    SEPARADOR SVG
 =========================== */
@@ -773,10 +719,6 @@ SECCIÓN: CÓMO TRABAJO (JD)
     margin-top: -8px;
     font-size: 1.1rem;
 }
-
-
-
-
 
 
 /* NAVEGACIÓN  */

@@ -540,13 +540,63 @@ $(function () {
                     src: "/static/videos/proyectos/app-storybooks-ficosha-seguros.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
                     alt: "Demo en video del flujo documental",
                     description:
-                        "Video demostrativo del flujo documental y la interfaz de usuario desarrollada para el proyecto Ficohsa Seguros., el requerimiento consistió en crear un catálogo de componentes en 2.5 semanas donde tenía que contemplar todos los componentes necesarios para armar la apliucación móvil luego, incluyendo componentes de todo tipo para cumplir luego con las etapas siguientes, se usó un dispositivo virtual de Android Studio para poder grabar esta demostración",
+                        "Video demostrativo del flujo documental y la interfaz de usuario desarrollada para el proyecto Ficohsa Seguros., el requerimiento consistió en crear un catálogo de componentes en 2.5 semanas donde tenía que contemplar todos los componentes necesarios para incorporar a la aplicación móvil luego, incluyendo componentes de todo tipo para cumplir luego con las etapas siguientes, se usó un dispositivo virtual de Android Studio para poder grabar esta demostración",
                 },
             ],
         },
         "app-crq-gestion": {
             title: "CRQ – Gestión de Documentación por Ciclos (Módulos indicadores y PAI)",
-            media: [],
+            media: [
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-login.png",
+                    alt: "Captura de pantalla del login de la aplicación",
+                    description:
+                        "Captura de pantalla dellogin de la aplicación, responsive y con una apariencia agradable para el usuario garantizando desde la entrada una buena experiencia. UX",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-dashboard-contraido.png",
+                    alt: "Captura de pantalla de la dashboard con menú contraído",
+                    description:
+                        "Se aprecian las opciones principales en el menú lateral izquierdo, el módulo PAI e INDICADORES se encuentran con sus opciones de menú contraídas",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-roles-permisos-1.png",
+                    alt: "Captura de pantalla del módulo para la gestión completa de roles y permisos adaptados para cada usuario, gestionable",
+                    description:
+                        "Captura de pantalla del módulo para la gestión completa de roles y permisos adaptados para cada usuario, gestionable",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-perfil-editar-1.png",
+                    alt: "Captura de pantalla del módulo de usuarios donde se ilustra la edición de los datos de un perfil de usuario",
+                    description:
+                        "Captura de pantalla del módulo de usuarios donde se ilustra la edición de los datos de un perfil de usuario",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-pai-actividades.png",
+                    alt: "Captura de pantalla del módulo de PAI - Actividades",
+                    description:
+                        "Captura de pantalla del módulo de PAI - Actividades del proyecto CRQ – Gestión de Documentación por Ciclos.",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-pai-actividad-consultas-sql.png",
+                    alt: "Captura de pantalla del módulo de PAI - Actividades - se aprecian las consultas SQL implementadas y usadas en este llamado",
+                    description:
+                        "Captura de pantalla del módulo de PAI - Actividades - se aprecian las consultas SQL implementadas y usadas en este llamado",
+                },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-reporte-actividades-por-grupo.png",
+                    alt: "Captura de pantalla del módulo de PAI - reporte de actividades por grupo, permitiendo exportar a DOCX, PDF",
+                    description:
+                        "Captura de pantalla del módulo de PAI - reporte de actividades por grupo, permitiendo exportar a DOCX, PDF",
+                },
+            ],
         },
         "app-football-center": {
             title: "Football Center Academy – Reservas Canchas",
@@ -734,6 +784,29 @@ $(function () {
                     )
                 );
         }
+
+        // =================================================================
+        //  INICIO: FORZAR SILENCIO PERMANENTE EN VIDEOS
+        // =================================================================
+        $(this)
+            .find("video")
+            .each(function () {
+                const video = this;
+                video.muted = true; // Asegura el estado inicial al mostrar el modal.
+
+                // Elimina cualquier listener previo para evitar duplicados al reabrir el modal
+                $(video).off("volumechange.enforceMute");
+
+                // Añade un listener que fuerza el silencio si se intenta cambiar el volumen
+                $(video).on("volumechange.enforceMute", function () {
+                    if (!video.muted) {
+                        video.muted = true;
+                    }
+                });
+            });
+        // =================================================================
+        //  FIN: FORZAR SILENCIO PERMANENTE EN VIDEOS
+        // =================================================================
     });
 
     // Evento que se dispara CUANDO EL MODAL SE CIERRA

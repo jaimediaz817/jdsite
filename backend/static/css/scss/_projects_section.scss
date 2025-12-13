@@ -55,28 +55,41 @@
     }
 
     .card-title-descripcion {
+      font-size: 1rem;
       font-weight: 700;
       margin-top: 0.5rem;
       margin-bottom: 0.5rem;
+      text-decoration: underline;
     }
 
+
     .project-meta {
-    font-size: 1rem;
+      font-size: 1rem;
     }
 
     .project-points {
-    font-size: 0.9rem;
-    color: #334155;
-    margin-bottom: 0;
+      font-size: 1.05rem;
+      color: #334155;
+      margin-bottom: 0;
+
     }
 
     .project-points li + li {
     margin-top: 0.2rem;
     }
 
+    .badges-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    
+
     /* Badges de tecnologías */
     .badge-tech {
-    font-size: 0.87rem;
+    font-size: 1rem;
     font-weight: 600;
     border-radius: 999px;
     padding: 0.25rem 0.6rem;
@@ -307,10 +320,17 @@
 /* Reposiciona toda la lista de indicadores para evitar que el panel de descripción los tape */
 #projectGalleryModal {
   .carousel-control-next, .carousel-control-prev {
-    width: 5%;
-    height: 10%;
+    // width: 5%;
+    // height: 10%;
+    // top: 50%;
+    // transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
     top: 50%;
+    background: rgba(1, 1, 1, 0.85);
+    z-index: 9999;
     transform: translateY(-50%);
+    border-radius: 50px;    
   }
   .carousel-indicators {
       top: 1rem; /* Sube los indicadores desde su posición por defecto */
@@ -320,7 +340,10 @@
   }  
 }
 /* === FIN: AJUSTE DE POSICIÓN DE INDICADORES === */
-
+.carousel-inner {
+    border: 3px solid #6b787a;
+    border-radius: 4px;
+}
 /* ============================
    NUEVO: Estilos para el video dentro del carrusel
    ============================ */
@@ -517,7 +540,7 @@
         font-size: 0.8rem;
         border-radius: 999px;
         background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $tertiary;
         color: #0f172a;
         box-shadow: none;
         transition: all 0.6s ease;

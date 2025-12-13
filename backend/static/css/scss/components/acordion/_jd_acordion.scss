@@ -78,7 +78,7 @@
         border-color: transparent;
         width: 5px;
         height: 100%;
-        background: #b0e9eb;
+        background: #00adb5;
         transition: all 1.5s ease-in-out;
         opacity: 1;
         pointer-events: none;
@@ -97,13 +97,14 @@
     .jd-acordion-title-section {
         &::before {
             content: "";
-            opacity: 0;
+            // opacity: 0;
             pointer-events: auto;
+            background: $tertiary;
         }
         &::after {
             content: "...";
             padding-left: 1rem;
-            color: #ffacb8;
+            color: $tertiary;
             transition: all 1.5s ease-in-out;
         }
     } 

@@ -17,6 +17,43 @@
 }
 
 
+
+
+
+
+#navigation-menu {
+    // ... (estilos existentes)
+
+    .nav-link-bug {
+        color: rgba(255, 255, 255, 0.75) !important;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+
+        i {
+            margin-right: 6px;
+            opacity: 0.95;
+            color: #d37381;
+             font-size: 1rem;
+        }
+
+        &:hover {
+            i {
+                color: #fff;
+            }
+            color: #fff !important;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+    }
+}
+
+
+
+
+
+
+
 // Medias
 @media(min-width: 0) {
     // CONTACT #1

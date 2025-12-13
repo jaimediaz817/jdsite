@@ -596,6 +596,13 @@ $(function () {
                     description:
                         "Captura de pantalla del módulo de PAI - reporte de actividades por grupo, permitiendo exportar a DOCX, PDF",
                 },
+                {
+                    type: "image",
+                    src: "/static/images/proyectos/app-crq-actividades-por-grupo-usuario.png",
+                    alt: "Captura de pantalla para ilustrar cómo se visualian los reportes de actividades por grupo de usuario, involucrando una lógica especial de negocio para las consultas sql, realizndo correctamente los joins para evitar duplicidad de información y promovimendo la fidelidad de lo que se requiere para estos indicadores",
+                    description:
+                        "Captura de pantalla para ilustrar cómo se visualian los reportes de actividades por grupo de usuario, involucrando una lógica especial de negocio para las consultas sql, realizndo correctamente los joins para evitar duplicidad de información y promovimendo la fidelidad de lo que se requiere para estos indicadores",
+                },
             ],
         },
         "app-football-center": {

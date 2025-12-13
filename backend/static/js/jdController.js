@@ -600,7 +600,22 @@ $(function () {
         },
         "app-football-center": {
             title: "Football Center Academy – Reservas Canchas",
-            media: [],
+            media: [
+                {
+                    type: "video",
+                    src: "/static/videos/proyectos/app-footballcenter-academy-welcome.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
+                    alt: "Video demostrativo de la landing page desarrollada para las canchas footballcenter club, se aprecia el mapa de cómo llegar a las instalaciones y un diseño muy intuitivo, minimalista y fresco usando fuente de iconos: FONTAWESOME para mejorar la experiencia de usuario.",
+                    description:
+                        "Video demostrativo de la landing page desarrollada para las canchas footballcenter club, se aprecia el mapa de cómo llegar a las instalaciones y un diseño muy intuitivo, minimalista y fresco usando fuente de iconos: FONTAWESOME para mejorar la experiencia de usuario.",
+                },
+                {
+                    type: "video",
+                    src: "/static/videos/proyectos/app-footballcenter-crear-ofertas-crear-reservas.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
+                    alt: "Vídeo demostrativo para ilustrar el proceso, las ventanas maquetadas y programadas para crear ofertas, clientes que aplican a dichas ofertas, creación de reserva y la aplicación a esa oferta creada previamente para separar una cancha en cuestión, también se ilustra como se veneran notificaciones de difusión general o a un solo usuario en particular para mostrar aspectos relevantes de la aplicación entre otras funciones importanes.",
+                    description:
+                        "Vídeo demostrativo para ilustrar el proceso, las ventanas maquetadas y programadas para crear ofertas, clientes que aplican a dichas ofertas, creación de reserva y la aplicación a esa oferta creada previamente para separar una cancha en cuestión, también se ilustra como se veneran notificaciones de difusión general o a un solo usuario en particular para mostrar aspectos relevantes de la aplicación entre otras funciones importanes.",
+                },
+            ],
         },
         "app-automation-zoho-woztell": {
             title: "Integración Zoho CRM + WOZTELL + SQL Server (SAG)",
@@ -608,7 +623,15 @@ $(function () {
         },
         "app-huellitas-felices": {
             title: "Huellitas Felices – Rifas (3 y 4 cifras)",
-            media: [], // Array vacío, el botón se deshabilitará
+            media: [
+                {
+                    type: "video",
+                    src: "/static/videos/proyectos/app-huellitas-felices-demo.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
+                    alt: "Vídeo demostrativo para ilustrar el proceso de creación de rifas, separar boletas, así como también desed un enfoque de diseño el cómo se solucionaron ciertos retos a nivelde usabilidad para poder pintar las boletas de 2 cifras y 3 cifras sin que fueran elementos invasivos, el Frontend se desarrolló con React JS.",
+                    description:
+                        "Vídeo demostrativo para ilustrar el proceso de creación de rifas, separar boletas, así como también desed un enfoque de diseño el cómo se solucionaron ciertos retos a nivelde usabilidad para poder pintar las boletas de 2 cifras y 3 cifras sin que fueran elementos invasivos, el Frontend se desarrolló con React JS.",
+                },
+            ], // Array vacío, el botón se deshabilitará
         },
     };
 

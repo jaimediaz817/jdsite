@@ -91,6 +91,12 @@
     justify-content: center;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 
+    &.small-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+    }
+
     &.jd-tooltip-grey {
         background: rgba(45, 55, 72, 0.6);
     }

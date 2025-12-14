@@ -152,6 +152,7 @@
 
 #projectGalleryModal .modal-header {
   border-bottom: 1px solid #e2e8f0;
+  align-items: center;
 }
 
 #projectGalleryModal .modal-title {
@@ -342,7 +343,8 @@
 /* === FIN: AJUSTE DE POSICIÓN DE INDICADORES === */
 .carousel-inner {
     border: 3px solid #6b787a;
-    border-radius: 4px;
+    border-radius: 10px;
+    background: #000000;
 }
 /* ============================
    NUEVO: Estilos para el video dentro del carrusel
@@ -361,26 +363,29 @@
     background-color: #000; /* Fondo negro por si el video no carga */
 }
 
+#projectGalleryModal .modal-title {
+    line-height: 1.2;
+}
 
+/* NUEVO: Estilo para el icono de tipo de medio en el header del modal */
+#projectGalleryMediaIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 173, 181, 0.15);
+    color: #00adb5;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    line-height: 1;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    i {
+      font-size: 22px;
+    }
+}
 
 
 

@@ -1675,23 +1675,42 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title mb-0" id="projectGalleryTitle">Capturas del proyecto</h5>
+                        <span id="projectGalleryMediaIcon" class="ml-2"></span>
+                        <!-- TOOLTIP INFO IMGS/VIEDO -->
+                        <div class="jd-tooltip-wrapper  jd-tooltip-relative ml-1" data-jd-pos="auto">
+                            <button class="jd-tooltip-trigger jd-tooltip-red small-icon">i</button>
+                            <div class="jd-tooltip-panel">
+                                <div class="jd-tooltip-arrow"></div>
+                                <div class="jd-tooltip-header">
+                                    <span class="jd-tooltip-title">Tipos de recursos para imágenes y video</span>
+                                    <button class="jd-tooltip-close">x</button>
+                                </div>
+                                <div class="jd-tooltip-body">
+                                    <p>
+                                        Las capturas mostradas en este carrusel pueden ser imágenes estáticas (JPG, PNG) o videos (MP4, WEBM) dependiendo del recurso disponible para cada proyecto.
+                                    </p>
+                                </div>
+                                <div class="jd-tooltip-footer">
+                                </div>
+                            </div>
+                        </div>                        
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div id="projectGalleryCarousel" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators"></ol>
-                        <div class="carousel-inner"></div>
+                            <ol class="carousel-indicators"></ol>
+                            <div class="carousel-inner"></div>
 
-                        <a class="carousel-control-prev" href="#projectGalleryCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Anterior</span>
-                        </a>
-                        <a class="carousel-control-next" href="#projectGalleryCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Siguiente</span>
-                        </a>
+                            <a class="carousel-control-prev" href="#projectGalleryCarousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Anterior</span>
+                            </a>
+                            <a class="carousel-control-next" href="#projectGalleryCarousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Siguiente</span>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -540,7 +540,7 @@ $(function () {
                     src: "/static/videos/proyectos/app-storybooks-ficosha-seguros.mp4", // <-- ¡AÑADE LA RUTA A TU VIDEO AQUÍ!
                     alt: "Demo en video del flujo documental",
                     description:
-                        "Video demostrativo del flujo documental y la interfaz de usuario desarrollada para el proyecto Ficohsa Seguros., el requerimiento consistió en crear un catálogo de componentes en 2.5 semanas donde tenía que contemplar todos los componentes necesarios para incorporar a la aplicación móvil luego, incluyendo componentes de todo tipo para cumplir luego con las etapas siguientes, se usó un dispositivo virtual de Android Studio para poder grabar esta demostración",
+                        "Video demostrativo del flujo documental y la interfaz de usuario desarrollada para el proyecto Ficohsa Seguros, el requerimiento consistió en crear un catálogo de componentes en 2.5 semanas donde tenía que contemplar todos los componentes necesarios para incorporar a la aplicación móvil luego, incluyendo componentes de todo tipo para cumplir luego con las etapas siguientes, se usó un dispositivo virtual de Android Studio para poder grabar esta demostración",
                 },
             ],
         },
@@ -672,10 +672,26 @@ $(function () {
         const modal = $("#projectGalleryModal");
         const carouselInner = modal.find(".carousel-inner");
         const carouselIndicators = modal.find(".carousel-indicators");
+        const mediaIconContainer = modal.find("#projectGalleryMediaIcon");
 
         modal.find("#projectGalleryTitle").text(projectData.title);
         carouselInner.empty();
         carouselIndicators.empty();
+        mediaIconContainer.empty();
+
+        // --- Lógica para el icono inicial ---
+        if (projectData.media.length > 0) {
+            const firstItem = projectData.media[0];
+            let iconClass =
+                firstItem.type === "video"
+                    ? "fas fa-play-circle"
+                    : "fas fa-image";
+            let iconTitle = firstItem.type === "video" ? "Video" : "Imagen";
+            mediaIconContainer.html(
+                `<i class="${iconClass}" title="${iconTitle}"></i>`
+            );
+        }
+        // --- Fin lógica icono ---
 
         projectData.media.forEach((item, index) => {
             const indicator = $("<li></li>")
@@ -699,9 +715,20 @@ $(function () {
                 }">`;
             }
 
+            // Determina el icono según el tipo
+            let mediaIcon = "";
+            if (item.type === "video") {
+                mediaIcon =
+                    '<span class="media-type-icon" title="Video"><i class="fas fa-play-circle"></i></span>';
+            } else {
+                mediaIcon =
+                    '<span class="media-type-icon" title="Imagen"><i class="fas fa-image"></i></span>';
+            }
+
             const carouselItem = $(`
                 <div class="carousel-item">
                     <div class="project-image-wrapper">
+                        ${mediaIcon}
                         ${mediaElement}
                         ${
                             item.description
@@ -853,14 +880,14 @@ $(function () {
     });
 
     // Evento que se dispara ANTES de que un slide cambie
-    $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
-        // Pausa el video del slide que se está abandonando
-        const previousSlide = $(this).find(".carousel-item").eq(e.from);
-        const video = previousSlide.find("video");
-        if (video.length > 0) {
-            video[0].pause();
-        }
-    });
+    // $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
+    //     // Pausa el video del slide que se está abandonando
+    //     const previousSlide = $(this).find(".carousel-item").eq(e.from);
+    //     const video = previousSlide.find("video");
+    //     if (video.length > 0) {
+    //         video[0].pause();
+    //     }
+    // });
 
     // Evento que se dispara DESPUÉS de que un slide ha cambiado
     $("#projectGalleryCarousel").on("slid.bs.carousel", function (e) {
@@ -874,6 +901,23 @@ $(function () {
                     console.log("Autoplay fue bloqueado por el navegador.")
                 );
         }
+
+        // --- NUEVO: Actualizar icono en el header ---
+        const projectData =
+            projectsData[currentSlide.closest(".modal").data("projectId")];
+        if (projectData && projectData.media[e.to]) {
+            const currentMedia = projectData.media[e.to];
+            let iconClass =
+                currentMedia.type === "video"
+                    ? "fas fa-play-circle"
+                    : "fas fa-image";
+            let iconTitle = currentMedia.type === "video" ? "Video" : "Imagen";
+            $("#projectGalleryMediaIcon").html(
+                `<i class="${iconClass}" title="${iconTitle}"></i>`
+            );
+        }
+        // --- Fin de la actualización del icono ---
+
         // Resetea el panel de info del slide anterior
         $(this).find(".btn-image-info").removeClass("active");
         $(this).find(".image-description-panel").removeClass("is-visible");

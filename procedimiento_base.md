@@ -131,3 +131,14 @@ sudo systemctl status jdiaz_gunicorn.service --no-pager
 
 # en el backend instalar esto:
 pip install requests
+
+
+
+Resumen rápido
+git push (local)
+git fetch --all && git reset --hard origin/main (VPS)
+pip install -r backend/requirements.txt (si cambió)
+python manage.py migrate
+python manage.py collectstatic --noinput
+sudo systemctl restart jdiaz_gunicorn.service
+¡Con esto tu VPS queda al día y funcionando con los últimos cambios!

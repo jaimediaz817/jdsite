@@ -137,7 +137,10 @@ pip install requests
 Resumen rápido
 git push (local)
 git fetch --all && git reset --hard origin/main (VPS)
-pip install -r backend/requirements.txt (si cambió)
+
+source env/bin/activate
+pip install -r backend/requirements.txt
+
 python manage.py migrate
 python manage.py collectstatic --noinput
 sudo systemctl restart jdiaz_gunicorn.service

@@ -1,38 +1,39 @@
 
+@use 'vars';
+@use 'sass:color';
+
 // C O M M O N  -  S T Y L E S 
-
-
 //------------------------------------------------------------
 // TEXT - CONTENT
 .text-primary {
-    color: $primary!important;
+    color: vars.$primary!important;
 }
 .text-secundary, .text-grey__dark, .text-secondary {
-    color: $grey_dark!important;
+    color: vars.$grey_dark!important;
 }
 .text-light {
-    color: $grey_light!important;
+    color: vars.$grey_light!important;
 }
 .text-white-light {
-    color: rgba($white, 0.85);
+    color: rgba(vars.$white, 0.85);
 }
 .text-tertiary {
-    color: $red_light;
+    color: vars.$red_light;
 }
 
 //------------------------------------------------------------
 // BACKGROUNDS
 .bg-white {
-    background-color: $white!important;
+    background-color: vars.$white!important;
 }
 .bg-primary {
-    background-color: $primary!important;
+    background-color: vars.$primary!important;
 }
 .bg-secundary {
-    background-color: $grey_dark!important;
+    background-color: vars.$grey_dark!important;
 }
 .bg-secundary-light-1 {
-    background-color: lighten( $grey_dark, 3%);
+    background-color: color.adjust(vars.$grey_dark, $lightness: 3%);
 }
 
 
@@ -46,21 +47,21 @@
     z-index: 1;
 
     &.btn-primary {
-        background-color: $primary;
-        border-color: $primary;
+        background-color: vars.$primary;
+        border-color: vars.$primary;
         position: relative;
         box-sizing: border-box;
         border-width: 2px;
 
         &:hover, &:active, &:active {
-            background-color: $white;
-            border-color: $primary;
-            color: $secundary;
+            background-color: vars.$white;
+            border-color: vars.$primary;
+            color: vars.$secundary;
             transition: all .5s ease;
 
             &:after { // &:before:focus
                 left: .25rem;
-                color: $primary;
+                color: vars.$primary;
             }
 
             // FORM
@@ -71,11 +72,11 @@
             }
         }
         &:active {
-            background-color: lighten($primary, 5%);
-            border-color: lighten($primary, 5%);
+            background-color: color.adjust(vars.$primary, $lightness: 5%);
+            border-color: color.adjust(vars.$primary, $lightness: 5%);
         }
         &:focus {
-            box-shadow: 0 0 0 0.2rem rgba($primary, .5);
+            box-shadow: 0 0 0 0.2rem rgba(vars.$primary, .5);
         }
 
         // FORM - HOVER
@@ -83,7 +84,7 @@
             content: "";
             position: absolute;
             width: 0;
-            background: $white;
+            background: vars.$white;
             height: 100%;
             top: 0;
             left: 50%;
@@ -104,22 +105,22 @@
     }
 
     &.btn-tertiary {
-        background-color: $tertiary;
-        border-color: $tertiary;
+        background-color: vars.$tertiary;
+        border-color: vars.$tertiary;
         position: relative;
         box-sizing: border-box;
         border-width: 2px;
-        color: $white;
+        color: vars.$white;
 
         &:hover, &:active, &:active {
-            background-color: $white;
-            border-color: $tertiary;
-            color: $secundary;
+            background-color: vars.$white;
+            border-color: vars.$tertiary;
+            color: vars.$secundary;
             transition: all .5s ease;
 
             &:after { // &:before:focus
                 left: .25rem;
-                color: $tertiary;
+                color: vars.$tertiary;
             }
 
             // FORM
@@ -130,11 +131,11 @@
             }
         }
         &:active {
-            background-color: lighten($tertiary, 5%);
-            border-color: lighten($tertiary, 5%);
+            background-color: color.adjust(vars.$tertiary, $lightness: 5%);
+            border-color: color.adjust(vars.$tertiary, $lightness: 5%);
         }
         &:focus {
-            box-shadow: 0 0 0 0.2rem rgba($tertiary, .5);
+            box-shadow: 0 0 0 0.2rem rgba(vars.$tertiary, .5);
         }
 
         // FORM - HOVER
@@ -142,7 +143,7 @@
             content: "";
             position: absolute;
             width: 0;
-            background: $white;
+            background: vars.$white;
             height: 100%;
             top: 0;
             left: 50%;

@@ -1,8 +1,11 @@
+@use '../vars';
+
+
 /* ===========================
    SECCIÓN WELCOME / BIO JD
    =========================== */
 // Variables locales de colores usados en este archivo
-$color-turquesa: #00adb5;
+$color-turquesa: vars.$primary;
 $color-turquesa-dark: #00838a;
 $color-turquesa-bg: rgba(0,173,181,0.12);
 $color-turquesa-bg-card: rgba(0,173,181,0.13);
@@ -26,6 +29,8 @@ $color-shadow-card: rgba(15,23,42,0.18);
 $color-shadow-media: rgba(0,0,0,0.35);
 $color-shadow-play: rgba(0,0,0,0.6);
 $color-shadow-play-hover: rgba(0,0,0,0.75);
+
+
 .welcome-section {
     position: relative;
     overflow: hidden;
@@ -130,10 +135,13 @@ $color-shadow-play-hover: rgba(0,0,0,0.75);
 }
 
 /* Tarjeta bio derecha */
+
+
+
 .welcome-bio-card {
     background: $color-blanco-bg-card;
     border-radius: 1.5rem;
-    padding: 1.8rem 1.9rem 1.7rem;
+    // padding: 1.8rem 1.9rem 1.7rem;
     box-shadow: 0 18px 45px $color-shadow-card;
     border: 1px solid $color-border-card;
     position: relative;
@@ -142,6 +150,35 @@ $color-shadow-play-hover: rgba(0,0,0,0.75);
     justify-content: space-between;
     display: flex;
     flex-direction: column;
+
+    .padding-header-welcome {
+        padding-top: 1.8rem;
+        padding-left: 1.9rem;
+        padding-right: 1.9rem;
+        padding-bottom: 0.75rem;
+    }
+    .padding-content-welcome {
+        padding-top: 1rem;
+        padding-left: 1.9rem;
+        padding-right: 1.9rem;
+        padding-bottom: 1.5rem;
+    }
+    .padding-footer-welcome {
+        padding-top: 1rem;
+        padding-bottom: 1.8rem;
+        padding-left: 1.9rem;
+        padding-right: 1.9rem;        
+    }
+
+    .header-welcome-container {
+        background-color: vars.$bg_color_yellow_ultra_light;   
+        border-bottom: 2px solid vars.$grey_extra_light_l2;
+    }    
+
+    .footer-welcome-container {
+        border-top: 2px solid vars.$grey_extra_light_l2;
+        background-color: vars.$grey_extra_light_l1;
+    }       
 
     .lp-titulo-home {
         font-size: 1.25rem;
@@ -162,24 +199,24 @@ $color-shadow-play-hover: rgba(0,0,0,0.75);
 .welcome-bio-card::before {
     content: "";
     position: absolute;
-    width: 220px;
-    height: 220px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
-    background: radial-gradient(circle, $color-turquesa-bg-card, transparent 65%);
-    top: -80px;
-    right: -80px;
+    background: radial-gradient(circle, rgba(0, 173, 181, 0.06), transparent 70%);
+    top: -60px;
+    right: -60px;
     pointer-events: none;
 }
 
 .welcome-bio-card::after {
     content: "";
     position: absolute;
-    width: 260px;
-    height: 260px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background: radial-gradient(circle, $color-rosa-bg-card, transparent 70%);
-    bottom: -120px;
-    left: -90px;
+    background: radial-gradient(circle, rgba(246, 54, 79, 0.05), transparent 72%);
+    bottom: -90px;
+    left: -70px;
     pointer-events: none;
 }
 
@@ -234,8 +271,6 @@ $color-shadow-play-hover: rgba(0,0,0,0.75);
 
 .welcome-meta-item i {
     color: $color-turquesa;
-    margin-right: 0.45rem;
-    margin-top: 0.1rem;
 }
 
 /* Texto principal */
@@ -416,3 +451,275 @@ $color-shadow-play-hover: rgba(0,0,0,0.75);
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ...existing code...
+
+/* ===========================
+   MEJORAS WELCOME BIO CARD v2
+   =========================== */
+
+/* Fila pill + badge disponibilidad */
+.welcome-pill-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Punto animado dentro del pill */
+.welcome-pill-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: vars.$primary;
+    margin-right: 6px;
+    animation: pillDotPulse 2s ease-in-out infinite;
+}
+
+@keyframes pillDotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* Badge disponibilidad */
+.welcome-availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.22rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(1, 167, 175, 0.02);
+    border: 1px solid rgb(2, 145, 154);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #454545;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    i {
+        font-size: 0.5rem;
+        animation: availabilityBlink 1.5s ease-in-out infinite;
+        color: #22c55e;
+    }
+}
+
+@keyframes availabilityBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Título con highlight turquesa */
+.welcome-title-highlight {
+    background: linear-gradient(135deg, vars.$primary 0%, #028a93 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Meta icon mejorado */
+.welcome-meta-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 8px;
+    background: rgba(0, 173, 181, 0.1);
+    margin-right: 0.6rem;
+
+    i {
+        color: vars.$primary;
+        font-size: 0.85rem;
+    }
+}
+
+/* Highlight diferencial mejorado */
+.welcome-highlight {
+    background: #f8fffe;
+    // border-radius: 12px;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(0, 173, 181, 0.2);
+    border-left: 3px solid vars.$primary;
+    box-shadow: 0 2px 12px rgba(0, 173, 181, 0.06);
+}
+
+.welcome-highlight-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.welcome-highlight-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #fff;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.img-jd-welcome-content {
+    object-fit: cover;
+}
+
+/* Lista con puntos turquesa */
+.welcome-list {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.3rem 0;
+        color: #4b5563;
+        border-bottom: 1px dashed rgba(0, 173, 181, 0.1);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+.welcome-list-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    background: vars.$primary;
+    margin-top: 6px;
+}
+
+/* Tags con iconos mejorados */
+.welcome-tags span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    i {
+        font-size: 0.7rem;
+        color: vars.$primary;
+    }
+
+    &:hover {
+        background: rgba(0, 173, 181, 0.1);
+        border-color: rgba(0, 173, 181, 0.3);
+        color: #00838a;
+        transform: translateY(-1px);
+    }
+}
+
+/* QUICK STATS BAR */
+.welcome-quick-stats {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fdfb 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 173, 181, 0.15);
+    box-shadow: inset 0 1px 3px rgba(0, 173, 181, 0.05);
+}
+
+.welcome-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 55px;
+}
+
+.welcome-stat-number {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #00838a;
+    line-height: 1.1;
+}
+
+.welcome-stat-label {
+    font-size: 0.68rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.welcome-stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(0, 173, 181, 0.2);
+    align-self: center;
+}
+
+/* RESPONSIVE */
+@media (max-width: 767.98px) {
+    .welcome-quick-stats {
+        gap: 0.25rem;
+        padding: 0.65rem 0.75rem;
+    }
+
+    .welcome-stat-number {
+        font-size: 0.95rem;
+    }
+
+    .welcome-stat-label {
+        font-size: 0.6rem;
+    }
+
+    .welcome-highlight-header h6 {
+        font-size: 0.72rem;
+    }
+
+    .welcome-title-highlight {
+        display: block;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .welcome-pill-row {
+        justify-content: center;
+    }
+
+    .welcome-quick-stats {
+        justify-content: center;
+    }
+}
+
+
+
+

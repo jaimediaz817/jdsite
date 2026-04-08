@@ -1,0 +1,136 @@
+@use 'vars';
+@use 'sass:color';
+
+.project-card-v2 {
+    background-color: vars.$white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(vars.$grey_dark, 0.08), 0 10px 30px rgba(vars.$grey_dark, 0.06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(vars.$grey_dark, 0.1), 0 15px 40px rgba(vars.$grey_dark, 0.08);
+    }
+
+    // 1. SECCIÓN DE IMAGEN
+    &__media {
+        position: relative;
+        overflow: hidden;
+        padding-top: 56.25%; // Proporción 16:9
+
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card-v2:hover & img {
+            transform: scale(1.05);
+        }
+
+        &-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(vars.$grey_dark, 0.7) 0%, transparent 60%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+
+            .btn {
+                transform: translateY(10px);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                opacity: 0;
+            }
+        }
+
+        .project-card-v2:hover &-overlay {
+            opacity: 1;
+            .btn {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    }
+
+    // 2. CONTENIDO (TEXTO)
+    &__content {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    &__header {
+        margin-bottom: 0.75rem;
+    }
+
+    &__title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: vars.$grey_dark;
+        margin-bottom: 0.25rem;
+    }
+
+    &__meta {
+        font-size: 0.85rem;
+        color: vars.$grey_light;
+    }
+
+    &__body {
+        flex-grow: 1;
+        margin-bottom: 1rem;
+    }
+
+    &__description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: vars.$grey_dark;
+        margin-bottom: 1rem;
+    }
+
+    &__skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    // 3. FOOTER (ACCIONES)
+    &__footer {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+    }
+}
+
+// BADGE REUTILIZABLE
+.badge-v2 {
+    display: inline-block;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    background-color: color.adjust(vars.$primary, $alpha: -0.9);
+    color: vars.$primary_darken;
+    border: 1px solid color.adjust(vars.$primary, $alpha: -0.8);
+}
+
+// --- RESPONSIVE ---
+@media (max-width: 767.98px) {
+    .project-card-v2__title {
+        font-size: 1.1rem;
+    }
+    .project-card-v2__content {
+        padding: 1rem;
+    }
+}

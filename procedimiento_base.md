@@ -145,3 +145,7 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 sudo systemctl restart jdiaz_gunicorn.service
 ¡Con esto tu VPS queda al día y funcionando con los últimos cambios!
+
+
+## PARA ACTUALIZAR ALGUN SCSS:
+ir akl package.json para ejecutar los comandos scss (watch y compiltado, un nivel arriba de backend)

@@ -1,25 +1,32 @@
 // IMPORTS
-@import 'vars';
-@import 'typography';
-@import 'mixins';
-@import 'commons';
+@use 'vars';
+@use 'typography';
+@use 'mixins';
+@use 'commons';
+
 // Libs
-@import 'libs';
-@import 'header';
-@import 'slides';
-@import 'homePage';
-@import 'contactJDForm';
-@import 'metodologia_trabajo';
+@use 'libs';
+@use 'header';
+@use 'slides';
+@use 'homePage';
+@use 'home_custom';
+@use 'contactJDForm';
+@use 'metodologia_trabajo';
+
 // videos
-@import 'videos_slide_container';
+@use 'videos_slide_container';
+
 // Projects section
-@import 'projects_section';
-@import 'skills_habilidades_tech';
+@use 'projects_section';
+@use 'skills_habilidades_tech';
 
 // Librerías propias:
-@import 'lib/terminal_landing';
-@import 'components/tooltip/jd_tooltip';
-@import 'components/acordion/jd_acordion';
-@import 'lib/introJS';
-@import 'responsive_elements';
-@import 'addons/addons_home';
+@use 'lib/terminal_landing';
+@use 'components/tooltip/jd_tooltip';
+@use 'components/acordion/jd_acordion';
+
+@use 'project_card_v2';
+
+@use 'lib/introJS';
+@use 'responsive_elements';
+@use 'addons/addons_home';

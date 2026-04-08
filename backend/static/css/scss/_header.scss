@@ -1,3 +1,6 @@
+@use 'sass:color';
+@use 'vars';
+
 
 #contact-info {
     padding: .5rem 1rem;
@@ -7,19 +10,7 @@
     background: rgba(0,173,181,0.98); // glass suave si quieres
     a { text-decoration: underline dotted; }
     .fa-lg { opacity: 0.85; }
-
-    .container {
-        .row {
-            // padding-left: 2.5rem;
-            // padding-right: 2.5rem;
-        }
-    }
 }
-
-
-
-
-
 
 #navigation-menu {
     // ... (estilos existentes)
@@ -58,7 +49,7 @@
 @media(min-width: 0) {
     // CONTACT #1
     section .social-network li a i {
-        color: $white;
+        color: vars.$white;
         font-size: 1.25rem;
         padding: .6rem 1rem;
         opacity: 0.8;
@@ -72,7 +63,7 @@
 
     // CONTACT #2
     #details-contact {
-        color: $grey_light;
+        color: vars.$grey_light;
         display: none!important;
     }
 
@@ -102,7 +93,7 @@
             transition: all 0.55s ease;
             background-color: #1f2225;
             // border-bottom: 2px solid lighten($red_light, 0.15);
-            border-bottom: 2px solid $red_light_darken;
+            border-bottom: 2px solid vars.$red_light_darken;
             width: 100%!important;
 
             // JD - dark
@@ -121,7 +112,7 @@
                 content: "\f0c9";
                 font-weight: 900;
                 font-size: 2rem;
-                color: $white;
+                color: vars.$white;
                 transition: all 0.4s ease;
                 position: relative;
                 left: 0.3rem;
@@ -144,11 +135,12 @@
                     border-radius: .5rem;
                     &:hover {                        
                         .nav-link {
-                            background-color: $primary;
+                            background-color: vars.$primary;
                         }                        
                     }
                     .nav-link {
-                        background-color: darken($primary, 3%);
+                        // background-color: color.adjust(vars.$primary, 3%);
+                        background-color: color.adjust(vars.$primary, $lightness: 3%);
                     }                    
                 }
 
@@ -160,8 +152,8 @@
                     border-radius: .5rem;
         
                     &:hover {
-                        color: $white;
-                        background-color: lighten($secundary, 10%);
+                        color: vars.$white;
+                        background-color: color.adjust(vars.$secundary, $lightness: 10%);
         
                         &:after {
                             transform: rotateZ(180deg);
@@ -175,7 +167,7 @@
                     }
 
                     &.active {
-                        background-color: darken($primary, 3%);
+                        background-color: darken(vars.$primary, 3%);
                     }
 
                 }

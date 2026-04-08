@@ -99,7 +99,7 @@
 
         <!-- CUSTOM  STYLES -->
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-        <link rel="stylesheet" href="{% static 'css/home_custom.css' %}">
+        {% comment %} <link rel="stylesheet" href="{% static 'css/home_custom.css' %}"> {% endcomment %}
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
@@ -286,6 +286,7 @@
                     <video autoplay muted loop playsinline class="bg-video">
                         <source src="{% static 'videos/home/jd_hero_loop.mp4' %}" type="video/mp4">
                     </video>
+
                     <div class="container text-slide-container">
                         <div class="row justify-content-md-start">
                             <div class="col-12 col-lg-8 text-left">
@@ -397,9 +398,10 @@
                     <div class="col-12 col-lg-5 swipe-item-home mb-4 mb-lg-0 d-flex">
                         <div class="welcome-media-stack">
                             <div class="video-container position-relative welcome-media">
+
                                 <img src="{% static 'images/jd-imagen-office-v2.png' %}"
                                     alt="Jaime Díaz, Full-Stack Developer JS/Python trabajando en entorno de oficina"
-                                    class="img-fluid rounded-lg shadow-lg">
+                                    class="img-jd-welcome-content img-fluid rounded-lg shadow-lg">
 
                                 <a data-fancybox
                                 href="https://www.youtube.com/watch?v=d6KleH5mLms"
@@ -468,7 +470,7 @@
 
 
                     <!-- Columna derecha: bio mejorada -->
-                    <div class="col-12 col-lg-7 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
+                    {% comment %} <div class="col-12 col-lg-7 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
                         <div class="welcome-bio-card">
                             <span class="welcome-pill">Full-Stack JS / Python · Integraciones de negocio</span>
 
@@ -529,7 +531,134 @@
                                 <span>Nginx · Docker · CI/CD</span>
                             </div>
                         </div>
+                    </div> {% endcomment %}
+
+<div class="col-12 col-lg-7 pt-3 pt-lg-0 text-center text-lg-left swipe-item-home d-flex">
+    <div class="welcome-bio-card">
+        <div class="header-welcome-container padding-header-welcome">
+            <!-- PILL SUPERIOR -->
+            <div class="welcome-pill-row">
+                <span class="welcome-pill">
+                    <span class="welcome-pill-dot"></span>
+                    Full-Stack JS / Python · Integraciones de negocio
+                </span>
+                <span class="welcome-availability-badge">
+                    <i class="fas fa-circle"></i> Disponible
+                </span>
+            </div>
+
+            <!-- TÍTULO -->
+            <h2 class="welcome-title mt-3">
+                Soy <span class="welcome-title-highlight">Jaime Iván Díaz Gaona</span>
+            </h2>
+        </div>
+
+        <div class="content-welcome-container padding-content-welcome">
+            <!-- SUBTÍTULO -->
+            <p class="welcome-subtitle mb-3 lp-titulo-home">
+                Full-Stack JS/Python · Frontend (Angular/React) · Zoho CRM (Deluge)
+            </p>
+
+            <!-- META INFO -->
+            <div class="welcome-meta mb-3">
+                <div class="welcome-meta-item">
+                    <div class="welcome-meta-icon">
+                        <i class="far fa-calendar-alt"></i>
                     </div>
+                    <span class="lp-parrafo-home">+{{ experience_years }} años construyendo productos digitales</span>
+                </div>
+                <div class="welcome-meta-item">
+                    <div class="welcome-meta-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <span class="lp-parrafo-home">RUNT · Caracol TV · DMS Tigo · Susuerte · 8Belts · Romy Mail</span>
+                </div>
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <p class="welcome-body mb-3 lp-parrafo-home">
+                Me enfoco en transformar procesos de negocio en soluciones digitales trazables,
+                medibles y fáciles de mantener, desde el frontend hasta la capa de integraciones
+                con APIs y automatizaciones.
+            </p>
+
+            <!-- BLOQUE DIFERENCIAL -->
+            <div class="welcome-highlight mb-3">
+                <div class="welcome-highlight-header">
+                    <div class="welcome-highlight-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h6 class="text-uppercase small font-weight-bold mb-0 lp-titulo-home">
+                        Diferencial · Zoho + WhatsApp / WOZTELL
+                    </h6>
+                </div>
+                <ul class="welcome-list mb-0 lp-parrafo-home">
+                    <li>
+                        <span class="welcome-list-dot"></span>
+                        Functions, Schedules, Webhooks, Blueprints, Custom Views, Bulk Read/Write, REST API en Zoho CRM.
+                    </li>
+                    <li>
+                        <span class="welcome-list-dot"></span>
+                        APIs Deluge seguras para FastAPI / Node y chatbots WOZTELL (tokens / API key).
+                    </li>
+                    <li>
+                        <span class="welcome-list-dot"></span>
+                        Flujos bidireccionales con validaciones, logs, reintentos, alertas y trazabilidad end-to-end.
+                    </li>
+                    <li>
+                        <span class="welcome-list-dot"></span>
+                        Chatbots en WhatsApp con menús interactivos y respuestas contextuales contra Zoho y servicios externos.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-welcome-container padding-footer-welcome">
+            <!-- CTAs -->
+            <div class="welcome-cta-row">
+                <a href="#contact" class="btn lp btn-primary mb-2 mb-sm-0">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Contáctame si eres reclutador(a)
+                </a>
+                <a href="{% static 'docs/Certificaciones_Completo_JaimeDiaz.pdf' %}"
+                    class="btn lp btn-tertiary"
+                    download="Certificaciones_Jaime_Diaz"
+                    aria-label="Descargar certificaciones y cursos en PDF">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    Certificaciones
+                </a>
+            </div>
+
+            <!-- TAGS / SKILLS -->
+            <div class="welcome-tags mt-3 lp-skills-home">
+                <span><i class="fas fa-code mr-1"></i>Zoho Deluge</span>
+                <span><i class="fas fa-bolt mr-1"></i>FastAPI</span>
+                <span><i class="fas fa-layer-group mr-1"></i>Angular / React</span>
+                <span><i class="fab fa-whatsapp mr-1"></i>WOZTELL · WhatsApp</span>
+                <span><i class="fas fa-server mr-1"></i>Nginx · Docker · CI/CD</span>
+            </div>
+
+            <!-- SEPARADOR + STATS RÁPIDOS -->
+            <div class="welcome-quick-stats mt-3">
+                <div class="welcome-stat-item">
+                    <span class="welcome-stat-number">+{{ experience_years }}</span>
+                    <span class="welcome-stat-label">años exp.</span>
+                </div>
+                <div class="welcome-stat-divider"></div>
+                <div class="welcome-stat-item">
+                    <span class="welcome-stat-number">Remoto</span>
+                    <span class="welcome-stat-label">disponible</span>
+                </div>
+                <div class="welcome-stat-divider"></div>
+                <div class="welcome-stat-item">
+                    <span class="welcome-stat-number">Col</span>
+                    <span class="welcome-stat-label">Colombia 🇨🇴</span>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>
+
                 </div>
             </div>
         </section>
@@ -1009,45 +1138,56 @@
                                         <div class="row project-grid">
                                             <!-- PROYECTO 1: CRQ -->
                                             <div class="col-12 col-md-6 mb-4">
+                                                
                                                 <article class="card h-100 border-1 shadow-sm project-card">
-                                                    <div class="card-body d-flex flex-column">
-                                                        <h3 class="project-title mb-1">
-                                                        StoryBooks (catálogo de componentes UI) para Ficohsa Seguros
-                                                        </h3>
-                                                        <p class="project-meta text-muted mb-2">
-                                                        Banco Ficosha - Catálogo de componentes Con React Native
-                                                        </p>
-                                                        <span class="card-title-descripcion">Características del proyecto:</span>
-                                                        <ul class="pl-3 mb-3 project-points">
-                                                            <li>Catálogo de componentes UI para Ficohsa Seguros usando RC</li>
-                                                            <li>Fácil ejecución para entornos Android, IOS usando EXPO</li>
-                                                            <li>Maquetación de componentes a partir de plantilla de diseño en FIGMA compartido</li>
-                                                            <li>A través de una lista ordenada de components se visualizan según la seleción desde el menú principal</li>
-                                                        </ul>
-                                                        <span class="card-title-descripcion">Skills usados/adquiridos:</span>
-                                                        <div class="mb-3 badges-container">
-                                                            <span class="badge badge-tech">Storybook para React Native con EXPO</span>
-                                                            <span class="badge badge-tech">Yarn</span>
-                                                            <span class="badge badge-tech">TypeScript</span>
-                                                            <span class="badge badge-tech">Native StyleSheet</span>
-                                                            <span class="badge badge-tech">Compilación en tiempo real con Expo - Adroid</span>
+                                                    <div class="d-flex flex-column">
+                                                        <div class="project-card-header card-section-item-container">
+                                                            <h3 class="project-title mb-1">
+                                                            StoryBooks (catálogo de componentes UI) para Ficohsa Seguros
+                                                            </h3>
+                                                            <p class="project-meta text-muted mb-2">
+                                                            Banco Ficosha - Catálogo de componentes Con React Native
+                                                            </p>
                                                         </div>
 
-                                                        <div class="actions-project-container  d-flex flex-wrap align-items-center">
-                                                            <a href="#contact"
-                                                                class="btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
-                                                                data-project="StoryBooks (catálogo de componentes UI) para Ficohsa Seguros con React Native"
-                                                                data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
-                                                                Quiero algo así (StoryBooks con React Native)
-                                                            </a>
-                                                            <button 
-                                                                type="button"
-                                                                class="btn btn-light btn-sm mb-2 project-gallery-trigger"
-                                                                data-project-id="app-storybook-ficohsa-seguros"
-                                                                tabindex="-1">
-                                                                <i class="fas fa-images mr-1"></i>
-                                                                Ver capturas
-                                                            </button>                                                         
+                                                        <div class="project-card-body card-section-item-container flex-grow-1">
+                                                            <span class="card-title-descripcion">Características del proyecto:</span>
+                                                            <ul class="pl-3 mb-3 project-points">
+                                                                <li>Catálogo de componentes UI para Ficohsa Seguros usando RC</li>
+                                                                <li>Fácil ejecución para entornos Android, IOS usando EXPO</li>
+                                                                <li>Maquetación de componentes a partir de plantilla de diseño en FIGMA compartido</li>
+                                                                <li>A través de una lista ordenada de components se visualizan según la seleción desde el menú principal</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="project-card-footer card-section-item-container ">
+                                                            <span class="card-title-descripcion">Skills usados/adquiridos:</span>
+                                                            <div class="mb-3 badges-container">
+                                                                <span class="badge badge-tech">Storybook para React Native con EXPO</span>
+                                                                <span class="badge badge-tech">Yarn</span>
+                                                                <span class="badge badge-tech">TypeScript</span>
+                                                                <span class="badge badge-tech">Native StyleSheet</span>
+                                                                <span class="badge badge-tech">Compilación en tiempo real con Expo - Adroid</span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="project-actions card-section-item-container">
+                                                            <div class="actions-project-container  d-flex flex-wrap align-items-center">
+                                                                <a href="#contact"
+                                                                    class="btn-gradient-green  btn-addtext-to-form-opc1 btn btn-outline-primary btn-sm mr-2 mb-2"
+                                                                    data-project="StoryBooks (catálogo de componentes UI) para Ficohsa Seguros con React Native"
+                                                                    data-stack="Laravel · Vue 2 · Bootstrap · PostgreSQL/MySQL">
+                                                                    <span class="btn-content">Quiero algo así (StoryBooks con React Native)</span>
+                                                                </a>
+                                                                <button 
+                                                                    type="button"
+                                                                    class="btn btn-gradient-red btn-sm mb-2 project-gallery-trigger"
+                                                                    data-project-id="app-storybook-ficohsa-seguros"
+                                                                    tabindex="-1">
+                                                                    <span class="btn-content">
+                                                                        <i class="fas fa-images mr-1"></i>Ver capturas
+                                                                    </span>
+                                                                </button>                                                         
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </article>                                                

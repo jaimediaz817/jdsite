@@ -1,3 +1,5 @@
+@use 'vars';
+
 /* ONNOFF SWITCH */
 .switch {
     position: relative;
@@ -15,7 +17,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: vars.$grey_light_l1;
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -26,15 +28,15 @@
     width: 20px;
     left: 3px;
     bottom: 2px;
-    background-color: white;
+    background-color: vars.$white;
     -webkit-transition: .4s;
     transition: .4s;
 }
 input:checked + .slider {
-  background-color: rgb(0, 172, 185);
+  background-color: vars.$primary_light_l1;
 }
 input:focus + .slider {
-  box-shadow: 0 0 1px rgb(0, 172, 185);
+  box-shadow: 0 0 1px vars.$primary_light_l1;
 }
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
@@ -62,11 +64,11 @@ input:checked + .slider:before {
    ============================ */
 
 .form-container .card-form-contact {
-  background: #ffffff;
+  background: vars.$white;
   border-radius: 18px;
   padding: 2.25rem 2rem;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 45px rgba(vars.$grey_dark_l1, 0.10);
+  border: 1px solid rgba(vars.$grey_light_l2, 0.25);
 }
 
 /* Titular del formulario */
@@ -81,14 +83,14 @@ input:checked + .slider:before {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 700;
-  color: #64748b;
+  color: vars.$grey_medium;
   margin-bottom: 0.3rem;
 }
 
 /* Inputs */
 .form-container .card-form-contact .form-control {
   border-radius: 999px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid vars.$grey_light_l3;
   padding: 0.55rem 0.95rem;
   font-size: 0.95rem;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -103,15 +105,15 @@ input:checked + .slider:before {
 
 /* Focus state */
 .form-container .card-form-contact .form-control:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 0.14rem rgba(14, 165, 233, 0.25);
-  background: #f9fafb;
+  border-color: vars.$primary_light_blue_l1;
+  box-shadow: 0 0 0 0.14rem rgba(vars.$primary_light_blue_l1, 0.25);
+  background: vars.$white_light_l1;
 }
 
 /* Helper text */
 .form-container .card-form-contact .form-text {
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: vars.$grey_light_l4;
 }
 
 /* Separación vertical entre grupos */
@@ -142,8 +144,8 @@ input:checked + .slider:before {
   margin-top: 0.9rem;
   padding: 0.75rem 0.9rem;
   border-radius: 999px;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  background: vars.$grey_light_l5;
+  border: 1px dashed vars.$grey_light_l6;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -167,7 +169,7 @@ input:checked + .slider:before {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: #e2e8f0;
+  background-color: vars.$grey_light_l7;
   border-radius: 999px;
   transition: background-color 0.2s ease;
 }
@@ -180,8 +182,8 @@ input:checked + .slider:before {
   left: 4px;
   top: 3px;
   border-radius: 999px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.3);
+  background-color: vars.$white;
+  box-shadow: 0 2px 4px rgba(vars.$grey_dark_l1, 0.3);
   transition: transform 0.2s ease;
 }
 

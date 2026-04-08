@@ -1,3 +1,6 @@
+@use '../../vars';
+
+
 /* ============================
    COMPONENTE ACORDEÓN REUTILIZABLE
    ============================ */
@@ -10,7 +13,7 @@
             padding: 0;
         }
         .jd-accordion-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(vars.$black, 0.08);
             height: 0;
             padding-bottom: 0;
             margin-bottom: 0;
@@ -20,8 +23,8 @@
                 z-index: 999;
                 .jd-accordion-toggle {
                     height: 32px;
-                    background: #343a40;
-                    color: #ffffff;     
+                    background: vars.$grey_light;
+                    color: vars.$white;     
                     top: -2.15rem;
                     right: 2.75rem;
                     span {
@@ -37,16 +40,16 @@
 .jd-accordion-toggle {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #4b5563;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    color: vars.$grey_medium;
+    background: vars.$white_light_l1;
+    border: 1px solid vars.$grey_light_l7;
     border-radius: 999px;
     padding: 0.4rem 1rem;
     transition: background 0.2s ease, color 0.2s ease;
 
     &:hover {
-        background: #e2e8f0;
-        color: #0f172a;
+        background: vars.$grey_light_l7;
+        color: vars.$grey_ultra_dark;
     }
 
     i {
@@ -78,7 +81,7 @@
         border-color: transparent;
         width: 5px;
         height: 100%;
-        background: #00adb5;
+        background: vars.$primary;
         transition: all 1.5s ease-in-out;
         opacity: 1;
         pointer-events: none;
@@ -99,12 +102,12 @@
             content: "";
             // opacity: 0;
             pointer-events: auto;
-            background: $tertiary;
+            background: vars.$tertiary;
         }
         &::after {
             content: "...";
             padding-left: 1rem;
-            color: $tertiary;
+            color: vars.$tertiary;
             transition: all 1.5s ease-in-out;
         }
     } 
@@ -150,7 +153,7 @@
 /* SVG */
 .jd-acc-arrow {
     transition: transform 0.3s ease;
-    color: #00adb5; /* turquesa consistente con tu paleta */
+    color: vars.$primary; /* turquesa consistente con tu paleta */
     transform: rotate(180deg);
     width: 25px;
     height: 25px;    
@@ -167,16 +170,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
 @media (max-width: 991px) {
     .jd-accordion-header {
         & > .row {
@@ -186,9 +179,5 @@
 }
 
 @media (max-width: 513px) {
-    .jd-accordion-header {
-        .jd-acordion-title-section {
-            // font-size: 2.25rem;
-        }
-    }
+    // NOTE: pendiente
 }

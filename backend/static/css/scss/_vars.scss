@@ -4,27 +4,53 @@
 //-----------------------------------------------
 
 // Blue scale | primary
-$primary: #00adb5;
-$primary_tmp: #00b57e;
+$primary: #00ADB5;
+$primary_darken: #028a93;
+$primary_darken_l1: rgb(0, 173, 181);
+$primary_light_l1: rgb(0, 172, 184);
+$primary_light_l2: #89cacd;
+
+// Blue
+$primary_light_blue_l1: rgba(14, 165, 233, 1);
+$primary_light_blue_l2: #0ea5e9;
+
 // Grey scale
+$black: #000000;
+$grey_ultra_dark: #0f172a;
+$grey_dark_l1: rgb(15, 23, 42);
 $grey_dark: #23262A;
+$grey_light: #393E46;
+
+$grey_medium: #64748b;
+$grey_light_l2: rgb(148, 163, 184);
+$grey_extra_light_l1: #fbfbfb;
+$grey_extra_light_l2: #efefef;
+
+$white_light_l1: #f9fafb;
+$grey_light_l3: #cbd5e1;
+$grey_light_l4: #94a3b8;
+$grey_light_l5: #f8fafc;
+$grey_light_l6: #cbd5e1;
+$grey_light_l7: #e2e8f0;
+$grey_light_l1: #ccc;
+$white_light_: #EEEEEE;
+$white: #FFFFFF;
+
 $secundary: $grey_dark;
 $secondary: $secundary;
+
 $tertiary: #F6364F;
-$grey_light: #393E46;
-// White scale
-$white_ultra_light: #F6F6F6;
-$white_light_: #EEEEEE;
-// CTA, actions
 $red_light: #F6364F;
 $red_light_darken: #f75b6f;
 
+// White scale
+$white_ultra_light: #F6F6F6;
 
-//****************************
-$white: #FFFFFF;
+// COMPONENTS COLORS:
+// Tooltip component:
+$tooltip_border_dark: #0d0f14;
 
-//-----------------------------------------------
-
+$bg_color_yellow_ultra_light: #fdfced;
 
 
 /*-----------------------------------------------

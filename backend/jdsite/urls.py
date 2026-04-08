@@ -50,6 +50,7 @@ urlpatterns = [
     path("inq/", include(("inquiries.urls", "inquiries"), namespace="inquiries")),
     # ... otras URLs
     path("api/", include("core.urls")),
+    path("", include("soap_service.urls")),
     path("cv/", descargar_cv, name="descargar_cv"),
     path("cv-file/", descargar_cv_real, name="descargar_cv_real"),
     path(

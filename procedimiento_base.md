@@ -144,6 +144,7 @@ source env/bin/activate
 pip install -r backend/requirements.txt
 
 python manage.py migrate
+"cd backend" + ENTER
 python manage.py collectstatic --noinput
 sudo systemctl restart jdiaz_gunicorn.service
 ¡Con esto tu VPS queda al día y funcionando con los últimos cambios!

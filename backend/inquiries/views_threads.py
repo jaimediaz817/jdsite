@@ -65,6 +65,7 @@ def home_view(request):
         "total_hours": f"{total_hours_worked:,}".replace(",", "."),
         "github_counts": repos_counts,
         "github_repos_grouped": grouped_repos,
+        "cv_filename": settings.CV_FILENAME,
     }
     return render(request, "home.html", context)
 
@@ -383,11 +384,11 @@ def descargar_cv(request):
 
 
 def descargar_cv_real(request):
-    file_path = os.path.join(
-        settings.STATIC_ROOT, "docs/Jaime_Diaz_Espaniol_2025.pdf"
-    )
+    file_path = os.path.join(settings.STATIC_ROOT, f"docs/{settings.CV_FILENAME}")
     return FileResponse(
-        open(file_path, "rb"), as_attachment=True, filename="Jaime_Diaz_CV.pdf"
+        open(file_path, "rb"),
+        as_attachment=True,
+        filename=settings.CV_DOWNLOAD_NAME,
     )
 
 

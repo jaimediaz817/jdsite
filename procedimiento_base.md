@@ -13,12 +13,14 @@ pip install django mysqlclient python-dotenv gunicorn
 
 django-admin startproject jdsite backend
 
+## NOTE: ojo con estos ya que muestran error si no se instalan antes de ejecutar la migración
 pip install pymysql
+pip install cryptography
 
 cd backend
 python manage.py makemigrations
 
-pip install cryptography
+
 
 - ejecutar las migraciones
 python manage.py migrate

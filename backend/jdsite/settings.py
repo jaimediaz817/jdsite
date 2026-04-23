@@ -157,3 +157,10 @@ JD_AVATAR_URL = f"{SITE_URL}/static/images/jd-imagen.jpg"
 
 # --- AÑADIR ESTA LÍNEA AL FINAL ---
 SITE_ID = 1
+
+# =================================================
+# CONFIGURACIÓN ÚNICA PARA CV - CAMBIAR SOLO AQUÍ
+# =================================================
+CV_FILENAME = "Jaime_Diaz_Espaniol_2026.pdf"
+CV_DOWNLOAD_NAME = "Jaime_Diaz_CV.pdf"
+# =================================================

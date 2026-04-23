@@ -66,6 +66,7 @@ def home_view(request):
         "github_counts": repos_counts,
         "github_repos_grouped": grouped_repos,
         "cv_filename": settings.CV_FILENAME,
+        "cv_cache_version": int(date.today().strftime("%Y%m%d%H%M")),
     }
     return render(request, "home.html", context)
 

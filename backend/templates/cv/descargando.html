@@ -92,7 +92,7 @@
                     iframe.style.display = 'none';
                     check.style.display = "none";
                     // Apuntamos a la URL de Django que tiene as_attachment=True
-                    iframe.src = "{% url 'descargar_cv_real' %}?v={{ cv_cache_version }}"; 
+                    iframe.src = "{% url 'descargar_cv_real' %}"; 
                     document.body.appendChild(iframe);
                     
                     // Limpieza del iframe después de un tiempo prudencial
@@ -127,7 +127,7 @@
                     const iframe = document.createElement('iframe');
                     iframe.style.display = 'none';
                     // Apuntamos a la URL de Django que tiene as_attachment=True
-                    iframe.src = "{% url 'descargar_certificaciones_real' %}?v={{ cv_cache_version }}"; 
+                    iframe.src = "{% url 'descargar_certificaciones_real' %}"; 
                     document.body.appendChild(iframe);
                     
                     // Limpieza del iframe después de un tiempo prudencial

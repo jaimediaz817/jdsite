@@ -393,11 +393,18 @@ def descargar_cv(request):
 
 def descargar_cv_real(request):
     file_path = os.path.join(settings.STATIC_ROOT, f"docs/{settings.CV_FILENAME}")
-    return FileResponse(
+    response = FileResponse(
         open(file_path, "rb"),
         as_attachment=True,
-        filename=settings.CV_DOWNLOAD_NAME,
     )
+    response["Content-Disposition"] = (
+        f'attachment; filename="{settings.CV_DOWNLOAD_NAME}"'
+    )
+    response["Content-Type"] = "application/pdf"
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
 
 
 def descargar_certificaciones_real(request):

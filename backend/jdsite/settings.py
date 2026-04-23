@@ -161,6 +161,6 @@ SITE_ID = 1
 # =================================================
 # CONFIGURACIÓN ÚNICA PARA CV - CAMBIAR SOLO AQUÍ
 # =================================================
-CV_FILENAME = "Jaime_Diaz_Espaniol_2026.pdf"
+CV_FILENAME = "CV_Jaime_Diaz.pdf"
 CV_DOWNLOAD_NAME = "Jaime_Diaz_CV.pdf"
 # =================================================

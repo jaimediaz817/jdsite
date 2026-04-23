@@ -381,7 +381,14 @@ def api_admin_reply(request):
 def descargar_cv(request):
     current_site = get_current_site(request)
     site_domain = current_site.domain
-    return render(request, "cv/descargando.html", {"site_domain": site_domain})
+    return render(
+        request,
+        "cv/descargando.html",
+        {
+            "site_domain": site_domain,
+            "cv_cache_version": int(date.today().strftime("%Y%m%d%H%M")),
+        },
+    )
 
 
 def descargar_cv_real(request):

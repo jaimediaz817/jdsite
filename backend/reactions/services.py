@@ -35,13 +35,20 @@ def get_user_reactions(blog_slug: str, ip_address: str) -> list:
 def toggle_reaction(blog_slug: str, ip_address: str, reaction_type: str) -> bool:
     """
     Alterna una reaccion: si existe la borra, si no existe la crea.
-    Retorna True si la reaccion quedo activa, False si se quito.
+    ✅ NUEVA REGLA: Solo se permite UNA reaccion por usuario por blog.
+    Al activar una nueva reaccion se borran automaticamente todas las demas.
 
     100% atomico a nivel de base de datos.
     No importa cuantas peticiones simultaneas lleguen, siempre funciona correctamente.
     """
     try:
-        # Intentamos borrar primero si existe
+        # Primero borramos CUALQUIER otra reaccion que tenga el usuario en este blog
+        BlogReaction.objects.filter(
+            blog_slug=blog_slug,
+            ip_address=ip_address,
+        ).exclude(reaction_type=reaction_type).delete()
+
+        # Ahora alternamos la reaccion solicitada
         deleted, _ = BlogReaction.objects.filter(
             blog_slug=blog_slug,
             ip_address=ip_address,

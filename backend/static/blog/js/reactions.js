@@ -47,6 +47,14 @@
         const isCurrentlyActive = button.classList.contains('active');
         const newState = !isCurrentlyActive;
 
+        // ✅ NUEVA REGLA: Desactivar TODAS las demas reacciones
+        document.querySelectorAll('.reaction-button').forEach(btn => {
+            if (btn !== button) {
+                btn.classList.remove('active');
+                void btn.offsetWidth;
+            }
+        });
+
         updateButtonState(button, newState);
 
         // Debounce 300ms
@@ -86,7 +94,15 @@
             const isActive = userActive.includes(type);
 
             button.querySelector('.count').textContent = count;
-            updateButtonState(button, isActive);
+            
+            if (isActive) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+            
+            // Reset animacion
+            void button.offsetWidth;
         });
     }
 

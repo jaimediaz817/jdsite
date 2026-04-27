@@ -17,7 +17,7 @@ Implementar sistema de reacciones **SIN REGISTRO DE USUARIOS** con control de un
 | 🔴 Sin registro obligatorio  | NUNCA se pedirá email, nombre ni ningún dato personal al usuario para reaccionar | CRÍTICO |
 | 🔴 Control de unicidad       | Una misma IP solo puede dar 1 vez cada tipo de reacción por publicación          | CRÍTICO |
 | 🔴 Comportamiento Toggle     | Presionar nuevamente la misma reacción la quita                                  | ALTO    |
-| 🔴 No hay límite de tipos    | Un mismo usuario puede dar diferentes tipos de reacción al mismo artículo        | ALTO    |
+| 🔴 UNA SOLA REACCIÓN         | Un mismo usuario solo puede dar MAXIMO UNA reacción por artículo                 | ALTO    |
 | 🔴 Animaciones profesionales | Todas las interacciones siguen principios de usabilidad aprobados                | ALTO    |
 | 🟡 Funciona sin Javascript   | Debe degradarse gracefulmente y funcionar incluso con JS desactivado             | MEDIO   |
 | 🟡 Sin cookies               | No se usará storage del navegador, única fuente de verdad es IP + Artículo       | MEDIO   |

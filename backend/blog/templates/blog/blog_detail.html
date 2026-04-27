@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es" class="html-jd">
+<head>
+    <title>{{ post.meta_title|default:post.title }} | Jaime Díaz</title>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="{{ post.meta_description|default:post.description }}">
+    
+    <!-- BOOTSTRAP   LIB -->
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    
+    <!-- SWIPER      LIB -->
+    <link rel="stylesheet" href="{% static 'css/lib/swiper.min.css' %}">
+    
+    <!-- FONTAWESOME LIB -->
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+    
+    <!-- CUSTOM  STYLES -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}">
+    
+    <style>
+        /* ✨ Barra progreso lectura - ULTIMA CORRECION POSIBLE */
+        html, body {
+            overflow-y: auto !important;
+            height: auto !important;
+        }
+        
+        .reading-progress-bar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 5px !important;
+            z-index: 99999999999 !important;
+            background: #f1f5f9 !important;
+            pointer-events: none !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .reading-progress-fill {
+            height: 100% !important;
+            width: 0%;
+            background: linear-gradient(90deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%) !important;
+            transition: width 40ms linear !important;
+            display: block !important;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.35) !important;
+        }
+        
+        /* ✨ BARRA LATERAL FLOTANTE REACCIONES */
+        .floating-reaction-bar {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 300ms ease-out;
+        }
+
+        .floating-reaction-bar.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+<body class="home-p">
+    <!-- ✨ Barra progreso lectura -->
+    <div class="reading-progress-bar">
+        <div class="reading-progress-fill"></div>
+    </div>
+
+    {% include "partials/_navigation_menu.html" %}
+
+<!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
+<div class="floating-reaction-bar d-none d-lg-flex">
+    <div class="d-flex flex-column gap-2 p-2 bg-white shadow-sm rounded">
+        <button class="btn btn-outline-secondary btn-reaction-float" title="Me gusta">
+            <i class="fas fa-thumbs-up"></i>
+            <span class="d-block mt-1 small">42</span>
+        </button>
+        <button class="btn btn-outline-secondary btn-reaction-float" title="Me encanta">
+            <i class="fas fa-heart"></i>
+            <span class="d-block mt-1 small">18</span>
+        </button>
+        <button class="btn btn-outline-secondary btn-reaction-float" title="Buena idea">
+            <i class="fas fa-lightbulb"></i>
+            <span class="d-block mt-1 small">9</span>
+        </button>
+        <button class="btn btn-outline-secondary btn-reaction-float" title="Excelente">
+            <i class="fas fa-fire"></i>
+            <span class="d-block mt-1 small">7</span>
+        </button>
+        <div class="border-top my-1"></div>
+        <a href="#comments" class="btn btn-outline-secondary btn-reaction-float" title="Comentarios">
+            <i class="fas fa-comments"></i>
+            <span class="d-block mt-1 small">2</span>
+        </a>
+    </div>
+</div>
+
+<section class="jd-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-11 col-xl-9">
+                <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
+
+                <div class="mb-5">
+                    <a href="{% url 'blog:blog_list' %}" class="text-secondary d-inline-flex align-items-center" style="font-size: 1rem; font-weight: 500;">
+                        <i class="fas fa-arrow-left mr-2"></i> Volver al listado de artículos
+                    </a>
+                </div>
+
+                <article>
+                    <header class="mb-4">
+                        <h1 class="display-4 font-weight-bold mb-3">{{ post.title }}</h1>
+                        
+                        <div class="d-flex flex-wrap gap-4 text-muted mb-4 align-items-center">
+                            <div>
+                                <i class="far fa-calendar-alt mr-1"></i>
+                                {{ post.publish_date|date:"d M Y" }}
+                            </div>
+                            <div>
+                                <i class="far fa-clock mr-1"></i>
+                                {% widthratio post.content_html|length 1500 1 %} min de lectura
+                            </div>
+                        </div>
+
+                        <!-- ✨ Tags del articulo -->
+                        <div class="mb-4">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge px-3 py-2 rounded-pill fw-normal" style="background: #0891b2; color: white;">
+                                    <i class="fas fa-tag mr-1"></i> Zoho
+                                </span>
+                                <span class="badge px-3 py-2 rounded-pill fw-normal" style="background: #0891b2; color: white;">
+                                    <i class="fas fa-tag mr-1"></i> CRM
+                                </span>
+                                <span class="badge px-3 py-2 rounded-pill fw-normal" style="background: #0891b2; color: white;">
+                                    <i class="fas fa-tag mr-1"></i> Integraciones
+                                </span>
+                                <span class="badge px-3 py-2 rounded-pill fw-normal" style="background: #0891b2; color: white;">
+                                    <i class="fas fa-tag mr-1"></i> Automatización
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr>
+                    </header>
+
+                    <div class="blog-content lp-parrafo-home">
+                        {{ post.content_html|safe }}
+                    </div>
+
+                    <!-- 🔘 BOTONES DE COMPARTIR -->
+                    <div class="mt-5 mb-4">
+                        <div class="text-center text-secondary mb-3" style="font-size: 0.9rem;">Compartir este artículo</div>
+                        <div class="d-flex justify-content-center gap-4 flex-wrap">
+                            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ post.title|urlencode }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-linkedin mr-1"></i> LinkedIn
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                <i class="fab fa-twitter mr-1"></i> Twitter
+                            </a>
+                            <a href="mailto:?subject={{ post.title|urlencode }}&body={{ request.build_absolute_uri }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-envelope mr-1"></i> Correo
+                            </a>
+                            <button class="btn btn-outline-secondary btn-sm copy-link-btn">
+                                <i class="fas fa-link mr-1"></i> Copiar enlace
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 🔘 BOTONES DE REACCIONES UI -->
+                    <div class="mt-4 mb-5">
+                        <div class="text-center text-secondary mb-4" style="font-size: 0.95rem; font-weight: 500;">¿Te pareció útil este artículo?</div>
+                        <div class="d-flex justify-content-center gap-4 flex-wrap">
+                            <button class="btn btn-outline-secondary btn-reaction" title="Me gusta">
+                                <i class="fas fa-thumbs-up mr-2"></i> 42
+                            </button>
+                            <button class="btn btn-outline-secondary btn-reaction" title="Me encanta">
+                                <i class="fas fa-heart mr-2"></i> 18
+                            </button>
+                            <button class="btn btn-outline-secondary btn-reaction" title="Buena idea">
+                                <i class="fas fa-lightbulb mr-2"></i> 9
+                            </button>
+                            <button class="btn btn-outline-secondary btn-reaction" title="Excelente">
+                                <i class="fas fa-fire mr-2"></i> 7
+                            </button>
+                            <button class="btn btn-outline-secondary btn-reaction" title="No me gustó">
+                                <i class="fas fa-thumbs-down mr-2"></i> 1
+                            </button>
+                        </div>
+                    </div>
+
+                    <footer class="mt-4 pt-4 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left mr-2"></i> Todos los artículos
+                            </a>
+                            
+                            <a href="#contact" class="btn btn-primary">
+                                <i class="fas fa-paper-plane mr-2"></i> Comentar
+                            </a>
+                        </div>
+                    </footer>
+
+                    <!-- 💬 SECCION COMENTARIOS UI -->
+                    <section class="mt-5 pt-4 border-top">
+                        <h3 class="h4 mb-4"><i class="fas fa-comments mr-2"></i> Comentarios</h3>
+
+                        <div class="mb-5">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <h6 class="font-weight-bold mb-3">Deja tu comentario</h6>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="Tu nombre">
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-paper-plane mr-1"></i> Enviar comentario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comentarios ejemplo -->
+                        <div class="comment-item mb-4">
+                            <div class="d-flex">
+                                <div class="avatar-circle mr-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 48px; height: 48px;">
+                                    JD
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-1 font-weight-bold">Jaime Díaz</h6>
+                                        <small class="text-muted">hace 2 dias</small>
+                                    </div>
+                                    <p class="text-muted mb-2">Excelente articulo, muy bien explicado y con ejemplos practicos. Me ayudo bastante!</p>
+                                    <div class="d-flex gap-3">
+                                        <button class="btn btn-sm btn-link text-muted p-0"><i class="fas fa-thumbs-up mr-1"></i> 12</button>
+                                        <button class="btn btn-sm btn-link text-muted p-0 ml-2"><i class="fas fa-reply mr-1"></i> Responder</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comment-item mb-4">
+                            <div class="d-flex">
+                                <div class="avatar-circle mr-3 bg-success text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 48px; height: 48px;">
+                                    MS
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-1 font-weight-bold">Maria Santos</h6>
+                                        <small class="text-muted">hace 5 dias</small>
+                                    </div>
+                                    <p class="text-muted mb-2">Teniamos exactamente este problema en la empresa, lo solucionamos en 1 hora despues de leer esto. Gracias!</p>
+                                    <div class="d-flex gap-3">
+                                        <button class="btn btn-sm btn-link text-muted p-0"><i class="fas fa-thumbs-up mr-1"></i> 7</button>
+                                        <button class="btn btn-sm btn-link text-muted p-0 ml-2"><i class="fas fa-reply mr-1"></i> Responder</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-secondary">
+                                Cargar mas comentarios
+                            </button>
+                        </div>
+                    </section>
+
+                </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include "partials/_footer.html" %}
+
+<!-- JQUERY    LIB -->
+<script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+
+<!-- POPPER    CDN -->
+<script src="{% static 'js/jquery-plugins/popper.min.js' %}"></script>
+
+<!-- BOOTSTRAP LIB -->
+<script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+
+<!-- SWIPER    LIB -->
+<script src="{% static 'js/lib/swiper.min.js' %}"></script>
+
+<!-- JARALLAX  LIB -->
+<script src="{% static 'js/lib/jarallax.min.js' %}"></script>
+
+<!-- WAY POINTS LIB -->
+<script src="{% static 'js/jquery-plugins/jquery.waypoints.min.js' %}"></script>
+
+<!-- COUNTERUP  LIB -->
+<script src="{% static 'js/jquery-plugins/jquery.counterup.min.js' %}"></script>
+
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        easing: 'ease-out-quart',
+        once: true
+    });
+</script>
+
+<!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
+<script>
+// ✨ Inicializacion componente Carrusel Full Width
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.blog-carousel-container .swiper')) {
+        new Swiper('.blog-carousel-container .swiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            centeredSlides: true,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                }
+            }
+        });
+    }
+});
+
+// ✅ VISOR DE IMAGENES POPUP MODAL
+window.openGalleryPopup = function(element) {
+    
+    const images = element.querySelector('.gallery-images').value.split('|');
+    let currentIndex = 0;
+    
+    // Crear modal HTML directamente
+    const modal = document.createElement('div');
+    modal.className = 'gallery-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center';
+    modal.style.zIndex = '999999999';
+    modal.style.background = 'rgba(0,0,0,0.92)';
+    modal.style.backdropFilter = 'blur(8px)';
+    modal.style.opacity = '0';
+    modal.style.transition = 'opacity 150ms ease';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    
+    modal.innerHTML = `
+<button class="gallery-modal-close" onclick="this.parentElement.remove()">
+    <i class="fas fa-times"></i>
+</button>
+<button class="gallery-modal-nav prev" onclick="prevImage()">
+    <i class="fas fa-chevron-left"></i>
+</button>
+<button class="gallery-modal-nav next" onclick="nextImage()">
+    <i class="fas fa-chevron-right"></i>
+</button>
+<div class="gallery-modal-image-wrapper">
+    <img id="gallery-modal-img" src="${images[0]}" alt="">
+</div>
+<div class="gallery-modal-counter">${currentIndex+1} / ${images.length}</div>
+`;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.style.opacity = '1', 10);
+    
+    window.prevImage = function() {
+        currentIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+        document.getElementById('gallery-modal-img').src = images[currentIndex];
+        modal.querySelector('.gallery-modal-counter').textContent = `${currentIndex+1} / ${images.length}`;
+    }
+    
+    window.nextImage = function() {
+        currentIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+        document.getElementById('gallery-modal-img').src = images[currentIndex];
+        modal.querySelector('.gallery-modal-counter').textContent = `${currentIndex+1} / ${images.length}`;
+    }
+    
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.remove();
+    }
+    
+    document.onkeydown = function(e) {
+        if (e.key === 'Escape') modal.remove();
+        if (e.key === 'ArrowLeft') prevImage();
+        if (e.key === 'ArrowRight') nextImage();
+    }
+}
+
+// ✅ DEFINITIVAMENTE, FORZADO AL MAXIMO
+console.log('✅ Iniciando barra progreso');
+
+window.onscroll = function() {
+    let scrol = window.pageYOffset || document.documentElement.scrollTop;
+    let altoTotal = document.body.scrollHeight - window.innerHeight;
+    
+    // ✅ Proteccion contra division por cero y valores invalidos
+    if (altoTotal <= 0) altoTotal = 1;
+    let porcentaje = Math.min(100, Math.max(0, (scrol / altoTotal) * 100));
+    
+    // Aplicar valor final
+    document.querySelector('.reading-progress-fill').style.width = porcentaje + '%';
+
+    // Barra flotante reacciones
+    let barraFlotante = document.querySelector('.floating-reaction-bar');
+    if (porcentaje > 12 && porcentaje < 82) {
+        barraFlotante.classList.add('visible');
+    } else {
+        barraFlotante.classList.remove('visible');
+    }
+};
+
+// EJECUTAR INMEDIATAMENTE
+setTimeout(function(){
+    window.onscroll();
+}, 100);
+</script>
+
+<style>
+/* ✅ SISTEMA ZOOM IMAGENES AUTOMATICO */
+.blog-content img {
+    cursor: zoom-in !important;
+    transition: transform 220ms ease;
+    position: relative;
+    z-index: 5;
+    pointer-events: all !important;
+}
+
+.blog-content img:hover {
+    transform: scale(1.01);
+}
+
+#image-zoom-modal {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 95vw;
+    max-height: 95vh;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+    animation: modalIn 250ms ease;
+}
+
+#image-zoom-modal::backdrop {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+}
+
+#image-zoom-modal img {
+    display: block;
+    max-width: 100%;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<!-- Modal nativo HTML5 para zoom de imagenes -->
+<dialog id="image-zoom-modal">
+    <img id="image-zoom-content" src="" alt="">
+</dialog>
+
+<script>
+// ✅ Sistema de Zoom automatico para TODAS las imagenes del blog
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('image-zoom-modal');
+    const modalImg = document.getElementById('image-zoom-content');
+    
+    // Agregar evento click a TODAS las imagenes del contenido
+    document.querySelectorAll('.blog-content img').forEach(img => {
+        img.addEventListener('click', () => {
+            modalImg.src = img.src;
+            modal.showModal();
+        });
+    });
+    
+    // Cerrar modal al hacer click fuera o escape
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.close();
+    });
+});
+</script>
+
+</body>
+</html>

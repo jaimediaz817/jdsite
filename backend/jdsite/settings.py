@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "inquiries",
     "core",
     "blog",
+    "reactions",
 ]
 
 LANGUAGE_CODE = "es-co"

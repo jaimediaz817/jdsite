@@ -79,6 +79,8 @@ urlpatterns = [
     ),
     # ✅ SISTEMA DE BLOGS
     path("blog/", include(("blog.urls", "blog"), namespace="blog")),
+    # ✅ SISTEMA DE REACCIONES
+    path("", include(("reactions.urls", "reactions"), namespace="reactions")),
     # ✅ HOME SIEMPRE AL FINAL! (Django evalua rutas en ORDEN - error mas comun)
     path("", home_view, name="home"),
 ]

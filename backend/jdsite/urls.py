@@ -34,7 +34,6 @@ sitemaps = {
 
 urlpatterns = [
     path("admin/", admin.site.urls),  # admin Django (opcional)
-    path("", home_view, name="home"),
     # path("ask/", include("inquiries.urls")),
     path(
         "ask/",
@@ -78,4 +77,8 @@ urlpatterns = [
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
     ),
+    # ✅ SISTEMA DE BLOGS
+    path("blog/", include(("blog.urls", "blog"), namespace="blog")),
+    # ✅ HOME SIEMPRE AL FINAL! (Django evalua rutas en ORDEN - error mas comun)
+    path("", home_view, name="home"),
 ]

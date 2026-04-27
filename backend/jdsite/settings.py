@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     # apps tuyas
     "inquiries",
     "core",
-    # "blog",
+    "blog",
 ]
 
 LANGUAGE_CODE = "es-co"

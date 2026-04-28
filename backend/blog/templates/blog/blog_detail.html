@@ -86,23 +86,23 @@
     {% include "partials/_navigation_menu.html" %}
 
 <!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
-<div class="floating-reaction-bar d-none d-lg-flex">
+<div class="floating-reaction-bar d-none d-lg-flex blog-reactions" data-slug="{{ post.slug }}">
     <div class="d-flex flex-column gap-2 p-2 bg-white shadow-sm rounded">
-        <button class="btn btn-outline-secondary btn-reaction-float" title="Me gusta">
-            <i class="fas fa-thumbs-up"></i>
-            <span class="d-block mt-1 small">42</span>
+        <button class="reaction-button btn-reaction-float" data-reaction="like" title="Me gusta">
+            <span class="icon">👍</span>
+            <span class="count d-block mt-1 small">0</span>
         </button>
-        <button class="btn btn-outline-secondary btn-reaction-float" title="Me encanta">
-            <i class="fas fa-heart"></i>
-            <span class="d-block mt-1 small">18</span>
+        <button class="reaction-button btn-reaction-float" data-reaction="love" title="Me encanta">
+            <span class="icon">❤️</span>
+            <span class="count d-block mt-1 small">0</span>
         </button>
-        <button class="btn btn-outline-secondary btn-reaction-float" title="Buena idea">
-            <i class="fas fa-lightbulb"></i>
-            <span class="d-block mt-1 small">9</span>
+        <button class="reaction-button btn-reaction-float" data-reaction="idea" title="Buena idea">
+            <span class="icon">💡</span>
+            <span class="count d-block mt-1 small">0</span>
         </button>
-        <button class="btn btn-outline-secondary btn-reaction-float" title="Excelente">
-            <i class="fas fa-fire"></i>
-            <span class="d-block mt-1 small">7</span>
+        <button class="reaction-button btn-reaction-float" data-reaction="fire" title="Excelente">
+            <span class="icon">🔥</span>
+            <span class="count d-block mt-1 small">0</span>
         </button>
         <div class="border-top my-1"></div>
         <a href="#comments" class="btn btn-outline-secondary btn-reaction-float" title="Comentarios">

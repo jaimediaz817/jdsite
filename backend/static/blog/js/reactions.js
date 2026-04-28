@@ -5,24 +5,27 @@
  */
 
 (function() {
-    let currentSlug = null;
     let debounceTimer = null;
 
     function init() {
-        const container = document.querySelector('.blog-reactions');
-        if (!container) return;
+        const containers = document.querySelectorAll('.blog-reactions');
+        if (containers.length === 0) return;
 
-        currentSlug = container.dataset.slug;
+        // Cargar estado inicial (todos los contenedores comparten el mismo slug)
+        const firstContainer = containers[0];
+        const currentSlug = firstContainer.dataset.slug;
         if (!currentSlug) return;
 
         // Cargar estado inicial
-        loadReactions();
+        loadReactions(currentSlug);
 
-        // Agregar eventos
-        container.addEventListener('click', handleReactionClick);
+        // Agregar eventos a TODOS los contenedores
+        containers.forEach(container => {
+            container.addEventListener('click', (e) => handleReactionClick(e, currentSlug));
+        });
     }
 
-    async function loadReactions() {
+    async function loadReactions(currentSlug) {
         try {
             const response = await fetch(`/api/blog/${currentSlug}/reactions/`);
             const data = await response.json();
@@ -33,7 +36,7 @@
         }
     }
 
-    function handleReactionClick(e) {
+    function handleReactionClick(e, currentSlug) {
         const button = e.target.closest('.reaction-button');
         if (!button) return;
 
@@ -47,23 +50,25 @@
         const isCurrentlyActive = button.classList.contains('active');
         const newState = !isCurrentlyActive;
 
-        // ✅ NUEVA REGLA: Desactivar TODAS las demas reacciones
+        // ✅ Desactivar TODAS las demas reacciones en TODOS los contenedores
         document.querySelectorAll('.reaction-button').forEach(btn => {
-            if (btn !== button) {
+            if (btn.dataset.reaction === reactionType) {
+                // Si es el mismo tipo de reaccion, sincronizar estado en todos los lugares
+                updateButtonState(btn, newState);
+            } else {
+                // Todas las demas reacciones se desactivan
                 btn.classList.remove('active');
-                void btn.offsetWidth;
             }
+            void btn.offsetWidth;
         });
-
-        updateButtonState(button, newState);
 
         // Debounce 300ms
         debounceTimer = setTimeout(() => {
-            sendReaction(reactionType, button, isCurrentlyActive);
+            sendReaction(reactionType, button, isCurrentlyActive, currentSlug);
         }, 300);
     }
 
-    async function sendReaction(reactionType, button, previousState) {
+    async function sendReaction(reactionType, button, previousState, currentSlug) {
         try {
             const response = await fetch(`/api/blog/${currentSlug}/reactions/toggle/`, {
                 method: 'POST',

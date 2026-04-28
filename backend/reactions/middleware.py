@@ -6,13 +6,13 @@ from collections import defaultdict
 class RateLimitMiddleware:
     """
     Rate limit simple sin dependencias externas.
-    Limita a 10 peticiones por minuto por IP.
+    Limita a 30 peticiones POR MINUTO por IP solo para POST.
     Diseñado especificamente para endpoints de reacciones.
     """
 
     def __init__(self, get_response):
         self.get_response = get_response
-        self.rate_limit = 10
+        self.rate_limit = 30
         self.window = 60  # 1 minuto
         self.requests = defaultdict(list)
 
@@ -20,6 +20,7 @@ class RateLimitMiddleware:
         if (
             request.path.startswith("/api/blog/")
             and "/reactions/" in request.path
+            and request.method == "POST"
         ):
             ip = self.get_client_ip(request)
 

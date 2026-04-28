@@ -16,18 +16,16 @@
 
 ## 🗓️ FASES DE IMPLEMENTACIÓN
 
-| Fase      | Descripción                                                         | Tiempo estimado | Estado       |
-| --------- | ------------------------------------------------------------------- | --------------- | ------------ |
-| 🔹 FASE 1  | Crear modelo `BlogReaction` + migración                             | 8 min           | ✅ Completado |
-| 🔹 FASE 2  | Crear lógica de negocio y servicio de reacciones                    | 10 min          | ✅ Completado |
-| 🔹 FASE 3  | Crear endpoints API minimalistas                                    | 7 min           | ✅ Completado |
-| 🔹 FASE 4  | Añadir middleware rate limit y detección de robots                  | 6 min           | ✅ Completado |
-| 🔹 FASE 5  | Implementar CSS animaciones exactas según especificaciones          | 12 min          | ⏳ Pendiente  |
-| 🔹 FASE 6  | Implementar componente Vanilla JS con Optimistic UI                 | 12 min          | ⏳ Pendiente  |
-| 🔹 FASE 7  | Integración en plantilla blog detail sin modificar código existente | 5 min           | ⏳ Pendiente  |
-| 🔹 FASE 8  | Fallback sin Javascript                                             | 7 min           | ⏳ Pendiente  |
-| 🔹 FASE 9  | Testeo de todos los casos borde                                     | 10 min          | ⏳ Pendiente  |
-| 🔹 FASE 10 | Revisión final y medición métricas                                  | 5 min           | ⏳ Pendiente  |
+| Fase     | Descripción                                                         | Tiempo estimado | Estado       |
+| -------- | ------------------------------------------------------------------- | --------------- | ------------ |
+| 🔹 FASE 1 | Crear modelo `BlogReaction` + migración                             | 8 min           | ✅ Completado |
+| 🔹 FASE 2 | Crear lógica de negocio y servicio de reacciones                    | 10 min          | ✅ Completado |
+| 🔹 FASE 3 | Crear endpoints API minimalistas                                    | 7 min           | ✅ Completado |
+| 🔹 FASE 4 | Añadir middleware rate limit y detección de robots                  | 6 min           | ✅ Completado |
+| 🔹 FASE 5 | Implementar CSS animaciones exactas según especificaciones          | 12 min          | ✅ Completado |
+| 🔹 FASE 6 | Implementar componente Vanilla JS con Optimistic UI                 | 12 min          | ⏳ Pendiente  |
+| 🔹 FASE 7 | Integración en plantilla blog detail sin modificar código existente | 5 min           | ⏳ Pendiente  |
+| 🔹 FASE 8 | Revisión final y medición métricas                                  | 5 min           | ⏳ Pendiente  |
 
 ---
 
@@ -90,23 +88,7 @@
 - Se inserta el componente al final del artículo
 - Carga asincrónica
 
-## 🔹 FASE 8: Fallback sin JS
-**Objetivo:** Funciona completamente desactivado javascript
-- Formulario normal POST
-- Redirección de vuelta al artículo
-- Mismo comportamiento exacto
-- Mismo diseño
-- Sin diferencias visibles para el usuario
-
-## 🔹 FASE 9: Testeo Casos Borde
-**Objetivo:** Validar todos los casos del diagnóstico
-- Testear cada uno de los 15 casos borde definidos
-- Prueba manual con JS desactivado
-- Prueba multiple clicks rápidos
-- Prueba desconectando internet
-- Prueba dos navegadores misma IP
-
-## 🔹 FASE 10: Revisión Final
+## 🔹 FASE 8: Revisión Final
 **Objetivo:** Cumplir todas las métricas
 - Medir tiempo respuesta endpoint
 - Medir tamaño JS y CSS

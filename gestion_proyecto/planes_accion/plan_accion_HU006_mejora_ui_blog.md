@@ -50,7 +50,8 @@ El plan se divide en 3 bloques alineados exactamente con los criterios de acepta
 | 3.2 | Estilos personalizados listas | Eliminar estilos por defecto navegador, viñetas personalizadas | 0,25h           | ✅ COMPLETADO |
 | 3.3 | Micro-interacciones imagenes  | Efecto escala `1.02` suave en imagenes al hover                | 0,25h           | ✅ COMPLETADO |
 | 3.4 | Puntos de acento de color     | Aplicar color de marca en elementos clave cada 3 secciones     | 0,25h           | ✅ COMPLETADO |
-|     |                               | **TOTAL BLOQUE 3**                                             | **1,0h**        |              |
+| 3.5 | Mejora estilos tags/badges    | Espaciado, tamaño fuente, padding y efectos hover cabecera     | 0,25h           | ✅ COMPLETADO |
+|     |                               | **TOTAL BLOQUE 3**                                             | **1,25h**       |              |
 
 ---
 

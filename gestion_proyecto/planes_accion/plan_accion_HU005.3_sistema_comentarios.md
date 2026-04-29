@@ -17,17 +17,18 @@
 
 ## 🗓️ FASES DE IMPLEMENTACIÓN
 
-| Fase     | Descripcion                                                         | Tiempo estimado | Estado      |
-| -------- | ------------------------------------------------------------------- | --------------- | ----------- |
-| 🔹 FASE 1 | Crear modelo BlogComment + migración con índices correctos          | 8 min           | ⏳ Pendiente |
-| 🔹 FASE 2 | Integración completa en Django Admin con filtros y acciones masivas | 6 min           | ⏳ Pendiente |
-| 🔹 FASE 3 | Servicio interno puro con logica de negocio, sin dependencias       | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 4 | Formulario Django nativo + validaciones + sanitización              | 10 min          | ⏳ Pendiente |
-| 🔹 FASE 5 | Endpoints POST + integración con Rate Limit existente               | 8 min           | ⏳ Pendiente |
-| 🔹 FASE 6 | UI: Mostrar comentarios + respuestas indentadas + formulario        | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 7 | Protecciones anti spam + honeypot + limite de caracteres            | 8 min           | ⏳ Pendiente |
-| 🔹 FASE 8 | Notificaciones por email al administrador                           | 6 min           | ⏳ Pendiente |
-| 🔹 FASE 9 | Testeo de todos los casos borde + verificación SEO                  | 10 min          | ⏳ Pendiente |
+| Fase      | Descripcion                                                         | Tiempo estimado | Estado       |
+| --------- | ------------------------------------------------------------------- | --------------- | ------------ |
+| 🔹 FASE 1  | Crear modelo BlogComment + migración con índices correctos          | 8 min           | ✅ Completado |
+| 🔹 FASE 2  | Integración completa en Django Admin con filtros y acciones masivas | 6 min           | ✅ Completado |
+| 🔹 FASE 3  | Servicio interno puro con logica de negocio, sin dependencias       | 12 min          | ✅ Completado |
+| 🔹 FASE 4  | Formulario Django nativo + validaciones + sanitización              | 10 min          | ✅ Completado |
+| 🔹 FASE 5  | Endpoints POST + integración con Rate Limit existente               | 8 min           | ✅ Completado |
+| 🔹 FASE 6  | Endpoints POST y rutas urls.py                                      | 8 min           | ✅ Completado |
+| 🔹 FASE 7  | UI: Mostrar comentarios + respuestas indentadas + formulario        | 12 min          | ✅ Completado |
+| 🔹 FASE 8  | Protecciones anti spam + honeypot + limite de caracteres            | 8 min           | ✅ Completado |
+| 🔹 FASE 9  | Notificaciones por email al administrador                           | 6 min           | ✅ Completado |
+| 🔹 FASE 10 | Testeo de todos los casos borde + verificación SEO                  | 10 min          | ⏳ Pendiente  |
 
 ---
 

@@ -101,3 +101,49 @@ class BlogPost(models.Model):
         from django.urls import reverse
 
         return reverse("blog:blog_detail", args=[self.slug])
+
+
+class BlogComment(models.Model):
+    """
+    Comentarios y respuestas para articulos del blog
+    """
+
+    STATUS_CHOICES = [
+        ("pending", "Pendiente"),
+        ("approved", "Aprobado"),
+        ("rejected", "Rechazado"),
+    ]
+
+    blog_slug = models.CharField(max_length=200, db_index=True)
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="replies",
+    )
+
+    name = models.CharField(max_length=80)
+    email = models.EmailField(max_length=150, null=True, blank=True)
+    content = models.TextField(max_length=1000)
+
+    ip_address = models.CharField(max_length=45)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="pending"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Comentario"
+        verbose_name_plural = "Comentarios"
+        indexes = [
+            models.Index(fields=["blog_slug", "status", "created_at"]),
+            models.Index(fields=["parent"]),
+            models.Index(fields=["ip_address", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} - {self.blog_slug}"

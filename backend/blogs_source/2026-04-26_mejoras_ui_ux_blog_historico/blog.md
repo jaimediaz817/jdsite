@@ -5,6 +5,7 @@ date: 2026-04-26
 draft: false
 image: "cover.jpg"
 author: "Jaime Díaz"
+category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
 meta_title: "Mejoras de UI/UX que aumentaron el tiempo de lectura en un 40%"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"

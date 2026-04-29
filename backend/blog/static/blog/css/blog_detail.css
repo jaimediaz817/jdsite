@@ -340,23 +340,53 @@
 }
 
 .gallery-badge {
-    position: absolute;
+    position: absolute !important;
     bottom: 16px !important;
     right: 16px !important;
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    backdrop-filter: blur(6px);
-    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 10;
-    border-radius: 16px !important;
-    padding: 6px 14px !important;
-    font-size: 0.85rem;
-    font-weight: 500;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 999 !important;
+    border-radius: 20px !important;
+    padding: 7px 16px !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
     color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: unset !important;
+    max-width: fit-content !important;
+    transform: translateZ(0) !important;
+    text-decoration: none !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+}
+
+/* SOBREESCRITURA FORZADA PARA CLASES BOOTSTRAP */
+.gallery-badge.text-white {
+    color: white !important;
+}
+
+.gallery-badge.px-3 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+.gallery-badge.py-1 {
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+}
+
+.gallery-badge.rounded-pill {
+    border-radius: 20px !important;
+}
+
+.gallery-badge.small {
+    font-size: 0.78rem !important;
 }
 
 .gallery-badge::before {
@@ -566,4 +596,250 @@
     to {
         opacity: 1;
     }
+}
+
+/* ✨ MEJORAS UI SISTEMA DE COMENTARIOS */
+
+/* Boton Enviar Comentario Principal */
+form button[type="submit"] {
+    position: relative;
+    overflow: hidden;
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 173, 181, 0.15);
+}
+
+form button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 173, 181, 0.35);
+    filter: brightness(1.05);
+}
+
+form button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 173, 181, 0.2);
+}
+
+form button[type="submit"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Inputs y Textarea del formulario */
+.comment-form .form-control {
+    transition: all 200ms ease-out;
+    border-width: 2px;
+    border-color: #e2e8f0;
+}
+
+.comment-form .form-control:focus {
+    border-color: #00ADB5;
+    box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Boton Responder comentario */
+.reply-btn {
+    transition: all 180ms ease-out;
+    opacity: 0.7;
+}
+
+.reply-btn:hover {
+    opacity: 1;
+    color: #00ADB5 !important;
+    transform: translateX(3px);
+}
+
+/* Boton Cancelar Respuesta */
+.cancel-reply {
+    transition: all 180ms ease-out !important;
+}
+
+.cancel-reply:hover {
+    background-color: #fee2e2 !important;
+    border-color: #f87171 !important;
+    color: #dc2626 !important;
+}
+
+/* Tarjetas de comentarios */
+.comment-item {
+    transition: all 220ms ease-out;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.comment-item:hover {
+    background-color: #f8fafc;
+    transform: translateX(4px);
+}
+
+/* Skeleton Loader Animacion */
+.comment-skeleton {
+    display: flex;
+    gap: 12px;
+    padding: 1rem;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.comment-skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    flex-shrink: 0;
+}
+
+.comment-skeleton-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comment-skeleton-line {
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 6px;
+}
+
+.comment-skeleton-line.short {
+    width: 30%;
+}
+
+.comment-skeleton-line.medium {
+    width: 60%;
+}
+
+.comment-skeleton-line.long {
+    width: 90%;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ✨ MEJORAS GENERALES UX */
+
+/* Botones del blog */
+.btn {
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Sombras suaves en elementos interactivos */
+.card {
+    transition: all 240ms ease-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Seleccion de texto personalizada */
+::selection {
+    background-color: rgba(0, 173, 181, 0.2);
+    color: #0f172a;
+}
+
+::-moz-selection {
+    background-color: rgba(0, 173, 181, 0.2);
+    color: #0f172a;
+}
+
+/* ✨ TAGS / ETIQUETAS DEL BLOG */
+.blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.blog-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #475569;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 500ms ease;
+}
+
+.blog-tag:hover {
+    color: #00ADB5;
+    background: white;
+    border-color: #00ADB5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 173, 181, 0.15);
+    text-decoration: none;
+}
+
+.blog-tag:hover::before {
+    left: 100%;
+}
+
+.blog-tag:active {
+    transform: translateY(0);
+}
+
+/* ✨ BOTONES COMPARTIR REDES SOCIALES */
+.share-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.share-buttons-container .btn {
+    padding: 10px 18px !important;
+    font-size: 0.9rem !important;
+    border-radius: 12px !important;
+    border-width: 1.5px !important;
+    font-weight: 500;
+    min-width: 130px;
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.share-buttons-container .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.share-buttons-container .btn:active {
+    transform: translateY(0);
+}
+
+.share-buttons-container .btn i {
+    margin-right: 6px;
+    font-size: 1rem;
 }

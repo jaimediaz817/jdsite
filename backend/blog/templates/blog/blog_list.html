@@ -158,7 +158,11 @@
                     <!-- Categoria -->
                     <div class="blog-card-category">
                         {% if post.category %}
-                        <span>{{ post.category.name }}</span>
+                            {% if post.category.slug == 'sin-categoria-asignada' %}
+                            <span style="background: rgba(255,193,7,0.9); color: #856404;">{{ post.category.name }}</span>
+                            {% else %}
+                            <span>{{ post.category.name }}</span>
+                            {% endif %}
                         {% endif %}
                     </div>
 

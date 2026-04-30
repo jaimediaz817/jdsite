@@ -60,9 +60,8 @@ def post_comment(request, slug):
         provider = None
         provider_uid = None
 
-        # Si el usuario está autenticado con OAuth, usar sus datos
-        if request.user.is_authenticated:
-            identification_level = "registered"
+        # Si el usuario está autenticado y eligió "registered", usar sus datos
+        if request.user.is_authenticated and identification_level == "registered":
             # Obtener proveedor social
             if hasattr(request.user, "socialaccount_set"):
                 social_account = request.user.socialaccount_set.first()

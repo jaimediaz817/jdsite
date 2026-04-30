@@ -141,6 +141,31 @@ class BlogComment(models.Model):
         max_length=20, choices=STATUS_CHOICES, default="pending"
     )
 
+    # Nivel de identificación (HU-008)
+    IDENTIFICATION_LEVELS = [
+        ("anonymous", "Anónimo"),
+        ("identified", "Identificado por email"),
+        ("registered", "Registrado (OAuth)"),
+    ]
+    identification_level = models.CharField(
+        max_length=20, choices=IDENTIFICATION_LEVELS, default="anonymous"
+    )
+
+    # Para usuarios registrados con OAuth (Google/GitHub)
+    provider = models.CharField(
+        max_length=20,
+        choices=[("google", "Google"), ("github", "GitHub")],
+        null=True,
+        blank=True,
+    )
+    provider_uid = models.CharField(max_length=255, null=True, blank=True)
+
+    # Identificación automática de administradores
+    is_admin = models.BooleanField(default=False)
+
+    # Límite de edición de comentarios
+    editable_until = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

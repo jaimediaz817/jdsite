@@ -252,6 +252,19 @@
                             <div class="card shadow-sm border-0">
                                 <div class="card-body">
                                     <h6 class="font-weight-bold mb-3">Deja tu comentario</h6>
+                                    
+                                    <!-- ✅ Botones OAuth (HU-008) -->
+                                    <div class="mb-4">
+                                        <p class="text-muted small mb-2">Inicia sesión con:</p>
+                                        <a href="/accounts/google/login/" class="btn btn-outline-dark btn-sm mr-2">
+                                            <i class="fab fa-google mr-1"></i> Google
+                                        </a>
+                                        <a href="/accounts/github/login/" class="btn btn-outline-dark btn-sm">
+                                            <i class="fab fa-github mr-1"></i> GitHub
+                                        </a>
+                                        <p class="text-muted small mt-2">O comenta como invitado:</p>
+                                    </div>
+                                    
                                     <form method="POST" action="{% url 'blog:post_comment' post.slug %}">
                                         {% csrf_token %}
                                         
@@ -270,6 +283,15 @@
                                             {{ comment_form.email }}
                                             {% if comment_form.email.errors %}
                                                 <div class="text-danger small mt-1">{{ comment_form.email.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- ✅ Selector identificación (HU-008) -->
+                                        <div class="form-group">
+                                            <label>{{ comment_form.identification_level.label }}</label>
+                                            {{ comment_form.identification_level }}
+                                            {% if comment_form.identification_level.errors %}
+                                                <div class="text-danger small mt-1">{{ comment_form.identification_level.errors }}</div>
                                             {% endif %}
                                         </div>
                                         
@@ -298,6 +320,16 @@
                             <div class="comment-content">
                                 <div class="comment-meta">
                                     <strong class="comment-author">{{ comment.name }}</strong>
+                                    {% if comment.identification_level == 'anonymous' %}
+                                        <span class="badge badge-secondary ml-2">Anónimo</span>
+                                    {% elif comment.identification_level == 'identified' %}
+                                        <span class="badge badge-info ml-2">Identificado</span>
+                                    {% elif comment.identification_level == 'registered' %}
+                                        <span class="badge badge-success ml-2">Registrado</span>
+                                    {% endif %}
+                                    {% if comment.is_admin %}
+                                        <span class="badge badge-danger ml-2">Admin</span>
+                                    {% endif %}
                                     <small class="comment-date">{{ comment.created_at|date:"d M Y" }}</small>
                                 </div>
                                 <p class="comment-text">{{ comment.content|linebreaksbr }}</p>
@@ -330,10 +362,20 @@
                                             {{ reply.avatar_initials }}
                                         </div>
                                         <div class="comment-content">
-                                            <div class="comment-meta">
-                                                <strong class="comment-author">{{ reply.name }}</strong>
-                                                <small class="comment-date">{{ reply.created_at|date:"d M Y" }}</small>
-                                            </div>
+                                                <div class="comment-meta">
+                                                    <strong class="comment-author">{{ reply.name }}</strong>
+                                                    {% if reply.identification_level == 'anonymous' %}
+                                                        <span class="badge badge-secondary ml-2">Anónimo</span>
+                                                    {% elif reply.identification_level == 'identified' %}
+                                                        <span class="badge badge-info ml-2">Identificado</span>
+                                                    {% elif reply.identification_level == 'registered' %}
+                                                        <span class="badge badge-success ml-2">Registrado</span>
+                                                    {% endif %}
+                                                    {% if reply.is_admin %}
+                                                        <span class="badge badge-danger ml-2">Admin</span>
+                                                    {% endif %}
+                                                    <small class="comment-date">{{ reply.created_at|date:"d M Y" }}</small>
+                                                </div>
                                             <p class="comment-text">{{ reply.content|linebreaksbr }}</p>
                                         </div>
                                     </div>

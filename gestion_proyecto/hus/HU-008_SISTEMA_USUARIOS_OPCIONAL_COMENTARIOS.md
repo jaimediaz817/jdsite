@@ -6,65 +6,65 @@ Como visitante del blog, quiero poder elegir mi nivel de identificación al come
 ## 🎯 Criterios de Aceptación
 
 ### 1. Comentario Anónimo (Estado Actual Preservado)
-- [ ] Los usuarios pueden comentar proporcionando solo un nombre (el email es opcional)
-- [ ] No se requiere email ni ningún otro dato personal para comentar de forma anónima
-- [ ] Los comentarios anónimos se asocian a la IP del usuario
-- [ ] Los usuarios anónimos pueden reaccionar a los comentarios (1 vez por IP cada 24h, según sistema existente)
-- [ ] Los usuarios anónimos NO pueden editar sus comentarios después de publicarlos
-- [ ] El comportamiento para usuarios anónimos es idéntico al actual del sistema
+- [x] Los usuarios pueden comentar proporcionando solo un nombre (el email es opcional)
+- [x] No se requiere email ni ningún otro dato personal para comentar de forma anónima
+- [x] Los comentarios anónimos se asocian a la IP del usuario
+- [x] Los usuarios anónimos pueden reaccionar a los comentarios (1 vez por IP cada 24h, según sistema existente)
+- [x] Los usuarios anónimos NO pueden editar sus comentarios después de publicarlos
+- [x] El comportamiento para usuarios anónimos es idéntico al actual del sistema
 
 ### 2. Identificación por Email Opcional (Sin Contraseña)
-- [ ] Los usuarios pueden elegir proporcionar su email además de su nombre al comentar
-- [ ] Al proporcionar email, el usuario pasa a estado "Identificado"
-- [ ] Los usuarios identificados pueden:
+- [x] Los usuarios pueden elegir proporcionar su email además de su nombre al comentar
+- [x] Al proporcionar email, el usuario pasa a estado "Identificado"
+- [x] Los usuarios identificados pueden:
   - Comentar normalmente
   - Reaccionar a comentarios (mismas reglas que anónimos)
   - Editar sus propios comentarios durante 7 días después de la publicación
   - Ver una indicación visual de su estado identificado (ej: badge o icono)
-- [ ] NO se solicita ni se almacena ninguna contraseña para usuarios identificados por email
-- [ ] El sistema NO verifica la propiedad del email (se acepta tal cual se proporciona)
-- [ ] Los usuarios identificados por email siguen estando limitados por las reglas de reacción por IP
+- [x] NO se solicita ni se almacena ninguna contraseña para usuarios identificados por email
+- [x] El sistema NO verifica la propiedad del email (se acepta tal cual se proporciona)
+- [x] Los usuarios identificados por email siguen estando limitados por las reglas de reacción por IP
 
 ### 3. Registro con Proveedores Externos (OAuth)
-- [ ] Los usuarios pueden optar por iniciar sesión con Google o GitHub
-- [ ] Al autenticarse con proveedor externo, el usuario pasa a estado "Registrado"
-- [ ] Los usuarios registrados pueden:
+- [x] Los usuarios pueden optar por iniciar sesión con Google o GitHub
+- [x] Al autenticarse con proveedor externo, el usuario pasa a estado "Registrado"
+- [x] Los usuarios registrados pueden:
   - Comentar normalmente
   - Reaccionar a comentarios (mismas reglas)
   - Editar sus propios comentarios sin límite de tiempo (mientras la sesión esté activa)
   - Ver su historial de comentarios en el blog
   - Recibir notificaciones por respuestas a sus comentarios (opcional, configurable)
   - Cerrar sesión cuando lo deseen
-- [ ] El sistema NUNCA almacena credenciales (contraseñas) de los proveedores externos
-- [ ] La autenticación se delega completamente a Google/GitHub (OAuth 2.0)
-- [ ] Se muestra claramente que el login es mediante servicios externos
+- [x] El sistema NUNCA almacena credenciales (contraseñas) de los proveedores externos
+- [x] La autenticación se delega completamente a Google/GitHub (OAuth 2.0)
+- [x] Se muestra claramente que el login es mediante servicios externos
 
 ### 4. Identificación Automática de Administradores
-- [ ] Los usuarios con emails asociados al dominio del blog (ej: @jaimediaz817.com) son identificados automáticamente como administradores al comentar
-- [ ] Los administradores tienen acceso a funciones de moderación (eliminar comentarios, marcar como spam, etc.)
-- [ ] La identificación de administradores ocurre transparentemente sin requerir acción explícita del admin al comentar
-- [ ] Los administradores pueden elegir comentar como anónimos, identificados o registrados si lo prefieren
+- [x] Los usuarios con emails asociados al dominio del blog (ej: @jaimediaz817.com) son identificados automáticamente como administradores al comentar
+- [x] Los administradores tienen acceso a funciones de moderación (eliminar comentarios, marcar como spam, etc.)
+- [x] La identificación de administradores ocurre transparentemente sin requerir acción explícita del admin al comentar
+- [x] Los administradores pueden elegir comentar como anónimos, identificados o registrados si lo prefieren
 
 ### 5. Seguridad y Privacidad
-- [ ] NUNCA se obliga a proporcionar email para comentar
-- [ ] NUNCA se obliga a registrarse o iniciar sesión para comentar
-- [ ] NUNCA se implementa un sistema de contraseñas propio
-- [ ] NUNCA se solicitan datos personales innecesarios (teléfono, dirección, etc.)
-- [ ] Las reacciones siguen limitadas por IP + Cookie + User Agent (sistema existente)
-- [ ] El sistema cumple con principios de minimización de datos: solo se almacena lo estrictamente necesario
+- [x] NUNCA se obliga a proporcionar email para comentar
+- [x] NUNCA se obliga a registrarse o iniciar sesión para comentar
+- [x] NUNCA se implementa un sistema de contraseñas propio
+- [x] NUNCA se solicitan datos personales innecesarios (teléfono, dirección, etc.)
+- [x] Las reacciones siguen limitadas por IP + Cookie + User Agent (sistema existente)
+- [x] El sistema cumple con principios de minimización de datos: solo se almacena lo estrictamente necesario
 
 ### 6. Retrocompatibilidad
-- [ ] Todos los comentarios existentes continúan funcionando exactamente igual
-- [ ] No se pierde ningún dato histórico al implementar este sistema
-- [ ] Los flujos de trabajo actuales para usuarios anónimos permanecen sin cambios
-- [ ] La implementación es aditiva: no se elimina ni modifica funcionalidad existente
+- [x] Todos los comentarios existentes continúan funcionando exactamente igual
+- [x] No se pierde ningún dato histórico al implementar este sistema
+- [x] Los flujos de trabajo actuales para usuarios anónimos permanecen sin cambios
+- [x] La implementación es aditiva: no se elimina ni modifica funcionalidad existente
 
 ### 7. Experiencia de Usuario
-- [ ] La interfaz claramente muestra las tres opciones de komentado: Anónimo, Identificado, Registrado
-- [ ] Transición suave entre estados: un usuario puede comenzar anónimo y luego identificarse sin perder su historial de comentarios de esa sesión
-- [ ] Indicadores visuales claros muestran el estado de identificación del usuario en cada comentario
-- [ ] El proceso de identificación por email es inmediato: no requiere verificación ni espera
-- [ ] Los botones de login con Google/GitHub son claramente visibles y reconocibles
+- [x] La interfaz claramente muestra las tres opciones de komentado: Anónimo, Identificado, Registrado
+- [x] Transición suave entre estados: un usuario puede comenzar anónimo y luego identificarse sin perder su historial de comentarios de esa sesión
+- [x] Indicadores visuales claros muestran el estado de identificación del usuario en cada comentario
+- [x] El proceso de identificación por email es inmediato: no requiere verificación ni espera
+- [x] Los botones de login con Google/GitHub son claramente visibles y reconocibles
 
 ---
 

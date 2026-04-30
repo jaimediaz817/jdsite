@@ -17,19 +17,19 @@
 
 ## 📊 FASES DE IMPLEMENTACIÓN
 
-| Fase      | Descripcion                                         | Tiempo estimado | Estado      |
-| --------- | --------------------------------------------------- | --------------- | ----------- |
-| 🔹 FASE 1  | Actualizar modelo BlogComment + campos nuevos       | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 2  | Migraciones de base de datos                        | 5 min           | ⏳ Pendiente |
-| 🔹 FASE 3  | Instalar y configurar django-allauth                | 10 min          | ⏳ Pendiente |
-| 🔹 FASE 4  | Configurar settings.py OAuth (Google/GitHub)        | 8 min           | ⏳ Pendiente |
-| 🔹 FASE 5  | Configurar URLs allauth en jdsite/urls.py           | 5 min           | ⏳ Pendiente |
-| 🔹 FASE 6  | Obtener credenciales OAuth (Google Cloud + GitHub)  | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 7  | Actualizar forms.py (selector identificación)       | 10 min          | ⏳ Pendiente |
-| 🔹 FASE 8  | Actualizar vistas (lógica identificación + edición) | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 9  | Actualizar templates (UI + badges + botones OAuth)  | 12 min          | ⏳ Pendiente |
-| 🔹 FASE 10 | Lógica administradores automáticos (email dominio)  | 8 min           | ⏳ Pendiente |
-| 🔹 FASE 11 | Testeo y verificación final (casos borde)           | 15 min          | ⏳ Pendiente |
+| Fase      | Descripcion                                         | Tiempo estimado | Estado       |
+| --------- | --------------------------------------------------- | --------------- | ------------ |
+| 🔹 FASE 1  | Actualizar modelo BlogComment + campos nuevos       | 12 min          | ✅ Completado |
+| 🔹 FASE 2  | Migraciones de base de datos                        | 5 min           | ✅ Completado |
+| 🔹 FASE 3  | Instalar y configurar django-allauth                | 10 min          | ✅ Completado |
+| 🔹 FASE 4  | Configurar settings.py OAuth (Google/GitHub)        | 8 min           | ✅ Completado |
+| 🔹 FASE 5  | Configurar URLs allauth en jdsite/urls.py           | 5 min           | ✅ Completado |
+| 🔹 FASE 6  | Obtener credenciales OAuth (Google Cloud + GitHub)  | 12 min          | ✅ Completado |
+| 🔹 FASE 7  | Actualizar forms.py (selector identificación)       | 10 min          | ✅ Completado |
+| 🔹 FASE 8  | Actualizar vistas (lógica identificación + edición) | 12 min          | ✅ Completado |
+| 🔹 FASE 9  | Actualizar templates (UI + badges + botones OAuth)  | 12 min          | ✅ Completado |
+| 🔹 FASE 10 | Lógica administradores automáticos (email dominio)  | 8 min           | ✅ Completado |
+| 🔹 FASE 11 | Testeo y verificación final (casos borde)           | 15 min          | ⏳ Pendiente  |
 
 ---
 

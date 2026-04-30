@@ -2,14 +2,27 @@ from django.utils.html import escape
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
+from datetime import timedelta
 
 from .models import BlogComment
 
 
-def create_comment(blog_slug, name, email, content, ip_address, parent_id=None):
+def create_comment(
+    blog_slug,
+    name,
+    email,
+    content,
+    ip_address,
+    parent_id=None,
+    identification_level="anonymous",
+    provider=None,
+    provider_uid=None,
+):
     """
     Crea un nuevo comentario pendiente de moderacion
     """
+    from django.utils import timezone
+
     # Sanitizar todo el contenido
     name = escape(name.strip())
     content = escape(content.strip())
@@ -25,6 +38,19 @@ def create_comment(blog_slug, name, email, content, ip_address, parent_id=None):
         except BlogComment.DoesNotExist:
             parent = None
 
+    # Detectar administrador por dominio de email
+    is_admin = False
+    if email and email.endswith("@jaimediaz817.com"):
+        is_admin = True
+
+    # Calcular editable_until
+    editable_until = None
+    if identification_level == "identified":
+        editable_until = timezone.now() + timedelta(days=7)
+    elif identification_level == "registered":
+        # Sin límite mientras la sesión esté activa (se maneja en vista)
+        editable_until = None
+
     comment = BlogComment.objects.create(
         blog_slug=blog_slug,
         parent=parent,
@@ -33,6 +59,11 @@ def create_comment(blog_slug, name, email, content, ip_address, parent_id=None):
         content=content,
         ip_address=ip_address,
         status="pending",
+        identification_level=identification_level,
+        provider=provider,
+        provider_uid=provider_uid,
+        is_admin=is_admin,
+        editable_until=editable_until,
     )
 
     # ✅ FASE 9: Notificacion por email al administrador

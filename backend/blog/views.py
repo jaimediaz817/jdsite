@@ -54,14 +54,38 @@ def post_comment(request, slug):
 
     if form.is_valid():
         ip = get_client_ip(request)
+        identification_level = form.cleaned_data.get(
+            "identification_level", "anonymous"
+        )
+        provider = None
+        provider_uid = None
+
+        # Si el usuario está autenticado con OAuth, usar sus datos
+        if request.user.is_authenticated:
+            identification_level = "registered"
+            # Obtener proveedor social
+            if hasattr(request.user, "socialaccount_set"):
+                social_account = request.user.socialaccount_set.first()
+                if social_account:
+                    provider = social_account.provider
+                    provider_uid = social_account.uid
+            # Usar nombre y email del usuario autenticado
+            name = request.user.get_full_name() or request.user.username
+            email = request.user.email
+        else:
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
 
         comment = create_comment(
             blog_slug=slug,
-            name=form.cleaned_data["name"],
-            email=form.cleaned_data["email"],
+            name=name,
+            email=email,
             content=form.cleaned_data["content"],
             ip_address=ip,
             parent_id=form.cleaned_data.get("parent_id"),
+            identification_level=identification_level,
+            provider=provider,
+            provider_uid=provider_uid,
         )
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":

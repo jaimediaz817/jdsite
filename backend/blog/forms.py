@@ -23,6 +23,18 @@ class CommentForm(forms.Form):
         ),
     )
 
+    identification_level = forms.ChoiceField(
+        label="Nivel de identificación",
+        choices=[
+            ("anonymous", "Anónimo"),
+            ("identified", "Identificado por email"),
+            ("registered", "Registrado (OAuth)"),
+        ],
+        initial="anonymous",
+        widget=forms.RadioSelect,
+        required=True,
+    )
+
     content = forms.CharField(
         validators=[MinLengthValidator(10), MaxLengthValidator(1000)],
         widget=forms.Textarea(

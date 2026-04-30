@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@400;600;700&display=swap');
 
 .blog-content {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.08rem;
-    line-height: 1.8;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
     font-weight: 400;
     color: #1e293b;
     max-width: 680px;
@@ -35,7 +35,7 @@
 }
 
 .blog-content h1 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 2.4rem;
     line-height: 1.25;

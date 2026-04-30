@@ -12,8 +12,8 @@ def blog_thumbnail(post):
     Cachea la imagen aleatoria por el ID del post para que no cambie en cada render
     """
     # Si el post tiene imagen propia, la devolvemos inmediatamente
-    if hasattr(post, "featured_image") and post.featured_image:
-        return post.featured_image.url
+    if hasattr(post, "cover_image") and post.cover_image:
+        return post.cover_image
 
     # Usamos el ID del post como seed para tener siempre la MISMA imagen
     # para el mismo post, no cambia en cada refresh

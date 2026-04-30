@@ -43,6 +43,13 @@ TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
 
+# FIX Unicode Windows Error
+import sys
+
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # --- DB ---
 if os.getenv("DB_ENGINE") == "mysql":
     DATABASES = {

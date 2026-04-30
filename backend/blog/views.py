@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
+from django.template.loader import render_to_string
 from blog.models import BlogPost
 from blog.forms import CommentForm
 from blog.services import create_comment, get_approved_comments, get_comment_count
@@ -77,3 +79,38 @@ def post_comment(request, slug):
 
     # Si no es ajax, volver al detalle del blog
     return redirect("blog:blog_detail", slug=slug)
+
+
+@require_http_methods(["GET"])
+def load_more_comments(request, slug):
+    """
+    ✅ HU-005.6 - ENDPOINT SCROLL INFINITO
+    Retorna HTML parcial de comentarios paginados para carga incremental automatica
+    """
+    page = request.GET.get("page", 2)
+    COMENTARIOS_POR_PAGINA = 12
+
+    # Obtener todos los comentarios aprobados
+    todos_comentarios = get_approved_comments(slug)
+
+    # Paginacion nativa Django
+    paginador = Paginator(todos_comentarios, COMENTARIOS_POR_PAGINA)
+
+    # Si la pagina solicitada no existe, devolver vacio
+    if int(page) > paginador.num_pages:
+        respuesta = HttpResponse()
+        respuesta["X-Has-More"] = "false"
+        return respuesta
+
+    pagina_comentarios = paginador.get_page(page)
+
+    # Renderizar solo el HTML parcial de los comentarios
+    html_comentarios = render_to_string(
+        "blog/partials/_comments_list.html", {"comments": pagina_comentarios}
+    )
+
+    # Crear respuesta con cabecera que indica si hay mas paginas
+    respuesta = HttpResponse(html_comentarios)
+    respuesta["X-Has-More"] = "true" if pagina_comentarios.has_next() else "false"
+
+    return respuesta

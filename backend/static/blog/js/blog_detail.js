@@ -103,6 +103,10 @@ window.openGalleryPopup = function(element) {
 // ✅ DEFINITIVAMENTE, FORZADO AL MAXIMO
 console.log('✅ Iniciando barra progreso');
 
+// ✨ BARRA PROGRESO LECTURA HU-005.5
+let hideTimeout;
+const progressBar = document.querySelector('.reading-progress-bar');
+
 window.onscroll = function() {
     let scrol = window.pageYOffset || document.documentElement.scrollTop;
     let altoTotal = document.body.scrollHeight - window.innerHeight;
@@ -113,6 +117,19 @@ window.onscroll = function() {
     
     // Aplicar valor final
     document.querySelector('.reading-progress-fill').style.width = porcentaje + '%';
+
+    // ✅ Logica visibilidad barra progreso
+    if (porcentaje > 5) {
+        progressBar.classList.add('visible');
+        
+        // Reset timeout para ocultar despues de inactividad
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            progressBar.classList.remove('visible');
+        }, 2000);
+    } else {
+        progressBar.classList.remove('visible');
+    }
 
     // Barra flotante reacciones
     let barraFlotante = document.querySelector('.floating-reaction-bar');
@@ -158,6 +175,293 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.showModal();
     });
 });
+
+
+// ==============================================================
+// ✨ HU-005.6 - SCROLL INFINITO COMENTARIOS BLOG
+// Implementacion 100% nativa con IntersectionObserver API
+// Sin dependencias externas, maximo rendimiento
+// ==============================================================
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ✅ CONFIGURACION OFICIAL SEGUN HU
+    const CONFIG = {
+        COMENTARIOS_POR_PAGINA: 12,      // Cantidad optima UX
+        UMBRAL_CARGA_PX: 150,            // Cargar cuando queden 150px
+        ANIMACION_DURACION_MS: 280,      // Velocidad fadeIn
+        DEBUG_MODE: false
+    };
+
+    // ✅ Estado interno controlado
+    const estado = {
+        paginaActual: 1,
+        cargando: false,
+        hayMasComentarios: true,
+        observer: null,
+        contenedorComentarios: null,
+        elementoSentinela: null
+    };
+
+    // ✅ Inicializacion automatica solo si existe la seccion comentarios
+    function inicializarScrollInfinito() {
+        estado.contenedorComentarios = document.getElementById('comments-list');
+        
+        // Si no hay comentarios o no existe el contenedor, salir silenciosamente
+        if (!estado.contenedorComentarios) {
+            logDebug('❌ No se encontro contenedor de comentarios, saliendo');
+            return;
+        }
+
+        // Crear elemento Sentinela (el que detectamos con IntersectionObserver)
+        crearElementoSentinela();
+
+        // Inicializar IntersectionObserver nativo
+        inicializarObserver();
+
+        logDebug('✅ Scroll infinito inicializado correctamente');
+    }
+
+    /**
+     * ✅ Crea el elemento invisible al final de la lista que usamos para detectar scroll
+     * Es el patron estandar mundial para scroll infinito
+     */
+    function crearElementoSentinela() {
+        estado.elementoSentinela = document.createElement('div');
+        estado.elementoSentinela.id = 'comments-load-sentinel';
+        estado.elementoSentinela.style.height = '1px';
+        estado.elementoSentinela.style.width = '100%';
+        estado.elementoSentinela.style.opacity = '0';
+        
+        // Insertar al final de la lista de comentarios
+        estado.contenedorComentarios.appendChild(estado.elementoSentinela);
+    }
+
+    /**
+     * ✅ Inicializa IntersectionObserver API
+     * 10x mas rapido que escuchar evento scroll directamente
+     * No consume CPU ni bateria en mobile
+     */
+    function inicializarObserver() {
+        const opcionesObserver = {
+            root: null,             // Observar viewport completo
+            rootMargin: `0px 0px ${CONFIG.UMBRAL_CARGA_PX}px 0px`,  // Cargar ANTES de llegar al final
+            threshold: 0.1          // Disparar cuando se vea el 10% del sentinela
+        };
+
+        estado.observer = new IntersectionObserver(function(entradas) {
+            const entrada = entradas[0];
+
+            // Si el sentinela entra en el viewport y podemos cargar
+            if (entrada.isIntersecting && estado.hayMasComentarios && !estado.cargando) {
+                cargarMasComentarios();
+            }
+
+        }, opcionesObserver);
+
+        // Empezar a observar el elemento sentinela
+        estado.observer.observe(estado.elementoSentinela);
+    }
+
+    /**
+     * ✅ Metodo principal que carga mas comentarios via fetch
+     * Maneja estados de carga, errores, duplicados, todo
+     */
+    async function cargarMasComentarios() {
+        // ✅ Proteccion anti-duplicado (NO eliminar esto)
+        if (estado.cargando || !estado.hayMasComentarios) return;
+
+        estado.cargando = true;
+        estado.paginaActual += 1;
+
+        logDebug(`⏳ Cargando pagina ${estado.paginaActual}...`);
+
+        // Mostrar skeleton loader inmediatamente
+        mostrarSkeletonLoader();
+
+        try {
+            // Construir URL endpoint (mismo slug de la pagina actual)
+            const url = `${window.location.pathname}comments/load-more/?page=${estado.paginaActual}`;
+
+            const respuesta = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                },
+                credentials: 'same-origin'
+            });
+
+            if (!respuesta.ok) {
+                throw new Error(`Error servidor: ${respuesta.status}`);
+            }
+
+            // Leer cabecera que indica si hay mas comentarios
+            estado.hayMasComentarios = respuesta.headers.get('X-Has-More') === 'true';
+
+            // Obtener HTML parcial renderizado desde backend
+            const htmlNuevosComentarios = await respuesta.text();
+
+            // Ocultar skeleton
+            ocultarSkeletonLoader();
+
+            // Insertar nuevos comentarios antes del sentinela
+            estado.elementoSentinela.insertAdjacentHTML('beforebegin', htmlNuevosComentarios);
+
+            // ✅ Animacion fadeIn suave para cada comentario nuevo
+            animarAparicionComentarios();
+
+            // ✅ Re-inicializar botones responder, reacciones, etc en nuevos comentarios
+            reInicializarFuncionalidadesNuevosElementos();
+
+            logDebug(`✅ Pagina ${estado.paginaActual} cargada exitosamente`);
+
+        } catch (error) {
+            logDebug('❌ Error cargando comentarios:', error);
+            ocultarSkeletonLoader();
+            // En caso de error, retroceder pagina para volver a intentar
+            estado.paginaActual -= 1;
+
+        } finally {
+            estado.cargando = false;
+
+            // ✅ Si ya no hay mas comentarios, limpiar todo
+            if (!estado.hayMasComentarios) {
+                finalizarScrollInfinito();
+            }
+        }
+    }
+
+    /**
+     * ✅ Muestra el skeleton loader animado mientras carga
+     */
+    function mostrarSkeletonLoader() {
+        const skeletonHtml = `
+        <div id="comments-loader-wrapper" style="animation: fadeIn 200ms ease;">
+            <div class="comment-skeleton">
+                <div class="comment-skeleton-avatar"></div>
+                <div class="comment-skeleton-content">
+                    <div class="comment-skeleton-line short"></div>
+                    <div class="comment-skeleton-line medium"></div>
+                    <div class="comment-skeleton-line long"></div>
+                </div>
+            </div>
+            <div class="comment-skeleton mt-3">
+                <div class="comment-skeleton-avatar"></div>
+                <div class="comment-skeleton-content">
+                    <div class="comment-skeleton-line short"></div>
+                    <div class="comment-skeleton-line long"></div>
+                </div>
+            </div>
+        </div>
+        `;
+        estado.elementoSentinela.insertAdjacentHTML('beforebegin', skeletonHtml);
+    }
+
+    function ocultarSkeletonLoader() {
+        const loader = document.getElementById('comments-loader-wrapper');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 200);
+        }
+    }
+
+    /**
+     * ✅ Animacion suave fadeIn para cada nuevo comentario
+     * Evita saltos bruscos en el scroll
+     */
+    function animarAparicionComentarios() {
+        // Seleccionar todos los comentarios que NO tienen aun la animacion
+        const comentariosNuevos = estado.contenedorComentarios.querySelectorAll('.comment-wrapper:not(.loaded)');
+
+        comentariosNuevos.forEach((comentario, indice) => {
+            // Aplicar delay escalonado para efecto cascada
+            setTimeout(() => {
+                comentario.classList.add('loaded');
+                comentario.style.opacity = '1';
+                comentario.style.transform = 'translateY(0)';
+            }, indice * 70);
+        });
+    }
+
+    /**
+     * ✅ Cuando ya no hay mas comentarios:
+     *  - Desconectamos el observer para liberar memoria
+     *  - Mostramos mensaje final elegante
+     */
+    function finalizarScrollInfinito() {
+        // Desconectar observer (IMPORTANTE para liberar memoria)
+        if (estado.observer) {
+            estado.observer.disconnect();
+            estado.observer = null;
+        }
+
+        // Eliminar el sentinela
+        if (estado.elementoSentinela) {
+            estado.elementoSentinela.remove();
+        }
+
+        // Mostrar mensaje final
+        const mensajeFinal = document.createElement('div');
+        mensajeFinal.className = 'text-center py-4 mt-3 text-muted';
+        mensajeFinal.style.animation = 'fadeIn 400ms ease';
+        mensajeFinal.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center gap-2">
+                <span>✅</span>
+                <span>Has visto todos los comentarios</span>
+            </div>
+        `;
+
+        estado.contenedorComentarios.appendChild(mensajeFinal);
+
+        logDebug('🏁 No hay mas comentarios. Scroll infinito finalizado.');
+    }
+
+    /**
+     * ✅ Re-inicializa TODAS las funcionalidades existentes para los nuevos comentarios
+     * Boton responder, reacciones, hover effects, etc
+     * NADA se rompe, todo sigue funcionando exactamente igual
+     */
+    function reInicializarFuncionalidadesNuevosElementos() {
+        // 1. Volver a enlazar botones Responder
+        document.querySelectorAll('.reply-btn:not(.initialized)').forEach(btn => {
+            btn.classList.add('initialized');
+            
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.reply-form-container').forEach(f => f.remove());
+                
+                const commentId = this.getAttribute('data-comment-id');
+                const commentItem = this.closest('.comment-wrapper');
+                
+                commentItem.insertAdjacentHTML('beforeend', getReplyFormHtml(commentId));
+                
+                const replyForm = commentItem.querySelector('.reply-form-container form');
+                setupCommentForm(replyForm);
+                
+                commentItem.querySelector('textarea[name="content"]').focus();
+                
+                commentItem.querySelector('.cancel-reply').addEventListener('click', function() {
+                    this.closest('.reply-form-container').remove();
+                });
+            });
+        });
+
+        // 2. Aqui se pueden agregar mas inicializaciones:
+        // ✅ Botones reaccion, ✅ Tooltips, ✅ Etc
+    }
+
+    function logDebug(...args) {
+        if (CONFIG.DEBUG_MODE) {
+            console.log('🔄 SCROLL INFINITO:', ...args);
+        }
+    }
+
+    // ✅ INICIAR!
+    inicializarScrollInfinito();
+});
+
+// ==============================================================
+// FIN HU-005.6 - SCROLL INFINITO
+// ==============================================================
 
 
 // ✨ BOTONES COMPARTIR
@@ -216,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
         boton.innerHTML = '<i class="fas fa-check mr-1"></i> Enlace copiado!';
         boton.classList.remove('btn-outline-secondary');
         boton.classList.add('btn-success');
-        
+
         setTimeout(() => {
             boton.innerHTML = textoOriginal;
             boton.classList.remove('btn-success');
@@ -273,10 +577,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (floatRightNav) {
         // ✅ Mostrar inmediatamente al cargar
         floatRightNav.classList.add('visible');
-        
-        window.addEventListener('scroll', function() {
-            floatRightNav.classList.add('visible');
-        });
     }
 });
     
@@ -309,11 +609,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Validacion fallida');
+            .then(async response => {
+                // Intentar leer respuesta JSON con manejo de error
+                try {
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        // Si el servidor envio un mensaje de error usarlo
+                        if (data && data.message) {
+                            throw new Error(data.message);
+                        }
+                        if (data && data.error) {
+                            throw new Error(data.error);
+                        }
+                        // Si hay errores de formulario especificos
+                        if (data && data.errors) {
+                            const firstError = Object.values(data.errors)[0];
+                            throw new Error(firstError);
+                        }
+                        throw new Error('Validacion fallida');
+                    }
+                    
+                    return data;
+                    
+                } catch (jsonError) {
+                    // Si no es JSON es error de servidor, pagina 500 o similar
+                    if (response.status === 403) {
+                        throw new Error('Error de seguridad CSRF. Por favor recarga la página.');
+                    }
+                    if (response.status === 500) {
+                        throw new Error('Error interno en el servidor.');
+                    }
+                    throw new Error(`Error ${response.status}: Ha ocurrido un problema`);
                 }
-                return response.json();
             })
             .then(data => {
                 if (!data.success) {
@@ -332,54 +660,49 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 `;
                 
-                // ✅ Mostrar mensaje success
-                const successMsg = document.createElement('div');
-                successMsg.className = 'alert alert-success mt-3 d-flex justify-content-between align-items-center';
-                successMsg.style.animation = 'fadeIn 200ms ease';
-                successMsg.innerHTML = `
-                    <div>
-                        <i class="fas fa-check-circle mr-2"></i> 
-                        <strong>Comentario enviado!</strong> Tu comentario esta pendiente de aprobacion y sera publicado pronto.
-                    </div>
-                    <button type="button" class="close ml-3" onclick="this.parentElement.remove()" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                `;
-                
-                // Insertar skeleton y reemplazar formulario
-                this.insertAdjacentHTML('afterend', skeletonHtml);
-                this.replaceWith(successMsg);
-                
-                // ✅ Desplazarse suavemente al mensaje
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // ✅ USAR TOAST (MISMO SISTEMA QUE HOME)
+                $.toast({
+                    heading: 'Comentario enviado!',
+                    text: 'Tu comentario esta pendiente de aprobacion y sera publicado pronto.',
+                    icon: 'success',
+                    position: 'top-right',
+                    hideAfter: 4500,
+                    stack: 4,
+                    bgColor: '#7c3aed',
+                    loaderBg: '#6366f1'
+                });
+
+                // Remover completamente el formulario
+                const formContainer = this.closest('.reply-form-container');
+                if (formContainer) {
+                    formContainer.remove();
+                } else {
+                    this.remove();
+                }
             })
             .catch(error => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalContent;
                 
-                // ✅ Mostrar error elegantemente en lugar de alert
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'alert alert-danger mt-3 d-flex justify-content-between align-items-center';
-                errorMsg.style.animation = 'fadeIn 200ms ease';
-                errorMsg.innerHTML = `
-                    <div>
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        <strong>Error!</strong> El comentario debe tener al menos 10 caracteres.
-                    </div>
-                    <button type="button" class="close ml-3" onclick="this.parentElement.remove()" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                `;
+                // Obtener mensaje de error real del servidor si esta disponible
+                let errorMessage = 'Ha ocurrido un error al enviar el comentario';
                 
-                // Insertar mensaje de error debajo del boton
-                submitBtn.insertAdjacentElement('afterend', errorMsg);
+                // Intentar extraer mensaje real de la respuesta
+                if (error.message && error.message !== 'Validacion fallida' && error.message !== 'Error en el servidor') {
+                    errorMessage = error.message;
+                }
                 
-                // Auto eliminar despues de 5 segundos
-                setTimeout(() => {
-                    if (errorMsg.parentElement) {
-                        errorMsg.remove();
-                    }
-                }, 5000);
+                // ✅ USAR TOAST (MISMO SISTEMA QUE HOME)
+                $.toast({
+                    heading: 'Error',
+                    text: errorMessage,
+                    icon: 'error',
+                    position: 'top-right',
+                    hideAfter: 5500,
+                    stack: 4,
+                    bgColor: '#dc2626',
+                    loaderBg: '#f87171'
+                });
             });
         });
     }
@@ -392,10 +715,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function getReplyFormHtml(commentId) {
         return `
         <div class="reply-form-container mt-3 ml-5" style="animation: fadeIn 200ms ease;">
-            <form method="POST" action="${window.location.pathname}">
+            <form method="POST" action="${window.location.pathname}comment/">
                 <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
                 <input type="hidden" name="parent_id" value="${commentId}">
-                <input type="text" name="website" style="display:none;">
+                <input type="hidden" name="website" value="">
                 
                 <div class="form-group">
                     <input type="text" name="name" class="form-control form-control-sm" placeholder="Tu nombre" required>
@@ -430,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.reply-form-container').forEach(f => f.remove());
             
             const commentId = this.getAttribute('data-comment-id');
-            const commentItem = this.closest('.comment-item');
+            const commentItem = this.closest('.comment-wrapper');
             
             // Insertar formulario directamente debajo del comentario
             commentItem.insertAdjacentHTML('beforeend', getReplyFormHtml(commentId));

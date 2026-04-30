@@ -130,11 +130,11 @@
 
 | #     | Tarea                                                   | Estado | %    | Prioridad | Notas                                                     |
 | ----- | ------------------------------------------------------- | ------ | ---- | --------- | --------------------------------------------------------- |
-| 2.2.1 | Añadir `poster` a todos los `<video>` de fondo          | ⏳      | 0%   | 🔴 P0      | Frame estático que se muestra mientras carga el video     |
-| 2.2.2 | Añadir indicador de scroll en el hero (flecha animada)  | ⏳      | 0%   | 🟡 P1      | Hint visual de que hay más contenido abajo                |
+| 2.2.1 | Añadir `poster` a todos los `<video>` de fondo          | ✅      | 100% | 🔴 P0      | 5 videos con poster: hero (2), skills, numeric, costs     |
+| 2.2.2 | Añadir indicador de scroll en el hero (flecha animada)  | ✅      | 100% | 🟡 P1      | Mouse + flecha animada, responsive, reduced-motion        |
 | 2.2.3 | Sección "Mis números": quitar mayúsculas excesivas      | ✅      | 100% | 🟢 P2      | "UN POCO SOBRE MIS NÚMEROS" → "Un poco sobre mis números" |
-| 2.2.4 | Normalizar alturas de cards de proyectos                | ⏳      | 0%   | 🟡 P1      | Usar `min-height` o truncar bullets a número fijo         |
-| 2.2.5 | Añadir botón de pausa a videos de fondo (accesibilidad) | ⏳      | 0%   | 🟡 P1      | WCAG 2.2.2                                                |
+| 2.2.4 | Normalizar alturas de cards de proyectos                | ✅      | 100% | 🟡 P1      | Flex + truncar bullets a 2 líneas + actions auto-margin   |
+| 2.2.5 | Añadir botón de pausa a videos de fondo (accesibilidad) | ✅      | 100% | 🟡 P1      | WCAG 2.2.2, botón global pause/play con JS                |
 
 ### Sprint 2.3 — Accesibilidad
 
@@ -191,10 +191,10 @@
 | ------------------------- | ------------ | ----------- | ----------- | ---------- | -------- |
 | Fase 0: Fixes técnicos    | 5            | 5           | 0           | 0          | ✅ 100%   |
 | Fase 1: Texto y redacción | 43           | 43          | 0           | 0          | ✅ 100%   |
-| Fase 2: Usabilidad UX     | 15           | 7           | 0           | 8          | 🔄 47%    |
+| Fase 2: Usabilidad UX     | 15           | 11          | 0           | 4          | 🔄 73%    |
 | Fase 3: Carrusel GitHub   | 8            | 0           | 0           | 8          | ⏳ 0%     |
 | Fase 4: SEO técnico       | 6            | 4           | 0           | 2          | 🔄 67%    |
-| **TOTAL**                 | **77**       | **54**      | **0**       | **23**     | **70%**  |
+| **TOTAL**                 | **77**       | **58**      | **0**       | **19**     | **75%**  |
 
 ---
 

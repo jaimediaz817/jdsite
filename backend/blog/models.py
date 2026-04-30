@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+from .utils import generate_avatar_seed, get_avatar_color, get_avatar_initials
 
 
 class Category(models.Model):
@@ -84,6 +85,14 @@ class BlogPost(models.Model):
     meta_title = models.CharField(max_length=120, blank=True, null=True)
     meta_description = models.CharField(max_length=160, blank=True, null=True)
 
+    # Imagen Portada
+    cover_image = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Ruta a imagen de portada",
+    )
+
     class Meta:
         ordering = ["-publish_date"]
         verbose_name = "Entrada de blog"
@@ -147,3 +156,15 @@ class BlogComment(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.blog_slug}"
+
+    @property
+    def avatar_seed(self) -> str:
+        return generate_avatar_seed(self.ip_address, self.name)
+
+    @property
+    def avatar_color(self) -> str:
+        return get_avatar_color(self.avatar_seed)
+
+    @property
+    def avatar_initials(self) -> str:
+        return get_avatar_initials(self.name)

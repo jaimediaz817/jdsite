@@ -14,4 +14,14 @@ urlpatterns = [
         views.toggle_reaction_view,
         name="toggle_reaction",
     ),
+    path(
+        "api/comment/<int:comment_id>/reactions/toggle/",
+        views.toggle_comment_reaction_view,
+        name="toggle_comment_reaction",
+    ),
+    path(
+        "api/comment/<int:comment_id>/reactions/",
+        views.get_comment_reactions,
+        name="get_comment_reactions",
+    ),
 ]

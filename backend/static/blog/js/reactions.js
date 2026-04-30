@@ -1,13 +1,21 @@
 /**
- * Sistema de Reacciones Blog
+ * Sistema de Reacciones Blog y Comentarios
  * Optimistic UI, Debounce 300ms, Manejo de errores silencioso
- * Segun especificaciones HU-005.2
+ * Segun especificaciones HU-005.2 y HU-005.4
  */
 
 (function() {
     let debounceTimer = null;
 
     function init() {
+        // Inicializar reacciones de articulos
+        initBlogReactions();
+        
+        // Inicializar reacciones de comentarios
+        initCommentReactions();
+    }
+
+    function initBlogReactions() {
         const containers = document.querySelectorAll('.blog-reactions');
         if (containers.length === 0) return;
 
@@ -21,7 +29,30 @@
 
         // Agregar eventos a TODOS los contenedores
         containers.forEach(container => {
-            container.addEventListener('click', (e) => handleReactionClick(e, currentSlug));
+            container.addEventListener('click', (e) => handleReactionClick(e, 'blog', currentSlug));
+        });
+    }
+
+    function initCommentReactions() {
+        const containers = document.querySelectorAll('.comment-reactions');
+        if (containers.length === 0) return;
+
+        containers.forEach(container => {
+            const commentId = container.dataset.commentId;
+            if (!commentId) return;
+
+            // Cargar estado inicial para este comentario
+            fetch(`/api/comment/${commentId}/reactions/`)
+                .then(res => res.json())
+                .then(data => {
+                    updateCommentUI(container, data.counts, data.user_reactions);
+                })
+                .catch(() => {
+                    // Fallback silencioso
+                });
+
+            // Agregar eventos
+            container.addEventListener('click', (e) => handleReactionClick(e, 'comment', commentId));
         });
     }
 
@@ -29,14 +60,24 @@
         try {
             const response = await fetch(`/api/blog/${currentSlug}/reactions/`);
             const data = await response.json();
-            updateUI(data.counts, data.user_reactions);
+            updateBlogUI(data.counts, data.user_reactions);
         } catch (e) {
             // Fallback silencioso, no mostrar errores al usuario
-            console.warn('No se pudieron cargar las reacciones');
+            console.warn('No se pudieron cargar las reacciones del articulo');
         }
     }
 
-    function handleReactionClick(e, currentSlug) {
+    async function loadCommentReactions(commentId, container) {
+        try {
+            // Por ahora solo inicializamos en 0, el contador se actualiza en cada click
+            // Se puede agregar endpoint de carga masiva cuando sea necesario
+            updateCommentUI(container, {}, []);
+        } catch (e) {
+            console.warn('No se pudieron cargar las reacciones del comentario');
+        }
+    }
+
+    function handleReactionClick(e, type, identifier) {
         const button = e.target.closest('.reaction-button');
         if (!button) return;
 
@@ -50,27 +91,48 @@
         const isCurrentlyActive = button.classList.contains('active');
         const newState = !isCurrentlyActive;
 
-        // ✅ Desactivar TODAS las demas reacciones en TODOS los contenedores
-        document.querySelectorAll('.reaction-button').forEach(btn => {
-            if (btn.dataset.reaction === reactionType) {
-                // Si es el mismo tipo de reaccion, sincronizar estado en todos los lugares
-                updateButtonState(btn, newState);
-            } else {
-                // Todas las demas reacciones se desactivan
-                btn.classList.remove('active');
-            }
-            void btn.offsetWidth;
-        });
+        // Si es una reaccion de articulo: sincronizar todos los botones
+        if (type === 'blog') {
+            document.querySelectorAll('.blog-reactions .reaction-button').forEach(btn => {
+                if (btn.dataset.reaction === reactionType) {
+                    // Si es el mismo tipo de reaccion, sincronizar estado en todos los lugares
+                    updateButtonState(btn, newState);
+                } else {
+                    // Todas las demas reacciones se desactivan
+                    btn.classList.remove('active');
+                }
+                void btn.offsetWidth;
+            });
+        } else {
+            // Si es una reaccion de comentario: solo afecta a este comentario
+            const container = button.closest('.comment-reactions');
+            container.querySelectorAll('.reaction-button').forEach(btn => {
+                if (btn.dataset.reaction === reactionType) {
+                    updateButtonState(btn, newState);
+                } else {
+                    btn.classList.remove('active');
+                }
+                void btn.offsetWidth;
+            });
+        }
 
         // Debounce 300ms
         debounceTimer = setTimeout(() => {
-            sendReaction(reactionType, button, isCurrentlyActive, currentSlug);
+            sendReaction(reactionType, button, isCurrentlyActive, type, identifier);
         }, 300);
     }
 
-    async function sendReaction(reactionType, button, previousState, currentSlug) {
+    async function sendReaction(reactionType, button, previousState, type, identifier) {
         try {
-            const response = await fetch(`/api/blog/${currentSlug}/reactions/toggle/`, {
+            let url;
+            
+            if (type === 'blog') {
+                url = `/api/blog/${identifier}/reactions/toggle/`;
+            } else {
+                url = `/api/comment/${identifier}/reactions/toggle/`;
+            }
+
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +145,13 @@
             }
 
             const data = await response.json();
-            updateUI(data.counts, []);
+            
+            if (type === 'blog') {
+                updateBlogUI(data.counts, []);
+            } else {
+                const container = button.closest('.comment-reactions');
+                updateCommentUI(container, data.counts, []);
+            }
 
         } catch (e) {
             // Revertir estado si falla la peticion
@@ -92,8 +160,27 @@
         }
     }
 
-    function updateUI(counts, userActive) {
-        document.querySelectorAll('.reaction-button').forEach(button => {
+    function updateBlogUI(counts, userActive) {
+        document.querySelectorAll('.blog-reactions .reaction-button').forEach(button => {
+            const type = button.dataset.reaction;
+            const count = counts[type] || 0;
+            const isActive = userActive.includes(type);
+
+            button.querySelector('.count').textContent = count;
+            
+            if (isActive) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+            
+            // Reset animacion
+            void button.offsetWidth;
+        });
+    }
+
+    function updateCommentUI(container, counts, userActive) {
+        container.querySelectorAll('.reaction-button').forEach(button => {
             const type = button.dataset.reaction;
             const count = counts[type] || 0;
             const isActive = userActive.includes(type);

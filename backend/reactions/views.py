@@ -2,7 +2,14 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .services import get_reaction_counts, get_user_reactions, toggle_reaction
+from .services import (
+    get_reaction_counts,
+    get_user_reactions,
+    toggle_reaction,
+    get_comment_reaction_counts,
+    get_user_comment_reactions,
+    toggle_comment_reaction,
+)
 
 
 def get_client_ip(request):
@@ -56,3 +63,47 @@ def toggle_reaction_view(request, blog_slug):
 
     except json.JSONDecodeError:
         return JsonResponse({"error": "JSON invalido"}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def toggle_comment_reaction_view(request, comment_id):
+    """
+    Alterna el estado de una reaccion en un comentario para el usuario actual.
+    """
+    try:
+        data = json.loads(request.body)
+        reaction_type = data.get("reaction_type", "").strip()
+
+        if not reaction_type:
+            return JsonResponse({"error": "reaction_type requerido"}, status=400)
+
+        ip = get_client_ip(request)
+        is_active = toggle_comment_reaction(comment_id, ip, reaction_type)
+
+        return JsonResponse(
+            {
+                "success": True,
+                "reaction_type": reaction_type,
+                "active": is_active,
+                "counts": get_comment_reaction_counts(comment_id),
+            }
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON invalido"}, status=400)
+
+
+@require_http_methods(["GET"])
+def get_comment_reactions(request, comment_id):
+    """
+    Devuelve las reacciones para un comentario y el estado del usuario actual.
+    """
+    ip = get_client_ip(request)
+
+    response = {
+        "counts": get_comment_reaction_counts(comment_id),
+        "user_reactions": get_user_comment_reactions(comment_id, ip),
+    }
+
+    return JsonResponse(response)

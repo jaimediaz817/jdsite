@@ -99,6 +99,7 @@
 
         <!-- CUSTOM  STYLES -->
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'css/sprint22_visual.css' %}">
         {% comment %} <link rel="stylesheet" href="{% static 'css/home_custom.css' %}"> {% endcomment %}
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
@@ -277,7 +278,8 @@
                 <!-- Slide con VIDEO -->
                 <div class="swiper-slide video-slide flex-center-full" data-swiper-autoplay="20000">
                     <!-- El video actúa como fondo -->
-                    <video autoplay muted loop playsinline class="bg-video">
+                    <video autoplay muted loop playsinline class="bg-video"
+                        poster="{% static 'images/jd-imagen-office-v2.png' %}">
                         <source src="{% static 'videos/home/jd_hero_loop.mp4' %}" type="video/mp4">
                     </video>
 
@@ -314,7 +316,8 @@
                 {% comment %} <div class="swiper-slide img image1 flex-center-full" data-swiper-autoplay="5000"> {% endcomment %}
                 <div class="swiper-slide video-slide flex-center-full" data-swiper-autoplay="20000">
                     <!-- El video actúa como fondo -->
-                    <video autoplay muted loop playsinline class="bg-video">
+                    <video autoplay muted loop playsinline class="bg-video"
+                        poster="{% static 'images/slides/slide_group_work.jpg' %}">
                         <source src="{% static 'videos/home/jd_entorno_empresarial_v1.mp4' %}" type="video/mp4">
                     </video>
 
@@ -381,6 +384,95 @@
             <!-- Navigation-->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
+
+            <!-- INDICADOR DE SCROLL (Tarea 2.2.2) -->
+            <a href="#welcome" class="hero-scroll-indicator swipe-item-home" aria-label="Desplazarse hacia abajo">
+                <span class="scroll-mouse">
+                    <span class="scroll-wheel"></span>
+                </span>
+                <span class="scroll-arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+            </a>
+            
+            <style>
+            /* ✨ Animación profesional indicador scroll mouse - UI/UX Premium */
+            @keyframes mouseFloat {
+                0% { 
+                    transform: translateY(0px);
+                    opacity: 0.95;
+                }
+                30% { 
+                    transform: translateY(9px);
+                    opacity: 1;
+                }
+                70% {
+                    transform: translateY(9px);
+                    opacity: 1;
+                }
+                100% { 
+                    transform: translateY(0px);
+                    opacity: 0.95;
+                }
+            }
+
+            @keyframes wheelIndicator {
+                0% { 
+                    opacity: 1;
+                    transform: translateY(0px) scale(1);
+                }
+                50% {
+                    opacity: 0.4;
+                }
+                100% { 
+                    opacity: 0;
+                    transform: translateY(12px) scale(0.85);
+                }
+            }
+
+            @keyframes arrowHint {
+                0% { 
+                    transform: translateY(0px);
+                    opacity: 0.6;
+                }
+                50% { 
+                    transform: translateY(7px);
+                    opacity: 1;
+                }
+                100% { 
+                    transform: translateY(0px);
+                    opacity: 0.6;
+                }
+            }
+
+            .scroll-mouse {
+                animation: mouseFloat 3.2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+                will-change: transform, opacity;
+            }
+
+            .scroll-wheel {
+                animation: wheelIndicator 2.1s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+                will-change: transform, opacity;
+            }
+
+            .scroll-arrow i {
+                animation: arrowHint 2.6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+                animation-delay: 0.8s;
+                will-change: transform, opacity;
+            }
+
+            /* Mejora de rendimiento para animaciones */
+            .hero-scroll-indicator {
+                transform: translateZ(0);
+                backface-visibility: hidden;
+            }
+            </style>
+
+            <!-- BOTÓN DE PAUSA GLOBAL VIDEOS (Tarea 2.2.5 - WCAG 2.2.2) -->
+            <button type="button" class="video-pause-toggle" id="videoPauseToggle"
+                aria-label="Pausar videos de fondo" title="Pausar/reanudar videos de fondo">
+                <i class="fas fa-pause"></i>
+            </button>
         </div>
 
         <!-- WELCOME -->
@@ -724,7 +816,8 @@
 
                                 <!-- NOTE: COL-2 -->
                                 <div class="col-12 col-md-6 col-lg-6 mt-4 mt-lg-0 video-bg-section position-relative d-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="800">
-                                    <video class="bg-video" autoplay muted loop playsinline>
+                                    <video class="bg-video" autoplay muted loop playsinline
+                                        poster="{% static 'images/slides/slide_pc_desktop.jpg' %}">
                                         <source src="{% static 'videos/home/jd_hombre_tecleando.mp4' %}" type="video/mp4">
                                     </video>
                                     {% comment %} OVERLAY  {% endcomment %}
@@ -930,7 +1023,8 @@
 
                 <div class="row numbers_bg position-relative justify-content-center align-items-center" style="overflow:hidden;">
                     <!-- VIDEO DE FONDO -->
-                    <video class="numbers-bg-video" autoplay muted loop playsinline>
+                    <video class="numbers-bg-video" autoplay muted loop playsinline
+                        poster="{% static 'images/sections/numbers_xl.jpg' %}">
                         <source src="{% static 'videos/home/jd_entorno_empresarial_v1.mp4' %}" type="video/mp4">
                     </video>
                     <!-- OVERLAY OSCURO -->
@@ -1389,7 +1483,8 @@
         <!-- COSTS -->
         <section id="costs" class="jd-section costs bg-secondary text-center text-md-left text-white jarallax" data-jarallax data-jarallax data-speed="0.95">
             <!-- VIDEO DE FONDO -->
-            <video class="costs-bg-video" autoplay muted loop playsinline>
+            <video class="costs-bg-video" autoplay muted loop playsinline
+                poster="{% static 'images/sections/costs_lg.jpg' %}">
                 <source src="{% static 'videos/home/jd_techs.mp4' %}" type="video/mp4">
             </video>
             <!-- OVERLAY OSCURO -->
@@ -1973,6 +2068,24 @@
 
         <script src="{% static 'js/lib/intro/minified/intro.min.js' %}"></script>
         <!-- ============================================================================================ -->
+
+        <!-- SPRINT 2.2: Video pause toggle (WCAG 2.2.2) -->
+        <script>
+        (function() {
+            var btn = document.getElementById('videoPauseToggle');
+            if (!btn) return;
+            var paused = false;
+            btn.addEventListener('click', function() {
+                paused = !paused;
+                var videos = document.querySelectorAll('video.bg-video, video.numbers-bg-video, video.costs-bg-video');
+                videos.forEach(function(v) {
+                    if (paused) { v.pause(); } else { v.play(); }
+                });
+                btn.classList.toggle('paused', paused);
+                btn.setAttribute('aria-label', paused ? 'Reanudar videos de fondo' : 'Pausar videos de fondo');
+            });
+        })();
+        </script>
 
         <!-- CUSTOM   PATH ******************* -->
         <script type="module" src="{% static 'js/jdController.js' %}"></script>

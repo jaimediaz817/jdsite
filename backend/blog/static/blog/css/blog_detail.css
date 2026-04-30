@@ -256,23 +256,65 @@
     color: #00ADB5;
 }
 
-/* ✨ Barra progreso lectura */
+/* ✨ Barra progreso lectura HU-005.5 */
 .reading-progress-bar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 4px;
-    z-index: 9999;
-    background: #e2e8f0;
+    width: 100vw;
+    height: 2.5px;
+    z-index: 999999;
+    background: transparent;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 200ms ease-out, visibility 200ms ease-out;
+    backdrop-filter: blur(2px);
+}
+
+.reading-progress-bar.visible {
+    opacity: 0.85;
+    visibility: visible;
 }
 
 .reading-progress-fill {
     height: 100%;
     width: 0%;
-    background: #00ADB5;
-    transition: width 100ms linear;
+    background: linear-gradient(90deg, #7c3aed 0%, #ec4899 50%, #f43f5e 100%);
+    transition: width 100ms linear, opacity 200ms ease-out;
+    display: block;
 }
+
+/* ✨ Boton flotante derecho navegacion */
+.float-nav-btn {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: white;
+    border-radius: 50px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+    transition: all 220ms ease-out;
+    text-decoration: none;
+}
+
+.float-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+    background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+    color: white;
+    text-decoration: none;
+}
+
+/* ✨ Tamaño iconos reacciones */
+.reaction-button i,
+.btn-reaction-float i,
+.reaction-comment-btn i {
+    font-size: 1.25rem !important;
+    line-height: 1.5;
+}
+
+
 
 /* ✨ BARRA LATERAL FLOTANTE REACCIONES */
 .floating-reaction-bar {
@@ -842,4 +884,120 @@ form button[type="submit"]:disabled {
 .share-buttons-container .btn i {
     margin-right: 6px;
     font-size: 1rem;
+}
+
+/* ✨ Estado activo reaccion seleccionada */
+button.reaction-button.active,
+button.btn-reaction-float.active,
+button.reaction-comment-btn.active {
+    background: rgba(124, 58, 237, 0.12) !important;
+    border: 2px solid #7c3aed !important;
+    border-radius: 12px !important;
+    color: #7c3aed !important;
+    transition: all 180ms ease-out !important;
+}
+
+button.reaction-button.active i,
+button.btn-reaction-float.active i,
+button.reaction-comment-btn.active i {
+    color: #7c3aed !important;
+    font-weight: 900 !important;
+    transform: scale(1.15) !important;
+}
+
+/* ✨ Boton flotante derecho navegacion */
+.floating-right-nav.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+}
+
+/* ✨ Ancho completo formulario respuestas */
+.reply-form-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.04) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border-left: 3px solid #7c3aed;
+    border-radius: 0 12px 12px 0;
+    clear: both !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.reply-form-container form {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.reply-form-container .form-control {
+    width: 100% !important;
+    border-color: #cbd5e1 !important;
+}
+
+.reply-form-container .form-control:focus {
+    border-color: #7c3aed !important;
+    box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.15) !important;
+}
+
+.reply-form-container button[type="submit"] {
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25) !important;
+}
+
+.reply-form-container button[type="submit"]:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4) !important;
+}
+
+/* ✅ Corregir conflicto con botones de reacciones */
+.comment-wrapper {
+    position: relative;
+    overflow: visible !important;
+}
+
+.comment-actions {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 0.5rem;
+}
+
+/* ✅ Mantener consistencia colores AZUL / MORADO */
+.reply-btn {
+    color: #7c3aed !important;
+}
+
+.reply-btn:hover {
+    color: #6366f1 !important;
+    transform: translateX(3px);
+    opacity: 1;
+}
+
+/* ✅ Corregir cortes y superposiciones */
+.comment-wrapper {
+    padding-bottom: 0.5rem !important;
+    overflow: visible !important;
+}
+
+/* ✅ Mensaje de exito no corta contenido */
+.alert-success,
+.alert-danger {
+    position: relative !important;
+    z-index: 20 !important;
+    clear: both !important;
+    margin: 1rem 0 !important;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* ✅ Estilo especifico para mensajes dentro de respuestas */
+.comment-wrapper .alert-success,
+.comment-wrapper .alert-danger {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 12px !important;
 }

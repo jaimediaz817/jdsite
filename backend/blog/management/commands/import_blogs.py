@@ -65,12 +65,10 @@ class Command(BaseCommand):
 
         with connection.cursor() as cursor:
             if "postgresql" in db_engine:
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT setval(pg_get_serial_sequence('blog_blogpost', 'id'), 
                     COALESCE((SELECT MAX(id) FROM blog_blogpost), 0) + 1, false);
-                """
-                )
+                """)
             elif "mysql" in db_engine:
                 # MySQL no permite subconsultas directamente en ALTER TABLE
                 cursor.execute(
@@ -121,8 +119,13 @@ class Command(BaseCommand):
             self.stdout.write("✅ Imagenes verificadas y copiadas correctamente")
             return
 
+        # ✅ Extraer y eliminar la PRIMERA imagen como portada
+        cover_image_path, content_sin_portada = self.extract_cover_image(
+            content_md, blog_dir, blog_static_dir, slug
+        )
+
         # ✅ Convertir Markdown a HTML
-        html_content = self.convert_markdown_to_html(content_md)
+        html_content = self.convert_markdown_to_html(content_sin_portada)
 
         # ✅ Procesar bloques especiales (galerias, carruseles)
         processed_html = self.process_special_blocks(
@@ -145,7 +148,13 @@ class Command(BaseCommand):
 
         # ✅ Guardar finalmente en BD
         obj = self.save_blog_post(
-            slug, file_hash, title, html_final, category_obj
+            slug,
+            file_hash,
+            title,
+            html_final,
+            category_obj,
+            frontmatter,
+            cover_image_path,
         )
 
         # ✅ Asociar tags
@@ -359,6 +368,18 @@ class Command(BaseCommand):
                     img["src"] = f"/static/blogs/{slug}/{source_img.name}"
                     img["loading"] = "lazy"
 
+                    # ✅ SEO: Agregar atributo alt automatico si no existe
+                    if not img.get("alt"):
+                        nombre_limpio = (
+                            source_img.stem.replace("-", " ")
+                            .replace("_", " ")
+                            .title()
+                        )
+                        img["alt"] = nombre_limpio
+                        self.stdout.write(
+                            f"✅ Atributo alt generado automaticamente: {nombre_limpio}"
+                        )
+
         return str(soup)
 
     def auto_create_carousels(self, html_content):
@@ -507,17 +528,96 @@ class Command(BaseCommand):
     # -------------------------------------------------------------------------
     # 🔹 BLOQUE: GUARDADO Y FINALIZACION
     # -------------------------------------------------------------------------
-    def save_blog_post(self, slug, file_hash, title, html_final, category_obj):
+    def extract_cover_image(self, content_md, blog_dir, blog_static_dir, slug):
+        """
+        ✨ MAGIA DE LA IMAGEN DE PORTADA
+        Busca la PRIMERA imagen del markdown, la extrae como portada y la ELIMINA del contenido
+        No aparece nunca en el detalle del blog. Solo en listados y redes.
+        """
+        lines = content_md.strip().split("\n")
+        cover_image_path = None
+
+        for i, line in enumerate(lines):
+            # Detecta imagen markdown de cualquier forma
+            match = re.search(r"!\[.*?\]\((.*?)\)", line.strip())
+            if match:
+                img_src = match.group(1).strip()
+                if not img_src.startswith(("http://", "https://", "/")):
+                    source_img = blog_dir / img_src
+                    if source_img.exists():
+                        target_img = blog_static_dir / source_img.name
+                        shutil.copy2(source_img, target_img)
+                        cover_image_path = (
+                            f"/static/blogs/{slug}/{source_img.name}"
+                        )
+
+                        # ELIMINAMOS ESTA LINEA COMPLETAMENTE DEL CONTENIDO
+                        del lines[i]
+
+                        self.stdout.write(
+                            f"✅ Imagen de portada detectada automaticamente"
+                        )
+                        break
+
+        return cover_image_path, "\n".join(lines)
+
+    def save_blog_post(
+        self,
+        slug,
+        file_hash,
+        title,
+        html_final,
+        category_obj,
+        frontmatter,
+        cover_image_path=None,
+    ):
         """Crea o actualiza el BlogPost en la base de datos"""
+
+        # Leer TODOS los campos del frontmatter
+        is_published = not frontmatter.get("draft", "false").lower() == "true"
+
+        # ✅ SEO: Validar y truncar longitudes correctas segun Google 2026
+        meta_title_raw = frontmatter.get("meta_title", title)
+        meta_description_raw = frontmatter.get(
+            "meta_description", frontmatter.get("description", "")
+        )
+
+        # Limites oficiales Google: Title 60 chars, Description 155 chars
+        meta_title = meta_title_raw[:59].strip()
+        meta_description = meta_description_raw[:154].strip()
+
+        if len(meta_title_raw) > 59:
+            self.stdout.write(
+                f"⚠️  Meta Title truncado: '{meta_title_raw[:55]}...'"
+            )
+        if len(meta_description_raw) > 154:
+            self.stdout.write(
+                f"⚠️  Meta Description truncado: '{meta_description_raw[:50]}...'"
+            )
+
+        defaults = {
+            "source_hash": file_hash,
+            "title": title,
+            "content_html": html_final,
+            "is_published": is_published,
+            "category": category_obj,
+            "description": frontmatter.get("description", ""),
+            "meta_title": meta_title,
+            "meta_description": meta_description,
+            "cover_image": cover_image_path or frontmatter.get("image", None),
+        }
+
+        # Procesar fecha si existe
+        if "date" in frontmatter:
+            from django.utils.dateparse import parse_date
+
+            fecha = parse_date(frontmatter["date"])
+            if fecha:
+                defaults["publish_date"] = fecha
+
         obj, created = BlogPost.objects.update_or_create(
             slug=slug,
-            defaults={
-                "source_hash": file_hash,
-                "title": title,
-                "content_html": html_final,
-                "is_published": True,
-                "category": category_obj,
-            },
+            defaults=defaults,
         )
         return obj
 

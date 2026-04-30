@@ -34,6 +34,8 @@ sitemaps = {
 
 urlpatterns = [
     path("admin/", admin.site.urls),  # admin Django (opcional)
+    # --- URLs allauth (Google/GitHub) ---
+    path("accounts/", include("allauth.urls")),
     # path("ask/", include("inquiries.urls")),
     path(
         "ask/",

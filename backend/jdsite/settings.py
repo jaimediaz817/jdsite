@@ -168,12 +168,39 @@ GITHUB_ACCOUNTS = [
 # --- REDIRECCIÓN DE LOGIN ---
 # Esto le dice a Django dónde ir cuando @login_required bloquea a un usuario
 LOGIN_URL = "/me/login/"
-LOGIN_REDIRECT_URL = "/ask/admin/threads/"
+LOGIN_REDIRECT_URL = "/"
 
 JD_AVATAR_URL = f"{SITE_URL}/static/images/jd-imagen.jpg"
 
 # --- AÑADIR ESTA LÍNEA AL FINAL ---
 SITE_ID = 1
+
+# --- CONFIGURACIÓN DJANGO ALLAUTH (PARA GOOGLE/GITHUB) ---
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+LOGOUT_REDIRECT_URL = "/"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
+            "key": "",
+        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    },
+    "github": {
+        "APP": {
+            "client_id": os.getenv("GITHUB_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("GITHUB_OAUTH_CLIENT_SECRET"),
+            "key": "",
+        }
+    },
+}
 
 # =================================================
 # CONFIGURACIÓN ÚNICA PARA CV - CAMBIAR SOLO AQUÍ

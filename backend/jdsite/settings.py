@@ -8,11 +8,23 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+# Ensure pymysql is used as MySQLdb fallback on Windows where mysqlclient may not compile
+try:
+    import pymysql
+
+    pymysql.install_as_MySQLdb()
+except Exception:
+    # If pymysql is not available, the original MySQL client will be used (if installed)
+    pass
+
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-key")
 # DEBUG = os.getenv("DEBUG", "True") == "True"
 DEBUG = True
 # Detecta entorno
 DJANGO_ENV = os.getenv("DJANGO_ENV", "development").lower()
+
+# Fix AutoField warnings (W042)
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configuración automática según entorno
 if DJANGO_ENV == "production":
@@ -35,6 +47,9 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # Proveedores sociales (CRÍTICO para URLs en v65+)
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     # apps tuyas
     "inquiries",
     "core",
@@ -113,7 +128,7 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-# --- Email y SITE_URL ---
+# --- EMAIL y SITE_URL ---
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
@@ -121,7 +136,9 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL", "Jaime Diaz <no-reply@localhost>"
 )
 OWNER_EMAIL = os.getenv("OWNER_EMAIL")
-SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000")
+# URL base del sitio en desarrollo. Cambiada a localhost para que coincida con los
+# redirect_uri que Google y GitHub esperan (evita el error redirect_uri_mismatch).
+SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
 
 
 # CONF NUEVA:EMAIL_BACKEND = os.getenv("EMAIL_BACKEND",
@@ -145,7 +162,7 @@ EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX", "[JD] ")
 SITE_BASE_URL = os.getenv("SITE_BASE_URL", "http://localhost:8000")
 REPLY_TO_EMAIL = os.getenv("REPLY_TO_EMAIL", EMAIL_HOST_USER)
 
-# GUTHUB SETTINGS
+# GITHUB SETTINGS
 JDIAZ817_GITHUB_PAT = os.getenv("JDIAZ817_GITHUB_PAT")
 JDIAZ817_GITHUB_USERNAME = os.getenv("JDIAZ817_GITHUB_USERNAME")
 
@@ -169,7 +186,7 @@ GITHUB_ACCOUNTS = [
 # --- REDIRECCIÓN DE LOGIN ---
 # Esto le dice a Django dónde ir cuando @login_required bloquea a un usuario
 LOGIN_URL = "/me/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/blog/"
 
 JD_AVATAR_URL = f"{SITE_URL}/static/images/jd-imagen.jpg"
 
@@ -182,7 +199,75 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-LOGOUT_REDIRECT_URL = "/"
+# Custom adapter to handle email conflicts during social login
+# The adapter resides in the ``jdsite`` package (backend/jdsite/adapter.py).
+# Use the module path ``jdsite.adapter.CustomSocialAccountAdapter``.
+SOCIALACCOUNT_ADAPTER = "jdsite.adapter.CustomSocialAccountAdapter"
+
+LOGOUT_REDIRECT_URL = "/blog/"
+
+# ----------------------------------------------------------------------
+# AUTHENTICATION SETTINGS FOR DEVELOPMENT
+# ----------------------------------------------------------------------
+# En desarrollo Django Allauth asume HTTPS por defecto, lo que genera
+# redirect_uris como `https://localhost:8000/...`.  Los proveedores OAuth
+# (Google y GitHub) están configurados para aceptar solo HTTP en entorno
+# local, por lo que debemos forzar el uso de HTTP para evitar el error
+# `redirect_uri_mismatch`.
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+
+# Forzar que la vista de login social no redirija automáticamente en GET.
+# Con `SOCIALACCOUNT_LOGIN_ON_GET = False` se mostrará una página de
+# confirmación (similar a la de Google) antes de redirigir a GitHub.
+SOCIALACCOUNT_LOGIN_ON_GET = False
+
+# Permitir logout vía GET (evita conflictos con JS de comentarios)
+ACCOUNT_LOGOUT_ON_GET = True
+
+# --- CONFIGURACIÓN DE SEGURIDAD Y UNICIDAD DE CUENTAS ---
+# Evitar que se registren usuarios con el mismo correo
+# Incluir el campo de email en el formulario de registro pero hacerlo opcional.
+# Con `ACCOUNT_EMAIL_REQUIRED = False` el email no es obligatorio y Allauth lo
+# almacenará si el proveedor (GitHub) lo proporciona.
+# Hacer que el email sea opcional: lo quitamos del formulario de registro.
+# Incluir el campo email en el formulario de registro para que Allauth pueda
+# crear la cuenta cuando el email es obligatorio y enlazar cuentas de distintos
+# proveedores que compartan el mismo correo.
+# Excluir el campo email del formulario de registro; Allauth obtendrá el email
+# del proveedor social y lo almacenará automáticamente.
+# No requerir que el email sea obligatorio para el registro ni para el login
+# social. Esto permite que, si el email ya existe en el sistema, Allauth lo
+# conecte automáticamente a la cuenta existente sin mostrar el formulario.
+ACCOUNT_EMAIL_REQUIRED = False
+# Allow users to log in using their email address instead of username.
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+# Include the email, first name and last name fields in the signup form (optional). The asterisk indicates the field
+# is required by the form UI, but we keep ACCOUNT_EMAIL_REQUIRED=False so the user can submit without providing an email.
+ACCOUNT_SIGNUP_FIELDS = [
+    "email",
+    "first_name",
+    "last_name",
+    "username*",
+    "password1*",
+    "password2*",
+]
+ACCOUNT_UNIQUE_EMAIL = True
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+
+# Configuración Social (Google/GitHub)
+# Intentar autocompletar el registro si el correo ya existe.
+# No requerimos que el email esté presente ni verificado para iniciar sesión
+# con una cuenta social, lo que permite que el flujo de GitHub sea directo.
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+# Si un usuario inicia sesión con Google y el correo ya existe en el sistema,
+# conecta la cuenta social a ese usuario existente.
+SOCIALACCOUNT_CONNECTION_EXISTS_ACTION = "connect"
+
+# Guardar el email obtenido del proveedor aunque el formulario de registro no lo solicite.
+SOCIALACCOUNT_STORE_EMAIL = True
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -199,9 +284,17 @@ SOCIALACCOUNT_PROVIDERS = {
             "client_id": os.getenv("GITHUB_OAUTH_CLIENT_ID"),
             "secret": os.getenv("GITHUB_OAUTH_CLIENT_SECRET"),
             "key": "",
-        }
+        },
+        # Solicitar permiso para obtener el email del usuario en GitHub
+        "SCOPE": ["read:user", "user:email"],
+        "AUTH_PARAMS": {"allow_signup": "true"},
     },
 }
+
+# Si el proveedor no devuelve el email directamente, Allauth intentará
+# consultarlo mediante una petición adicional. Esto permite que el email
+# se guarde en el modelo User aunque la respuesta inicial no lo incluya.
+SOCIALACCOUNT_QUERY_EMAIL = True
 
 # =================================================
 # CONFIGURACIÓN ÚNICA PARA CV - CAMBIAR SOLO AQUÍ

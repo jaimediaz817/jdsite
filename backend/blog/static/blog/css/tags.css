@@ -1,0 +1,143 @@
+/* =============================================
+   ESTILOS MEJORADOS PARA TAGS DE BLOG
+   ============================================= */
+
+/* Contenedor de tags */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Estilo base del tag */
+.blog-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border-radius: 2rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto degradado en tags */
+.blog-tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.blog-tag span,
+.blog-tag i {
+    position: relative;
+    z-index: 2;
+}
+
+.blog-tag:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.05);
+    text-decoration: none;
+}
+
+.blog-tag i {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Variaciones de tamaño */
+.blog-tag.tag-sm {
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
+}
+
+.blog-tag.tag-lg {
+    font-size: 1em;
+    padding: 0.7rem 1.8rem;
+}
+
+.blog-tag.tag-xl {
+    font-size: 1.6rem;
+    padding: 0.8rem 2rem;
+    font-weight: 700;
+}
+
+/* Estilos para la página de lista de blogs */
+.blog-card .blog-tag {
+    font-size: 1.1rem;
+    padding: 0.5rem 1.2rem;
+}
+
+/* Estilos para el detalle del blog */
+.blog-detail .blog-tag {
+    font-size: 1.4rem;
+    padding: 0.7rem 1.8rem;
+    font-weight: 600;
+}
+
+/* Animación de entrada */
+@keyframes tagFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.blog-tag {
+    animation: tagFadeIn 0.4s ease backwards;
+}
+
+.blog-tag:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.blog-tag:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.blog-tag:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.blog-tag:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.blog-tag:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+/* Estilo para tags clickeables (enlaces) */
+a.blog-tag {
+    cursor: pointer;
+}
+
+a.blog-tag:hover {
+    filter: brightness(0.95);
+}
+
+/* Estilo para tags en el menú o navegación */
+.nav-tag {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 0.5rem;
+}

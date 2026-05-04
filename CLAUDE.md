@@ -100,4 +100,16 @@ deactivate
 
 ---
 
+## 🟡 SKILLS DEL PROYECTO
+
+Lee el skill correspondiente según la tarea antes de implementar:
+
+| Tarea                               | Archivo                     |
+| ----------------------------------- | --------------------------- |
+| Vistas, modelos, URLs, forms, admin | `.cline/skills/django.md`   |
+| CSS, JS, templates, HTML            | `.cline/skills/frontend.md` |
+| Queries, migraciones, ORM           | `.cline/skills/database.md` |
+| HTMX, interactividad, SSE           | `.cline/skills/htmx.md`     |
+
 > ✅ Última actualización: 29/04/2026
+> 

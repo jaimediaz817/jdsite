@@ -111,6 +111,24 @@ class BlogPost(models.Model):
 
         return reverse("blog:blog_detail", args=[self.slug])
 
+    # ---------------------------------------------------------------------
+    # Comentarios
+    # ---------------------------------------------------------------------
+    @property
+    def comment_count(self):
+        """Devuelve la cantidad de comentarios aprobados asociados a este post.
+
+        Se realiza una consulta ligera a ``BlogComment`` filtrando por el slug
+        del post y por el estado ``approved``. La importación del modelo se hace
+        dentro del método para evitar problemas de importación circular, ya que
+        ``BlogComment`` se define más abajo en este mismo archivo.
+        """
+        from .models import BlogComment  # Importación tardía para evitar circular
+
+        return BlogComment.objects.filter(
+            blog_slug=self.slug, status="approved"
+        ).count()
+
 
 class BlogComment(models.Model):
     """

@@ -1,16 +1,452 @@
-<!-- NAV MENU TEMPORAL - Despues extraer correctamente del home -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="/">Jaime Díaz</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ml-auto">
+{% load static %}
+<!-- NAV MENU -->
+<nav id="navigation-menu" class="jd-section navbar navbar-dark navbar-expand-lg sticky-top">
+  <div class="container section-menu-cta-buttons">
+    <!-- Botón toggler (izquierda) -->
+    <button type="button" class="navbar-toggler bu" data-toggle="collapse" data-target="#navbarNav" aria-expanded="false" aria-label="Menú principal" style="margin-left: 0 !important; margin-right: 0 !important; order: -1 !important;">
+      <span class="icon-menu-custom"></span>
+    </button>
+
+    <!-- Logo (derecha del toggler) -->
+    <a href="javascript:;" class="jd-logo-dark d-md-block jd-white pr-4">
+        <img src="{% static 'images/jd_white.svg' %}" alt="Jaime Díaz" width="40" class="img-fluid">
+    </a>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Bloque Izquierdo -->
+      <ul class="navbar-nav mt-3 mt-md-0">
         <li class="nav-item">
           <a class="nav-link" href="/">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="/blog/">Blog</a>
+          <a class="nav-link" href="/blog/">Blog</a>
         </li>
       </ul>
+      
+      <!-- Bloque Derecho: Autenticación -->
+      <div class="d-flex align-items-center gap-3">
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav d-flex align-items-center mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-expanded="false" style="display: flex; align-items: center;">
+                <div class="user-profile d-flex align-items-center gap-2">
+                  <div class="user-avatar">
+                    {% if user.socialaccount_set.exists %}
+                      {% with social_account=user.socialaccount_set.first %}
+                        {% if social_account.provider == 'google' and social_account.extra_data.picture %}
+                          <img src="{{ social_account.extra_data.picture }}" alt="Avatar" class="avatar-img">
+                        {% elif social_account.provider == 'github' and social_account.extra_data.avatar_url %}
+                          <img src="{{ social_account.extra_data.avatar_url }}" alt="Avatar" class="avatar-img">
+                        {% else %}
+                          <i class="fas fa-user"></i>
+                        {% endif %}
+                      {% endwith %}
+                    {% else %}
+                      <i class="fas fa-user"></i>
+                    {% endif %}
+                  </div>
+                <span style="margin-left: 4px;">{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.email }}{% endif %}</span>
+                </div>
+              </a>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: 150px;">
+                <li><a class="dropdown-item logout-item" href="#" onclick="return confirmLogout(event)">Cerrar sesión</a></li>
+              </ul>
+            </li>
+          </ul>
+        {% else %}
+          <div class="login-wrapper d-flex align-items-center gap-3">
+            <div class="login-prompt d-flex align-items-center gap-2">
+              <i class="fas fa-sparkles login-sparkle"></i>
+              <span class="login-text">Acceder</span>
+            </div>
+            <div class="social-btns d-flex align-items-center gap-2">
+              <a href="/accounts/google/login/" class="social-login-btn google-login" title="Continuar con Google">
+                <div class="social-icon-wrapper"><i class="fab fa-google"></i></div>
+                <span class="btn-label">Google</span>
+                <div class="btn-shine"></div>
+              </a>
+              <div class="divider-dot"></div>
+              <a href="/accounts/github/login/" class="social-login-btn github-login" title="Continuar con GitHub">
+                <div class="social-icon-wrapper"><i class="fab fa-github"></i></div>
+                <span class="btn-label">GitHub</span>
+                <div class="btn-shine"></div>
+              </a>
+            <a href="/accounts/login/" class="social-login-btn acceso-tradicional-blog traditional-signup-btn" style="padding: 10px 20px; border-radius: 50px;">
+                <div class="social-icon-wrapper"><i class="fas fa-sign-in-alt"></i></div>
+                <span class="btn-label">Iniciar sesión</span>
+                <div class="btn-shine"></div>
+            </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </nav>
+
+<!-- Modal Registro Rápido eliminado - no se usa actualmente -->
+
+<!-- Formulario oculto para logout -->
+<form id="logoutFormHiddenUnique" method="POST" action="/accounts/logout/" style="display: none;">
+  {% csrf_token %}
+  <input type="hidden" name="next" id="logoutNextHidden" value="">
+</form>
+
+<!-- ✨ TOAST SIMPLE PARA LOGOUT -->
+<div id="logoutToast" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 99999; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 20px; min-width: 320px; max-width: 400px; border: 3px solid #7c3aed;">
+  <div style="display: flex; align-items: flex-start; gap: 12px;">
+    <div style="font-size: 20px; color: #0891b2; margin-top: 2px;"><i class="fas fa-sign-out-alt"></i></div>
+    <div style="flex: 1;">
+      <div style="font-weight: 600; font-size: 15px; color: #1e293b; margin-bottom: 4px;">Cerrar sesión</div>
+      <div style="font-size: 13px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">¿Estás seguro que deseas cerrar tu sesión?</div>
+      <div style="display: flex; gap: 8px;">
+        <button id="logoutConfirmBtn" style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; background: linear-gradient(135deg, #0891b2, #7c3aed); color: white;">Sí, cerrar</button>
+        <button id="logoutCancelBtn" style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: white; color: #475569; border: 1.5px solid #cbd5e1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ===== LOGIN WRAPPER ===== */
+.burguer-menu-content {
+  margin-left: 1rem;
+}
+#navbarToggler {
+  margin-left: 1rem;
+}
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-wrapper:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SPARKLE ICON ===== */
+.login-prompt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.login-sparkle {
+    color: #FFD700;
+    font-size: 14px;
+    animation: sparkleRotate 3s ease-in-out infinite;
+}
+
+@keyframes sparkleRotate {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(15deg) scale(1.1); }
+    75% { transform: rotate(-15deg) scale(1.1); }
+}
+
+.login-text {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ===== SOCIAL BUTTONS ===== */
+.social-btns {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.social-login-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+
+    &:hover {
+        color: white;
+    }
+}
+
+.social-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.4s ease;
+}
+
+.social-login-btn i {
+    font-size: 16px;
+    transition: all 0.4s ease;
+}
+
+.btn-label {
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== SHINE EFFECT ===== */
+.btn-shine {
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 100%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+}
+
+.social-login-btn:hover .btn-shine {
+    left: 150%;
+}
+
+/* ===== GOOGLE BUTTON ===== */
+.google-login:hover {
+    background: linear-gradient(135deg, rgba(219, 68, 55, 0.25), rgba(219, 68, 55, 0.1));
+    border-color: rgba(219, 68, 55, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(219, 68, 55, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.google-login i { color: #EA4335; }
+.google-login:hover i { 
+    transform: scale(1.2) rotate(10deg); 
+}
+
+/* ===== GITHUB BUTTON ===== */
+.github-login:hover, .acceso-tradicional-blog:hover {
+    background: linear-gradient(135deg, rgba(36, 41, 46, 0.4), rgba(36, 41, 46, 0.2));
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+    color: white;
+    text-decoration: none;
+}
+
+.github-login i { color: #f5f5f5; }
+.github-login:hover i { transform: scale(1.2) rotate(-10deg); }
+
+/* ===== DIVIDER DOT ===== */
+.divider-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .login-text { display: none; }
+    .login-sparkle { display: none; }
+    .login-wrapper { padding: 6px 12px; }
+    .social-login-btn { padding: 10px 14px; }
+    .btn-label { display: none; }
+    .social-login-btn i { font-size: 18px; }
+    .divider-dot { display: none; }
+}
+
+@media (max-width: 480px) {
+    .social-btns { gap: 8px; }
+}
+
+/* ===== AVATAR IMAGE ===== */
+.avatar-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(255,255,255,0.1);
+}
+
+/* ===== INCREASE FORM FONT SIZE ===== */
+#quickSignupModal label {
+    font-size: 1rem !important;
+}
+#quickSignupModal input {
+    font-size: 1rem !important;
+}
+#quickSignupModal .form-control {
+    font-size: 1rem !important;
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+}
+
+.toast {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    padding: 20px;
+    min-width: 320px;
+    max-width: 400px;
+    margin-bottom: 10px;
+    border-left: 4px solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast.success {
+    border-color: #0891b2;
+}
+
+.toast.error {
+    border-color: #dc2626;
+}
+
+.toast .toast-icon {
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.toast.success .toast-icon {
+    color: #0891b2;
+}
+
+.toast.error .toast-icon {
+    color: #dc2626;
+}
+
+.toast .toast-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.toast .toast-message {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.toast.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+</style>
+
+<script>
+function confirmLogout(e) {
+    e.preventDefault();
+    var toast = document.getElementById('logoutToast');
+    toast.style.display = 'block';
+    return false;
+}
+
+function showToast(title, message, type) {
+    var container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        document.body.appendChild(container);
+    }
+    
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    
+    var iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    
+    toast.innerHTML = 
+        '<div style="display: flex; align-items: flex-start;">' +
+            '<div class="toast-icon ' + iconClass + '"></div>' +
+            '<div style="flex: 1;">' +
+                '<div class="toast-title">' + title + '</div>' +
+                '<div class="toast-message">' + message + '</div>' +
+            '</div>' +
+        '</div>';
+    
+    container.appendChild(toast);
+    
+    setTimeout(function() {
+        toast.classList.add('hiding');
+        setTimeout(function() {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var confirmBtn = document.getElementById('logoutConfirmBtn');
+    var cancelBtn = document.getElementById('logoutCancelBtn');
+    var toast = document.getElementById('logoutToast');
+    
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            var next = window.location.pathname + window.location.search;
+            document.getElementById('logoutNextHidden').value = next;
+            document.getElementById('logoutFormHiddenUnique').submit();
+        });
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            toast.style.display = 'none';
+        });
+    }
+
+    // Script para el modal de registro eliminado - no se usa actualmente
+    // El formulario de registro ahora está en /blog/accounts/signup/
+});
+</script>

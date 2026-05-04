@@ -1,0 +1,185 @@
+/* =========================================
+    Blog List - Estilos Profesionales
+    ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* tags  */
+.blog-tags-list {
+    gap: 4px;
+}
+
+/* --- Contenedor de la Card --- */
+.blog-card {
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid #eef2f7 !important;
+    /* Fondo azul suave del blog */
+    background-color: #f5faff;
+}
+
+.blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- Imagen de la Card --- */
+.blog-card-image {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    overflow: hidden;
+}
+
+.blog-card-image img {
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.blog-card:hover .blog-card-image img {
+    transform: scale(1.05);
+    filter: brightness(0.8);
+}
+
+/* --- Títulos y Enlaces --- */
+.blog-card .card-body h3 a {
+    color: #2c3e50;
+    transition: color 0.2s ease;
+}
+
+/* --- Comentario overlay --- */
+/* --- Comentario overlay mejorado (UI/UX) --- */
+/* Comentario overlay mejorado (UI/UX) */
+.comment-info {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    /* Fondo azul primario con ligera transparencia para buena legibilidad */
+    background: rgba(52, 152, 219, 0.9);
+    padding: 4px 10px;
+    border-radius: 999px;
+    /* forma pill */
+    font-size: 0.95rem;
+    /* Sombra para separar del fondo de la imagen */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    transform: scale(0.95);
+}
+
+/* Al pasar el mouse sobre la tarjeta, resaltamos el badge */
+.blog-card:hover .comment-info {
+    transform: scale(1);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+}
+
+.comment-info i {
+    font-size: 1rem;
+    /* icono un poco más grande */
+    transition: transform 0.2s ease;
+}
+
+.blog-card:hover .comment-info i {
+    transform: scale(1.25);
+}
+
+/* Estilo del número de comentarios dentro del badge */
+.comment-info .comment-count {
+    font-weight: 600;
+    margin-left: 2px;
+    /* Aseguramos buena legibilidad en fondos oscuros */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Pequeña animación al aparecer el badge para reforzar la interacción */
+.blog-card .comment-info {
+    animation: fadeInScale 0.3s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(0.95);
+    }
+}
+
+.blog-card .card-body h3 a:hover {
+    color: #3498db;
+}
+
+/* --- Título principal con borde degradado --- */
+.section-title {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+    /* opcional: color del texto ya está definido por bootstrap */
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    border-radius: 2px;
+    /* suaviza la aparición */
+    transition: background 0.3s ease;
+}
+
+/* --- Metadatos (Fecha/Lectura) --- */
+.blog-card-meta {
+    font-size: 0.85rem;
+    color: #95a5a6 !important;
+}
+
+.blog-card-meta i {
+    color: #bdc3c7;
+}
+
+/* --- Tags/Badges --- */
+/* --- Tags en listado (igual que detalle) --- */
+.blog-tags-list .blog-tag {
+    font-size: 0.75rem;
+    /* mantiene tamaño actual */
+    font-weight: 500 !important;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+    /* Estilos estáticos para coincidir con la vista detalle */
+    color: #475569;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+}
+
+.blog-tags-list .blog-tag:hover {
+    /* Efecto hover idéntico al detalle */
+    color: #00ADB5;
+    background: #fff;
+    border-color: #00ADB5;
+    transform: translateY(-1px);
+    opacity: 1;
+}
+
+/* --- Paginación --- */
+.pagination .page-link {
+    border-radius: 50px;
+    margin: 0 3px;
+    border: none;
+    color: #3498db;
+    background-color: #f8f9fa;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3498db;
+    color: white;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4);
+}

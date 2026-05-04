@@ -1,5 +1,7 @@
 from django import forms
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 
 class CommentForm(forms.Form):
@@ -24,15 +26,13 @@ class CommentForm(forms.Form):
     )
 
     identification_level = forms.ChoiceField(
-        label="Nivel de identificación",
         choices=[
             ("anonymous", "Anónimo"),
             ("identified", "Identificado por email"),
             ("registered", "Registrado (OAuth)"),
         ],
-        initial="anonymous",
-        widget=forms.RadioSelect,
-        required=True,
+        widget=forms.HiddenInput(),
+        required=False,
     )
 
     content = forms.CharField(
@@ -68,3 +68,58 @@ class CommentForm(forms.Form):
         while "\n\n\n" in content:
             content = content.replace("\n\n\n", "\n\n")
         return content
+
+
+class QuickSignupForm(UserCreationForm):
+    """
+    Formulario breve para registro tradicional (popup).
+    """
+
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(
+            attrs={"class": "form-control", "placeholder": "Correo electrónico"}
+        ),
+    )
+    first_name = forms.CharField(
+        required=True,
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Nombre"}
+        ),
+    )
+    last_name = forms.CharField(
+        required=True,
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Apellido"}
+        ),
+    )
+
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+        widgets = {
+            "username": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Nombre de usuario",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={"class": "form-control", "placeholder": "Correo electrónico"}
+            ),
+            "first_name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Nombre"}
+            ),
+            "last_name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Apellido"}
+            ),
+            "password1": forms.PasswordInput(
+                attrs={"class": "form-control", "placeholder": "Contraseña"}
+            ),
+            "password2": forms.PasswordInput(
+                attrs={"class": "form-control", "placeholder": "Confirmar contraseña"}
+            ),
+        }

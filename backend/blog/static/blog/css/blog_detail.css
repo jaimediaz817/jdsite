@@ -1,13 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
 
+.blog-title-main {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2.25rem;
+}
+
+/* Ampliado el ancho máximo del contenido del blog para que coincida con el ancho del header en escritorio */
+/* Ampliado el ancho máximo del contenido del blog para que coincida con el ancho del header en escritorio */
 .blog-content {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 1.08rem;
     line-height: 1.8;
     font-weight: 400;
     color: #1e293b;
-    max-width: 680px;
+    max-width: 1140px;
+    /* ancho similar al contenedor bootstrap usado en el header */
     margin: 0 auto;
+    background: #fafafa;
+    /* fondo suave para destacar el contenido */
+    padding: 2rem;
+    /* espacio interno para respirar */
+    border-radius: 12px;
+    /* esquinas redondeadas */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    /* sombra ligera */
+    border: 1px solid #e2e8f0;
+    /* borde sutil */
 }
 
 @media (min-width: 768px) {
@@ -35,7 +54,7 @@
 }
 
 .blog-content h1 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 2.4rem;
     line-height: 1.25;
@@ -45,7 +64,7 @@
 }
 
 .blog-content h2 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 1.85rem;
     line-height: 1.3;
@@ -56,7 +75,7 @@
 }
 
 .blog-content h3 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1.45rem;
     line-height: 1.4;
@@ -66,7 +85,7 @@
 }
 
 .blog-content h4 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
     margin-top: 2rem;
@@ -103,7 +122,7 @@
 }
 
 .blog-content blockquote {
-    border-left: 4px solid #00ADB5;
+    border-left: 4px solid #7c3aed;
     padding: 1.5rem 1.75rem;
     margin: 2.5rem 0;
     font-style: normal;
@@ -114,7 +133,7 @@
 }
 
 .blog-content a {
-    color: #00ADB5;
+    color: #7c3aed;
     text-decoration: none;
     border-bottom: 1px solid transparent;
     transition: all 200ms ease-out;
@@ -122,7 +141,7 @@
 }
 
 .blog-content a:hover {
-    border-bottom-color: #00ADB5;
+    border-bottom-color: #7c3aed;
 }
 
 .blog-content ul,
@@ -138,7 +157,7 @@
 }
 
 .blog-content li::marker {
-    color: #00ADB5;
+    color: #7c3aed;
     font-weight: 600;
 }
 
@@ -153,6 +172,77 @@
 .blog-content strong {
     font-weight: 600;
     color: #0f172a;
+}
+
+/* ✨ MEJORAS VISUALES MINIMALISTAS PARA BLOG-CONTENT */
+.blog-content h2 {
+    position: relative;
+    padding-top: 1.5rem;
+    margin-top: 4.5rem;
+}
+
+.blog-content h2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #6d28d9, #7c3aed);
+    border-radius: 4px;
+    transition: width 400ms ease-out;
+}
+
+.blog-content h2:hover::before {
+    width: 120px;
+}
+
+.blog-content h3 {
+    position: relative;
+    padding-left: 1.25rem;
+    border-left: 4px solid #7c3aed;
+    transition: border-color 300ms ease;
+}
+
+.blog-content h3:hover {
+    border-left-color: #7c3aed;
+}
+
+.blog-content p+h2,
+.blog-content p+h3 {
+    margin-top: 4rem;
+}
+
+.blog-content p:first-of-type {
+    font-size: 1.15rem;
+    color: #334155;
+    line-height: 1.9;
+    margin-bottom: 2rem;
+}
+
+/* ✨ DROP CAP (Letra capital) - Color del blog */
+.blog-content p:first-of-type::first-letter {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    margin-right: 0.75rem;
+    margin-top: 0.3rem;
+    color: #7c3aed;
+    transition: color 300ms ease, transform 300ms ease;
+}
+
+.blog-content p:first-of-type:hover::first-letter {
+    color: #7c3aed;
+    transform: scale(1.05);
+}
+
+/* ✨ PÁRRAFOS - Un solo bloque visual */
+.blog-content p {
+    margin-bottom: 1.25rem;
+    orphans: 3;
+    widows: 3;
 }
 
 .btn-reaction {
@@ -172,7 +262,7 @@
     transform: translateY(0);
 }
 
-/* ✨ SISTEMA LAYOUT DUAL IMPLEMENTACION */
+/* ✨ SISTEMA LAYOUT DUAL IMPLEMENTATION */
 .container-narrow {
     max-width: 720px;
     margin-left: auto;
@@ -193,8 +283,9 @@
 }
 
 /* Compatibilidad retroactiva: el contenido existente sigue funcionando exactamente igual */
+/* Compatibilidad retroactiva: el contenido existente sigue funcionando exactamente igual */
 .blog-content {
-    max-width: 720px;
+    max-width: 1140px;
     margin: 0 auto;
 }
 
@@ -212,7 +303,7 @@
     aspect-ratio: 1 / 1;
 }
 
-/* ✨ COMPONENTE CARRUSEL FULL WIDTH */
+/* ✨ COMPONENTE CAROUSEL FULL WIDTH */
 .blog-carousel-container {
     margin: 4rem 0;
 }
@@ -248,21 +339,20 @@
 }
 
 .blog-carousel-container .swiper-pagination-bullet-active {
-    background: #00ADB5;
+    background: #7c3aed;
 }
 
 .blog-carousel-container .swiper-button-next,
 .blog-carousel-container .swiper-button-prev {
-    color: #00ADB5;
+    color: #7c3aed;
 }
 
-/* ✨ Barra progreso lectura HU-005.5 */
+/* Barra progreso lectura HU-005.5 */
 .reading-progress-bar {
     position: fixed;
-    top: 0;
     left: 0;
     width: 100vw;
-    height: 2.5px;
+    height: 3.5px;
     z-index: 999999;
     background: transparent;
     pointer-events: none;
@@ -315,11 +405,10 @@
 }
 
 
-
-/* ✨ BARRA LATERAL FLOTANTE REACCIONES */
+/* ✨ BARRA LATERAL FLOTANTE REACCIONES - Compacta y Moderna */
 .floating-reaction-bar {
     position: fixed;
-    left: 2rem;
+    left: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 999;
@@ -333,26 +422,57 @@
     visibility: visible;
 }
 
+.floating-reaction-bar>div {
+    gap: 6px !important;
+    padding: 8px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
 .btn-reaction-float {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px !important;
-    padding: 0.5rem !important;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px !important;
+    padding: 0.25rem !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-width: 1px;
+    border: 1px solid rgba(0, 173, 181, 0.15) !important;
+    background: white !important;
     transition: all 200ms ease-out;
 }
 
 .btn-reaction-float i {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    color: #64748b;
+}
+
+.btn-reaction-float .count {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 2px !important;
 }
 
 .btn-reaction-float:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 173, 181, 0.15);
+    border-color: #7c3aed !important;
+}
+
+.btn-reaction-float:hover i {
+    color: #7c3aed;
+}
+
+.btn-reaction-float.active {
+    background: rgba(124, 58, 237, 0.08) !important;
+    border-color: #7c3aed !important;
+}
+
+.btn-reaction-float.active i {
+    color: #7c3aed;
 }
 
 @media (max-width: 991px) {
@@ -621,7 +741,7 @@
 /* ✨ ACCESIBILIDAD */
 .gallery-modal-close:focus,
 .gallery-modal-nav:focus {
-    outline: 2px solid #00ADB5;
+    outline: 2px solid #7c3aed;
     outline-offset: 2px;
 }
 
@@ -677,7 +797,7 @@ form button[type="submit"]:disabled {
 }
 
 .comment-form .form-control:focus {
-    border-color: #00ADB5;
+    border-color: #7c3aed;
     box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.1);
     transform: translateY(-1px);
 }
@@ -690,7 +810,7 @@ form button[type="submit"]:disabled {
 
 .reply-btn:hover {
     opacity: 1;
-    color: #00ADB5 !important;
+    color: #7c3aed !important;
     transform: translateX(3px);
 }
 
@@ -711,6 +831,51 @@ form button[type="submit"]:disabled {
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1rem;
+}
+
+/* ✨ REACCIONES EN COMENTARIOS - Compactas y sutiles */
+.reaction-comment-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(0, 173, 181, 0.15) !important;
+    background: white !important;
+    transition: all 200ms ease-out !important;
+}
+
+.reaction-comment-btn i {
+    font-size: 0.85rem !important;
+    color: #64748b !important;
+}
+
+.reaction-comment-btn .count {
+    font-size: 0.65rem !important;
+    color: #94a3b8 !important;
+    margin-top: 1px !important;
+}
+
+.reaction-comment-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    border-color: #7c3aed !important;
+}
+
+.reaction-comment-btn:hover i {
+    color: #00ADB5 !important;
+}
+
+.reaction-comment-btn.active {
+    background: rgba(0, 173, 181, 0.08) !important;
+    border-color: #00ADB5 !important;
+}
+
+.reaction-comment-btn.active i {
+    color: #00ADB5 !important;
+    font-weight: 900 !important;
 }
 
 .comment-item:hover {
@@ -784,7 +949,6 @@ form button[type="submit"]:disabled {
 }
 
 .card:hover {
-    transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
 }
 
@@ -906,6 +1070,14 @@ button.reaction-comment-btn.active i {
 }
 
 /* ✨ Boton flotante derecho navegacion */
+.floating-right-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: none;
+}
+
 .floating-right-nav.visible {
     opacity: 1 !important;
     visibility: visible !important;
@@ -1000,4 +1172,200 @@ button.reaction-comment-btn.active i {
     margin-left: 0 !important;
     margin-right: 0 !important;
     border-radius: 12px !important;
+}
+
+/* tags */
+.blog-tags-container {
+    gap: 10px;
+}
+
+/* ✨ Responsive: Boton flotante derecho a inferior derecho en móviles */
+@media (max-width: 767px) {
+    .floating-right-nav {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        transform: none !important;
+        flex-direction: row !important;
+        z-index: 9999 !important;
+    }
+}
+
+/* ✨ LOGIN INVITE - Sección atractiva y con vida */
+.login-invite-container {
+    margin: 3rem auto;
+    max-width: 500px;
+}
+
+.login-invite-card {
+    background: linear-gradient(135deg, rgba(0, 173, 181, 0.04) 0%, rgba(124, 58, 237, 0.04) 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1rem 2rem;
+    text-align: center;
+    transition: all 300ms ease;
+}
+
+.login-invite-card:hover {
+    border-color: #7c3aed;
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
+}
+
+.login-invite-icon {
+    font-size: 2.5rem;
+    color: #7c3aed;
+    margin-bottom: 1rem;
+    animation: pulseIcon 2s infinite;
+}
+
+@keyframes pulseIcon {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.login-invite-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+}
+
+.login-invite-text {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.login-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 220ms ease;
+    border: 1.5px solid transparent;
+}
+
+.google-btn {
+    background: white;
+    color: #6d28d9;
+    border-color: rgba(219, 68, 55, 0.3);
+}
+
+.google-btn:hover {
+    background: rgba(219, 68, 55, 0.08);
+    border-color: #6d28d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(219, 68, 55, 0.2);
+    color: #6d28d9;
+    text-decoration: none;
+}
+
+.github-btn {
+    background: white;
+    color: #333;
+    border-color: rgba(51, 51, 51, 0.3);
+}
+
+.github-btn:hover {
+    background: rgba(51, 51, 51, 0.08);
+    border-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(51, 51, 51, 0.2);
+    color: #333;
+    text-decoration: none;
+}
+
+.login-invite-footer {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* ✨ MEJORAS CARRUSEL DE IMÁGENES - Con vida y sentido */
+.blog-carousel-container {
+    margin: 4rem 0;
+    position: relative;
+}
+
+.blog-carousel-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(15, 23, 42, 0.05) 100%);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.blog-carousel-container .swiper-slide img {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: 320px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease, box-shadow 400ms ease;
+}
+
+.blog-carousel-container .swiper-slide-active img {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ✨ GALERÍA POPUP BADGE - Más vida y color */
+.gallery-badge {
+    position: absolute !important;
+    bottom: 16px !important;
+    right: 16px !important;
+    background: linear-gradient(135deg, rgba(0, 173, 181, 0.85) 0%, rgba(124, 58, 237, 0.85) 100%) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 999 !important;
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: unset !important;
+    max-width: fit-content !important;
+    transform: translateZ(0) !important;
+    text-decoration: none !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+}
+
+.gallery-badge:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
 }

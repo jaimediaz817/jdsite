@@ -1,0 +1,234 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block auth_header %}{% endblock %}
+
+{% block title %}Registro - JDiaz Blog{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header text-center">
+            <h4 style="margin: 0;">
+                <i class="fas fa-user-plus"></i> Crear cuenta
+            </h4>
+        </div>
+        <div class="card-body">
+        <!-- Botones de acceso alineados horizontalmente con estilo outline (consistente con login) -->
+        <!-- Flex container for social buttons; will wrap on small screens -->
+        <div class="d-flex justify-content-center gap-3 mb-4 social-buttons" style="flex-wrap: wrap;">
+            <a href="/blog/" class="btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1; min-width: 120px;">
+                <i class="fas fa-blog"></i>
+                <span>Ir al blog</span>
+            </a>
+            <a href="{% provider_login_url 'google' %}" class="btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 120px;">
+                <i class="fab fa-google"></i>
+                <span>Google</span>
+            </a>
+            <a href="/accounts/github/login/" class="btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 120px;">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
+
+        <div class="text-center mb-4" style="color: #6c757d;">
+            <small>o crea una cuenta con tu correo</small>
+        </div>
+
+        <!-- Formulario de registro -->
+        <form method="post" action="/accounts/signup/">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Username and Email occupy full width each -->
+            <div class="row g-2 mb-3">
+                <div class="col-12">
+                    <label for="id_username" class="form-label">Nombre de usuario</label>
+                    <input type="text"
+                           name="username"
+                           class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                           id="id_username"
+                           placeholder="ej. jdiaz2024"
+                           required
+                           value="{{ form.username.value|default:'' }}">
+                    {% for error in form.username.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label for="id_email" class="form-label">Correo electrónico</label>
+                    <input type="email"
+                           name="email"
+                           class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                           id="id_email"
+                           placeholder="tu@email.com"
+                           value="{{ form.email.value|default:'' }}">
+                    {% for error in form.email.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label for="id_first_name" class="form-label">Nombre</label>
+                    <input type="text" 
+                           name="first_name" 
+                           class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                           id="id_first_name" 
+                           placeholder="Tu nombre"
+                           required
+                           value="{{ form.first_name.value|default:'' }}">
+                    {% for error in form.first_name.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_last_name" class="form-label">Apellido</label>
+                    <input type="text" 
+                           name="last_name" 
+                           class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                           id="id_last_name" 
+                           placeholder="Tu apellido"
+                           required
+                           value="{{ form.last_name.value|default:'' }}">
+                    {% for error in form.last_name.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label for="id_password1" class="form-label">Contraseña</label>
+                    <input type="password" 
+                           name="password1" 
+                           class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                           id="id_password1" 
+                           placeholder="Mínimo 8 caracteres"
+                           required>
+                    {% for error in form.password1.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                    <small class="form-text text-muted">
+                        La contraseña debe tener al menos 8 caracteres.
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="id_password2" class="form-label">Confirmar contraseña</label>
+                    <input type="password" 
+                           name="password2" 
+                           class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                           id="id_password2" 
+                           placeholder="Repite la contraseña"
+                           required>
+                    {% for error in form.password2.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <input type="hidden" name="next" value="{{ next|default:'/blog/' }}">
+
+            <button type="submit" class="btn btn-primary btn-block d-flex align-items-center justify-content-center" style="width: 100%;" id="signup-btn">
+                <span id="signup-btn-text">Crear cuenta</span>
+                <div class="spinner-border spinner-border-sm text-light d-none" role="status" id="signup-spinner" style="margin-left: 0.5rem;"></div>
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <div class="text-center">
+            <p class="mb-0">¿Ya tienes cuenta? 
+                <a href="/accounts/login/" class="font-weight-bold">Inicia sesión aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Fondo con imagen y overlay blanco semitransparente (igual que login) */
+    body {
+        background: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)),
+                    url("{% static 'blog/images/backgrounds/fondo_blog_elements_tech.png' %}") no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        margin: 0 auto; /* center on larger screens */
+        width: 100%;
+    }
+    /* Ensure the form fields stack nicely on small screens */
+    @media (max-width: 576px) {
+        .card {
+            padding: 0 1rem;
+        }
+        .social-buttons a {
+            flex: 1 1 100%;
+            max-width: none;
+        }
+    }
+    .btn-google {
+        background: linear-gradient(135deg, #0891b2, #6f42c1) !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-google:hover {
+        background: linear-gradient(135deg, #0e7490, #7c3aed) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+    }
+    /* Outline button with gradient border */
+    .btn-outline-gradient {
+        background: #fff;
+        margin: 0 4px;
+        border: 2px solid #d3d3d3; /* Transparent border to maintain size */
+        border-radius: 0.5rem;
+        padding: 0.6rem 1.5rem;
+        transition: all 0.3s ease;        
+        display: inline-block; /* keep button sizing consistent */
+        color: #6a11cb !important; /* override any link default color */
+        text-decoration: none;
+    }
+    /* Icons inside the outline buttons should inherit the button text color */
+    .btn-outline-gradient i {
+        color: inherit !important;
+    }
+    .btn-outline-gradient:hover {
+        /* Solid purple background on hover with white text */
+        
+        background: linear-gradient(135deg, #0891b2, #6f42c1) !important;
+        color: #fff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(42, 17, 203, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('form');
+    var btn = document.getElementById('signup-btn');
+    var spinner = document.getElementById('signup-spinner');
+    var btnText = document.getElementById('signup-btn-text');
+    if (form) {
+        form.addEventListener('submit', function () {
+            if (btn) { btn.disabled = true; }
+            if (spinner) { spinner.classList.remove('d-none'); }
+            if (btnText) { btnText.textContent = 'Registrando...'; }
+        });
+    }
+});
+</script>
+{% endblock %}

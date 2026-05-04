@@ -1,8 +1,13 @@
 from django.contrib import admin
+import os
+from django.conf import settings
 
 # from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from .views import custom_logout, CustomLoginView
+from .views import custom_logout
 from django.contrib.sitemaps import Sitemap
+from django.views.static import serve
 
 # IMPORTACIONES SEO
 from django.contrib.sitemaps.views import sitemap
@@ -35,19 +40,26 @@ sitemaps = {
 urlpatterns = [
     path("admin/", admin.site.urls),  # admin Django (opcional)
     # --- URLs allauth (Google/GitHub) ---
+    # Mantenemos /accounts/ para compatibilidad, pero el blog usa /blog/accounts/
     path("accounts/", include("allauth.urls")),
+    # path("blog/accounts/", include("allauth.urls")),  # Eliminado para evitar redirect_uri con /blog/
     # path("ask/", include("inquiries.urls")),
     path(
         "ask/",
         include(("inquiries.urls", "inquiries_ask"), namespace="inquiries_ask"),
     ),
-    # login/logout para panel “me”
+    # login/logout para panel "me"
+    # La vista de login personalizada debe usar la plantilla correcta que contiene
+    # el formulario con el checkbox "Recordar sesión". La plantilla está en
+    # "backend/templates/account/login.html", por lo que la ruta del template es
+    # "account/login.html" (Django busca dentro de los directorios de templates).
     path(
         "me/login/",
-        auth_views.LoginView.as_view(template_name="auth/login.html"),
+        CustomLoginView.as_view(template_name="account/login.html"),
         name="login",
     ),
-    path("me/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    # Custom logout view that clears any lingering messages before redirecting to login
+    path("me/logout/", custom_logout, name="logout"),
     path("inq/", include(("inquiries.urls", "inquiries"), namespace="inquiries")),
     # ... otras URLs
     path("api/", include("core.urls")),
@@ -85,4 +97,38 @@ urlpatterns = [
     path("", include(("reactions.urls", "reactions"), namespace="reactions")),
     # ✅ HOME SIEMPRE AL FINAL! (Django evalua rutas en ORDEN - error mas comun)
     path("", home_view, name="home"),
+    # ✅ FAVICON
+    path(
+        "favicon.ico",
+        serve,
+        {
+            "path": "blog/images/favicon/favicon.ico",
+            "document_root": os.path.join(settings.BASE_DIR, "blog", "static"),
+        },
+    ),
+    path(
+        "favicon-32.png",
+        serve,
+        {
+            "path": "blog/images/favicon/favicon-32.png",
+            "document_root": os.path.join(settings.BASE_DIR, "blog", "static"),
+        },
+    ),
+    # ↓ agrega estos dos
+    path(
+        "favicon-16.png",
+        serve,
+        {
+            "path": "blog/images/favicon/favicon-16.png",
+            "document_root": os.path.join(settings.BASE_DIR, "blog", "static"),
+        },
+    ),
+    path(
+        "favicon-512.png",
+        serve,
+        {
+            "path": "blog/images/favicon/favicon-512.png",
+            "document_root": os.path.join(settings.BASE_DIR, "blog", "static"),
+        },
+    ),
 ]

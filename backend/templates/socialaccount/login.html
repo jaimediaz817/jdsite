@@ -1,0 +1,21 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Iniciar sesión con {{ provider.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Iniciar sesión mediante {{ provider.name }}
+    </div>
+    <div class="card-body">
+        <p class="card-text">
+            Se dispone a iniciar sesión usando una cuenta externa desde <strong>{{ provider.name }}</strong>.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Continuar con {{ provider.name }}</button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

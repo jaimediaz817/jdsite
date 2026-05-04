@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load blog_filters %}
 <html lang="es" class="html-jd">
 <head>
     <title>{{ post.meta_title|default:post.title }} | Jaime Díaz</title>
@@ -11,7 +12,13 @@
 
     <!-- ✅ SEO CANONICAL -->
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
-
+    
+    <!-- ✅ FAVICON -->
+    <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'blog/images/favicon/favicon-16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'blog/images/favicon/favicon-32.png' %}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{% static 'blog/images/favicon/favicon-512.png' %}">
+    
     <!-- ✅ ROBOTS SEO -->
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="author" content="Jaime Díaz">
@@ -88,24 +95,40 @@
     <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
     
     <!-- CUSTOM  STYLES -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+    <!-- Blog Header CSS (estilos específicos del header para blog) -->
+    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}?v={{ now|date:'U' }}">
     <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}">
     
 
     
-    <!-- Fuentes -->
-    <link href="https://fonts.googleapis.com/css?family=Krub" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <!-- ✅ FUENTES MONTSERRAT + ROBOTO -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ ASEGURAR VISIBILIDAD DEL LOGO EN HEADER -->
+    <style>
+        .jd-logo-dark {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        .jd-logo-dark img {
+            display: block !important;
+            width: 40px !important;
+            height: auto !important;
+            max-width: 100% !important;
+        }
+    </style>
 </head>
 <body class="home-p">
+    {% include "partials/_navigation_menu.html" %}
     <!-- ✨ Barra progreso lectura -->
     <div class="reading-progress-bar">
         <div class="reading-progress-fill"></div>
     </div>
-
-    {% include "partials/_navigation_menu.html" %}
 
 <!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
 <div class="floating-reaction-bar d-none d-lg-flex blog-reactions" data-slug="{{ post.slug }}">
@@ -135,11 +158,11 @@
 </div>
 
 <!-- ✨ BARRA FLOTANTE DERECHA NAVEGACION -->
-<div class="floating-right-nav d-none d-lg-flex" style="right: 2rem; z-index: 99999;">
-    <a href="{% url 'blog:blog_list' %}" class="float-nav-btn back-btn" title="Volver al listado de artículos">
-        <i class="fas fa-arrow-left"></i>
-        <span class="d-md-none d-lg-block ml-2" style="font-size: 0.8rem; font-weight: 500;">Blog</span>
-    </a>
+<div class="floating-right-nav d-flex" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%);">
+     <a href="{% url 'blog:blog_list' %}" class="float-nav-btn back-btn" title="Volver al listado de artículos">
+         <i class="fas fa-arrow-left"></i>
+         <span class="d-none d-lg-block ml-2" style="font-size: 0.8rem; font-weight: 500;">Blog</span>
+     </a>
 </div>
 
 <section class="jd-section py-5">
@@ -156,7 +179,7 @@
 
                 <article>
                     <header class="mb-4">
-                        <h1 class="display-4 font-weight-bold mb-3">{{ post.title }}</h1>
+                        <h1 class="blog-title-main display-4 font-weight-bold mb-3">{{ post.title }}</h1>
                         
                         <div class="d-flex flex-wrap gap-4 text-muted mb-4 align-items-center">
                             <div>
@@ -169,13 +192,17 @@
                             </div>
                         </div>
 
-                        <!-- ✨ Tags del articulo -->
+                        <!-- ✨ Tags del artículo -->
                         {% if post.tags.all %}
                         <div class="mb-4">
-                            <div class="d-flex flex-wrap gap-2">
+                            <div class="blog-tags-container d-flex flex-wrap gap-4">
                                 {% for tag in post.tags.all %}
-                                <span class="badge px-3 py-2 rounded-pill fw-normal" style="background: #0891b2; color: white;">
-                                    <i class="fas fa-tag mr-1"></i> {{ tag.name }}
+                                <span class="badge px-3 py-2 rounded-pill fw-normal blog-tag tag-lg" 
+                                      style="background-color: {{ tag.name|tag_bg_color }}; 
+                                             color: {{ tag.name|tag_text_color }};
+                                             border: 2px solid {{ tag.name|tag_color }};">
+                                    <i class="fas fa-tag mr-1" style="color: {{ tag.name|tag_color }};"></i> 
+                                    {{ tag.name }}
                                 </span>
                                 {% endfor %}
                             </div>
@@ -233,12 +260,8 @@
 
                     <footer class="mt-4 pt-4 border-top">
                         <div class="d-flex justify-content-between align-items-center">
-                        <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-primary">
+                        <a href="{% url 'blog:blog_list' %}" class="btn btn-inverted-primary">
                                 <i class="fas fa-arrow-left mr-2"></i> Todos los artículos
-                            </a>
-                            
-                            <a href="#contact" class="btn btn-primary">
-                                <i class="fas fa-paper-plane mr-2"></i> Comentar
                             </a>
                         </div>
                     </footer>
@@ -249,49 +272,22 @@
 
                         <!-- Formulario nuevo comentario -->
                         <div class="mb-5">
+                            {% if user.is_authenticated %}
                             <div class="card shadow-sm border-0">
                                 <div class="card-body">
                                     <h6 class="font-weight-bold mb-3">Deja tu comentario</h6>
-                                    
-                                    <!-- ✅ Botones OAuth (HU-008) -->
-                                    <div class="mb-4">
-                                        <p class="text-muted small mb-2">Inicia sesión con:</p>
-                                        <a href="/accounts/google/login/" class="btn btn-outline-dark btn-sm mr-2">
-                                            <i class="fab fa-google mr-1"></i> Google
-                                        </a>
-                                        <a href="/accounts/github/login/" class="btn btn-outline-dark btn-sm">
-                                            <i class="fab fa-github mr-1"></i> GitHub
-                                        </a>
-                                        <p class="text-muted small mt-2">O comenta como invitado:</p>
-                                    </div>
                                     
                                     <form method="POST" action="{% url 'blog:post_comment' post.slug %}">
                                         {% csrf_token %}
                                         
                                         {{ comment_form.website }}
                                         
-                                        <div class="form-group">
-                                            <label for="{{ comment_form.name.id_for_label }}">Tu nombre</label>
-                                            {{ comment_form.name }}
-                                            {% if comment_form.name.errors %}
-                                                <div class="text-danger small mt-1">{{ comment_form.name.errors }}</div>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="{{ comment_form.email.id_for_label }}">Tu email (opcional)</label>
-                                            {{ comment_form.email }}
-                                            {% if comment_form.email.errors %}
-                                                <div class="text-danger small mt-1">{{ comment_form.email.errors }}</div>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <!-- ✅ Selector identificación (HU-008) -->
-                                        <div class="form-group">
-                                            <label>{{ comment_form.identification_level.label }}</label>
-                                            {{ comment_form.identification_level }}
-                                            {% if comment_form.identification_level.errors %}
-                                                <div class="text-danger small mt-1">{{ comment_form.identification_level.errors }}</div>
+                                        <!-- Mostrar info del usuario autenticado -->
+                                        <div class="alert alert-info py-2 px-3 mb-3">
+                                            <i class="fas fa-user-check mr-2"></i>
+                                            Comentando como: <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                            {% if user.socialaccount_set.all.0 %}
+                                                <span class="badge badge-success ml-2">{{ user.socialaccount_set.all.0.provider|title }}</span>
                                             {% endif %}
                                         </div>
                                         
@@ -303,15 +299,44 @@
                                             {% endif %}
                                         </div>
                                         
-                                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #ff3660, #dd6978); border-color: transparent;">
+                                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0891b2, #6f42c1); border-color: transparent;">
                                             <i class="fas fa-paper-plane mr-1"></i> Enviar comentario
                                         </button>
                                     </form>
                                 </div>
                             </div>
+                             {% else %}
+                             <!-- ✨ MENSAJE INVITANTE PARA NO AUTENTICADOS -->
+                             <div class="login-invite-container">
+                                 <div class="login-invite-card">
+                                     <div class="login-invite-icon">
+                                         <i class="fas fa-comments"></i>
+                                     </div>
+                                     <h5 class="login-invite-title">¡Únete a la conversación!</h5>
+                                     <p class="login-invite-text">Inicia sesión para compartir tu opinión y ser parte de la comunidad.</p>
+                                     
+                                     <div class="login-buttons-wrapper">
+                                         <a href="/accounts/google/login/?next={{ request.path }}" class="login-btn google-btn">
+                                             <i class="fab fa-google"></i> 
+                                             <span>Google</span>
+                                         </a>
+                                         <a href="/accounts/github/login/?next={{ request.path }}" class="login-btn github-btn">
+                                             <i class="fab fa-github"></i> 
+                                             <span>GitHub</span>
+                                         </a>
+                                     </div>
+                                     
+                                     <div class="login-invite-footer">
+                                         <i class="fas fa-shield-alt"></i>
+                                         <span>Tu información está segura y protegida</span>
+                                     </div>
+                                 </div>
+                             </div>
+                             {% endif %}
                         </div>
 
                         <!-- Lista de comentarios aprobados -->
+                        <div id="comments-list">
                         {% for comment in comments %}
                         <div class="comment-wrapper">
                             <div class="comment-avatar" style="background-color: {{ comment.avatar_color }};">
@@ -385,9 +410,10 @@
                         </div>
                         {% empty %}
                         <div class="text-center text-muted py-4">
-                            <p>Todavia no hay comentarios. Se el primero en comentar!</p>
+                            <p>Todavía no hay comentarios. Sé el primero en comentar!</p>
                         </div>
                         {% endfor %}
+                        </div>
 
                     </section>
 
@@ -486,6 +512,9 @@
     <img id="image-zoom-content" src="" alt="">
 </dialog>
 
+
+<!-- ✨ VARIABLE AUTENTICACION PARA JS -->
+<script>window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};</script>
 
 <!-- ✨ SISTEMA DE REACCIONES -->
 <script src="{% static 'blog/js/reactions.js' %}"></script>

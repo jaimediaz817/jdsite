@@ -1,0 +1,221 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block auth_header %}{% endblock %}
+
+{% block title %}Iniciar sesión - JDiaz{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header text-center">
+        <h4 style="margin: 0;">
+            <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+        </h4>
+    </div>
+    <div class="card-body">
+        <!-- Botones de redes sociales y acceso al blog -->
+        <!-- Botones de acceso alineados horizontalmente con estilo outline */
+        <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
+            <a href="/blog/" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 260px;">
+                <i class="fas fa-blog"></i>
+                <span>Ir al blog</span>
+            </a>
+            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 260px;">
+                <i class="fab fa-google"></i>
+                <span>Google</span>
+            </a>
+            <a href="/accounts/github/login/" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 260px;">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
+
+        <div class="text-center mb-4" style="color: #6c757d;">
+            <small>o ingresa con tu cuenta</small>
+        </div>
+
+        <!-- Formulario de login -->
+        {# Usamos la URL nombrada "login" que apunta a la vista CustomLoginView en jdsite.urls #}
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="form-group mb-3">
+                <label for="id_username">Correo electrónico</label>
+                <input type="email" 
+                       name="username" 
+                       class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                       id="id_username" 
+                       placeholder="tu@email.com"
+                       required
+                       value="{{ request.COOKIES.remember_email|default:'' }}">
+                {% for error in form.username.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="id_password">Contraseña</label>
+            <input type="password" 
+                       name="password" 
+                       class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                       id="id_password" 
+                       placeholder="••••••••"
+                       required
+                       value="{{ request.COOKIES.remember_password|default:'' }}">
+                {% for error in form.password.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group form-check mb-3 d-flex align-items-center">
+                <input type="checkbox" 
+                       name="remember" 
+                       class="form-check-input" 
+                       id="id_remember"
+                       {% if request.COOKIES.remember_email %}checked{% endif %}>
+                <label class="form-check-label ms-2 ml-2" for="id_remember">
+                    Recordar sesión
+                </label>
+            </div>
+
+            <input type="hidden" name="next" value="{{ next|default:'/blog/' }}">
+
+            <button type="submit" class="btn btn-primary btn-block d-flex align-items-center justify-content-center" style="width: 100%;" id="login-btn">
+                <span id="login-btn-text">Iniciar sesión</span>
+                <div class="spinner-border spinner-border-sm text-light d-none" role="status" id="login-spinner" style="margin-left: 0.5rem;"></div>
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'account_reset_password' %}" class="text-muted small">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="text-center">
+            <p class="mb-0">¿No tienes cuenta? 
+                <a href="/accounts/signup/" class="font-weight-bold">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Fondo con imagen y overlay blanco semitransparente */
+    /* Fondo con imagen y overlay blanco semitransparente (más claro) */
+    body {
+        background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
+                    url("{% static 'blog/images/backgrounds/fondo_blog_elements_tech.png' %}") no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #0891b2, #6f42c1) !important;
+        color: white;
+        font-weight: bold;
+        border: none;
+        padding: 1rem;
+    }
+    .btn-google {
+        background: linear-gradient(135deg, #0891b2, #6f42c1) !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-google:hover {
+        background: linear-gradient(135deg, #0e7490, #7c3aed) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+    }
+    /* Botones outline con degradado */
+    .btn-outline-gradient {
+        background: #fff;
+        color: #6a11cb;
+        border: 2px solid transparent;
+        border-image: linear-gradient(135deg, #6a11cb, #2575fc) 1;        
+        border-radius: 0.5rem;
+        padding: 0.6rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-gradient:hover {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(42, 17, 203, 0.3);
+    }
+
+    /* Ajuste del checkbox "Recordar sesión" */
+    /* Ajuste del checkbox "Recordar sesión" */
+    /* Mejoras al checkbox "Recordar sesión" */
+    /* Refuerzo de estilos para el checkbox usando mayor especificidad y !important */
+    /* Eliminado el estilo conflictivo para .form-check-input ya que usamos .custom-checkbox */
+    /* Eliminado bloque .large-checkbox y código erróneo que causaba CSS malformado */
+    /* Cuando el checkbox está marcado */
+    .form-check-input {
+        width: 1.5rem;
+        height: 1.5rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border: 2px solid #6c757d;
+        border-radius: 0.25rem;
+        background-color: #fff;
+        cursor: pointer;
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .form-check-input:checked {
+        border-color: #6c757d;
+    }
+    .form-check-input:checked::after {
+        content: "\f00c"; /* FontAwesome check */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #6c757d;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('form');
+    var btn = document.getElementById('login-btn');
+    var spinner = document.getElementById('login-spinner');
+    var btnText = document.getElementById('login-btn-text');
+    if (form) {
+        form.addEventListener('submit', function () {
+            if (btn) {
+                btn.disabled = true;
+            }
+            if (spinner) {
+                spinner.classList.remove('d-none');
+            }
+            if (btnText) {
+                btnText.textContent = 'Iniciando...';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

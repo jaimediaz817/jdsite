@@ -1,0 +1,164 @@
+/**
+ * Sistema de Reacciones Blog
+ * Animaciones profesionales segun especificaciones HU-005.2
+ * Todos los tiempos y curvas estan definidos en el diagnostico
+ */
+
+.blog-reactions {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 16px 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    user-select: none;
+}
+
+/* Mejoramos el espaciado y alineación de los botones de reacción */
+.reaction-button {
+    display: inline-flex;
+    flex-direction: column;
+    /* ícono arriba, contador abajo */
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    min-height: 56px;
+    /* mayor altura para evitar que el número toque el borde */
+    min-width: 56px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: transform 150ms ease-out, background-color 150ms ease-out;
+}
+
+/* Ajustes específicos para la barra flotante izquierda */
+.floating-reaction-bar .reaction-button {
+    margin-bottom: 4px;
+    /* separa el número del borde inferior */
+    padding-bottom: 6px;
+    /* espacio interno extra */
+}
+
+/* Aseguramos que el número no quede pegado al borde inferior */
+.floating-reaction-bar .reaction-button .count {
+    margin-bottom: 4px;
+    /* mayor separación del borde inferior */
+}
+
+/* Eliminar el contorno/borde de foco por defecto en los botones de la barra flotante */
+.floating-reaction-bar .reaction-button:focus,
+.floating-reaction-bar .reaction-button:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* También eliminar el foco de los botones con la clase adicional btn-reaction-float */
+.floating-reaction-bar .btn-reaction-float:focus,
+.floating-reaction-bar .btn-reaction-float:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Asegurarse de que cualquier botón dentro de la barra flotante no tenga borde ni color de fondo al foco */
+.floating-reaction-bar button:focus,
+.floating-reaction-bar button:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Ajustes para reacciones en los comentarios */
+.comment-reactions .reaction-comment-btn {
+    margin-right: 6px;
+    /* separa cada botón del siguiente */
+    padding: 6px 8px;
+    min-height: 48px;
+    min-width: 48px;
+}
+
+/* Evitamos que el número toque el borde derecho */
+.comment-reactions .reaction-comment-btn .count {
+    padding-right: 2px;
+    margin-right: 2px;
+    /* separa del borde derecho */
+}
+
+.reaction-button:hover {
+    background-color: #f3f4f6;
+    transform: scale(1.02);
+}
+
+.reaction-button:active {
+    transform: scale(0.9);
+    transition: transform 80ms ease-in;
+}
+
+.reaction-button.active {
+    color: #2563eb;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    animation: reactionActivate 280ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reaction-button .icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Separación del número respecto al ícono */
+.reaction-button .count {
+    min-width: 24px;
+    text-align: center;
+    margin-top: 2px;
+    transition: opacity 200ms ease;
+}
+
+.reaction-button.active .count {
+    font-weight: 600;
+}
+
+@keyframes reactionActivate {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.3);
+    }
+
+    70% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1.05);
+    }
+}
+
+/* Estado cargando */
+.reaction-button.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .blog-reactions {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .reaction-button {
+        padding: 6px 8px;
+        min-height: 48px;
+        min-width: 48px;
+    }
+}

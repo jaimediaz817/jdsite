@@ -1,0 +1,5 @@
+Requirement already satisfied: django-allauth in C:\Users\jdiaz\Documents\JDiaz-PC-DESKTOP-2\proyectos_jdiaz\apps_personales\jdsite_clean\.venv\Lib\site-packages (65.16.1)
+Requirement already satisfied: Django>=4.2.16 in C:\Users\jdiaz\Documents\JDiaz-PC-DESKTOP-2\proyectos_jdiaz\apps_personales\jdsite_clean\.venv\Lib\site-packages (from django-allauth) (5.2.8)
+Requirement already satisfied: asgiref>=3.8.1 in C:\Users\jdiaz\Documents\JDiaz-PC-DESKTOP-2\proyectos_jdiaz\apps_personales\jdsite_clean\.venv\Lib\site-packages (from django-allauth) (3.11.0)
+Requirement already satisfied: sqlparse>=0.3.1 in C:\Users\jdiaz\Documents\JDiaz-PC-DESKTOP-2\proyectos_jdiaz\apps_personales\jdsite_clean\.venv\Lib\site-packages (from Django>=4.2.16->django-allauth) (0.5.3)
+Requirement already satisfied: tzdata in C:\Users\jdiaz\Documents\JDiaz-PC-DESKTOP-2\proyectos_jdiaz\apps_personales\jdsite_clean\.venv\Lib\site-packages (from Django>=4.2.16->django-allauth) (2025.2)

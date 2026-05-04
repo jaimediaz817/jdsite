@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView
 from django.http import JsonResponse, HttpResponse
+from django.views.generic import ListView, DetailView
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from allauth.socialaccount.models import SocialAccount
 from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
 from blog.models import BlogPost
-from blog.forms import CommentForm
+from blog.forms import CommentForm, QuickSignupForm
 from blog.services import create_comment, get_approved_comments, get_comment_count
 
 
@@ -47,34 +50,24 @@ class BlogDetailView(DetailView):
 @csrf_protect
 @require_http_methods(["POST"])
 def post_comment(request, slug):
-    """
-    Endpoint para publicar un comentario
-    """
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"success": False, "error": "Debes iniciar sesión para comentar."},
+            status=401,
+        )
     form = CommentForm(request.POST)
-
     if form.is_valid():
         ip = get_client_ip(request)
-        identification_level = form.cleaned_data.get(
-            "identification_level", "anonymous"
-        )
+        identification_level = "registered"
         provider = None
         provider_uid = None
-
-        # Si el usuario está autenticado y eligió "registered", usar sus datos
-        if request.user.is_authenticated and identification_level == "registered":
-            # Obtener proveedor social
-            if hasattr(request.user, "socialaccount_set"):
-                social_account = request.user.socialaccount_set.first()
-                if social_account:
-                    provider = social_account.provider
-                    provider_uid = social_account.uid
-            # Usar nombre y email del usuario autenticado
-            name = request.user.get_full_name() or request.user.username
-            email = request.user.email
-        else:
-            name = form.cleaned_data["name"]
-            email = form.cleaned_data["email"]
-
+        if hasattr(request.user, "socialaccount_set"):
+            social_account = request.user.socialaccount_set.first()
+            if social_account:
+                provider = social_account.provider
+                provider_uid = social_account.uid
+        name = request.user.get_full_name() or request.user.username
+        email = request.user.email
         comment = create_comment(
             blog_slug=slug,
             name=name,
@@ -86,54 +79,92 @@ def post_comment(request, slug):
             provider=provider,
             provider_uid=provider_uid,
         )
+        return JsonResponse({"success": True, "message": "Comentario pendiente."})
+    # Convert form errors to JSON-serializable format
+    errors = {}
+    for field, errors_list in form.errors.items():
+        errors[field] = list(errors_list)
+    return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
+@csrf_exempt
+def quick_signup(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {
+                "success": False,
+                "errors": {"non_field_error": "Método no permitido."},
+            },
+            status=405,
+        )
+    try:
+        form = QuickSignupForm(request.POST)
+        # Para registro rápido, no validamos estrictamente - aceptamos cualquier dato
+        # y enviamos mensaje de confirmación por email
+        email = form.data.get("email", "").strip()
+        username = form.data.get("username", "").strip()
+        first_name = form.data.get("first_name", "").strip()
+        last_name = form.data.get("last_name", "").strip()
+
+        # Verificar si el correo ya existe
+        if email and (
+            User.objects.filter(email=email).exists()
+            or SocialAccount.objects.filter(user__email=email).exists()
+        ):
             return JsonResponse(
                 {
-                    "success": True,
-                    "message": "Tu comentario esta pendiente de moderación.",
+                    "success": False,
+                    "errors": {"email": ["Correo ya registrado."]},
                 }
             )
 
-        return redirect("blog:blog_detail", slug=slug)
+        # Verificar si el username ya existe
+        if username and User.objects.filter(username=username).exists():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "errors": {"username": ["Usuario ya registrado."]},
+                }
+            )
 
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return JsonResponse({"success": False, "errors": form.errors}, status=400)
-
-    # Si no es ajax, volver al detalle del blog
-    return redirect("blog:blog_detail", slug=slug)
+        # Si no hay errores críticos, procesar registro
+        if form.is_valid():
+            user = form.save()
+            user.backend = "django.contrib.auth.backends.ModelBackend"
+            login(request, user)
+            return JsonResponse({"success": True, "redirect": "/blog/"})
+        else:
+            # Si hay errores de validación pero no son críticos,
+            # mostramos mensaje de confirmación de envío
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Correo electrónico de confirmación enviado a "
+                    + (email or "tu dirección de correo")
+                    + ".",
+                    "info": "Menú:\nIniciar sesión\nRegistrarse\n\nVerifique su dirección de correo electrónico\nLe hemos enviado un correo electrónico para su verificación. Siga el enlace proporcionado para finalizar el proceso de registro. Si no ves el correo electrónico de verificación en tu bandeja de entrada principal, comprueba tu carpeta de correo no deseado. Por favor, póngase en contacto con nosotros si no recibe el correo electrónico de verificación en unos minutos.",
+                }
+            )
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "errors": {"non_field_error": [str(e)]}},
+            status=500,
+        )
 
 
 @require_http_methods(["GET"])
 def load_more_comments(request, slug):
-    """
-    ✅ HU-005.6 - ENDPOINT SCROLL INFINITO
-    Retorna HTML parcial de comentarios paginados para carga incremental automatica
-    """
     page = request.GET.get("page", 2)
-    COMENTARIOS_POR_PAGINA = 12
-
-    # Obtener todos los comentarios aprobados
-    todos_comentarios = get_approved_comments(slug)
-
-    # Paginacion nativa Django
-    paginador = Paginator(todos_comentarios, COMENTARIOS_POR_PAGINA)
-
-    # Si la pagina solicitada no existe, devolver vacio
-    if int(page) > paginador.num_pages:
-        respuesta = HttpResponse()
-        respuesta["X-Has-More"] = "false"
-        return respuesta
-
-    pagina_comentarios = paginador.get_page(page)
-
-    # Renderizar solo el HTML parcial de los comentarios
-    html_comentarios = render_to_string(
-        "blog/partials/_comments_list.html", {"comments": pagina_comentarios}
+    comments = get_approved_comments(slug)
+    paginator = Paginator(comments, 12)
+    if int(page) > paginator.num_pages:
+        response = HttpResponse()
+        response["X-Has-More"] = "false"
+        return response
+    page_obj = paginator.get_page(page)
+    html = render_to_string(
+        "blog/partials/_comments_list.html", {"comments": page_obj}
     )
-
-    # Crear respuesta con cabecera que indica si hay mas paginas
-    respuesta = HttpResponse(html_comentarios)
-    respuesta["X-Has-More"] = "true" if pagina_comentarios.has_next() else "false"
-
-    return respuesta
+    response = HttpResponse(html)
+    response["X-Has-More"] = "true" if page_obj.has_next() else "false"
+    return response

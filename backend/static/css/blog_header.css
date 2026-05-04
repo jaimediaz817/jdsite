@@ -1,0 +1,523 @@
+/* =============================================
+   BLOG HEADER - Glassmorphism Moderno
+   ============================================= */
+
+/* Contenedor principal - Forzar fondo oscuro consistente */
+html body #navigation-menu {
+    background: #1f2225 !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    -webkit-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 0;
+    -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#navigation-menu .container {
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    width: 100%;
+    gap: 1rem;
+}
+
+/* Forzar hamburguesa a la izquierda globalmente */
+#navigation-menu .navbar-toggler,
+#navigation-menu.navbar-expand-lg .navbar-toggler,
+#navigation-menu .container .navbar-toggler {
+    float: none !important;
+    position: static !important;
+    margin: 0 !important;
+    order: -1 !important;
+}
+
+/* Evitar que el logo tenga margen automático */
+#navigation-menu .jd-logo-dark {
+    margin-right: 0 !important;
+}
+
+#navigation-menu.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+/* Brand/Logo con gradiente - Colores de marca */
+#navigation-menu .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(8, 145, 178, 0.5);
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+#navigation-menu .navbar-brand:hover {
+    text-shadow: 0 0 60px rgba(8, 145, 178, 0.8);
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+}
+
+/* Navegación */
+#navigation-menu .navbar-collapse {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-grow: 1;
+}
+
+#navigation-menu .navbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Links de navegación - CRÍTICO: color claro para fondo oscuro */
+#navigation-menu .navbar-nav .nav-item {
+    margin: 0;
+}
+
+#navigation-menu .navbar-nav .nav-item .nav-link {
+    padding: 0.6rem 1.2rem;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+#navigation-menu .navbar-nav .nav-item .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08);
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+}
+
+/* Estado activo del menú - Colores de marca */
+#navigation-menu .navbar-nav .nav-item.active .nav-link,
+#navigation-menu .navbar-nav .nav-item .nav-link.active {
+    background: linear-gradient(135deg, rgba(8, 145, 178, 0.15) 0%, rgba(111, 66, 193, 0.15) 100%);
+    color: #0891b2 !important;
+    border: 1px solid rgba(8, 145, 178, 0.3);
+    border-radius: 0.75rem;
+    -webkit-box-shadow: 0 0 20px rgba(8, 145, 178, 0.2);
+    box-shadow: 0 0 20px rgba(8, 145, 178, 0.2);
+}
+
+/* Texto de sesión */
+#navigation-menu .navbar-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Botones de redes sociales */
+#navigation-menu .btn-outline-light {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#navigation-menu .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(8, 145, 178, 0.5);
+    color: #0891b2 !important;
+    -webkit-box-shadow: 0 4px 15px rgba(8, 145, 178, 0.2);
+    box-shadow: 0 4px 15px rgba(8, 145, 178, 0.2);
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+}
+
+/* Dropdown de usuario */
+#navigation-menu .dropdown-menu {
+    background: rgba(20, 20, 30, 0.95) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-radius: 1rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    min-width: 200px;
+}
+
+/* Avatar de usuario */
+#navigation-menu .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+#navigation-menu .user-avatar i {
+    color: white;
+    font-size: 16px;
+}
+
+#navigation-menu .nav-link.dropdown-toggle:hover .user-avatar {
+    border-color: rgba(8, 145, 178, 0.8);
+    box-shadow: 0 0 15px rgba(8, 145, 178, 0.4);
+    transform: scale(1.05);
+}
+
+/* Perfil de usuario en el dropdown */
+#navigation-menu .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Ocultar caret del dropdown en el perfil */
+#navigation-menu .user-profile .dropdown-toggle::after {}
+
+/* Mejorar hover del avatar en el perfil */
+#navigation-menu .nav-link.dropdown-toggle:hover .user-avatar {
+    border-color: rgba(8, 145, 178, 0.8);
+    box-shadow: 0 0 20px rgba(8, 145, 178, 0.5);
+    transform: scale(1.08);
+}
+
+#navigation-menu .dropdown-item.logout-item:hover {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* ✅ BOTÓN INVERTIDO (MORADO/GRADIENTE) */
+.btn-inverted-primary {
+    background: transparent !important;
+    border: 2px solid #6f42c1 !important;
+    color: #6f42c1 !important;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.btn-inverted-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%);
+    z-index: -1;
+    opacity: 0;
+    -webkit-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+}
+
+.btn-inverted-primary:hover {
+    color: white !important;
+    border-color: transparent !important;
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
+}
+
+.btn-inverted-primary:hover::before {
+    opacity: 1;
+}
+
+/* ✅ BOTÓN PRIMARY CON GRADIENTE DE MARCA */
+.btn-primary {
+    background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0e7490 0%, #7c3aed 100%) !important;
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+}
+
+#navigation-menu .dropdown-item {
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+#navigation-menu .dropdown-item:hover {
+    background: rgba(0, 212, 255, 0.15) !important;
+    color: #00d4ff !important;
+    -webkit-transform: translateX(5px);
+    transform: translateX(5px);
+}
+
+/* Responsive: móvil */
+@media (max-width: 991.98px) {
+    #navigation-menu .navbar-collapse {
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(20, 20, 30, 0.98) !important;
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        -webkit-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    #navigation-menu .navbar-collapse.show {
+        display: flex !important;
+    }
+
+    #navigation-menu .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 1rem;
+        gap: 0.5rem;
+    }
+
+    #navigation-menu .navbar-nav .nav-item {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    #navigation-menu .navbar-nav .nav-item .nav-link {
+        padding: 0.8rem 1rem;
+        width: 100%;
+        border-radius: 0.5rem;
+    }
+
+    #navigation-menu div.d-flex.align-items-center {
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem 0;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Ajustar botones sociales en móvil para que no se vean como un ovalo gigante */
+    #navigation-menu .btn-outline-light {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Evitar líneas dobles en el menú colapsado */
+    #navigation-menu .navbar-collapse {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Arreglar el óvalo gigante de los botones de login en móvil */
+    #navigation-menu .login-wrapper {
+        background: transparent !important;
+        border-radius: 0 !important;
+        border: none !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    #navigation-menu .login-prompt {
+        display: none;
+        /* Ocultar "Acceder" en móvil para ahorrar espacio */
+    }
+
+    #navigation-menu .social-btns {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Estilos mejorados para el botón hamburguesa - IZQUIERDA */
+    #navigation-menu .navbar-toggler {
+        border: 1px solid rgba(8, 145, 178, 0.4);
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.75rem;
+        background: rgba(8, 145, 178, 0.08);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        min-height: 44px;
+        height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        order: -1 !important;
+    }
+
+    /* Anular cualquier margen automático de Bootstrap */
+    #navigation-menu .navbar-toggler,
+    #navigation-menu .navbar-toggler.collapsed,
+    #navigation-menu .navbar-toggler:not(.collapsed) {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #navigation-menu .navbar-toggler::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, rgba(8, 145, 178, 0.3), rgba(111, 66, 193, 0.3));
+        border-radius: 0.85rem;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    #navigation-menu .navbar-toggler:hover {
+        background: rgba(8, 145, 178, 0.15);
+        border-color: rgba(8, 145, 178, 0.6);
+        box-shadow: 0 0 20px rgba(8, 145, 178, 0.3);
+        transform: scale(1.05);
+    }
+
+    #navigation-menu .navbar-toggler:hover::before {
+        opacity: 1;
+    }
+
+    #navigation-menu .navbar-toggler:active {
+        transform: scale(0.95);
+    }
+
+    /* Animación de pulso sutil para el botón hamburguesa */
+    @keyframes pulse-glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 5px rgba(8, 145, 178, 0.2);
+        }
+
+        50% {
+            box-shadow: 0 0 20px rgba(8, 145, 178, 0.4), 0 0 40px rgba(111, 66, 193, 0.2);
+        }
+    }
+
+    #navigation-menu .navbar-toggler {
+        animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    #navigation-menu .navbar-toggler:hover {
+        animation: none;
+    }
+
+    #navigation-menu .navbar-toggler[aria-expanded="true"] {
+        animation: none;
+        border-color: rgba(8, 145, 178, 0.8);
+        box-shadow: 0 0 25px rgba(8, 145, 178, 0.5);
+    }
+
+    #navigation-menu .navbar-toggler .icon-menu-custom {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 2px;
+        position: relative;
+        transition: background 0.3s ease;
+    }
+
+    #navigation-menu .navbar-toggler .icon-menu-custom::before,
+    #navigation-menu .navbar-toggler .icon-menu-custom::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    #navigation-menu .navbar-toggler .icon-menu-custom::before {
+        top: -7px;
+    }
+
+    #navigation-menu .navbar-toggler .icon-menu-custom::after {
+        bottom: -7px;
+    }
+
+    /* Animación a X cuando el menú está abierto */
+    #navigation-menu .navbar-toggler[aria-expanded="true"] .icon-menu-custom {
+        background: transparent;
+    }
+
+    #navigation-menu .navbar-toggler[aria-expanded="true"] .icon-menu-custom::before {
+        top: 0;
+        transform: rotate(45deg);
+    }
+
+    #navigation-menu .navbar-toggler[aria-expanded="true"] .icon-menu-custom::after {
+        bottom: 0;
+        transform: rotate(-45deg);
+    }
+}
+
+/* =============================================
+   BLOG LIST HEADER - Responsive Adjustments
+   ============================================= */
+@media (max-width: 767.98px) {
+    .jd-section .display-4 {
+        font-size: 2.2rem;
+        /* Reducir tamaño en móviles */
+        line-height: 1.2;
+    }
+
+    .jd-section .lead {
+        font-size: 1rem;
+        /* Texto más compacto */
+        margin-top: 0.5rem !important;
+    }
+
+    .jd-section .row.mb-5 {
+        margin-bottom: 2rem !important;
+        /* Menos espacio inferior */
+    }
+
+    /* Ajuste para las cards en móvil si es necesario */
+    .blog-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .blog-card h3.h6 {
+        font-size: 0.95rem;
+        /* Ajuste fino para móviles */
+    }
+}

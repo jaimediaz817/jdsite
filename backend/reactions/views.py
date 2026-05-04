@@ -69,8 +69,19 @@ def toggle_reaction_view(request, blog_slug):
 @require_http_methods(["POST"])
 def toggle_comment_reaction_view(request, comment_id):
     """
-    Alterna el estado de una reaccion en un comentario para el usuario actual.
+    Alterna el estado de una reaccion en un comentario.
+    ✅ SOLO usuarios autenticados pueden reaccionar a comentarios.
     """
+    # ✅ VALIDAR AUTENTICACIÓN
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Debes iniciar sesión para reaccionar a comentarios.",
+            },
+            status=401,
+        )
+
     try:
         data = json.loads(request.body)
         reaction_type = data.get("reaction_type", "").strip()
@@ -78,6 +89,7 @@ def toggle_comment_reaction_view(request, comment_id):
         if not reaction_type:
             return JsonResponse({"error": "reaction_type requerido"}, status=400)
 
+        # Usar IP del usuario autenticado (o identificador de usuario)
         ip = get_client_ip(request)
         is_active = toggle_comment_reaction(comment_id, ip, reaction_type)
 

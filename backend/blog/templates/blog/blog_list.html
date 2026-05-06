@@ -99,8 +99,13 @@
                                 {{ post.title|truncatechars:55 }}
                             </a>
                         </h3>
-                        {% if post.description %}
-                        <p class="text-muted mb-2 small flex-grow-1">{{ post.description|truncatewords:18 }}</p>
+                        <!-- Autor del artículo (estático) -->
+                        <div class="mb-2 text-muted small"><i class="far fa-user mr-1"></i> Jaime Díaz</div>
+                        <!-- Extracto del contenido (primeros 100 caracteres) -->
+                        {% if post.content_html %}
+                        <p class="text-muted mb-2 small flex-grow-1">
+                            {{ post.content_html|striptags|truncatechars:100 }}
+                        </p>
                         {% endif %}
                         <div class="blog-card-meta small text-muted d-flex align-items-center gap-3 mt-auto pt-2 border-top">
                             <span><i class="far fa-calendar-alt mr-1"></i> {{ post.publish_date|date:"d M Y" }}</span>

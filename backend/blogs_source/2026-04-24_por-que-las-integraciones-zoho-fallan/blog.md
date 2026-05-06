@@ -7,7 +7,7 @@ image: "image.png"
 author: "Jaime Díaz"
 category: "Tecnologia"
 tags: ["Zoho", "Integraciones", "CRM", "Desarrollo", "API"]
-meta_title: "Por que fallan las integraciones Zoho | Jaime Díaz"
+meta_title: "Integraciones Zoho fallan 6to mes limite oculto"
 meta_description: "Aprende las 5 causas mas comunes por las que tus integraciones Zoho fallan y como solucionarlas definitivamente. Guia practica 2026."
 keywords: "integraciones zoho, zoho crm, fallos integracion, api zoho"
 tiempo_lectura: 8

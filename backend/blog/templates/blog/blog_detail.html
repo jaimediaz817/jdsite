@@ -2,50 +2,50 @@
 {% load static %}
 {% load blog_filters %}
 <html lang="es" class="html-jd">
-<head>
+  <head>
     <title>{{ post.meta_title|default:post.title }} | Jaime Díaz</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="referrer" content="origin" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="{{ post.meta_description|default:post.description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="{{ post.meta_description|default:post.description }}" />
 
     <!-- ✅ SEO CANONICAL -->
-    <link rel="canonical" href="{{ request.build_absolute_uri }}">
-    
+    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+
     <!-- ✅ FAVICON -->
-    <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'blog/images/favicon/favicon-16.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'blog/images/favicon/favicon-32.png' %}">
-    <link rel="apple-touch-icon" sizes="512x512" href="{% static 'blog/images/favicon/favicon-512.png' %}">
-    
+    <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'blog/images/favicon/favicon-16.png' %}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'blog/images/favicon/favicon-32.png' %}" />
+    <link rel="apple-touch-icon" sizes="512x512" href="{% static 'blog/images/favicon/favicon-512.png' %}" />
+
     <!-- ✅ ROBOTS SEO -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="author" content="Jaime Díaz">
-    
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Jaime Díaz" />
+
     <!-- Open Graph Meta Tags -->
-    <meta property="og:site_name" content="Jaime Díaz | Senior Fullstack Engineer">
-    <meta property="og:locale" content="es_CO">
-    <meta property="og:title" content="{{ post.meta_title|default:post.title }}">
-    <meta property="og:description" content="{{ post.meta_description|default:post.description }}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="article:published_time" content="{{ post.publish_date|date:'c' }}">
-    <meta property="article:modified_time" content="{{ post.last_modified|date:'c' }}">
-    <meta property="article:author" content="https://www.linkedin.com/in/jdiaz817/">
+    <meta property="og:site_name" content="Jaime Díaz | Senior Fullstack Engineer" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:title" content="{{ post.meta_title|default:post.title }}" />
+    <meta property="og:description" content="{{ post.meta_description|default:post.description }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="article:published_time" content="{{ post.publish_date|date:'c' }}" />
+    <meta property="article:modified_time" content="{{ post.last_modified|date:'c' }}" />
+    <meta property="article:author" content="https://www.linkedin.com/in/jdiaz817/" />
     {% if post.cover_image %}
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+      <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
     {% endif %}
-    
+
     <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:domain" content="jaimediaz.dev">
-    <meta name="twitter:title" content="{{ post.meta_title|default:post.title }}">
-    <meta name="twitter:description" content="{{ post.meta_description|default:post.description }}">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:domain" content="jaimediaz.dev" />
+    <meta name="twitter:title" content="{{ post.meta_title|default:post.title }}" />
+    <meta name="twitter:description" content="{{ post.meta_description|default:post.description }}" />
     {% if post.cover_image %}
-    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}">
+      <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}" />
     {% endif %}
 
     <!-- ✅ SCHEMA.ORG ARTICLE -->
@@ -84,30 +84,28 @@
         {% endif %}
     }
     </script>
-    
-    <!-- BOOTSTRAP   LIB -->
-    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
-    
-    <!-- SWIPER      LIB -->
-    <link rel="stylesheet" href="{% static 'css/lib/swiper.min.css' %}">
-    
-    <!-- FONTAWESOME LIB -->
-    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
-    
-    <!-- CUSTOM  STYLES -->
-    {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
-    <!-- Blog Header CSS (estilos específicos del header para blog) -->
-    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
-    <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}?v={{ now|date:'U' }}">
-    <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}">
-    <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}">
-    <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}">
-    
 
-    
+    <!-- BOOTSTRAP LIB -->
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}" />
+
+    <!-- SWIPER LIB -->
+    <link rel="stylesheet" href="{% static 'css/lib/swiper.min.css' %}" />
+
+    <!-- FONTAWESOME LIB -->
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}" />
+
+    <!-- CUSTOM STYLES -->
+    {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}" /> {% endcomment %}
+    <!-- Blog Header CSS (estilos específicos del header para blog) -->
+    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}" />
+    <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}?v={{ now|date:'U' }}" />
+    <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}" />
+    <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}" />
+    <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}" />
+
     <!-- ✅ FUENTES MONTSERRAT + ROBOTO -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
     <!-- ✅ ASEGURAR VISIBILIDAD DEL LOGO EN HEADER -->
     <style>
         .jd-logo-dark {
@@ -122,338 +120,323 @@
             max-width: 100% !important;
         }
     </style>
-</head>
-<body class="home-p">
-    {% include "partials/_navigation_menu.html" %}
+  </head>
+  <body class="home-p blog-detail-page">
+    {% include 'partials/_navigation_menu.html' %}
     <!-- ✨ Barra progreso lectura -->
-    <div class="reading-progress-bar">
-        <div class="reading-progress-fill"></div>
-    </div>
+<!-- Barra de progreso de lectura -->
+<div class="reading-progress-bar">
+  <div class="reading-progress-fill"></div>
+</div>
 
-<!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
-<div class="floating-reaction-bar d-none d-lg-flex blog-reactions" data-slug="{{ post.slug }}">
-    <div class="d-flex flex-column gap-2 p-2 bg-white shadow-sm rounded">
+    <!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
+    <div class="floating-reaction-bar d-none d-lg-flex blog-reactions" data-slug="{{ post.slug }}">
+      <div class="d-flex flex-column gap-2 p-2 bg-white shadow-sm rounded">
         <button class="reaction-button btn-reaction-float" data-reaction="like" title="Me gusta">
-            <i class="far fa-thumbs-up"></i>
-            <span class="count d-block mt-1 small">0</span>
+          <i class="far fa-thumbs-up"></i>
+          <span class="count d-block mt-1 small">0</span>
         </button>
         <button class="reaction-button btn-reaction-float" data-reaction="love" title="Me encanta">
-            <i class="fas fa-heart"></i>
-            <span class="count d-block mt-1 small">0</span>
+          <i class="fas fa-heart"></i>
+          <span class="count d-block mt-1 small">0</span>
         </button>
         <button class="reaction-button btn-reaction-float" data-reaction="idea" title="Buena idea">
-            <i class="far fa-lightbulb"></i>
-            <span class="count d-block mt-1 small">0</span>
+          <i class="far fa-lightbulb"></i>
+          <span class="count d-block mt-1 small">0</span>
         </button>
         <button class="reaction-button btn-reaction-float" data-reaction="fire" title="Excelente">
-            <i class="fas fa-fire"></i>
-            <span class="count d-block mt-1 small">0</span>
+          <i class="fas fa-fire"></i>
+          <span class="count d-block mt-1 small">0</span>
         </button>
         <div class="border-top my-1"></div>
         <a href="#comments" class="btn btn-outline-secondary btn-reaction-float" title="Comentarios">
-            <i class="fas fa-comments"></i>
-            <span class="d-block mt-1 small">{{ comment_count }}</span>
+          <i class="fas fa-comments"></i>
+          <span class="d-block mt-1 small">{{ comment_count }}</span>
         </a>
+      </div>
     </div>
-</div>
 
-<!-- ✨ BARRA FLOTANTE DERECHA NAVEGACION -->
-<div class="floating-right-nav d-flex" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%);">
-     <a href="{% url 'blog:blog_list' %}" class="float-nav-btn back-btn" title="Volver al listado de artículos">
-         <i class="fas fa-arrow-left"></i>
-         <span class="d-none d-lg-block ml-2" style="font-size: 0.8rem; font-weight: 500;">Blog</span>
-     </a>
-</div>
+    <!-- ✨ BARRA FLOTANTE DERECHA NAVEGACION -->
+    <div class="floating-right-nav d-flex" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%);">
+      <a href="{% url 'blog:blog_list' %}" class="float-nav-btn back-btn" title="Volver al listado de artículos">
+        <i class="fas fa-arrow-left"></i>
+        <span class="d-none d-lg-block ml-2" style="font-size: 0.8rem; font-weight: 500;">Blog</span>
+      </a>
+    </div>
 
-<section class="jd-section py-5">
-    <div class="container">
+    <section class="jd-section py-5">
+      <div class="container">
         <div class="row justify-content-center">
-            <div class="col-12 col-lg-11 col-xl-9">
-                <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
+          <!-- Sidebar TOC (solo en escritorio) -->
+          <nav id="toc-sidebar" class="toc-sidebar col-lg-3 d-none d-lg-block">
+            <button id="toc-toggle" class="toc-toggle btn btn-sm btn-outline-secondary" style="position:absolute; top:5px; right:5px;">☰</button>
+          </nav>
+          <div class="col-12 col-lg-12 col-xl-12">
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
+              <div class="mb-5">
+                <a href="{% url 'blog:blog_list' %}" class="text-secondary d-inline-flex align-items-center" style="font-size: 1rem; font-weight: 500;"><i class="fas fa-arrow-left mr-2"></i> Volver al listado de artículos</a>
+              </div>
 
-                <div class="mb-5">
-                    <a href="{% url 'blog:blog_list' %}" class="text-secondary d-inline-flex align-items-center" style="font-size: 1rem; font-weight: 500;">
-                        <i class="fas fa-arrow-left mr-2"></i> Volver al listado de artículos
-                    </a>
-                </div>
+              <article>
+                <header class="mb-4">
+                  <h1 class="blog-title-main display-4 font-weight-bold mb-3">{{ post.title }}</h1>
+                  <!-- Autor del artículo -->
+                  <div class="mb-3 text-muted small d-flex align-items-center">
+                    <i class="far fa-user mr-1"></i>
+                    <span>Jaime Díaz</span>
+                  </div>
 
-                <article>
-                    <header class="mb-4">
-                        <h1 class="blog-title-main display-4 font-weight-bold mb-3">{{ post.title }}</h1>
-                        
-                        <div class="d-flex flex-wrap gap-4 text-muted mb-4 align-items-center">
-                            <div>
-                                <i class="far fa-calendar-alt mr-1"></i>
-                                {{ post.publish_date|date:"d M Y" }}
-                            </div>
-                            <div>
-                                <i class="far fa-clock mr-1"></i>
-                                {% widthratio post.content_html|length 1500 1 %} min de lectura
-                            </div>
-                        </div>
+                  <div class="d-flex flex-wrap gap-4 text-muted mb-4 align-items-center">
+                    <div>
+                      <i class="far fa-calendar-alt mr-1"></i>
+                      {{ post.publish_date|date:'d M Y' }}
+                    </div>
+                    <div>
+                      <i class="far fa-clock mr-1"></i>
+                      {% widthratio post.content_html|length 1500 1 %}min de lectura
+                    </div>
+                  </div>
 
-                        <!-- ✨ Tags del artículo -->
-                        {% if post.tags.all %}
-                        <div class="mb-4">
-                            <div class="blog-tags-container d-flex flex-wrap gap-4">
-                                {% for tag in post.tags.all %}
-                                <span class="badge px-3 py-2 rounded-pill fw-normal blog-tag tag-lg" 
-                                      style="background-color: {{ tag.name|tag_bg_color }}; 
+                  <!-- ✨ Tags del artículo -->
+                  {% if post.tags.all %}
+                    <div class="mb-4">
+                      <div class="blog-tags-container d-flex flex-wrap gap-4">
+                        {% for tag in post.tags.all %}
+                          <span class="badge px-3 py-2 rounded-pill fw-normal blog-tag tag-lg" style="background-color: {{ tag.name|tag_bg_color }}; 
                                              color: {{ tag.name|tag_text_color }};
                                              border: 2px solid {{ tag.name|tag_color }};">
-                                    <i class="fas fa-tag mr-1" style="color: {{ tag.name|tag_color }};"></i> 
-                                    {{ tag.name }}
-                                </span>
-                                {% endfor %}
+                            <i class="fas fa-tag mr-1" style="color: {{ tag.name|tag_color }};"></i>
+                            {{ tag.name }}
+                          </span>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endif %}
+
+                  <hr />
+                </header>
+
+                <!-- Renderizado del contenido del blog con HTML completo para soportar galerías y carruseles -->
+                <div class="blog-content">{{ post.content_html|safe }}</div>
+
+                <!-- 🔘 BOTONES DE COMPARTIR -->
+                <div class="mt-5 mb-4">
+                  <div class="text-center text-secondary mb-3" style="font-size: 0.9rem;">Compartir este artículo</div>
+                  <div class="share-buttons-container">
+                    <a href="https://www.linkedin.com/feed/?shareActive=true&text={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm"><i class="fab fa-linkedin mr-1"></i> LinkedIn</a>
+                    <a href="https://x.com/intent/tweet?text={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm"><i class="fab fa-twitter mr-1"></i> X</a>
+                    <a href="mailto:?subject={{ post.title|urlencode }}&body={{ request.build_absolute_uri }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-envelope mr-1"></i> Correo</a>
+                    <button class="btn btn-outline-secondary btn-sm copy-link-btn"><i class="fas fa-link mr-1"></i> Copiar enlace</button>
+                  </div>
+                </div>
+
+                <!-- 🔘 BOTONES DE REACCIONES UI -->
+                <div class="mt-4 mb-5 blog-reactions" data-slug="{{ post.slug }}">
+                  <div class="text-center text-secondary mb-4" style="font-size: 0.95rem; font-weight: 500;">¿Te pareció útil este artículo?</div>
+                  <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <button class="reaction-button" data-reaction="like" title="Me gusta">
+                      <i class="far fa-thumbs-up"></i>
+                      <span class="count">0</span>
+                    </button>
+                    <button class="reaction-button" data-reaction="love" title="Me encanta">
+                      <i class="fas fa-heart"></i>
+                      <span class="count">0</span>
+                    </button>
+                    <button class="reaction-button" data-reaction="idea" title="Buena idea">
+                      <i class="far fa-lightbulb"></i>
+                      <span class="count">0</span>
+                    </button>
+                    <button class="reaction-button" data-reaction="fire" title="Excelente">
+                      <i class="fas fa-fire"></i>
+                      <span class="count">0</span>
+                    </button>
+                  </div>
+                </div>
+
+                <footer class="mt-4 pt-4 border-top">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'blog:blog_list' %}" class="btn btn-inverted-primary"><i class="fas fa-arrow-left mr-2"></i> Todos los artículos</a>
+                  </div>
+                </footer>
+
+                <!-- 💬 SECCION COMENTARIOS UI -->
+                <section id="comments" class="mt-5 pt-4 border-top">
+                  <h3 class="h4 mb-4"><i class="fas fa-comments mr-2"></i> Comentarios ({{ comment_count }})</h3>
+
+                  <!-- Formulario nuevo comentario -->
+                  <div class="mb-5">
+                    {% if user.is_authenticated %}
+                      <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                          <h6 class="font-weight-bold mb-3">Deja tu comentario</h6>
+
+                          <form method="POST" action="{% url 'blog:post_comment' post.slug %}">
+                            {% csrf_token %}
+
+                            {{ comment_form.website }}
+
+                            <!-- Mostrar info del usuario autenticado -->
+                            <div class="alert alert-info py-2 px-3 mb-3">
+                              <i class="fas fa-user-check mr-2"></i>
+                              Comentando como: <strong>{{ user.get_full_name|default:user.username }}</strong>
+                              {% if user.socialaccount_set.all.0 %}
+                                <span class="badge badge-success ml-2">{{ user.socialaccount_set.all.0.provider|title }}</span>
+                              {% endif %}
                             </div>
+
+                            <div class="form-group">
+                              <label for="{{ comment_form.content.id_for_label }}">Mensaje</label>
+                              {{ comment_form.content }}
+                              {% if comment_form.content.errors %}
+                                <div class="text-danger small mt-1">{{ comment_form.content.errors }}</div>
+                              {% endif %}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0891b2, #6f42c1); border-color: transparent;"><i class="fas fa-paper-plane mr-1"></i> Enviar comentario</button>
+                          </form>
                         </div>
-                        {% endif %}
+                      </div>
+                    {% else %}
+                      <!-- ✨ MENSAJE INVITANTE PARA NO AUTENTICADOS -->
+                      <div class="login-invite-container">
+                        <div class="login-invite-card">
+                          <div class="login-invite-icon">
+                            <i class="fas fa-comments"></i>
+                          </div>
+                          <h5 class="login-invite-title">¡Únete a la conversación!</h5>
+                          <p class="login-invite-text">Inicia sesión para compartir tu opinión y ser parte de la comunidad.</p>
 
-                        <hr>
-                    </header>
+                          <div class="login-buttons-wrapper">
+                            <a href="/accounts/google/login/?next={{ request.path }}" class="login-btn google-btn">
+                              <i class="fab fa-google"></i>
+                              <span>Google</span>
+                            </a>
+                            <a href="/accounts/github/login/?next={{ request.path }}" class="login-btn github-btn">
+                              <i class="fab fa-github"></i>
+                              <span>GitHub</span>
+                            </a>
+                          </div>
 
-                    <div class="blog-content lp-parrafo-home">
-                        {{ post.content_html|safe }}
-                    </div>
-
-                    <!-- 🔘 BOTONES DE COMPARTIR -->
-                    <div class="mt-5 mb-4">
-                        <div class="text-center text-secondary mb-3" style="font-size: 0.9rem;">Compartir este artículo</div>
-                        <div class="share-buttons-container">
-                            <a href="https://www.linkedin.com/feed/?shareActive=true&text={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
-                                <i class="fab fa-linkedin mr-1"></i> LinkedIn
-                            </a>
-                            <a href="https://x.com/intent/tweet?text={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
-                                <i class="fab fa-twitter mr-1"></i> X
-                            </a>
-                            <a href="mailto:?subject={{ post.title|urlencode }}&body={{ request.build_absolute_uri }}" class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-envelope mr-1"></i> Correo
-                            </a>
-                            <button class="btn btn-outline-secondary btn-sm copy-link-btn">
-                                <i class="fas fa-link mr-1"></i> Copiar enlace
-                            </button>
+                          <div class="login-invite-footer">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Tu información está segura y protegida</span>
+                          </div>
                         </div>
-                    </div>
+                      </div>
+                    {% endif %}
+                  </div>
 
-                    <!-- 🔘 BOTONES DE REACCIONES UI -->
-                    <div class="mt-4 mb-5 blog-reactions" data-slug="{{ post.slug }}">
-                        <div class="text-center text-secondary mb-4" style="font-size: 0.95rem; font-weight: 500;">¿Te pareció útil este artículo?</div>
-                        <div class="d-flex justify-content-center gap-4 flex-wrap">
-                            <button class="reaction-button" data-reaction="like" title="Me gusta">
+                  <!-- Lista de comentarios aprobados -->
+                  <div id="comments-list">
+                    {% for comment in comments %}
+                      <div class="comment-wrapper">
+                        <div class="comment-avatar" style="background-color: {{ comment.avatar_color }};">{{ comment.avatar_initials }}</div>
+                        <div class="comment-content">
+                          <div class="comment-meta">
+                            <strong class="comment-author">{{ comment.name }}</strong>
+                            {% if comment.identification_level == 'anonymous' %}
+                              <span class="badge badge-secondary ml-2">Anónimo</span>
+                            {% elif comment.identification_level == 'identified' %}
+                              <span class="badge badge-info ml-2">Identificado</span>
+                            {% elif comment.identification_level == 'registered' %}
+                              <span class="badge badge-success ml-2">Registrado</span>
+                            {% endif %}
+                            {% if comment.is_admin %}
+                              <span class="badge badge-danger ml-2">Admin</span>
+                            {% endif %}
+                            <small class="comment-date">{{ comment.created_at|date:'d M Y' }}</small>
+                          </div>
+                          <p class="comment-text">{{ comment.content|linebreaksbr }}</p>
+                          <div class="d-flex gap-3 align-items-center justify-content-between">
+                            <button class="btn btn-sm btn-link text-muted p-0 ml-2 reply-btn" data-comment-id="{{ comment.id }}"><i class="fas fa-reply mr-1"></i> Responder</button>
+
+                            <div class="comment-reactions d-flex gap-2" data-comment-id="{{ comment.id }}">
+                              <button class="reaction-button reaction-comment-btn" data-reaction="like" title="Me gusta">
                                 <i class="far fa-thumbs-up"></i>
                                 <span class="count">0</span>
-                            </button>
-                            <button class="reaction-button" data-reaction="love" title="Me encanta">
+                              </button>
+                              <button class="reaction-button reaction-comment-btn" data-reaction="love" title="Me encanta">
                                 <i class="fas fa-heart"></i>
                                 <span class="count">0</span>
-                            </button>
-                            <button class="reaction-button" data-reaction="idea" title="Buena idea">
-                                <i class="far fa-lightbulb"></i>
-                                <span class="count">0</span>
-                            </button>
-                            <button class="reaction-button" data-reaction="fire" title="Excelente">
+                              </button>
+                              <button class="reaction-button reaction-comment-btn" data-reaction="fire" title="Excelente">
                                 <i class="fas fa-fire"></i>
                                 <span class="count">0</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <footer class="mt-4 pt-4 border-top">
-                        <div class="d-flex justify-content-between align-items-center">
-                        <a href="{% url 'blog:blog_list' %}" class="btn btn-inverted-primary">
-                                <i class="fas fa-arrow-left mr-2"></i> Todos los artículos
-                            </a>
-                        </div>
-                    </footer>
-
-                    <!-- 💬 SECCION COMENTARIOS UI -->
-                    <section id="comments" class="mt-5 pt-4 border-top">
-                        <h3 class="h4 mb-4"><i class="fas fa-comments mr-2"></i> Comentarios ({{ comment_count }})</h3>
-
-                        <!-- Formulario nuevo comentario -->
-                        <div class="mb-5">
-                            {% if user.is_authenticated %}
-                            <div class="card shadow-sm border-0">
-                                <div class="card-body">
-                                    <h6 class="font-weight-bold mb-3">Deja tu comentario</h6>
-                                    
-                                    <form method="POST" action="{% url 'blog:post_comment' post.slug %}">
-                                        {% csrf_token %}
-                                        
-                                        {{ comment_form.website }}
-                                        
-                                        <!-- Mostrar info del usuario autenticado -->
-                                        <div class="alert alert-info py-2 px-3 mb-3">
-                                            <i class="fas fa-user-check mr-2"></i>
-                                            Comentando como: <strong>{{ user.get_full_name|default:user.username }}</strong>
-                                            {% if user.socialaccount_set.all.0 %}
-                                                <span class="badge badge-success ml-2">{{ user.socialaccount_set.all.0.provider|title }}</span>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="{{ comment_form.content.id_for_label }}">Mensaje</label>
-                                            {{ comment_form.content }}
-                                            {% if comment_form.content.errors %}
-                                                <div class="text-danger small mt-1">{{ comment_form.content.errors }}</div>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0891b2, #6f42c1); border-color: transparent;">
-                                            <i class="fas fa-paper-plane mr-1"></i> Enviar comentario
-                                        </button>
-                                    </form>
-                                </div>
+                              </button>
                             </div>
-                             {% else %}
-                             <!-- ✨ MENSAJE INVITANTE PARA NO AUTENTICADOS -->
-                             <div class="login-invite-container">
-                                 <div class="login-invite-card">
-                                     <div class="login-invite-icon">
-                                         <i class="fas fa-comments"></i>
-                                     </div>
-                                     <h5 class="login-invite-title">¡Únete a la conversación!</h5>
-                                     <p class="login-invite-text">Inicia sesión para compartir tu opinión y ser parte de la comunidad.</p>
-                                     
-                                     <div class="login-buttons-wrapper">
-                                         <a href="/accounts/google/login/?next={{ request.path }}" class="login-btn google-btn">
-                                             <i class="fab fa-google"></i> 
-                                             <span>Google</span>
-                                         </a>
-                                         <a href="/accounts/github/login/?next={{ request.path }}" class="login-btn github-btn">
-                                             <i class="fab fa-github"></i> 
-                                             <span>GitHub</span>
-                                         </a>
-                                     </div>
-                                     
-                                     <div class="login-invite-footer">
-                                         <i class="fas fa-shield-alt"></i>
-                                         <span>Tu información está segura y protegida</span>
-                                     </div>
-                                 </div>
-                             </div>
-                             {% endif %}
-                        </div>
+                          </div>
 
-                        <!-- Lista de comentarios aprobados -->
-                        <div id="comments-list">
-                        {% for comment in comments %}
-                        <div class="comment-wrapper">
-                            <div class="comment-avatar" style="background-color: {{ comment.avatar_color }};">
-                                {{ comment.avatar_initials }}
-                            </div>
-                            <div class="comment-content">
-                                <div class="comment-meta">
-                                    <strong class="comment-author">{{ comment.name }}</strong>
-                                    {% if comment.identification_level == 'anonymous' %}
-                                        <span class="badge badge-secondary ml-2">Anónimo</span>
-                                    {% elif comment.identification_level == 'identified' %}
-                                        <span class="badge badge-info ml-2">Identificado</span>
-                                    {% elif comment.identification_level == 'registered' %}
-                                        <span class="badge badge-success ml-2">Registrado</span>
+                          <!-- Respuestas anidadas -->
+                          {% for reply in comment.replies.all %}
+                            <div class="mt-3 ml-3">
+                              <div class="comment-wrapper">
+                                <div class="comment-avatar" style="background-color: {{ reply.avatar_color }};">{{ reply.avatar_initials }}</div>
+                                <div class="comment-content">
+                                  <div class="comment-meta">
+                                    <strong class="comment-author">{{ reply.name }}</strong>
+                                    {% if reply.identification_level == 'anonymous' %}
+                                      <span class="badge badge-secondary ml-2">Anónimo</span>
+                                    {% elif reply.identification_level == 'identified' %}
+                                      <span class="badge badge-info ml-2">Identificado</span>
+                                    {% elif reply.identification_level == 'registered' %}
+                                      <span class="badge badge-success ml-2">Registrado</span>
                                     {% endif %}
-                                    {% if comment.is_admin %}
-                                        <span class="badge badge-danger ml-2">Admin</span>
+                                    {% if reply.is_admin %}
+                                      <span class="badge badge-danger ml-2">Admin</span>
                                     {% endif %}
-                                    <small class="comment-date">{{ comment.created_at|date:"d M Y" }}</small>
+                                    <small class="comment-date">{{ reply.created_at|date:'d M Y' }}</small>
+                                  </div>
+                                  <p class="comment-text">{{ reply.content|linebreaksbr }}</p>
                                 </div>
-                                <p class="comment-text">{{ comment.content|linebreaksbr }}</p>
-                                <div class="d-flex gap-3 align-items-center justify-content-between">
-                                    <button class="btn btn-sm btn-link text-muted p-0 ml-2 reply-btn" data-comment-id="{{ comment.id }}">
-                                        <i class="fas fa-reply mr-1"></i> Responder
-                                    </button>
-                                    
-                                    <div class="comment-reactions d-flex gap-2" data-comment-id="{{ comment.id }}">
-                                        <button class="reaction-button reaction-comment-btn" data-reaction="like" title="Me gusta">
-                                            <i class="far fa-thumbs-up"></i>
-                                            <span class="count">0</span>
-                                        </button>
-                                        <button class="reaction-button reaction-comment-btn" data-reaction="love" title="Me encanta">
-                                            <i class="fas fa-heart"></i>
-                                            <span class="count">0</span>
-                                        </button>
-                                        <button class="reaction-button reaction-comment-btn" data-reaction="fire" title="Excelente">
-                                            <i class="fas fa-fire"></i>
-                                            <span class="count">0</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Respuestas anidadas -->
-                                {% for reply in comment.replies.all %}
-                                <div class="mt-3 ml-3">
-                                    <div class="comment-wrapper">
-                                        <div class="comment-avatar" style="background-color: {{ reply.avatar_color }};">
-                                            {{ reply.avatar_initials }}
-                                        </div>
-                                        <div class="comment-content">
-                                                <div class="comment-meta">
-                                                    <strong class="comment-author">{{ reply.name }}</strong>
-                                                    {% if reply.identification_level == 'anonymous' %}
-                                                        <span class="badge badge-secondary ml-2">Anónimo</span>
-                                                    {% elif reply.identification_level == 'identified' %}
-                                                        <span class="badge badge-info ml-2">Identificado</span>
-                                                    {% elif reply.identification_level == 'registered' %}
-                                                        <span class="badge badge-success ml-2">Registrado</span>
-                                                    {% endif %}
-                                                    {% if reply.is_admin %}
-                                                        <span class="badge badge-danger ml-2">Admin</span>
-                                                    {% endif %}
-                                                    <small class="comment-date">{{ reply.created_at|date:"d M Y" }}</small>
-                                                </div>
-                                            <p class="comment-text">{{ reply.content|linebreaksbr }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
+                              </div>
                             </div>
+                          {% endfor %}
                         </div>
-                        {% empty %}
-                        <div class="text-center text-muted py-4">
-                            <p>Todavía no hay comentarios. Sé el primero en comentar!</p>
-                        </div>
-                        {% endfor %}
-                        </div>
-
-                    </section>
-
-                </article>
-                </div>
+                      </div>
+                    {% empty %}
+                      <div class="text-center text-muted py-4">
+                        <p>Todavía no hay comentarios. Sé el primero en comentar!</p>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </section>
+              </article>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
-{% include "partials/_footer.html" %}
+    {% include 'partials/_footer.html' %}
 
-<!-- JQUERY    LIB -->
-<script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+    <!-- JQUERY LIB -->
+    <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
 
-<!-- POPPER    CDN -->
-<script src="{% static 'js/jquery-plugins/popper.min.js' %}"></script>
+    <!-- POPPER CDN -->
+    <script src="{% static 'js/jquery-plugins/popper.min.js' %}"></script>
 
-<!-- BOOTSTRAP LIB -->
-<script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+    <!-- BOOTSTRAP LIB -->
+    <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
 
-<!-- SWIPER    LIB -->
-<script src="{% static 'js/lib/swiper.min.js' %}"></script>
+    <!-- SWIPER LIB -->
+    <script src="{% static 'js/lib/swiper.min.js' %}"></script>
 
-<!-- TOAST LIB (MISMO QUE HOME) -->
-<link rel="stylesheet" href="{% static 'css/lib/toast.css' %}" type="text/css" media="screen">
-<script src="{% static 'js/lib/toast.js' %}"></script>
+    <!-- TOAST LIB (MISMO QUE HOME) -->
+    <link rel="stylesheet" href="{% static 'css/lib/toast.css' %}" type="text/css" media="screen" />
+    <script src="{% static 'js/lib/toast.js' %}"></script>
 
-<!-- JARALLAX  LIB -->
-<script src="{% static 'js/lib/jarallax.min.js' %}"></script>
+    <!-- JARALLAX LIB -->
+    <script src="{% static 'js/lib/jarallax.min.js' %}"></script>
 
-<!-- WAY POINTS LIB -->
-<script src="{% static 'js/jquery-plugins/jquery.waypoints.min.js' %}"></script>
+    <!-- WAY POINTS LIB -->
+    <script src="{% static 'js/jquery-plugins/jquery.waypoints.min.js' %}"></script>
 
-<!-- COUNTERUP  LIB -->
-<script src="{% static 'js/jquery-plugins/jquery.counterup.min.js' %}"></script>
+    <!-- COUNTERUP LIB -->
+    <script src="{% static 'js/jquery-plugins/jquery.counterup.min.js' %}"></script>
 
-<!-- AOS -->
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
+    <!-- AOS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
     AOS.init({
         duration: 800,
         easing: 'ease-out-quart',
@@ -461,10 +444,10 @@
     });
 </script>
 
-<!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
-<script src="{% static 'blog/js/blog_detail.js' %}"></script>
+    <!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
+    <script src="{% static 'blog/js/blog_detail.js' %}"></script>
 
-<style>
+    <style>
 /* ✅ SISTEMA ZOOM IMAGENES AUTOMATICO */
 .blog-content img {
     cursor: zoom-in !important;
@@ -507,25 +490,22 @@
 }
 </style>
 
-<!-- Modal nativo HTML5 para zoom de imagenes -->
-<dialog id="image-zoom-modal">
-    <img id="image-zoom-content" src="" alt="">
-</dialog>
+    <!-- Modal nativo HTML5 para zoom de imagenes -->
+    <dialog id="image-zoom-modal">
+      <img id="image-zoom-content" src="" alt="" />
+    </dialog>
 
+    <!-- ✨ VARIABLE AUTENTICACION PARA JS -->
+    <script>window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};</script>
 
-<!-- ✨ VARIABLE AUTENTICACION PARA JS -->
-<script>window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};</script>
+    <!-- ✨ SISTEMA DE REACCIONES -->
+    <script src="{% static 'blog/js/reactions.js' %}"></script>
 
-<!-- ✨ SISTEMA DE REACCIONES -->
-<script src="{% static 'blog/js/reactions.js' %}"></script>
-
-
-<style>
+    <style>
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 </style>
-
-</body>
+  </body>
 </html>

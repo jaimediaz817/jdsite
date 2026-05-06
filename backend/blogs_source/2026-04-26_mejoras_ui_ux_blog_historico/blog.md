@@ -7,7 +7,7 @@ image: "cover.jpg"
 author: "Jaime Díaz"
 category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
-meta_title: "Mejoras de UI/UX que aumentaron el tiempo de lectura en un 40%"
+meta_title: "Mejoras UI/UX +40% tiempo lectura blog"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
 twitter_card: "summary_large_image"
@@ -74,13 +74,19 @@ El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automati
 
 ### 3. Barra lateral flotante de reacciones
 
-::: popup:gallery
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+:::popup:gallery
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda](image-3.png)
+![Barra inferior|Reacciones al final del artículo](image-4.png)
+![Barra inferior|Reacciones al final del artículo](image-2.png)
 :::
 
 Esta fue la mejora con mayor impacto.
+
+:::slides
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda](image-3.png)
+![Barra inferior|Reacciones al final del artículo](image-4.png)
+![Barra inferior|Reacciones al final del artículo](image-2.png)
+:::
 
 Mientras lees, aparece una barra discreta en el lado izquierdo con los botones de reaccion. Cuando llegas al final, desaparece automaticamente y aparecen los botones abajo.
 
@@ -133,4 +139,14 @@ Y todo manteniendo el mismo principio: si no mejora la lectura, no existe.
 
 ---
 
-*Si te parecio util este articulo, puedes compartirlo en LinkedIn, ahi es donde paso la mayor parte del tiempo hablando de estas cosas.*
+ *Si te parecio util este articulo, puedes compartirlo en LinkedIn, ahi es donde paso la mayor parte del tiempo hablando de estas cosas.*
+
+<!-- force reimport -->
+<!-- reimport trigger v2 -->
+  
+  
+  
+  
+  
+#  
+  

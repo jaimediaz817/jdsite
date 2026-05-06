@@ -188,25 +188,24 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
     }
-    /* Outline button with gradient border */
+    /* Outline button with gradient border – refined styling */
     .btn-outline-gradient {
         background: #fff;
-        margin: 0 4px;
-        border: 2px solid #d3d3d3; /* Transparent border to maintain size */
+        color: #6a11cb !important;
+        border: 2px solid transparent;
+        border-image: linear-gradient(135deg, #6a11cb, #2575fc) 1;
         border-radius: 0.5rem;
         padding: 0.6rem 1.5rem;
-        transition: all 0.3s ease;        
-        display: inline-block; /* keep button sizing consistent */
-        color: #6a11cb !important; /* override any link default color */
+        margin: 0.5rem; /* spacing between buttons */
+        display: inline-block;
+        transition: all 0.3s ease;
         text-decoration: none;
     }
-    /* Icons inside the outline buttons should inherit the button text color */
+    /* Ensure icons inherit the button text color */
     .btn-outline-gradient i {
         color: inherit !important;
     }
     .btn-outline-gradient:hover {
-        /* Solid purple background on hover with white text */
-        
         background: linear-gradient(135deg, #0891b2, #6f42c1) !important;
         color: #fff !important;
         transform: translateY(-2px);

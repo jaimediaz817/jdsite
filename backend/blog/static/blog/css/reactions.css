@@ -38,10 +38,14 @@
 
 /* Ajustes específicos para la barra flotante izquierda */
 .floating-reaction-bar .reaction-button {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     /* separa el número del borde inferior */
-    padding-bottom: 6px;
+    padding-bottom: 8px;
     /* espacio interno extra */
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
 }
 
 /* Aseguramos que el número no quede pegado al borde inferior */

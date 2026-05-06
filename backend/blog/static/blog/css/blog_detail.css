@@ -1,1371 +1,663 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+/* ==========================================================================
+   BLOG DETAIL - Estilos Específicos para Galerías, Carruseles y Slides
+   ========================================================================== */
 
-.blog-title-main {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 2.25rem;
-}
-
-/* Ampliado el ancho máximo del contenido del blog para que coincida con el ancho del header en escritorio */
-/* Ampliado el ancho máximo del contenido del blog para que coincida con el ancho del header en escritorio */
-.blog-content {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.08rem;
-    line-height: 1.8;
-    font-weight: 400;
-    color: #1e293b;
-    max-width: 1140px;
-    /* ancho similar al contenedor bootstrap usado en el header */
-    margin: 0 auto;
-    background: #fafafa;
-    /* fondo suave para destacar el contenido */
-    padding: 2rem;
-    /* espacio interno para respirar */
-    border-radius: 12px;
-    /* esquinas redondeadas */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    /* sombra ligera */
-    border: 1px solid #e2e8f0;
-    /* borde sutil */
-}
-
-@media (min-width: 768px) {
-    .blog-content {
-        text-align: justify;
-    }
-}
-
-.blog-content p {
-    margin-bottom: 1.75rem;
-}
-
-.blog-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-    margin: 2rem auto;
-    display: block;
-    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
-    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.blog-content img:hover {
-    transform: scale(1.015);
-}
-
-.blog-content h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 2.4rem;
-    line-height: 1.25;
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #0f172a;
-}
-
-.blog-content h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 1.85rem;
-    line-height: 1.3;
-    margin-top: 4rem;
-    margin-bottom: 1.25rem;
-    color: #0f172a;
-    letter-spacing: -0.02em;
-}
-
-.blog-content h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 1.45rem;
-    line-height: 1.4;
-    margin-top: 2.75rem;
-    margin-bottom: 1rem;
-    color: #1e293b;
-}
-
-.blog-content h4 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    color: #334155;
-}
-
-.blog-content pre {
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: #0f172a;
-    color: #e2e8f0;
-    overflow-x: auto;
-    margin: 2rem 0;
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
-}
-
-.blog-content code {
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 0.875rem;
-    background: #f1f5f9;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    color: #dc2626;
-}
-
-.blog-content pre code {
-    background: transparent;
-    padding: 0;
-    color: inherit;
-}
-
-.blog-content blockquote {
-    border-left: 4px solid #7c3aed;
-    padding: 1.5rem 1.75rem;
-    margin: 2.5rem 0;
-    font-style: normal;
-    color: #475569;
-    background: #f8fafc;
-    border-radius: 0 8px 8px 0;
-    font-weight: 500;
-}
-
-.blog-content a {
-    color: #7c3aed;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: all 200ms ease-out;
-    font-weight: 500;
-}
-
-.blog-content a:hover {
-    border-bottom-color: #7c3aed;
-}
-
-.blog-content ul,
-.blog-content ol {
-    margin: 1.5rem 0;
-    padding-left: 1.75rem;
-}
-
-.blog-content li {
-    margin: 0.75rem 0;
-    padding-left: 0.5rem;
-    color: #334155;
-}
-
-.blog-content li::marker {
-    color: #7c3aed;
-    font-weight: 600;
-}
-
-.blog-content hr {
-    border: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #cbd5e1, transparent);
-    margin: 3rem auto;
-    max-width: 50%;
-}
-
-.blog-content strong {
-    font-weight: 600;
-    color: #0f172a;
-}
-
-/* ✨ MEJORAS VISUALES MINIMALISTAS PARA BLOG-CONTENT */
-.blog-content h2 {
+/* ==========================================================================
+   1. SLIDES (bloques :::slides)
+   ========================================================================== */
+.slides-container {
     position: relative;
-    padding-top: 1.5rem;
-    margin-top: 4.5rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    overflow: visible;
+    min-height: 400px;
+    height: auto;
+    transition: height 0.3s ease;
+    padding-bottom: 2rem;
 }
 
-.blog-content h2::before {
-    content: '';
+.slides-container .slide {
     position: absolute;
     top: 0;
     left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, #6d28d9, #7c3aed);
-    border-radius: 4px;
-    transition: width 400ms ease-out;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow-y: visible;
 }
 
-.blog-content h2:hover::before {
-    width: 120px;
+@media (min-width: 768px) {
+    .slides-container .slide {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        overflow-y: hidden;
+    }
+
+    .slides-container .slide .slide-caption {
+        order: 1;
+        flex: 0 0 35%;
+        padding: 1.5rem;
+        margin-top: 0;
+        align-items: flex-start;
+        max-width: none;
+    }
+
+    .slides-container .slide img {
+        order: 2;
+        flex: 0 0 65%;
+        max-height: 100%;
+        object-fit: contain;
+    }
 }
 
-.blog-content h3 {
+.slides-container .slide.active {
+    opacity: 1;
+    z-index: 2;
     position: relative;
-    padding-left: 1.25rem;
-    border-left: 4px solid #7c3aed;
-    transition: border-color 300ms ease;
+    height: auto;
+    overflow-y: visible;
 }
 
-.blog-content h3:hover {
-    border-left-color: #7c3aed;
+.slides-container .slide img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    object-fit: contain;
 }
 
-.blog-content p+h2,
-.blog-content p+h3 {
-    margin-top: 4rem;
-}
-
-.blog-content p:first-of-type {
-    font-size: 1.15rem;
-    color: #334155;
-    line-height: 1.9;
-    margin-bottom: 2rem;
-}
-
-/* ✨ DROP CAP (Letra capital) - Color del blog */
-.blog-content p:first-of-type::first-letter {
+.slide-caption {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 90%;
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.8rem;
-    font-weight: 700;
-    float: left;
-    line-height: 0.85;
-    margin-right: 0.75rem;
-    margin-top: 0.3rem;
-    color: #7c3aed;
-    transition: color 300ms ease, transform 300ms ease;
+    text-align: left;
 }
 
-.blog-content p:first-of-type:hover::first-letter {
-    color: #7c3aed;
+.slide-caption strong {
+    font-size: 1.2rem;
+    color: #1f2937;
+    margin-bottom: 0.15rem;
+    line-height: 1.2;
+}
+
+.slide-caption span {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+/* ==============================================================
+   ESTILOS DE CONTENIDO DEL ARTÍCULO
+   ============================================================== */
+.blog-content {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: #2d3748;
+}
+
+/* Títulos dentro del contenido: fuente Roboto */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #1a202c;
+}
+
+/* Párrafos con borde sutil */
+.blog-content p {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background: #fafafa;
+}
+
+/* Navegación del slider */
+.slides-nav {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.slides-nav button {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #4b5563;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.slides-nav button:hover {
+    background: #6f42c1;
+    color: #fff;
     transform: scale(1.05);
 }
 
-/* ✨ PÁRRAFOS - Un solo bloque visual */
-.blog-content p {
-    margin-bottom: 1.25rem;
-    orphans: 3;
-    widows: 3;
+.slides-dots {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
 }
 
-.btn-reaction {
-    border-radius: 50px !important;
-    padding: 0.5rem 1rem !important;
-    font-size: 0.9rem !important;
-    transition: all 200ms ease-out !important;
-    border-width: 1.5px;
+/* Bootstrap‑like carousel indicators */
+.slide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+    padding: 0;
+    border: none;
 }
 
-.btn-reaction:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.slide-dot:hover {
+    background: #8b5cf6;
+    transform: scale(1.2);
 }
 
-.btn-reaction:active {
-    transform: translateY(0);
+.slide-dot.active {
+    background: #6f42c1;
+    transform: scale(1.2);
 }
 
-/* ✨ SISTEMA LAYOUT DUAL IMPLEMENTATION */
-.container-narrow {
-    max-width: 720px;
+/* Posicionar el contador a la derecha dentro de .slides‑nav */
+.slides-counter {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 500;
     margin-left: auto;
-    margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+    align-self: center;
 }
 
-.container-fluid-full {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    padding-left: 0;
-    padding-right: 0;
-}
+/* ==========================================================================
+   2. GALLERÍA POPUP (bloques :::popup:gallery)
+   ========================================================================== */
 
-/* Compatibilidad retroactiva: el contenido existente sigue funcionando exactamente igual */
-/* Compatibilidad retroactiva: el contenido existente sigue funcionando exactamente igual */
-.blog-content {
-    max-width: 1140px;
-    margin: 0 auto;
-}
-
+/* Ajustes para móviles: evitar que la navegación corte el contenido */
 @media (max-width: 767px) {
-    .container-narrow {
-        padding-left: 20px;
-        padding-right: 20px;
+    /* .slides-container {
+        min-height: 0;
+        height: auto;
+        padding-bottom: 0;
+    }
+
+    .slides-container .slide {
+        position: relative;
+        height: auto;
+        padding: 1rem;
+        padding-bottom: 50px;
+    } */
+
+    .slides-nav {
+        bottom: 0.25rem;
+    }
+
+    .slide-caption {
+        max-width: 100%;
     }
 }
 
-/* ✅ Correccion proporcion avatares */
-.avatar-circle {
-    object-fit: cover;
-    flex-shrink: 0;
-    aspect-ratio: 1 / 1;
-}
-
-/* ✨ COMPONENTE CAROUSEL FULL WIDTH */
-.blog-carousel-container {
-    margin: 4rem 0;
-}
-
-.blog-carousel-container .swiper {
-    padding: 1rem 0 3rem 0;
-}
-
-.blog-carousel-container .swiper-slide {
-    opacity: 0.7;
-    transition: all 300ms ease-out;
-    transform: scale(0.95);
-}
-
-.blog-carousel-container .swiper-slide-active {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.blog-carousel-container .swiper-slide img {
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    height: 320px;
-    width: 100%;
-    object-fit: cover;
-}
-
-.blog-carousel-container .swiper-pagination-bullet {
-    width: 12px;
-    height: 12px;
-    background: #cbd5e1;
-    opacity: 1;
-}
-
-.blog-carousel-container .swiper-pagination-bullet-active {
-    background: #7c3aed;
-}
-
-.blog-carousel-container .swiper-button-next,
-.blog-carousel-container .swiper-button-prev {
-    color: #7c3aed;
-}
-
-/* Barra progreso lectura HU-005.5 */
-.reading-progress-bar {
-    position: fixed;
-    left: 0;
-    width: 100vw;
-    height: 3.5px;
-    z-index: 999999;
-    background: transparent;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 200ms ease-out, visibility 200ms ease-out;
-    backdrop-filter: blur(2px);
-}
-
-.reading-progress-bar.visible {
-    opacity: 0.85;
-    visibility: visible;
-}
-
-.reading-progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #7c3aed 0%, #ec4899 50%, #f43f5e 100%);
-    transition: width 100ms linear, opacity 200ms ease-out;
-    display: block;
-}
-
-/* ✨ Boton flotante derecho navegacion */
-.float-nav-btn {
-    display: flex;
-    align-items: center;
-    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-    color: white;
-    border-radius: 50px;
-    padding: 10px 14px;
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
-    transition: all 220ms ease-out;
-    text-decoration: none;
-}
-
-.float-nav-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
-    background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
-    color: white;
-    text-decoration: none;
-}
-
-/* ✨ Tamaño iconos reacciones */
-.reaction-button i,
-.btn-reaction-float i,
-.reaction-comment-btn i {
-    font-size: 1.25rem !important;
-    line-height: 1.5;
-}
-
-
-/* ✨ BARRA LATERAL FLOTANTE REACCIONES - Compacta y Moderna */
-.floating-reaction-bar {
-    position: fixed;
-    left: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 300ms ease-out;
-}
-
-.floating-reaction-bar.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-.floating-reaction-bar>div {
-    gap: 6px !important;
-    padding: 8px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
-}
-
-.btn-reaction-float {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px !important;
-    padding: 0.25rem !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(0, 173, 181, 0.15) !important;
-    background: white !important;
-    transition: all 200ms ease-out;
-}
-
-.btn-reaction-float i {
-    font-size: 1rem;
-    color: #64748b;
-}
-
-.btn-reaction-float .count {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    margin-top: 2px !important;
-}
-
-.btn-reaction-float:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 173, 181, 0.15);
-    border-color: #7c3aed !important;
-}
-
-.btn-reaction-float:hover i {
-    color: #7c3aed;
-}
-
-.btn-reaction-float.active {
-    background: rgba(124, 58, 237, 0.08) !important;
-    border-color: #7c3aed !important;
-}
-
-.btn-reaction-float.active i {
-    color: #7c3aed;
-}
-
-@media (max-width: 991px) {
-    .floating-reaction-bar {
-        display: none !important;
-    }
-}
-
-/* ✨ GALERIA POPUP ESTILOS */
 .popup-gallery-container {
-    margin: 2.5rem 0;
+    margin: 1.5rem 0;
+    display: inline-block;
+    max-width: 100%;
 }
 
 .gallery-preview {
     position: relative;
-    cursor: pointer !important;
-    transition: transform 250ms ease-out;
     display: inline-block;
+    cursor: zoom-in;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .gallery-preview:hover {
-    transform: scale(1.02);
-}
-
-.gallery-preview:hover .gallery-badge {
-    transform: scale(1.05);
-}
-
-.gallery-badge {
-    position: absolute !important;
-    bottom: 16px !important;
-    right: 16px !important;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
-    backdrop-filter: blur(10px) !important;
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-    z-index: 999 !important;
-    border-radius: 20px !important;
-    padding: 7px 16px !important;
-    font-size: 0.78rem !important;
-    font-weight: 600 !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35) !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    width: auto !important;
-    min-width: unset !important;
-    max-width: fit-content !important;
-    transform: translateZ(0) !important;
-    text-decoration: none !important;
-    line-height: 1.4 !important;
-    margin: 0 !important;
-}
-
-/* SOBREESCRITURA FORZADA PARA CLASES BOOTSTRAP */
-.gallery-badge.text-white {
-    color: white !important;
-}
-
-.gallery-badge.px-3 {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-}
-
-.gallery-badge.py-1 {
-    padding-top: 7px !important;
-    padding-bottom: 7px !important;
-}
-
-.gallery-badge.rounded-pill {
-    border-radius: 20px !important;
-}
-
-.gallery-badge.small {
-    font-size: 0.78rem !important;
-}
-
-.gallery-badge::before {
-    content: '\f03e';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    font-size: 0.8rem;
-    opacity: 0.8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .gallery-preview img {
-    margin: 0 !important;
-    pointer-events: none;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
 }
 
-.gallery-preview * {
-    pointer-events: none;
+.gallery-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    padding: 0.35rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
+.gallery-badge i {
+    font-size: 0.7rem;
+}
+
+/* Modal de galería popup */
 .gallery-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(0, 0, 0, 0.92);
     backdrop-filter: blur(8px);
-    z-index: 999999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 20px;
-    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-/* ✨ BOTON CERRAR - UI/UX STANDARD */
+.gallery-modal.visible {
+    opacity: 1;
+}
+
 .gallery-modal-close {
     position: absolute;
-    top: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+    top: 1.25rem;
+    right: 1.25rem;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(6px);
     border: none;
-    color: white;
-    font-size: 24px;
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.25rem;
     cursor: pointer;
-    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+    z-index: 100;
 }
 
 .gallery-modal-close:hover {
-    background: rgba(255, 255, 255, 0.18);
-    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
 }
 
-.gallery-modal-close:active {
-    transform: scale(0.96);
-}
-
-/* ✨ BOTONES NAVEGACION - POSICIONAMIENTO EXTREMOS CORRECTO */
 .gallery-modal-nav {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 64px;
-    height: 64px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 28px;
+    font-size: 1.1rem;
     cursor: pointer;
-    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
-    user-select: none;
-}
-
-.gallery-modal-nav.prev {
-    left: 32px;
-}
-
-.gallery-modal-nav.next {
-    right: 32px;
+    transition: all 0.2s ease;
+    z-index: 100;
 }
 
 .gallery-modal-nav:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%) scale(1.12);
+    transform: translateY(-50%) scale(1.1);
 }
 
-.gallery-modal-nav:active {
-    transform: translateY(-50%) scale(0.94);
+.gallery-modal-nav.prev {
+    left: 1.25rem;
 }
 
-/* ✨ CONTENEDOR IMAGEN CENTRADO */
+.gallery-modal-nav.next {
+    right: 1.25rem;
+}
+
 .gallery-modal-image-wrapper {
-    max-width: 90vw;
-    max-height: 85vh;
     position: relative;
-    cursor: default;
-    z-index: 50;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
 .gallery-modal-image-wrapper img {
+    display: block;
     max-width: 100%;
-    max-height: 85vh;
+    max-height: 100%;
     object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
 }
 
-/* ✨ CONTADOR IMAGENES */
+.gallery-modal-info {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    padding: 0 1.5rem;
+    color: #fff;
+    text-align: center;
+}
+
+.gallery-modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.gallery-modal-desc {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
 .gallery-modal-counter {
     position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(6px);
-    color: white;
-    padding: 8px 20px;
+    bottom: 1rem;
+    right: 1.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
     border-radius: 20px;
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    z-index: 100;
-    letter-spacing: 0.02em;
 }
 
-/* ✨ RESPONSIVIDAD MOBILE UI/UX */
-@media (max-width: 768px) {
-    .gallery-modal {
-        padding: 12px;
-    }
+/* ==========================================================================
+   3. ESTILOS ADICIONALES PARA COMPATIBILIDAD
+   ========================================================================== */
 
-    .gallery-modal-close {
-        top: 16px;
-        right: 16px;
-        width: 48px;
-        height: 48px;
-        font-size: 20px;
-    }
-
-    .gallery-modal-nav {
-        width: 52px;
-        height: 52px;
-        font-size: 22px;
-        bottom: 16px;
-        top: auto;
-        transform: none;
-    }
-
-    .gallery-modal-nav.prev {
-        left: calc(50% - 68px);
-    }
-
-    .gallery-modal-nav.next {
-        right: calc(50% - 68px);
-    }
-
-    .gallery-modal-nav:hover {
-        transform: scale(1.08);
-    }
-
-    .gallery-modal-counter {
-        bottom: 88px;
-        font-size: 0.85rem;
-    }
-
-    .gallery-modal-image-wrapper {
-        max-height: 72vh;
-    }
-
-    .gallery-modal-image-wrapper img {
-        max-height: 72vh;
-    }
+/* Asegurar que las imágenes en el contenido tengan el cursor de zoom */
+.blog-content img {
+    cursor: zoom-in !important;
+    transition: transform 220ms ease;
+    position: relative;
+    z-index: 5;
+    pointer-events: all !important;
 }
 
-/* ✨ ACCESIBILIDAD */
-.gallery-modal-close:focus,
-.gallery-modal-nav:focus {
-    outline: 2px solid #7c3aed;
-    outline-offset: 2px;
+.blog-content img:hover {
+    transform: scale(1.01);
 }
 
-/* ✨ ANIMACION APARICION */
-.gallery-modal {
-    animation: modalFadeIn 180ms ease-out;
+/* Estilos para el modal de zoom de imagen (HTML5 dialog) */
+#image-zoom-modal {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 95vw;
+    max-height: 95vh;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    animation: modalIn 250ms ease;
 }
 
-@keyframes modalFadeIn {
+#image-zoom-modal::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+}
+
+#image-zoom-modal img {
+    display: block;
+    max-width: 100%;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+@keyframes modalIn {
     from {
         opacity: 0;
+        transform: scale(0.9);
     }
 
     to {
         opacity: 1;
+        transform: scale(1);
     }
 }
 
-/* ✨ MEJORAS UI SISTEMA DE COMENTARIOS */
-
-/* Boton Enviar Comentario Principal */
-form button[type="submit"] {
-    position: relative;
-    overflow: hidden;
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 173, 181, 0.15);
+/* ========================================================================== 
+   6. BARRA LATERAL FLOTANTE (Reacciones) 
+   ========================================================================== */
+.floating-reaction-bar {
+    position: fixed;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 99999;
+    transition: opacity 0.3s ease;
 }
 
-form button[type="submit"]:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 173, 181, 0.35);
-    filter: brightness(1.05);
-}
-
-form button[type="submit"]:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 173, 181, 0.2);
-}
-
-form button[type="submit"]:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Inputs y Textarea del formulario */
-.comment-form .form-control {
-    transition: all 200ms ease-out;
-    border-width: 2px;
-    border-color: #e2e8f0;
-}
-
-.comment-form .form-control:focus {
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.1);
-    transform: translateY(-1px);
-}
-
-/* Boton Responder comentario */
-.reply-btn {
-    transition: all 180ms ease-out;
-    opacity: 0.7;
-}
-
-.reply-btn:hover {
-    opacity: 1;
-    color: #7c3aed !important;
-    transform: translateX(3px);
-}
-
-/* Boton Cancelar Respuesta */
-.cancel-reply {
-    transition: all 180ms ease-out !important;
-}
-
-.cancel-reply:hover {
-    background-color: #fee2e2 !important;
-    border-color: #f87171 !important;
-    color: #dc2626 !important;
-}
-
-/* Tarjetas de comentarios */
-.comment-item {
-    transition: all 220ms ease-out;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-/* ✨ REACCIONES EN COMENTARIOS - Compactas y sutiles */
-.reaction-comment-btn {
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 8px !important;
-    padding: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border: 1px solid rgba(0, 173, 181, 0.15) !important;
-    background: white !important;
-    transition: all 200ms ease-out !important;
-}
-
-.reaction-comment-btn i {
-    font-size: 0.85rem !important;
-    color: #64748b !important;
-}
-
-.reaction-comment-btn .count {
-    font-size: 0.65rem !important;
-    color: #94a3b8 !important;
-    margin-top: 1px !important;
-}
-
-.reaction-comment-btn:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    border-color: #7c3aed !important;
-}
-
-.reaction-comment-btn:hover i {
-    color: #00ADB5 !important;
-}
-
-.reaction-comment-btn.active {
-    background: rgba(0, 173, 181, 0.08) !important;
-    border-color: #00ADB5 !important;
-}
-
-.reaction-comment-btn.active i {
-    color: #00ADB5 !important;
-    font-weight: 900 !important;
-}
-
-.comment-item:hover {
-    background-color: #f8fafc;
-    transform: translateX(4px);
-}
-
-/* Skeleton Loader Animacion */
-.comment-skeleton {
-    display: flex;
-    gap: 12px;
-    padding: 1rem;
-    animation: pulse 1.5s infinite ease-in-out;
-}
-
-.comment-skeleton-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    flex-shrink: 0;
-}
-
-.comment-skeleton-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.comment-skeleton-line {
-    height: 12px;
-    background: #e2e8f0;
-    border-radius: 6px;
-}
-
-.comment-skeleton-line.short {
-    width: 30%;
-}
-
-.comment-skeleton-line.medium {
-    width: 60%;
-}
-
-.comment-skeleton-line.long {
-    width: 90%;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* ✨ MEJORAS GENERALES UX */
-
-/* Botones del blog */
-.btn {
-    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Sombras suaves en elementos interactivos */
-.card {
-    transition: all 240ms ease-out;
-}
-
-.card:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-}
-
-/* Seleccion de texto personalizada */
-::selection {
-    background-color: rgba(0, 173, 181, 0.2);
-    color: #0f172a;
-}
-
-::-moz-selection {
-    background-color: rgba(0, 173, 181, 0.2);
-    color: #0f172a;
-}
-
-/* ✨ TAGS / ETIQUETAS DEL BLOG */
-.blog-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-}
-
-.blog-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 14px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: #475569;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    text-decoration: none;
-    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.blog-tag::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 500ms ease;
-}
-
-.blog-tag:hover {
-    color: #00ADB5;
-    background: white;
-    border-color: #00ADB5;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 173, 181, 0.15);
-    text-decoration: none;
-}
-
-.blog-tag:hover::before {
-    left: 100%;
-}
-
-.blog-tag:active {
-    transform: translateY(0);
-}
-
-/* ✨ BOTONES COMPARTIR REDES SOCIALES */
-.share-buttons-container {
+/* --------------------------------------------------------------------------
+   ESTILOS PARA EL BLOQUE DE INVITACIÓN DE LOGIN (cuando el usuario no está
+   autenticado) 
+   -------------------------------------------------------------------------- */
+.login-invite-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-}
-
-.share-buttons-container .btn {
-    padding: 10px 18px !important;
-    font-size: 0.9rem !important;
-    border-radius: 12px !important;
-    border-width: 1.5px !important;
-    font-weight: 500;
-    min-width: 130px;
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.share-buttons-container .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-}
-
-.share-buttons-container .btn:active {
-    transform: translateY(0);
-}
-
-.share-buttons-container .btn i {
-    margin-right: 6px;
-    font-size: 1rem;
-}
-
-/* ✨ Estado activo reaccion seleccionada */
-button.reaction-button.active,
-button.btn-reaction-float.active,
-button.reaction-comment-btn.active {
-    background: rgba(124, 58, 237, 0.12) !important;
-    border: 2px solid #7c3aed !important;
-    border-radius: 12px !important;
-    color: #7c3aed !important;
-    transition: all 180ms ease-out !important;
-}
-
-button.reaction-button.active i,
-button.btn-reaction-float.active i,
-button.reaction-comment-btn.active i {
-    color: #7c3aed !important;
-    font-weight: 900 !important;
-    transform: scale(1.15) !important;
-}
-
-/* ✨ Boton flotante derecho navegacion */
-.floating-right-nav {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    display: none;
-}
-
-.floating-right-nav.visible {
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-}
-
-/* ✨ Ancho completo formulario respuestas */
-.reply-form-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 1rem !important;
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.04) 0%, rgba(59, 130, 246, 0.04) 100%);
-    border-left: 3px solid #7c3aed;
-    border-radius: 0 12px 12px 0;
-    clear: both !important;
-    position: relative !important;
-    z-index: 10 !important;
-}
-
-.reply-form-container form {
-    width: 100% !important;
-    margin: 0 !important;
-}
-
-.reply-form-container .form-control {
-    width: 100% !important;
-    border-color: #cbd5e1 !important;
-}
-
-.reply-form-container .form-control:focus {
-    border-color: #7c3aed !important;
-    box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.15) !important;
-}
-
-.reply-form-container button[type="submit"] {
-    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
-    border-color: #7c3aed !important;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25) !important;
-}
-
-.reply-form-container button[type="submit"]:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4) !important;
-}
-
-/* ✅ Corregir conflicto con botones de reacciones */
-.comment-wrapper {
-    position: relative;
-    overflow: visible !important;
-}
-
-.comment-actions {
-    position: relative;
-    z-index: 5;
-    margin-bottom: 0.5rem;
-}
-
-/* ✅ Mantener consistencia colores AZUL / MORADO */
-.reply-btn {
-    color: #7c3aed !important;
-}
-
-.reply-btn:hover {
-    color: #6366f1 !important;
-    transform: translateX(3px);
-    opacity: 1;
-}
-
-/* ✅ Corregir cortes y superposiciones */
-.comment-wrapper {
-    padding-bottom: 0.5rem !important;
-    overflow: visible !important;
-}
-
-/* ✅ Mensaje de exito no corta contenido */
-.alert-success,
-.alert-danger {
-    position: relative !important;
-    z-index: 20 !important;
-    clear: both !important;
-    margin: 1rem 0 !important;
-    float: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* ✅ Estilo especifico para mensajes dentro de respuestas */
-.comment-wrapper .alert-success,
-.comment-wrapper .alert-danger {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    border-radius: 12px !important;
-}
-
-/* tags */
-.blog-tags-container {
-    gap: 10px;
-}
-
-/* ✨ Responsive: Boton flotante derecho a inferior derecho en móviles */
-@media (max-width: 767px) {
-    .floating-right-nav {
-        top: auto !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        transform: none !important;
-        flex-direction: row !important;
-        z-index: 9999 !important;
-    }
-}
-
-/* ✨ LOGIN INVITE - Sección atractiva y con vida */
-.login-invite-container {
-    margin: 3rem auto;
-    max-width: 500px;
+    margin: 2rem 0;
+    padding: 0 1rem;
 }
 
 .login-invite-card {
-    background: linear-gradient(135deg, rgba(0, 173, 181, 0.04) 0%, rgba(124, 58, 237, 0.04) 100%);
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 1rem 2rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+    width: 100%;
     text-align: center;
-    transition: all 300ms ease;
-}
-
-.login-invite-card:hover {
-    border-color: #7c3aed;
-    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
+    padding: 2rem 1.5rem;
 }
 
 .login-invite-icon {
     font-size: 2.5rem;
-    color: #7c3aed;
+    color: #6f42c1;
     margin-bottom: 1rem;
-    animation: pulseIcon 2s infinite;
-}
-
-@keyframes pulseIcon {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
 }
 
 .login-invite-title {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
     font-size: 1.5rem;
-    color: #0f172a;
-    margin-bottom: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #111827;
 }
 
 .login-invite-text {
-    color: #64748b;
     font-size: 1rem;
+    color: #4b5563;
     margin-bottom: 1.5rem;
-    line-height: 1.6;
 }
 
 .login-buttons-wrapper {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
 .login-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
     font-weight: 500;
     text-decoration: none;
-    transition: all 220ms ease;
-    border: 1.5px solid transparent;
+    transition: background 0.2s ease;
 }
 
 .google-btn {
-    background: white;
-    color: #6d28d9;
-    border-color: rgba(219, 68, 55, 0.3);
-}
-
-.google-btn:hover {
-    background: rgba(219, 68, 55, 0.08);
-    border-color: #6d28d9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(219, 68, 55, 0.2);
-    color: #6d28d9;
-    text-decoration: none;
+    background: #4285F4;
+    color: #fff;
 }
 
 .github-btn {
-    background: white;
-    color: #333;
-    border-color: rgba(51, 51, 51, 0.3);
+    background: #333;
+    color: #fff;
 }
 
-.github-btn:hover {
-    background: rgba(51, 51, 51, 0.08);
-    border-color: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(51, 51, 51, 0.2);
-    color: #333;
-    text-decoration: none;
+.login-btn:hover {
+    opacity: 0.9;
 }
 
 .login-invite-footer {
-    font-size: 0.8rem;
-    color: #94a3b8;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    font-size: 0.875rem;
+    color: #6b7280;
+    gap: 0.5rem;
 }
 
-/* ✨ MEJORAS CARRUSEL DE IMÁGENES - Con vida y sentido */
-.blog-carousel-container {
-    margin: 4rem 0;
-    position: relative;
+.login-invite-footer i {
+    color: #6f42c1;
 }
 
-.blog-carousel-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, transparent 0%, rgba(15, 23, 42, 0.05) 100%);
-    border-radius: 12px;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.blog-carousel-container .swiper-slide img {
+.floating-reaction-bar .d-flex {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    height: 320px;
+    border: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   5. BARRA FLOTANTE DERECHA (Navegación)
+   ========================================================================== */
+.floating-right-nav {
+    z-index: 99999;
+    transition: opacity 0.3s ease;
+}
+
+.float-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: #4b5563;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* ========================================================================== 
+    7. BARRA DE PROGRESO DE LECTURA (fija debajo del header) 
+    ========================================================================== */
+.reading-progress-bar {
+    position: fixed;
+    /* Altura aproximada del header */
+    left: 0;
     width: 100%;
-    object-fit: cover;
-    transition: transform 400ms ease, box-shadow 400ms ease;
+    height: 4px;
+    background: #e5e7eb;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+    opacity: 0;
 }
 
-.blog-carousel-container .swiper-slide-active img {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+.reading-progress-bar.visible {
+    opacity: 1;
 }
 
-/* ✨ GALERÍA POPUP BADGE - Más vida y color */
-.gallery-badge {
-    position: absolute !important;
-    bottom: 16px !important;
-    right: 16px !important;
-    background: linear-gradient(135deg, rgba(0, 173, 181, 0.85) 0%, rgba(124, 58, 237, 0.85) 100%) !important;
-    backdrop-filter: blur(10px) !important;
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-    z-index: 999 !important;
-    border-radius: 20px !important;
-    padding: 8px 16px !important;
-    font-size: 0.8rem !important;
-    font-weight: 600 !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    width: auto !important;
-    min-width: unset !important;
-    max-width: fit-content !important;
-    transform: translateZ(0) !important;
-    text-decoration: none !important;
-    line-height: 1.4 !important;
-    margin: 0 !important;
+.reading-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #6f42c1, #e84a5f);
+    width: 0%;
+    transition: width 0.2s ease;
 }
 
-.gallery-badge:hover {
-    transform: scale(1.05) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+.float-nav-btn:hover {
+    background: #6f42c1;
+    color: #fff;
+    border-color: #6f42c1;
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(111, 66, 193, 0.3);
+}
+
+.float-nav-btn i {
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE - OCULTAR BARRAS EN MÓVIL
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .floating-reaction-bar {
+        display: none !important;
+    }
+
+    .floating-right-nav {
+        display: none !important;
+    }
+}
+
+/* Animaciones generales */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

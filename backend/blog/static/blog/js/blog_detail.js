@@ -4,57 +4,101 @@
  */
 
 // ===== CAROUSEL =====
-document.addEventListener('DOMContentLoaded', function() {
-    var swiperEl = document.querySelector('.blog-carousel-container .swiper');
-    if (swiperEl) {
-        new Swiper('.blog-carousel-container .swiper', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            centeredSlides: true,
-            loop: true,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev'
-            },
-            breakpoints: {
-                768: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 }
-            }
-        });
+/* =========================================================
+   SIMPLE SLIDES (Bootstrap‑like carousel)
+   ========================================================= */
+function getSlidesContainer() {
+    return document.querySelector('.slides-container');
+}
+function getSlides() {
+    var container = getSlidesContainer();
+    return container ? container.querySelectorAll('.slide') : [];
+}
+function getActiveIndex() {
+    var slides = getSlides();
+    for (var i = 0; i < slides.length; i++) {
+        if (slides[i].classList.contains('active')) return i;
+    }
+    return 0;
+}
+function setActiveSlide(index) {
+    var slides = getSlides();
+    if (!slides.length) return;
+    index = (index + slides.length) % slides.length;
+    slides.forEach(function(s, i) {
+        s.classList.toggle('active', i === index);
+    });
+    // update dots
+    var dots = document.querySelectorAll('.slide-dot');
+    dots.forEach(function(d, i) {
+        d.classList.toggle('active', i === index);
+    });
+    // update counter
+    var counter = document.querySelector('.slides-counter');
+    if (counter) {
+        counter.textContent = (index + 1) + ' / ' + slides.length;
+    }
+}
+function prevSlide() {
+    setActiveSlide(getActiveIndex() - 1);
+}
+function nextSlide() {
+    setActiveSlide(getActiveIndex() + 1);
+}
+function goToSlide(dot, idx) {
+    setActiveSlide(idx);
+}
+document.addEventListener('DOMContentLoaded', function () {
+    // inicializar contador y punto activo
+    var slides = getSlides();
+    if (slides.length) {
+        setActiveSlide(0);
     }
 });
 
 // ===== GALLERY POPUP =====
 window.openGalleryPopup = function(element) {
-    var images = element.querySelector('.gallery-images').value.split('|');
+    // Formato: src1||title1||desc1|src2||title2||desc2|...
+var raw = element.querySelector('.gallery-images').value;
+var entries = raw.split('|||');
+    var images = [];
+    var titles = [];
+    var descriptions = [];
+    for (var i = 0; i < entries.length; i++) {
+        var parts = entries[i].split('||');
+        images.push(parts[0]);
+        titles.push(parts[1] || '');
+        descriptions.push(parts[2] || '');
+    }
     var currentIndex = 0;
     var modal = document.createElement('div');
     modal.className = 'gallery-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center';
     modal.style.cssText = 'z-index:999999999;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);opacity:0;transition:opacity 150ms ease;position:fixed;top:0;left:0;width:100vw;height:100vh;';
     
-    modal.innerHTML = '<button class="gallery-modal-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button><button class="gallery-modal-nav prev" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button><button class="gallery-modal-nav next" onclick="nextImage()"><i class="fas fa-chevron-right"></i></button><div class="gallery-modal-image-wrapper"><img id="gallery-modal-img" src="' + images[0] + '" alt=""></div><div class="gallery-modal-counter">1 / ' + images.length + '</div>';
+    modal.innerHTML = '<button class="gallery-modal-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button><button class="gallery-modal-nav prev" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button><button class="gallery-modal-nav next" onclick="nextImage()"><i class="fas fa-chevron-right"></i></button><div class="gallery-modal-image-wrapper"><img id="gallery-modal-img" src="' + images[0] + '" alt=""><div id="gallery-modal-info" class="gallery-modal-info"><span id="gallery-modal-title" class="gallery-modal-title">' + titles[0] + '</span><span id="gallery-modal-desc" class="gallery-modal-desc">' + descriptions[0] + '</span></div></div><div class="gallery-modal-counter">1 / ' + images.length + '</div>';
+    
+    function updateImage() {
+        document.getElementById('gallery-modal-img').src = images[currentIndex];
+        var titleEl = document.getElementById('gallery-modal-title');
+        var descEl = document.getElementById('gallery-modal-desc');
+        titleEl.textContent = titles[currentIndex];
+        titleEl.style.display = titles[currentIndex] ? '' : 'none';
+        descEl.textContent = descriptions[currentIndex];
+        descEl.style.display = descriptions[currentIndex] ? '' : 'none';
+        modal.querySelector('.gallery-modal-counter').textContent = (currentIndex + 1) + ' / ' + images.length;
+    }
     
     document.body.appendChild(modal);
     setTimeout(function() { modal.style.opacity = '1'; }, 10);
     
     window.prevImage = function() {
         currentIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
-        document.getElementById('gallery-modal-img').src = images[currentIndex];
-        modal.querySelector('.gallery-modal-counter').textContent = (currentIndex + 1) + ' / ' + images.length;
+        updateImage();
     };
     
     window.nextImage = function() {
         currentIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
-        document.getElementById('gallery-modal-img').src = images[currentIndex];
-        modal.querySelector('.gallery-modal-counter').textContent = (currentIndex + 1) + ' / ' + images.length;
+        updateImage();
     };
     
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
@@ -68,36 +112,48 @@ window.openGalleryPopup = function(element) {
 // ===== READING PROGRESS BAR =====
 console.log('Iniciando barra progreso');
 var hideTimeout;
-var progressBar = document.querySelector('.reading-progress-bar');
 
-window.onscroll = function() {
-    var scrol = window.pageYOffset || document.documentElement.scrollTop;
-    var altoTotal = document.body.scrollHeight - window.innerHeight;
-    if (altoTotal <= 0) altoTotal = 1;
-    var porcentaje = Math.min(100, Math.max(0, (scrol / altoTotal) * 100));
-    
-    var progressFill = document.querySelector('.reading-progress-fill');
-    if (progressFill) progressFill.style.width = porcentaje + '%';
-    
-    if (porcentaje > 5) {
-        progressBar.classList.add('visible');
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(function() { progressBar.classList.remove('visible'); }, 2000);
-    } else {
-        progressBar.classList.remove('visible');
+document.addEventListener('DOMContentLoaded', function() {
+    var progressBar = document.querySelector('.reading-progress-bar');
+    if (!progressBar) {
+        console.warn('No se encontró .reading-progress-bar');
+        return;
     }
-    
-    var barraFlotante = document.querySelector('.floating-reaction-bar');
-    if (barraFlotante) {
-        if (porcentaje > 12 && porcentaje < 82) {
-            barraFlotante.classList.add('visible');
-        } else {
-            barraFlotante.classList.remove('visible');
+    console.log('Barra de progreso encontrada');
+
+    window.onscroll = function() {
+        var scrol = window.pageYOffset || document.documentElement.scrollTop;
+        var altoTotal = document.documentElement.scrollHeight - window.innerHeight;
+        if (altoTotal <= 0) altoTotal = 1;
+        var porcentaje = Math.min(100, Math.max(0, (scrol / altoTotal) * 100));
+        
+        var progressFill = progressBar.querySelector('.reading-progress-fill');
+        if (progressFill) {
+            progressFill.style.width = porcentaje + '%';
+            console.log('Progreso actualizado:', porcentaje + '%');
         }
-    }
-};
+        
+        if (porcentaje > 5) {
+            progressBar.classList.add('visible');
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(function() { progressBar.classList.remove('visible'); }, 2000);
+        } else {
+            progressBar.classList.remove('visible');
+        }
+        
+        var barraFlotante = document.querySelector('.floating-reaction-bar');
+        if (barraFlotante) {
+            if (porcentaje > 12 && porcentaje < 82) {
+                barraFlotante.classList.add('visible');
+            } else {
+                barraFlotante.classList.remove('visible');
+            }
+        }
+    };
 
-setTimeout(function() { if (window.onscroll) window.onscroll(); }, 100);
+    // Ejecutar una vez al cargar
+    if (window.onscroll) window.onscroll();
+});
 
 // ===== IMAGE ZOOM =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -378,6 +434,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     credentials: 'same-origin'
                 });
                 
+                if (!response.ok) throw new Error('Error ' + response.status);
+                
                 var data;
                 try {
                     data = await response.json();
@@ -385,13 +443,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la página.');
                     if (response.status === 500) throw new Error('Error interno en el servidor.');
                     throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
-                }
-                
-                if (!response.ok) {
-                    if (data && data.message) throw new Error(data.message);
-                    if (data && data.error) throw new Error(data.error);
-                    if (data && data.errors) throw new Error(Object.values(data.errors)[0]);
-                    throw new Error('Validacion fallida');
                 }
                 
                 if (!data.success) throw new Error('Error en el servidor');

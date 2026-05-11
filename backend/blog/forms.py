@@ -39,7 +39,7 @@ class CommentForm(forms.Form):
         validators=[MinLengthValidator(10), MaxLengthValidator(1000)],
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
+                "class": "jd-textarea form-control",
                 "rows": 4,
                 "placeholder": "Escribe tu comentario...",
             }
@@ -96,10 +96,16 @@ class QuickSignupForm(UserCreationForm):
         ),
     )
 
-
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password1",
+            "password2",
+        )
         widgets = {
             "username": forms.TextInput(
                 attrs={
@@ -108,7 +114,10 @@ class QuickSignupForm(UserCreationForm):
                 }
             ),
             "email": forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Correo electrónico"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Correo electrónico",
+                }
             ),
             "first_name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Nombre"}
@@ -120,6 +129,9 @@ class QuickSignupForm(UserCreationForm):
                 attrs={"class": "form-control", "placeholder": "Contraseña"}
             ),
             "password2": forms.PasswordInput(
-                attrs={"class": "form-control", "placeholder": "Confirmar contraseña"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Confirmar contraseña",
+                }
             ),
         }

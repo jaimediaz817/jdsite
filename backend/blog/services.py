@@ -99,17 +99,21 @@ Este comentario esta actualmente PENDIENTE y no es visible publicamente hasta qu
     return comment
 
 
-def get_approved_comments(blog_slug):
+def get_approved_comments(blog_slug, limit=None):
     """
-    Devuelve todos los comentarios aprobados para un blog, con sus respuestas
+    Devuelve los comentarios aprobados para un blog, con sus respuestas
+    Si limit se especifica, devuelve solo esa cantidad inicial
     """
-    return (
+    queryset = (
         BlogComment.objects.filter(
             blog_slug=blog_slug, status="approved", parent__isnull=True
         )
         .order_by("-created_at")
         .prefetch_related("replies")
     )
+    if limit is not None:
+        return queryset[:limit]
+    return queryset
 
 
 def get_comment_count(blog_slug):

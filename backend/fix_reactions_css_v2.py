@@ -1,4 +1,6 @@
-/** 
+import os
+
+css = """/** 
  * reactions.css - Estilos profesionales para barra flotante izquierda
  */
 
@@ -14,7 +16,7 @@
     --reaction-shadow-active: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
-/* === BARRA FLOTANTE LATERAL IZQUIERDA (tamaños originales) === */
+/* === BARRA FLOTANTE LATERAL IZQUIERDA === */
 .floating-reaction-bar {
     display: flex;
     flex-direction: column;
@@ -23,13 +25,13 @@
     background: var(--reaction-bg);
     border-radius: 16px;
     box-shadow: var(--reaction-shadow);
+    border: 1px solid #e5e7eb;
     width: 56px;
     align-items: center;
 }
 
 /* Botones de reacción en barra flotante */
-.floating-reaction-bar .reaction-button,
-.floating-reaction-bar .btn-reaction-float {
+.floating-reaction-bar .reaction-button {
     width: 44px;
     height: 44px;
     padding: 0;
@@ -47,25 +49,21 @@
     position: relative;
 }
 
-.floating-reaction-bar .reaction-button+.reaction-button,
-.floating-reaction-bar .btn-reaction-float+.btn-reaction-float {
+.floating-reaction-bar .reaction-button + .reaction-button {
     margin-top: 4px;
 }
 
-.floating-reaction-bar .reaction-button:hover,
-.floating-reaction-bar .btn-reaction-float:hover {
+.floating-reaction-bar .reaction-button:hover {
     background: var(--reaction-bg-hover);
     color: #374151;
 }
 
-.floating-reaction-bar .reaction-button:active,
-.floating-reaction-bar .btn-reaction-float:active {
+.floating-reaction-bar .reaction-button:active {
     transform: scale(0.92);
 }
 
-/* Estado activo (usuario ha reaccionado) */
-.floating-reaction-bar .reaction-button.active,
-.floating-reaction-bar .btn-reaction-float.active {
+/* Estado activo (usuario ha reaccionado) - MAS VISIBLE */
+.floating-reaction-bar .reaction-button.active {
     background: var(--reaction-active-bg);
     color: var(--reaction-active-text);
     box-shadow: var(--reaction-shadow-active);
@@ -73,25 +71,26 @@
     font-weight: 600;
 }
 
-.floating-reaction-bar .reaction-button.active:hover,
-.floating-reaction-bar .btn-reaction-float.active:hover {
+.floating-reaction-bar .reaction-button.active:hover {
     background: var(--reaction-active-hover);
 }
 
-.floating-reaction-bar .reaction-button i,
-.floating-reaction-bar .btn-reaction-float i {
+.floating-reaction-bar .reaction-button .icon {
     font-size: 18px;
     line-height: 1;
-    transition: transform 0.2s ease, color 0.2s ease;
+    color: currentColor;
+    transition: all 0.2s ease;
 }
 
-.floating-reaction-bar .reaction-button:hover i,
-.floating-reaction-bar .btn-reaction-float:hover i {
+.floating-reaction-bar .reaction-button.active .icon {
+    color: var(--reaction-active-text);
+}
+
+.floating-reaction-bar .reaction-button:hover .icon {
     color: #374151;
 }
 
-.floating-reaction-bar .reaction-button .count,
-.floating-reaction-bar .btn-reaction-float .count {
+.floating-reaction-bar .reaction-button .count {
     font-size: 10px;
     font-weight: 600;
     margin-top: 1px;
@@ -101,14 +100,12 @@
     line-height: 1;
 }
 
-.floating-reaction-bar .reaction-button.active .count,
-.floating-reaction-bar .btn-reaction-float.active .count {
+.floating-reaction-bar .reaction-button.active .count {
     color: #7c3aed;
     font-weight: 700;
 }
 
-.floating-reaction-bar .reaction-button:hover .count,
-.floating-reaction-bar .btn-reaction-float:hover .count {
+.floating-reaction-bar .reaction-button:hover .count {
     color: #6b7280;
 }
 
@@ -140,9 +137,10 @@
     text-decoration: none !important;
 }
 
-.floating-reaction-bar .comment-button i {
+.floating-reaction-bar .comment-button .icon {
     font-size: 18px;
     line-height: 1;
+    color: currentColor;
 }
 
 .floating-reaction-bar .comment-button .count {
@@ -166,95 +164,71 @@
     opacity: 1;
 }
 
-/* === BOTONES DEL ARTICULO (inferiores) - UI/UX profesional === */
+/* === BOTONES DEL ARTICULO (inferiores) === */
 .blog-reactions .reaction-button {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    padding: 4px 8px;
-    min-width: 44px;
-    min-height: 40px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
+    padding: 8px 14px;
+    min-width: 48px;
+    min-height: 48px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
     background: #ffffff;
-    color: #6b7280;
-    font-size: 0.65rem;
+    color: var(--reaction-text);
+    font-size: 12px;
     font-weight: 500;
-    transition: all 0.18s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
-    box-shadow: none;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.01em;
-    margin: 0 4px;
+    box-shadow: var(--reaction-shadow);
 }
 
 .blog-reactions .reaction-button:hover {
-    background: #faf9ff;
-    border-color: #d4c8f0;
-}
-
-.blog-reactions .reaction-button:active {
-    transform: scale(0.94);
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .blog-reactions .reaction-button.active {
-    background: linear-gradient(135deg, #f5f0ff 0%, #faf9ff 100%);
-    color: #6f42c1;
+    background: var(--reaction-active-bg);
+    color: var(--reaction-active-text);
     border-color: #c4b5fd;
-    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.12);
+    box-shadow: var(--reaction-shadow-active);
     font-weight: 600;
 }
 
 .blog-reactions .reaction-button .icon {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1;
-    color: #9ca3af;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.blog-reactions .reaction-button:hover .icon {
-    color: #8b7ec8;
-    transform: scale(1.1);
+    color: currentColor;
 }
 
 .blog-reactions .reaction-button.active .icon {
-    color: #6f42c1;
+    color: var(--reaction-active-text);
 }
 
 .blog-reactions .reaction-button .count {
-    font-size: 0.68rem;
+    font-size: 11px;
     font-weight: 600;
-    color: #a0aec0;
-    min-width: 20px;
+    margin-top: 2px;
+    color: #9ca3af;
+    min-width: 24px;
     text-align: center;
-    line-height: 1;
-    transition: color 0.2s ease;
+    line-height: 1.2;
 }
 
 .blog-reactions .reaction-button.active .count {
-    color: #6f42c1;
+    color: var(--reaction-active-text);
     font-weight: 700;
 }
 
 /* Animación pulsación */
 @keyframes reactionPulse {
-    0% {
-        transform: scale(1);
-    }
-
-    40% {
-        transform: scale(1.15);
-    }
-
-    60% {
-        transform: scale(0.95);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
 }
 
 /* Foco accesible */
@@ -276,86 +250,19 @@
         padding: 4px;
         gap: 4px;
     }
-
     .floating-reaction-bar .reaction-button,
     .floating-reaction-bar .comment-button {
         width: 38px !important;
         height: 38px !important;
     }
-
     .floating-reaction-bar .reaction-button .icon,
     .floating-reaction-bar .comment-button .icon {
         font-size: 16px;
     }
 }
+"""
 
-/* ===== REACCIONES EN COMENTARIOS ===== */
-.comment-reactions {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 6px;
-    background: #f9fafb;
-    border-radius: 20px;
-    border: 1px solid #e5e7eb;
-}
-
-.comment-reactions .reaction-comment-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 4px 8px;
-    min-height: 28px;
-    border: none;
-    border-radius: 14px;
-    background: transparent;
-    color: #9ca3af;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.comment-reactions .reaction-comment-btn:hover {
-    background: #e5e7eb;
-    color: #6b7280;
-}
-
-.comment-reactions .reaction-comment-btn:active {
-    transform: scale(0.9);
-}
-
-.comment-reactions .reaction-comment-btn .icon {
-    font-size: 15px;
-    line-height: 1;
-    color: currentColor;
-}
-
-.comment-reactions .reaction-comment-btn .count {
-    font-size: 11px;
-    font-weight: 600;
-    color: currentColor;
-}
-
-/* Estado activo en comentarios - morado */
-.comment-reactions .reaction-comment-btn.active {
-    background: #f5f3ff;
-    color: #7c3aed;
-    border: 1px solid #c4b5fd;
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(124, 58, 237, 0.15);
-}
-
-.comment-reactions .reaction-comment-btn.active:hover {
-    background: #ede9fe;
-}
-
-.comment-reactions .reaction-comment-btn.active .icon {
-    color: #7c3aed;
-}
-
-.comment-reactions .reaction-comment-btn.active .count {
-    color: #7c3aed;
-    font-weight: 700;
-}
+target = os.path.join("blog", "static", "blog", "css", "reactions.css")
+with open(target, "w", encoding="utf-8") as f:
+    f.write(css)
+print(f"OK: {len(css)} bytes escritos en {target}")

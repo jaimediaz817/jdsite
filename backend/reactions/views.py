@@ -27,10 +27,11 @@ def get_reactions(request, blog_slug):
     Devuelve las reacciones para un blog y el estado del usuario actual.
     """
     ip = get_client_ip(request)
+    user_id = request.user.id if request.user.is_authenticated else None
 
     response = {
         "counts": get_reaction_counts(blog_slug),
-        "user_reactions": get_user_reactions(blog_slug, ip),
+        "user_reactions": get_user_reactions(blog_slug, ip, user_id),
     }
 
     return JsonResponse(response)
@@ -40,7 +41,7 @@ def get_reactions(request, blog_slug):
 @require_http_methods(["POST"])
 def toggle_reaction_view(request, blog_slug):
     """
-    Alterna el estado de una reaccion para el usuario actual.
+    Alterna el estado de una reacción para el usuario actual.
     """
     try:
         data = json.loads(request.body)
@@ -50,7 +51,8 @@ def toggle_reaction_view(request, blog_slug):
             return JsonResponse({"error": "reaction_type requerido"}, status=400)
 
         ip = get_client_ip(request)
-        is_active = toggle_reaction(blog_slug, ip, reaction_type)
+        user_id = request.user.id if request.user.is_authenticated else None
+        is_active = toggle_reaction(blog_slug, ip, reaction_type, user_id)
 
         return JsonResponse(
             {
@@ -60,7 +62,6 @@ def toggle_reaction_view(request, blog_slug):
                 "counts": get_reaction_counts(blog_slug),
             }
         )
-
     except json.JSONDecodeError:
         return JsonResponse({"error": "JSON invalido"}, status=400)
 
@@ -69,10 +70,9 @@ def toggle_reaction_view(request, blog_slug):
 @require_http_methods(["POST"])
 def toggle_comment_reaction_view(request, comment_id):
     """
-    Alterna el estado de una reaccion en un comentario.
+    Alterna el estado de una reacción en un comentario.
     ✅ SOLO usuarios autenticados pueden reaccionar a comentarios.
     """
-    # ✅ VALIDAR AUTENTICACIÓN
     if not request.user.is_authenticated:
         return JsonResponse(
             {
@@ -89,9 +89,11 @@ def toggle_comment_reaction_view(request, comment_id):
         if not reaction_type:
             return JsonResponse({"error": "reaction_type requerido"}, status=400)
 
-        # Usar IP del usuario autenticado (o identificador de usuario)
         ip = get_client_ip(request)
-        is_active = toggle_comment_reaction(comment_id, ip, reaction_type)
+        user_id = request.user.id
+        is_active = toggle_comment_reaction(
+            comment_id, ip, reaction_type, user_id
+        )
 
         return JsonResponse(
             {
@@ -101,7 +103,6 @@ def toggle_comment_reaction_view(request, comment_id):
                 "counts": get_comment_reaction_counts(comment_id),
             }
         )
-
     except json.JSONDecodeError:
         return JsonResponse({"error": "JSON invalido"}, status=400)
 
@@ -112,10 +113,11 @@ def get_comment_reactions(request, comment_id):
     Devuelve las reacciones para un comentario y el estado del usuario actual.
     """
     ip = get_client_ip(request)
+    user_id = request.user.id if request.user.is_authenticated else None
 
     response = {
         "counts": get_comment_reaction_counts(comment_id),
-        "user_reactions": get_user_comment_reactions(comment_id, ip),
+        "user_reactions": get_user_comment_reactions(comment_id, ip, user_id),
     }
 
     return JsonResponse(response)

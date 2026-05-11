@@ -21,58 +21,69 @@ def get_reaction_counts(blog_slug: str) -> dict:
     return result
 
 
-def get_user_reactions(blog_slug: str, ip_address: str) -> list:
+def get_user_reactions(
+    blog_slug: str, ip_address: str, user_id: int = None
+) -> list:
     """
     Obtiene que reacciones ha dado un usuario a un blog.
+    Si el usuario está autenticado se usa su ID, de lo contrario se usa la IP.
     """
+    filters = {"blog_slug": blog_slug}
+    if user_id:
+        filters["user_id"] = user_id
+    else:
+        filters["ip_address"] = ip_address
     return list(
-        BlogReaction.objects.filter(
-            blog_slug=blog_slug, ip_address=ip_address
-        ).values_list("reaction_type", flat=True)
+        BlogReaction.objects.filter(**filters).values_list(
+            "reaction_type", flat=True
+        )
     )
 
 
-def toggle_reaction(blog_slug: str, ip_address: str, reaction_type: str) -> bool:
+def toggle_reaction(
+    blog_slug: str, ip_address: str, reaction_type: str, user_id: int = None
+) -> bool:
     """
-    Alterna una reaccion: si existe la borra, si no existe la crea.
-    ✅ NUEVA REGLA: Solo se permite UNA reaccion por usuario por blog.
-    Al activar una nueva reaccion se borran automaticamente todas las demas.
-
-    100% atomico a nivel de base de datos.
-    No importa cuantas peticiones simultaneas lleguen, siempre funciona correctamente.
+    Alterna una reacción: si existe la borra, si no existe la crea.
+    Si el usuario está autenticado se usa su ID, de lo contrario se usa la IP.
+    ✅ NUEVA REGLA: Solo se permite UNA reacción por usuario por blog.
+    Al activar una nueva reacción se borran automáticamente todas las demás.
     """
     try:
-        # Primero borramos CUALQUIER otra reaccion que tenga el usuario en este blog
-        BlogReaction.objects.filter(
-            blog_slug=blog_slug,
-            ip_address=ip_address,
-        ).exclude(reaction_type=reaction_type).delete()
+        # Primero borramos CUALQUIER otra reacción que tenga el usuario en este blog
+        filter_kwargs = {"blog_slug": blog_slug}
+        if user_id:
+            filter_kwargs["user_id"] = user_id
+        else:
+            filter_kwargs["ip_address"] = ip_address
 
-        # Ahora alternamos la reaccion solicitada
-        deleted, _ = BlogReaction.objects.filter(
-            blog_slug=blog_slug,
-            ip_address=ip_address,
-            reaction_type=reaction_type,
+        BlogReaction.objects.filter(**filter_kwargs).exclude(
+            reaction_type=reaction_type
         ).delete()
 
+        # Ahora alternamos la reacción solicitada
+        filter_kwargs["reaction_type"] = reaction_type
+        deleted, _ = BlogReaction.objects.filter(**filter_kwargs).delete()
+
         if deleted > 0:
-            # Se borro correctamente, retornamos falso (desactivado)
+            # Se borró correctamente, retornamos falso (desactivado)
             return False
 
-        # No existia, creamos nueva
+        # No existía, creamos nueva
         BlogReaction.objects.create(
             blog_slug=blog_slug,
             ip_address=ip_address,
             reaction_type=reaction_type,
+            user_id=user_id,
         )
 
-        # Se creo correctamente, retornamos verdadero (activado)
+        # Se creó correctamente, retornamos verdadero (activado)
         return True
 
     except IntegrityError:
-        # Unica razon para integrity error aqui es que otro request
-        # acaba de crear exactamente la misma reaccion.
-        # En ese caso retornamos True como si nosotros la hubieramos creado.
+        # Única razón para integrity error aquí es que otro request
+        # acaba de crear exactamente la misma reacción.
+        # En ese caso retornamos True como si nosotros la hubiéramos creado.
         return True
 
 
@@ -94,58 +105,67 @@ def get_comment_reaction_counts(comment_id: int) -> dict:
     return result
 
 
-def get_user_comment_reactions(comment_id: int, ip_address: str) -> list:
+def get_user_comment_reactions(
+    comment_id: int, ip_address: str, user_id: int = None
+) -> list:
     """
     Obtiene que reacciones ha dado un usuario a un comentario.
+    Si el usuario está autenticado se usa su ID, de lo contrario se usa la IP.
     """
+    filters = {"comment_id": comment_id}
+    if user_id:
+        filters["user_id"] = user_id
+    else:
+        filters["ip_address"] = ip_address
     return list(
-        CommentReaction.objects.filter(
-            comment_id=comment_id, ip_address=ip_address
-        ).values_list("reaction_type", flat=True)
+        CommentReaction.objects.filter(**filters).values_list(
+            "reaction_type", flat=True
+        )
     )
 
 
 def toggle_comment_reaction(
-    comment_id: int, ip_address: str, reaction_type: str
+    comment_id: int, ip_address: str, reaction_type: str, user_id: int = None
 ) -> bool:
     """
-    Alterna una reaccion en comentario: si existe la borra, si no existe la crea.
-    ✅ Solo se permite UNA reaccion por usuario por comentario.
-    Al activar una nueva reaccion se borran automaticamente todas las demas.
-
-    100% atomico a nivel de base de datos.
-    No importa cuantas peticiones simultaneas lleguen, siempre funciona correctamente.
+    Alterna una reacción en comentario: si existe la borra, si no existe la crea.
+    Si el usuario está autenticado se usa su ID, de lo contrario se usa la IP.
+    ✅ Solo se permite UNA reacción por usuario por comentario.
+    Al activar una nueva reacción se borran automáticamente todas las demás.
     """
     try:
-        # Primero borramos CUALQUIER otra reaccion que tenga el usuario en este comentario
-        CommentReaction.objects.filter(
-            comment_id=comment_id,
-            ip_address=ip_address,
-        ).exclude(reaction_type=reaction_type).delete()
+        # Primero borramos CUALQUIER otra reacción que tenga el usuario en este comentario
+        filter_kwargs = {"comment_id": comment_id}
+        if user_id:
+            filter_kwargs["user_id"] = user_id
+        else:
+            filter_kwargs["ip_address"] = ip_address
 
-        # Ahora alternamos la reaccion solicitada
-        deleted, _ = CommentReaction.objects.filter(
-            comment_id=comment_id,
-            ip_address=ip_address,
-            reaction_type=reaction_type,
+        CommentReaction.objects.filter(**filter_kwargs).exclude(
+            reaction_type=reaction_type
         ).delete()
 
+        # Ahora alternamos la reacción solicitada
+        filter_kwargs["reaction_type"] = reaction_type
+        deleted, _ = CommentReaction.objects.filter(**filter_kwargs).delete()
+
         if deleted > 0:
-            # Se borro correctamente, retornamos falso (desactivado)
+            # Se borró correctamente, retornamos falso (desactivado)
             return False
 
-        # No existia, creamos nueva
+        # No existía, creamos nueva
         CommentReaction.objects.create(
             comment_id=comment_id,
             ip_address=ip_address,
             reaction_type=reaction_type,
+            user_id=user_id,
         )
 
-        # Se creo correctamente, retornamos verdadero (activado)
+        # Se creó correctamente, retornamos verdadero (activado)
         return True
 
     except IntegrityError:
-        # Unica razon para integrity error aqui es que otro request
-        # acaba de crear exactamente la misma reaccion.
-        # En ese caso retornamos True como si nosotros la hubieramos creado.
+        # Única razón para integrity error aquí es que otro request
+        # acaba de crear exactamente la misma reacción.
+        # En ese caso retornamos True como si nosotros la hubiéramos creado.
         return True

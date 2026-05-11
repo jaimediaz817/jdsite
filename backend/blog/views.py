@@ -42,7 +42,8 @@ class BlogDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["comment_form"] = CommentForm()
-        context["comments"] = get_approved_comments(self.object.slug)
+        # Solo cargar los primeros 3 comentarios inicialmente para scroll infinito
+        context["comments"] = get_approved_comments(self.object.slug, limit=3)
         context["comment_count"] = get_comment_count(self.object.slug)
         return context
 
@@ -156,7 +157,8 @@ def quick_signup(request):
 def load_more_comments(request, slug):
     page = request.GET.get("page", 2)
     comments = get_approved_comments(slug)
-    paginator = Paginator(comments, 12)
+    # Cargar de 3 en 3 comentarios para scroll infinito
+    paginator = Paginator(comments, 3)
     if int(page) > paginator.num_pages:
         response = HttpResponse()
         response["X-Has-More"] = "false"

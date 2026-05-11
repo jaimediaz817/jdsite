@@ -106,3 +106,54 @@ def tag_text_color(tag_name):
         "#6c5ce7",  # Medium Purple
     ]
     return text_colors[hash_value % len(text_colors)]
+
+
+@register.filter(name="naturaltime_es")
+def naturaltime_es(value):
+    """
+    Traduce timesince de Django a formato relativo amigable en español.
+    Uso: {{ comment.created_at|naturaltime_es }}
+    Salidas: 'hace 5 min', 'hace 3 h', 'hace 2 días', 'hace 1 mes', etc.
+    """
+    if not value:
+        return ""
+
+    from django.utils.timesince import timesince
+    from django.utils.timezone import now
+
+    # Si la fecha es futura o muy antigua, mejor mostrar la fecha exacta
+    if value > now():
+        return value.strftime("%d %b %Y")
+
+    delta_seconds = (now() - value).total_seconds()
+
+    # Menos de 60 segundos
+    if delta_seconds < 60:
+        return "justo ahora"
+
+    # Calculamos el timesince de Django y traducimos
+    time_str = timesince(value)
+
+    # Mapeo de traducciones
+    translations = {
+        "year": "año",
+        "years": "años",
+        "month": "mes",
+        "months": "meses",
+        "week": "sem",
+        "weeks": "sems",
+        "day": "día",
+        "days": "días",
+        "hour": "h",
+        "hours": "h",
+        "minute": "min",
+        "minutes": "min",
+    }
+
+    for eng, esp in translations.items():
+        time_str = time_str.replace(eng, esp)
+
+    # Limpiar espacios extra
+    time_str = " ".join(time_str.split())
+
+    return f"hace {time_str}"

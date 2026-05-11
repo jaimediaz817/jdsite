@@ -18,7 +18,7 @@
 }
 
 .blog-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-2px);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.08) !important;
 }
 
@@ -27,6 +27,18 @@
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     overflow: hidden;
+}
+
+.blog-card-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .blog-card-image img {
@@ -44,60 +56,81 @@
     transition: color 0.2s ease;
 }
 
-/* --- Comentario overlay --- */
-/* --- Comentario overlay mejorado (UI/UX) --- */
-/* Comentario overlay mejorado (UI/UX) */
-.comment-info {
+/* --- Badges unificados (comentarios + reacciones) --- */
+.comment-info,
+.reactions-info {
     position: absolute;
     bottom: 12px;
-    right: 12px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     color: #fff;
-    /* Fondo azul primario con ligera transparencia para buena legibilidad */
-    background: rgba(52, 152, 219, 0.9);
-    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 6px 10px;
     border-radius: 999px;
-    /* forma pill */
-    font-size: 0.95rem;
-    /* Sombra para separar del fondo de la imagen */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    font-size: 0.82rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     transform: scale(0.95);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.02em;
+    min-height: 28px;
 }
 
-/* Al pasar el mouse sobre la tarjeta, resaltamos el badge */
+.comment-info {
+    right: 12px;
+}
+
+.reactions-info {
+    left: 12px;
+}
+
 .blog-card:hover .comment-info {
     transform: scale(1);
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+    background: linear-gradient(135deg, rgba(111, 66, 193, 0.85), rgba(111, 66, 193, 0.65));
+    border-color: rgba(196, 181, 253, 0.3);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
 }
 
-.comment-info i {
-    font-size: 1rem;
-    /* icono un poco más grande */
+.blog-card:hover .reactions-info {
+    transform: scale(1);
+    border-color: #d8cafb;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
+}
+
+.reactions-info .reaction-count,
+.comment-info .comment-count {
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    min-width: 14px;
+    text-align: center;
+}
+
+.comment-info i,
+.reactions-info i {
+    font-size: 0.85rem;
     transition: transform 0.2s ease;
 }
 
-.blog-card:hover .comment-info i {
-    transform: scale(1.25);
+.reactions-info i {
+    filter: brightness(1.5);
 }
 
-/* Estilo del número de comentarios dentro del badge */
-.comment-info .comment-count {
-    font-weight: 600;
-    margin-left: 2px;
-    /* Aseguramos buena legibilidad en fondos oscuros */
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+.blog-card:hover .comment-info i,
+.blog-card:hover .reactions-info i {
+    transform: scale(1.15);
 }
 
-/* Pequeña animación al aparecer el badge para reforzar la interacción */
-.blog-card .comment-info {
-    animation: fadeInScale 0.3s ease-out forwards;
+.blog-card .comment-info,
+.blog-card .reactions-info {
+    animation: badgeFadeIn 0.3s ease-out forwards;
     opacity: 0;
 }
 
-@keyframes fadeInScale {
+@keyframes badgeFadeIn {
     from {
         opacity: 0;
         transform: scale(0.9);
@@ -113,13 +146,27 @@
     color: #3498db;
 }
 
+/* --- Extracto del contenido (resumen) --- */
+.blog-card .card-body p.text-muted.mb-2.small {
+    background: transparent;
+    padding: 0;
+    border: none;
+    color: #64748b !important;
+    line-height: 1.65;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 /* --- Título principal con borde degradado --- */
 .section-title {
     position: relative;
     display: inline-block;
     padding-bottom: 0.5rem;
     font-weight: 700;
-    /* opcional: color del texto ya está definido por bootstrap */
 }
 
 .section-title::after {
@@ -131,7 +178,6 @@
     height: 4px;
     background: linear-gradient(90deg, #6a11cb, #2575fc);
     border-radius: 2px;
-    /* suaviza la aparición */
     transition: background 0.3s ease;
 }
 
@@ -146,14 +192,11 @@
 }
 
 /* --- Tags/Badges --- */
-/* --- Tags en listado (igual que detalle) --- */
 .blog-tags-list .blog-tag {
     font-size: 0.75rem;
-    /* mantiene tamaño actual */
     font-weight: 500 !important;
     transition: all 0.2s ease;
     letter-spacing: 0.3px;
-    /* Estilos estáticos para coincidir con la vista detalle */
     color: #475569;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border: 1px solid #e2e8f0;
@@ -161,7 +204,6 @@
 }
 
 .blog-tags-list .blog-tag:hover {
-    /* Efecto hover idéntico al detalle */
     color: #00ADB5;
     background: #fff;
     border-color: #00ADB5;
@@ -182,4 +224,41 @@
     background-color: #3498db;
     color: white;
     box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4);
+}
+
+/* --- Footer pegado al fondo (CSS Grid - no afecta nav ni section) --- */
+html {
+    height: 100%;
+}
+
+body.home-p {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100%;
+    margin: 0;
+}
+
+/* --- CSS Grid para las cards --- */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem 1.5rem;
+}
+
+@media (min-width: 1200px) {
+    .blog-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
 }

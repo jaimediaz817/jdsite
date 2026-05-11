@@ -3,7 +3,7 @@ title: "Por qué las integraciones de Zoho SIEMPRE fallan en el 6to mes"
 description: "Aprende las 5 causas mas comunes por las que tus integraciones Zoho fallan y como solucionarlas definitivamente."
 date: 2026-04-24
 draft: false
-image: "image.png"
+image: "image-1.png"
 author: "Jaime Díaz"
 category: "Tecnologia"
 tags: ["Zoho", "Integraciones", "CRM", "Desarrollo", "API"]
@@ -21,7 +21,7 @@ Llevo 13 años haciendo esto. Y veo exactamente el mismo patrón repetirse una y
 Tú haces una integración con Zoho CRM. Funciona perfecto. Pasas UAT. Lo pones en producción. Todo funciona genial.
 
 Llega el mes 6. Y empieza a fallar. Nadie sabe por que.
-
+![alt text](image-1.png)
 ---
 
 ## El patrón que nadie ve
@@ -37,6 +37,7 @@ Todo el mundo culpa a Zoho. Todo el mundo dice "Zoho es basura".
 
 Y estan equivocados.
 ![alt text](image.png)
+
 ---
 
 ## El problema real
@@ -62,3 +63,4 @@ Pon un delay de 1.1 segundos entre cada llamada.
 Es asi de simple.
 
 Y nadie te lo va a decir.
+<!-- reimport 2026-05-06 -->

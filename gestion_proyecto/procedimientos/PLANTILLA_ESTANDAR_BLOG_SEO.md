@@ -72,6 +72,92 @@ Terminar SIEMPRE con una pregunta abierta para incentivar comentarios.
 6. ✅ Siempre terminar con una pregunta
 7. ✅ Cada 3 parrafos agregar un punto de ruptura visual
 
+--- 
+
+## 📌 REGLAS ADICIONALES DE SEO
+
+1. ✅ **Meta Title**: máximo 55 caracteres, incluir palabra clave principal al inicio.  
+2. ✅ **Meta Description**: máximo 155 caracteres, resumir el contenido y contener una llamada a la acción.  
+3. ✅ **Alt de imágenes**: describir brevemente la imagen, incluir palabra clave cuando sea relevante.  
+4. ✅ **Enlaces internos**: al menos 2 enlaces a otros artículos del blog relacionados.  
+5. ✅ **Uso de encabezados**: H2 para secciones principales, H3 para subsecciones, sin saltar niveles.  
+6. ✅ **Longitud de párrafo**: no más de 5 líneas visibles; si supera, dividir en párrafos más cortos.  
+7. ✅ **Formato de listas**: usar listas con viñetas o numeración para mejorar escaneabilidad.  
+
+--- 
+
+## 📝 FORMATO DE PÁRRAFOS (NORMALIZACIÓN AUTOMÁTICA)
+
+El sistema ahora normaliza automáticamente los párrafos durante la importación:
+
+### ✅ CÓMO ESCRIBIR PÁRRAFOS GRANDES:
+
+```markdown
+## Mi Sección
+
+Esta es la primera línea de mi párrafo.
+Esta es la segunda línea del mismo párrafo.
+Y esta es la tercera línea.
+Todo esto sigue siendo un solo párrafo.
+
+Nueva línea vacía = nuevo párrafo.
+```
+
+**Resultado:** Las líneas consecutivas se unen automáticamente en un solo `<p>`.
+
+### ❌ NO HACER ESTO (líneas vacías innecesarias):
+
+```markdown
+## Mi Sección
+
+Esta es la primera línea de mi párrafo.
+
+Esta es la segunda línea del mismo párrafo.
+
+Esto generaría 3 párrafos separados innecesariamente.
+```
+
+### 📌 RESUMEN:
+- **Líneas consecutivas** (sin línea vacía) = mismo párrafo → se unen con espacios
+- **Línea vacía entre líneas** = nuevo párrafo
+
+---
+
+## 📝 FORMATO DE PÁRRAFOS (NORMALIZACIÓN AUTOMÁTICA)
+
+El sistema ahora normaliza automáticamente los párrafos durante la importación:
+
+### ✅ CÓMO ESCRIBIR PÁRRAFOS GRANDES:
+
+```markdown
+## Mi Sección
+
+Esta es la primera línea de mi párrafo.
+Esta es la segunda línea del mismo párrafo.
+Y esta es la tercera línea.
+Todo esto sigue siendo un solo párrafo.
+
+Nueva línea vacía = nuevo párrafo.
+```
+
+**Resultado:** Las líneas consecutivas se unen automáticamente en un solo `<p>`.
+
+### ❌ NO HACER ESTO (líneas vacías innecesarias):
+
+```markdown
+## Mi Sección
+
+Esta es la primera línea de mi párrafo.
+
+Esta es la segunda línea del mismo párrafo.
+
+Esto generaría 3 párrafos separados innecesariamente.
+```
+
+### 📌 RESUMEN:
+- **Líneas consecutivas** (sin línea vacía) = mismo párrafo → se unen con espacios
+- **Línea vacía entre líneas** = nuevo párrafo
+
 ---
 
 ## ✅ EJEMPLO REAL APLICADO

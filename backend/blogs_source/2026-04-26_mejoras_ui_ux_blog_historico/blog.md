@@ -2,8 +2,7 @@
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
 date: 2026-04-26
-draft: false
-image: "cover.jpg"
+draft: falseimage: "/static/blogs/2026-04-26_mejoras_ui_ux_blog_historico/image-2.png"
 author: "Jaime Díaz"
 category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
@@ -13,20 +12,29 @@ keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velo
 twitter_card: "summary_large_image"
 ---
 
-## Introduccion
+## Mi Introduccion
+
+[vl]: highlight
+Esta es la primera línea de mi párrafo.
+Esta es la segunda línea del mismo párrafo.
+Y esta es la tercera línea.
+Todo esto sigue siendo un solo párrafo.
+Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo. Todo esto sigue siendo un solo párrafo.
+Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.Todo esto sigue siendo un solo párrafo.
+Todo esto sigue siendo un solo párrafo.
 
 Hace 3 dias decidimos que el blog necesitaba un lavado de cara. No por que se viera mal, si no por que los numeros no mentian:
 
-✅ **Antes:**
+✅ **Antes**:
 - Tiempo medio permanencia: 1 minuto 52 segundos
 - Tasa finalización lectura: 42%
 - Tasa de rebote: 67%
 
-❌ **El problema:** Nadie terminaba de leer los articulos.
+❌ **El problema**: Nadie terminaba de leer los articulos.
 
 Asi que nos pusimos manos a la obra y en 4 horas de trabajo conseguimos estos resultados:
 
-✅ **Despues:**
+✅ **Despues**:
 - Tiempo medio permanencia: 3 minutos 27 segundos ✨ +40%
 - Tasa finalización lectura: 68% ✨ +61%
 - Tasa de rebote: 49% ✨ -26%
@@ -60,6 +68,19 @@ Esto no es un numero aleatorio. Es el ancho que da exactamente entre 65 y 75 car
 
 > La gente no sabe explicar por que, pero lee un 30% mas rapido y se cansa un 50% menos con esta medida.
 
+:::callout:info
+Esta es una caja informativa que destaca información importante para el lector.
+:::
+
+:::pullquote
+"El diseño no se ve, se siente." – Principio de UI/UX.
+:::
+
+:::codefile:example.py
+def hello_world():
+    print("Hello, world!")
+:::
+
 ### 2. Ritmo vertical
 
 No todos los espacios son iguales.
@@ -71,8 +92,9 @@ Antes teniamos 1.5rem de margen por debajo de TODO. Ahora tenemos un patron:
 
 El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automaticamente.
 
+---
 
-### 3. Barra lateral flotante de reacciones
+## 3. Barra lateral flotante de reacciones
 
 :::popup:gallery
 ![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda](image-3.png)
@@ -102,6 +124,34 @@ Todo tiene una razon de ser. Todo cumple una funcion.
 
 ---
 
+## Ejemplos adicionales de componentes
+
+:::slides
+![Ejemplo de slides|Imagen de ejemplo de slides]
+:::
+
+:::popup:gallery
+![Ejemplo de galería|Imagen de ejemplo de galería]
+:::
+
+:::callout:warning
+**Advertencia**: Este es un bloque de advertencia con estilo resaltado.
+:::
+
+:::callout:tip
+**Consejo**: Este es un bloque de consejo con estilo diferente.
+:::
+
+:::pullquote
+"El detalle hace la diferencia." – Principio de diseño.
+:::
+
+:::codefile:example.md
+def ejemplo():
+    # Este es un ejemplo en Markdown
+    pass
+:::
+
 ## El error mas comun que cometen todos
 
 Todo el mundo piensa que un buen diseño es el que se ve bonito.
@@ -130,12 +180,9 @@ Solo cambiando CSS.
 
 Esto es solo el principio. Ahora que tenemos la base solida, vamos a implementar:
 
-✅ Sistema de reacciones persistente
-✅ Sistema de comentarios real
+✅ Sistema de reacciones persistente✅ Sistema de comentarios real
 ✅ Paginacion infinita inteligente
-✅ Anclas automaticas en titulos
-
-Y todo manteniendo el mismo principio: si no mejora la lectura, no existe.
+✅ Anclas automaticas en titulosY todo manteniendo el mismo principio: si no mejora la lectura, no existe.
 
 ---
 
@@ -143,10 +190,8 @@ Y todo manteniendo el mismo principio: si no mejora la lectura, no existe.
 
 <!-- force reimport -->
 <!-- reimport trigger v2 -->
-  
-  
-  
-  
-  
-#  
-  
+
+#
+
+
+<!-- reimport 2026-05-06 -->

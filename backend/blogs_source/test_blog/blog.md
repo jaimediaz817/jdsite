@@ -13,6 +13,14 @@ keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velo
 twitter_card: "summary_large_image"
 ---
 
+## Introduccion1
+Este es el primer renglon de mi parrafo.
+Este es el segundo renglon del mismo parrafo.
+Este es el tercer renglon.
+Y este es el cuarto renglon.
+
+Nuevo parrafo aqui.
+
 ![cover](image.png)
 
 ## Introduccion
@@ -106,7 +114,7 @@ Todo tiene una razon de ser. Todo cumple una funcion.
 
 ## El error mas comun que cometen todos
 
-Todo el mundo piensa que un buen diseño es el que se ve bonito.
+Todo el mundo piensa que un buen diseño es el que no se ve bonito.
 
 Esto es falso.
 
@@ -117,32 +125,4 @@ Un buen diseño es el que nadie comenta. Nadie entra en tu articulo y piensa "gu
 Ese es el mejor diseño posible: invisible.
 
 ---
-
-## Resultados
-
-Llevamos 3 dias con el nuevo diseño y los numeros no paran de mejorar. Lo mejor de todo es que no tuvimos que cambiar absolutamente nada del contenido existente.
-
-Todo el trabajo de los ultimos 6 meses escribiendo articulos de repente valio un 40% mas.
-
-Solo cambiando CSS.
-
-:::pullquote
-La mejora mas barata y con mayor retorno de inversion que hemos hecho nunca.
-:::
-
----
-
-## Proximos pasos
-
-Esto es solo el principio. Ahora que tenemos la base solida, vamos a implementar:
-
-- ✅ Sistema de reacciones persistente
-- ✅ Sistema de comentarios real
-- ✅ Paginacion infinita inteligente
-- ✅ Anclas automaticas en titulos
-
-Y todo manteniendo el mismo principio: si no mejora la lectura, no existe.
-
----
-
-*Si te parecio util este articulo, puedes compartirlo en LinkedIn, ahi es donde paso la mayor parte del tiempo hablando de estas cosas.*
+<!-- reimport 2026-05-06 -->

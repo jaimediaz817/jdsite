@@ -330,7 +330,6 @@
                         <form method="POST" action="{% url 'blog:post_comment' post.slug %}" id="jd-comment-form">
                           {% csrf_token %}
                           {{ comment_form.website }}
-{{ comment_form.name }}
 
                           <div class="jd-textarea-wrapper">
                             <textarea

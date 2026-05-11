@@ -197,8 +197,14 @@ class Command(BaseCommand):
             with open(md_file, "r", encoding="latin-1", errors="replace") as f:
                 md_content = f.read()
 
-        # Convertir secuencias literales \n en saltos reales
-        md_content = md_content.replace("\\n", "\n")
+        # 🔹 LIMPIEZA: Eliminar backslashes al final de línea (usados como salto de línea)
+        lines = md_content.split("\n")
+        cleaned_lines = []
+        for line in lines:
+            # Eliminar uno o más backslashes al final de la línea
+            cleaned = re.sub(r"\\+$", "", line)
+            cleaned_lines.append(cleaned)
+        md_content = "\n".join(cleaned_lines)
 
         # 🔴 PROTEGER bloques ::: antes de normalizar saltos de línea
         placeholders = {}
@@ -305,7 +311,10 @@ class Command(BaseCommand):
                 result.append(line + " §JOIN§")
 
         joined = "\n".join(result)
+        # Unir líneas consecutivas con espacio (no con salto de línea)
         joined = re.sub(r" §JOIN§\n", " ", joined)
+        # Limpiar posibles marcadores que quedaron al final
+        joined = re.sub(r" §JOIN§$", "", joined)
         return joined
 
     def extract_title(self, content_md, blog_dir):
@@ -363,7 +372,7 @@ class Command(BaseCommand):
     def convert_markdown_to_html(self, content_md):
         """Convierte markdown a HTML.
 
-        - nl2br: convierte saltos simples en <br>
+        - Las líneas consecutivas ya están unidas con espacios en _normalize_lines
         - sane_lists: mejora el manejo de listas
         - extra, codehilite, tables, fenced_code: extensiones estándar
         """
@@ -374,7 +383,6 @@ class Command(BaseCommand):
                 "codehilite",
                 "tables",
                 "fenced_code",
-                "nl2br",
                 "sane_lists",
             ],
         )
@@ -606,6 +614,70 @@ class Command(BaseCommand):
             ),
             markdown_content,
             flags=re.DOTALL,
+        )
+
+        # ── 6. VISUAL LAYOUT [vl]: TAG ──────────────────────────────────────────
+        # El tag [vl]: debe envolver contenido. Formatos soportados:
+        # - [vl]: tipo (opcional) + contenido en la misma línea
+        # - [vl]: contenido en líneas siguientes (hasta línea vacía o heading)
+        # Tipos: full, limited, highlight (default), bullet
+
+        # Primero, procesar [vl]: en la misma línea: [vl]: tipo? contenido
+        def _replace_vl_inline(match):
+            vl_type = match.group(1).strip().lower() if match.group(1) else ""
+            content = match.group(2).strip() if match.group(2) else ""
+            class_map = {
+                "full": "vl-full",
+                "limited": "vl-limited",
+                "highlight": "vl-highlight",
+                "bullet": "vl-bullet",
+            }
+            # Si no se especifica tipo válido, usar highlight como default
+            css_class = class_map.get(vl_type, "vl-highlight")
+            if not content:
+                return f'<div class="{css_class}"></div>'
+            # Convertir el contenido interno de markdown a HTML
+            content_html = markdown.markdown(content).strip()
+            # Quitar el <p> wrapper si es un solo párrafo
+            content_html = re.sub(
+                r"^<p>(.*)</p>$", r"\1", content_html, flags=re.DOTALL
+            )
+            return f'<div class="{css_class}">{content_html}</div>'
+
+        # Patrón para [vl]: tipo? contenido (todo en una línea)
+        markdown_content = re.sub(
+            r"\[vl\]:\s*(full|limited|highlight|bullet)?\s*(.+?)$",
+            _replace_vl_inline,
+            markdown_content,
+            flags=re.MULTILINE,
+        )
+
+        # Segundo, procesar [vl]: al inicio de línea seguido de contenido en siguientes líneas
+        # hasta encontrar línea vacía o heading
+        def _replace_vl_block(match):
+            vl_type = match.group(1).strip().lower() if match.group(1) else ""
+            content = match.group(2).strip() if match.group(2) else ""
+            class_map = {
+                "full": "vl-full",
+                "limited": "vl-limited",
+                "highlight": "vl-highlight",
+                "bullet": "vl-bullet",
+            }
+            css_class = class_map.get(vl_type, "vl-highlight")
+            if not content:
+                return f'<div class="{css_class}"></div>'
+            content_html = markdown.markdown(content).strip()
+            content_html = re.sub(
+                r"^<p>(.*)</p>$", r"\1", content_html, flags=re.DOTALL
+            )
+            return f'<div class="{css_class}">{content_html}</div>'
+
+        # Patrón para [vl]: al inicio de línea, contenido en siguientes líneas
+        markdown_content = re.sub(
+            r"^\[vl\]:\s*(full|limited|highlight|bullet)?\s*\n([\s\S]*?)(?=^$|^\#|\n\n)",
+            _replace_vl_block,
+            markdown_content,
+            flags=re.MULTILINE,
         )
 
         return markdown_content

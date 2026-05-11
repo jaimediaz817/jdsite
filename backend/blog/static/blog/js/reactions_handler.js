@@ -1,7 +1,7 @@
 /**
- * Sistema de Reacciones Blog y Comentarios
- * Optimistic UI, Debounce 300ms, Manejo de errores silencioso
- * Refactorizado para usar Alpine.js
+ * Reactions Handler - Centralized logic for blog and comment reactions
+ * Uses Alpine.js where appropriate
+ * Isolates all reaction-related code from blog_detail.js
  */
 window.Reactions = {
     debounceTimer: null,
@@ -35,29 +35,32 @@ window.Reactions = {
             const userReactions = Array.isArray(data.user_reactions) ? data.user_reactions : [];
             this.updateCommentUI(container, data.counts || {}, userReactions);
         } catch (e) {
+            console.warn('No se pudieron cargar las reacciones del comentario');
             this.updateCommentUI(container, {}, []);
         }
     },
 
     toggleReaction(event, type, identifier) {
         // Debug: log event to console
-        console.log('toggleReaction called', { event, type, identifier });
-        
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('toggleReaction called', { event, type, identifier });
+        }
+
         // Get the button element - handle both direct clicks and Alpine.js events
         let button = null;
         if (event) {
             button = event.currentTarget || event.target;
             // If we got the icon instead of the button, find the button
-            if (button && !button.classList.contains('reaction-button')) {
-                button = button.closest('button.reaction-button');
+            if (button && !button.classList.contains('thread-reaction-btn') && !button.classList.contains('reaction-button')) {
+                button = button.closest('button');
             }
         }
-        
+
         if (!button) {
             console.error('No reaction button found for event', event);
             return;
         }
-        
+
         const reactionType = button.dataset.reaction;
         if (!reactionType) {
             console.error('No reaction type found on button', button);
@@ -99,9 +102,10 @@ window.Reactions = {
                 void btn.offsetWidth;
             });
         } else {
-            const container = button.closest('.comment-reactions');
+            // Support both .comment-reactions and .thread-reactions containers
+            const container = button.closest('.comment-reactions, .thread-reactions');
             if (container) {
-                container.querySelectorAll('.reaction-button').forEach((btn) => {
+                container.querySelectorAll('.thread-reaction-btn').forEach((btn) => {
                     if (btn.dataset.reaction === reactionType) {
                         this.updateButtonState(btn, newState);
                     } else {
@@ -144,14 +148,16 @@ window.Reactions = {
                 if (type === 'blog') {
                     document.querySelectorAll('.blog-reactions button.reaction-button').forEach((btn) => {
                         const t = btn.dataset.reaction;
-                        btn.querySelector('.count').textContent = (data.counts[t] || 0);
+                        const countEl = btn.querySelector('.count');
+                        if (countEl) countEl.textContent = (data.counts[t] || 0);
                     });
                 } else {
-                    const container = button.closest('.comment-reactions');
+                    const container = button.closest('.comment-reactions, .thread-reactions');
                     if (container) {
-                        container.querySelectorAll('.reaction-button').forEach((btn) => {
+                        container.querySelectorAll('.thread-reaction-btn').forEach((btn) => {
                             const t = btn.dataset.reaction;
-                            btn.querySelector('.count').textContent = (data.counts[t] || 0);
+                            const countEl = btn.querySelector('.count');
+                            if (countEl) countEl.textContent = (data.counts[t] || 0);
                         });
                     }
                 }
@@ -184,19 +190,13 @@ window.Reactions = {
             } else {
                 button.classList.remove('active');
             }
-            // Update icon
-            const icon = button.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('far', !isActive);
-                icon.classList.toggle('fas', isActive);
-            }
             void button.offsetWidth;
         });
     },
 
     updateCommentUI(container, counts, userActive) {
         const activeReactions = Array.isArray(userActive) ? userActive : [];
-        container.querySelectorAll('.reaction-button').forEach((button) => {
+        container.querySelectorAll('.thread-reaction-btn').forEach((button) => {
             const type = button.dataset.reaction;
             const count = (counts && counts[type]) || 0;
             const isActive = activeReactions.includes(type);
@@ -209,12 +209,6 @@ window.Reactions = {
             } else {
                 button.classList.remove('active');
             }
-            // Update icon
-            const icon = button.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('far', !isActive);
-                icon.classList.toggle('fas', isActive);
-            }
             void button.offsetWidth;
         });
     },
@@ -224,11 +218,6 @@ window.Reactions = {
             button.classList.add('active');
         } else {
             button.classList.remove('active');
-        }
-        const icon = button.querySelector('i');
-        if (icon) {
-            icon.classList.toggle('far', !active);
-            icon.classList.toggle('fas', active);
         }
         void button.offsetWidth;
     }
@@ -245,8 +234,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize comment reactions
-    document.querySelectorAll('.comment-reactions').forEach(function(container) {
+    // Initialize comment reactions (both .comment-reactions and .thread-reactions)
+    document.querySelectorAll('.comment-reactions, .thread-reactions').forEach(function(container) {
         const commentId = container.dataset.commentId;
         if (commentId) {
             window.Reactions.loadCommentReactions(commentId, container);

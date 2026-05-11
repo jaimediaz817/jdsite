@@ -1,0 +1,93 @@
+{% for comment in comments %}
+<div class="thread-item">
+    <div class="thread-avatar-col">
+        <div class="thread-avatar" style="background-color: {{ comment.avatar_color }};">{{ comment.avatar_initials }}</div>
+    </div>
+    <div class="thread-body">
+        <div class="thread-header">
+            <span class="thread-author">{{ comment.name }}</span>
+            <span class="thread-time">{{ comment.created_at|timesince }} ago</span>
+            {% if comment.identification_level == 'anonymous' %}
+                <span class="thread-badge thread-badge-anon">Anónimo</span>
+            {% elif comment.identification_level == 'identified' %}
+                <span class="thread-badge thread-badge-id">Verificado</span>
+            {% elif comment.identification_level == 'registered' %}
+                <span class="thread-badge thread-badge-reg">Registrado</span>
+            {% endif %}
+            {% if comment.is_admin %}
+                <span class="thread-badge thread-badge-admin">Admin</span>
+            {% endif %}
+        </div>
+        <div class="thread-text">{{ comment.content|linebreaksbr }}</div>
+        <div class="thread-actions-row">
+            <button class="thread-reply-btn" @click="replyId = {{ comment.id }}" data-comment-id="{{ comment.id }}">
+                <i class="fas fa-reply"></i> Responder
+            </button>
+            <div class="thread-reactions" data-comment-id="{{ comment.id }}">
+                <button class="thread-reaction-btn" data-reaction="like" title="Me gusta" onclick="Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                    <i class="far fa-thumbs-up"></i>
+                    <span class="count">0</span>
+                </button>
+                <button class="thread-reaction-btn" data-reaction="love" title="Me encanta" onclick="Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                    <i class="fas fa-heart"></i>
+                    <span class="count">0</span>
+                </button>
+                <button class="thread-reaction-btn" data-reaction="fire" title="Excelente" onclick="Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                    <i class="fas fa-fire"></i>
+                    <span class="count">0</span>
+                </button>
+            </div>
+        </div>
+
+        {% for reply in comment.replies.all %}
+        <div class="thread-replies">
+            <div class="thread-reply-item">
+                <div class="thread-line"></div>
+                <div class="thread-reply-body">
+                    <div class="thread-avatar-col">
+                        <div class="thread-avatar thread-avatar-sm" style="background-color: {{ reply.avatar_color }};">{{ reply.avatar_initials }}</div>
+                    </div>
+                    <div class="thread-body">
+                        <div class="thread-header">
+                            <span class="thread-author">{{ reply.name }}</span>
+                            <span class="thread-time">{{ reply.created_at|timesince }} ago</span>
+                            {% if reply.identification_level == 'anonymous' %}
+                                <span class="thread-badge thread-badge-anon">Anónimo</span>
+                            {% elif reply.identification_level == 'identified' %}
+                                <span class="thread-badge thread-badge-id">Verificado</span>
+                            {% elif reply.identification_level == 'registered' %}
+                                <span class="thread-badge thread-badge-reg">Registrado</span>
+                            {% endif %}
+                            {% if reply.is_admin %}
+                                <span class="thread-badge thread-badge-admin">Admin</span>
+                            {% endif %}
+                        </div>
+                        <div class="thread-reply-to">
+                            <i class="fas fa-reply-all fa-flip-horizontal"></i>
+                            En respuesta a <span class="thread-reply-mention">{{ comment.name }}</span>
+                        </div>
+                        <div class="thread-text">{{ reply.content|linebreaksbr }}</div>
+                        <div class="thread-actions-row">
+                            <div class="thread-reactions" data-comment-id="{{ reply.id }}">
+                                <button class="thread-reaction-btn" data-reaction="like" title="Me gusta" onclick="Reactions.toggleReaction(event, 'comment', {{ reply.id }})">
+                                    <i class="far fa-thumbs-up"></i>
+                                    <span class="count">0</span>
+                                </button>
+                                <button class="thread-reaction-btn" data-reaction="love" title="Me encanta" onclick="Reactions.toggleReaction(event, 'comment', {{ reply.id }})">
+                                    <i class="fas fa-heart"></i>
+                                    <span class="count">0</span>
+                                </button>
+                                <button class="thread-reaction-btn" data-reaction="fire" title="Excelente" onclick="Reactions.toggleReaction(event, 'comment', {{ reply.id }})">
+                                    <i class="fas fa-fire"></i>
+                                    <span class="count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}

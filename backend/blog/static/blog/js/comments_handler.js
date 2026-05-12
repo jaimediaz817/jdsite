@@ -3,6 +3,171 @@
  * Includes: scroll infinite, comment submission, reply forms
  * Isolated from blog_detail.js
  */
+
+// ===== Función para insertar skeleton pendiente con ID único =====
+function insertSkeletonPending(container, commentId) {
+    var skId = 'sk-pending-' + commentId;
+    if (document.getElementById(skId)) return;
+    container.insertAdjacentHTML('afterbegin',
+        '<div id="' + skId + '" class="sk-comment" data-pending-id="' + commentId + '">'
+        + '<div class="sk-comment-avatar"></div>'
+        + '<div class="sk-comment-body">'
+        + '<div class="sk-line sk-line-short"></div>'
+        + '<div class="sk-line sk-line-medium"></div>'
+        + '<div class="sk-line sk-line-long"></div>'
+        + '<div class="sk-comment-actions">'
+        + '<div class="sk-line sk-line-btn"></div>'
+        + '<div class="sk-line sk-line-btn"></div>'
+        + '</div>'
+        + '<div class="sk-pending-msg">'
+        + '<span class="sk-pending-icon">⏳</span>'
+        + '<span class="sk-pending-text">Comentario pendiente de aprobación. Aparecerá una vez revisado.</span>'
+        + '</div>'
+        + '</div></div>'
+    );
+}
+
+// ===== Gestionar lista de IDs pendientes en localStorage =====
+function addPendingId(commentId) {
+    try {
+        var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
+        if (!ids.includes(commentId)) ids.push(commentId);
+        localStorage.setItem('jd_pending_ids', JSON.stringify(ids));
+    } catch(e) {}
+}
+
+function removePendingId(commentId) {
+    try {
+        var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
+        var filtered = ids.filter(function(id) { return id !== commentId; });
+        localStorage.setItem('jd_pending_ids', JSON.stringify(filtered));
+    } catch(e) {}
+}
+
+function getPendingIds() {
+    try { return JSON.parse(localStorage.getItem('jd_pending_ids') || '[]'); }
+    catch(e) { return []; }
+}
+
+// ===== Restaurar skeletons según IDs pendientes =====
+function restoreSkeletonPending() {
+    var pendingIds = getPendingIds();
+    if (pendingIds.length === 0) return;
+
+    var list = document.getElementById('comments-list');
+    if (!list) return;
+
+    // Obtener IDs de comentarios ya aprobados visibles en la página
+    var approvedIds = [];
+    list.querySelectorAll('.jd-comment').forEach(function(el) {
+        // Buscar el data-comment-id en el contenedor de reacciones
+        var reactions = el.querySelector('.comment-reactions');
+        if (reactions) approvedIds.push(parseInt(reactions.dataset.commentId, 10));
+    });
+
+    // Por cada ID pendiente, si NO está en la lista de aprobados → mostrar skeleton
+    var remaining = [];
+    pendingIds.forEach(function(id) {
+        if (approvedIds.indexOf(parseInt(id, 10)) === -1) {
+            remaining.push(id);
+            insertSkeletonPending(list, id);
+        }
+    });
+
+    // Actualizar localStorage solo con los que siguen pendientes
+    localStorage.setItem('jd_pending_ids', JSON.stringify(remaining));
+}
+
+// ===== MAIN COMMENT FORM SUBMIT (definido fuera de DOMContentLoaded para disponibilidad inmediata) =====
+window.submitMainCommentForm = async function(form) {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Error ' + response.status);
+
+        var data;
+        try {
+            data = await response.json();
+        } catch (jsonError) {
+            if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la página.');
+            if (response.status === 500) throw new Error('Error interno en el servidor.');
+            throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
+        }
+
+        if (!data.success) throw new Error('Error en el servidor');
+
+        if (typeof $ !== 'undefined' && $.toast) {
+            $.toast({
+                heading: 'Comentario enviado!',
+                text: 'Tu comentario esta pendiente de aprobacion y sera publicado pronto.',
+                icon: 'success',
+                position: 'top-right',
+                hideAfter: 4500,
+                stack: 4,
+                bgColor: '#7c3aed',
+                loaderBg: '#6366f1'
+            });
+        } else {
+            alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.');
+        }
+
+        // Guardar ID del comentario pendiente en localStorage (para persistencia por ID)
+        if (data.comment_id) {
+            addPendingId(data.comment_id);
+            var commentsList = document.getElementById('comments-list');
+            if (commentsList) {
+                insertSkeletonPending(commentsList, data.comment_id);
+            }
+        }
+
+        form.reset();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+    } catch (error) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+        var errorMessage = error.message || 'Ha ocurrido un error al enviar el comentario';
+        if (typeof $ !== 'undefined' && $.toast) {
+            $.toast({
+                heading: 'Error',
+                text: errorMessage,
+                icon: 'error',
+                position: 'top-right',
+                hideAfter: 5500,
+                stack: 4,
+                bgColor: '#dc2626',
+                loaderBg: '#f87171'
+            });
+        } else {
+            alert('Error: ' + errorMessage);
+        }
+    }
+};
+
+// Function handler for form onsubmit - retorna false explicitamente para prevenir POST normal
+window.handleCommentSubmit = function(e) {
+    e.preventDefault();
+    if (window.submitMainCommentForm) {
+        window.submitMainCommentForm(e.target);
+    }
+    return false;
+};
+
+// ===== DOMContentLoaded: scroll infinite, reply toggles =====
 document.addEventListener('DOMContentLoaded', function() {
     var CONFIG = { COMMENTS_PER_PAGE: 3, SCROLL_MARGIN_PX: 150, ANIMATION_DURATION_MS: 280, DEBUG_MODE: false };
     var state = { page: 1, loading: false, hasMore: true, observer: null, commentsList: null, sentinel: null };
@@ -188,98 +353,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // ===== MAIN COMMENT FORM SUBMIT =====
-    window.submitMainCommentForm = async function(form) {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (!submitBtn) return;
-        const originalContent = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
-
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                credentials: 'same-origin',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error('Error ' + response.status);
-
-            var data;
-            try {
-                data = await response.json();
-            } catch (jsonError) {
-                if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la página.');
-                if (response.status === 500) throw new Error('Error interno en el servidor.');
-                throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
-            }
-
-            if (!data.success) throw new Error('Error en el servidor');
-
-            if (typeof $ !== 'undefined' && $.toast) {
-                $.toast({
-                    heading: 'Comentario enviado!',
-                    text: 'Tu comentario esta pendiente de aprobacion y sera publicado pronto.',
-                    icon: 'success',
-                    position: 'top-right',
-                    hideAfter: 4500,
-                    stack: 4,
-                    bgColor: '#7c3aed',
-                    loaderBg: '#6366f1'
-                });
-            } else {
-                alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.');
-            }
-
-            var commentsList = document.getElementById('comments-list');
-            if (commentsList) {
-                var skeletonHtml = '<div id="temp-comment-skeleton" style="animation: fadeIn 300ms ease;"><div class="comment-skeleton"><div class="comment-skeleton-avatar"></div><div class="comment-skeleton-content"><div class="comment-skeleton-line short"></div><div class="comment-skeleton-line medium"></div><div class="comment-skeleton-line long"></div></div></div>';
-                commentsList.insertAdjacentHTML('afterbegin', skeletonHtml);
-                setTimeout(function() {
-                    var skeleton = document.getElementById('temp-comment-skeleton');
-                    if (skeleton) {
-                        skeleton.style.opacity = '0';
-                        setTimeout(function() { skeleton.remove(); }, 300);
-                    }
-                }, 3000);
-            }
-
-            form.reset();
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalContent;
-        } catch (error) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalContent;
-            var errorMessage = error.message || 'Ha ocurrido un error al enviar el comentario';
-            if (typeof $ !== 'undefined' && $.toast) {
-                $.toast({
-                    heading: 'Error',
-                    text: errorMessage,
-                    icon: 'error',
-                    position: 'top-right',
-                    hideAfter: 5500,
-                    stack: 4,
-                    bgColor: '#dc2626',
-                    loaderBg: '#f87171'
-                });
-            } else {
-                alert('Error: ' + errorMessage);
-            }
-        }
-    };
-
-    // Function handler for Alpine.js
-    window.handleCommentSubmit = function(e) {
-        e.preventDefault();
-        if (window.submitMainCommentForm) {
-            window.submitMainCommentForm(e.target);
-        }
-    };
-
     // Reply form template (global for Alpine.js)
     // NOTE: Using onclick on button instead of onsubmit on form to work properly with Alpine.js x-html injection
     window.getReplyFormHtml = function(commentId) {
@@ -367,6 +440,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else { alert('Error: ' + msg); }
         });
     };
+
+    // Restaurar skeleton pendiente desde localStorage (persiste al recargar)
+    restoreSkeletonPending();
 
     // Initialize scroll infinite when DOM is loaded
     initializeScrollInfinite();

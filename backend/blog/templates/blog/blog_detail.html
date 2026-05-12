@@ -329,7 +329,7 @@
                           <i class="fas fa-lock jd-form-lock-icon" title="Sesión segura"></i>
                         </div>
 
-                        <form method="POST" action="{% url 'blog:post_comment' post.slug %}" id="jd-comment-form">
+                        <form method="POST" action="{% url 'blog:post_comment' post.slug %}" id="jd-comment-form" onsubmit="return window.handleCommentSubmit(event)">
                           {% csrf_token %}
                           {{ comment_form.website }}
                           <!-- Campo nombre: oculto para usuarios logueados, visible para anonimos -->
@@ -597,6 +597,9 @@
 
     <!-- ✨ SISTEMA DE REACCIONES -->
     <script src="{% static 'blog/js/reactions.js' %}"></script>
+
+    <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, etc.) -->
+    <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
     <!-- ✨ INTERACCIONES COMENTARIOS -->
     <script>

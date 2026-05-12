@@ -80,7 +80,13 @@ def post_comment(request, slug):
             provider=provider,
             provider_uid=provider_uid,
         )
-        return JsonResponse({"success": True, "message": "Comentario pendiente."})
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Comentario pendiente.",
+                "comment_id": comment.id,
+            }
+        )
     # Convert form errors to JSON-serializable format
     errors = {}
     for field, errors_list in form.errors.items():

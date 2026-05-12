@@ -100,6 +100,8 @@
     <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}" />
+    <!-- Alpine.js for interactive UI (e.g., comment toggle) -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <!-- ✅ FUENTES: Syne + DM Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -330,7 +332,23 @@
                         <form method="POST" action="{% url 'blog:post_comment' post.slug %}" id="jd-comment-form">
                           {% csrf_token %}
                           {{ comment_form.website }}
-{{ comment_form.name }}
+                          <!-- Campo nombre: oculto para usuarios logueados, visible para anonimos -->
+                          {% if not user.is_authenticated %}
+                            <div class="mb-3">
+                              <input 
+                                type="text" 
+                                name="{{ comment_form.name.html_name }}" 
+                                id="{{ comment_form.name.id_for_label }}"
+                                class="jd-textarea"
+                                placeholder="Tu nombre"
+                                value="{{ comment_form.name.value|default:'' }}"
+                                required
+                                style="min-height: 48px;"
+                              />
+                            </div>
+                          {% else %}
+                            <input type="hidden" name="{{ comment_form.name.html_name }}" value="{{ user.get_full_name|default:user.username }}" />
+                          {% endif %}
 
                           <div class="jd-textarea-wrapper">
                             <textarea
@@ -386,7 +404,7 @@
                   <!-- Lista de comentarios -->
                   <div id="comments-list" class="jd-comments-list">
                     {% for comment in comments %}
-                      <div class="jd-comment" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0">
+                      <div class="jd-comment" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0" x-data="{open:false}">
 
                         <!-- Avatar -->
                         <div class="jd-comment-avatar" style="background-color: {{ comment.avatar_color }};">
@@ -413,7 +431,10 @@
                                 </span>
                               {% endif %}
 
-                              <time class="jd-comment-date">{{ comment.created_at|date:'d M Y' }}</time>
+                          <!-- Mostrar tiempo relativo y fecha completa -->
+                          <time class="jd-comment-date">
+                              {{ comment.created_at|date:"d M Y" }} {{ comment.created_at|naturaltime_es }}
+                          </time>
                             </div>
 
                             <p class="jd-comment-text">{{ comment.content|linebreaksbr }}</p>
@@ -460,9 +481,24 @@
                             </div>
                           </div>
 
-                          <!-- Respuestas anidadas -->
-                          {% if comment.replies.all %}
-                            <div class="jd-replies">
+                            <!-- Botón para contraer/expandir respuestas -->
+                            {% if comment.replies.all %}
+                              <button class="jd-toggle-replies-btn" type="button"
+                                      @click="open = !open">
+                                <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                <span x-text="open ? 'Ocultar' : 'Ver'"></span>
+                                {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize:",s" }}
+                              </button>
+
+                              <!-- Respuestas anidadas -->
+                              <div class="jd-replies"
+                                   x-show="open"
+                                   x-transition:enter="jd-transition"
+                                   x-transition:enter-start="jd-transition-start"
+                                   x-transition:enter-end="jd-transition-end"
+                                   x-transition:leave="jd-transition"
+                                   x-transition:leave-start="jd-transition-end"
+                                   x-transition:leave-end="jd-transition-start">
                               {% for reply in comment.replies.all %}
                                 <div class="jd-reply">
                                   <div class="jd-reply-avatar" style="background-color: {{ reply.avatar_color }};">
@@ -484,7 +520,7 @@
                                         <span class="jd-badge jd-badge-admin"><i class="fas fa-shield-alt mr-1"></i>Admin</span>
                                       {% endif %}
 
-                                      <time class="jd-reply-date">{{ reply.created_at|date:'d M Y' }}</time>
+                                      <time class="jd-reply-date">{{ reply.created_at|naturaltime_es }}</time>
                                     </div>
                                     <p class="jd-reply-text">{{ reply.content|linebreaksbr }}</p>
                                   </div>

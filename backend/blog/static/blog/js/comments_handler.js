@@ -124,6 +124,69 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    /**
+     * Initialize click handlers for the reply toggle buttons added in the template.
+     * Each button has class 'thread-toggle-replies-btn' and a data-comment-id attribute.
+     * The corresponding replies wrapper has id 'replies-<comment-id>'.
+     * 
+     * IMPORTANT: If Alpine.js is present, let it handle the toggle to avoid conflicts.
+     * Alpine.js uses x-data="{open:false}" and x-show="open" on the replies wrapper.
+     * We only use vanilla JS as fallback when Alpine.js is not available.
+     */
+    function initReplyToggleButtons() {
+        // Check if Alpine.js is available and being used for this functionality
+        var isAlpineAvailable = typeof window.Alpine !== 'undefined' || document.querySelector('[x-data]');
+        
+        if (isAlpineAvailable) {
+            console.log('Alpine.js detectado, delegando toggle de respuestas a Alpine.js');
+            // Alpine.js will handle the toggle via @click="open = !open" in the template
+            // We just need to ensure the button has the correct data attributes
+            initializeAlpineToggleButtons();
+            return;
+        }
+        
+        // Fallback: Use vanilla JS when Alpine.js is not available
+        console.log('Alpine.js no detectado, usando vanilla JS para toggle de respuestas');
+        var toggleButtons = document.querySelectorAll('.thread-toggle-replies-btn');
+        toggleButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var commentId = btn.getAttribute('data-comment-id');
+                var wrapper = document.getElementById('replies-' + commentId);
+                if (!wrapper) return;
+                var isHidden = wrapper.style.display === 'none' || wrapper.style.display === '';
+                wrapper.style.display = isHidden ? 'block' : 'none';
+                // Toggle icon direction
+                var icon = btn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            });
+        });
+    }
+
+    /**
+     * Initialize Alpine.js toggle buttons with proper data attributes.
+     * This ensures Alpine.js can properly track and toggle the replies.
+     */
+    function initializeAlpineToggleButtons() {
+        var toggleButtons = document.querySelectorAll('.thread-toggle-replies-btn');
+        toggleButtons.forEach(function(btn) {
+            // Ensure the button has data-comment-id for Alpine to work with
+            if (!btn.hasAttribute('data-comment-id')) {
+                var wrapper = btn.nextElementSibling;
+                if (wrapper && wrapper.classList.contains('replies-wrapper')) {
+                    var wrapperId = wrapper.id;
+                    if (wrapperId && wrapperId.startsWith('replies-')) {
+                        var commentId = wrapperId.replace('replies-', '');
+                        btn.setAttribute('data-comment-id', commentId);
+                    }
+                }
+            }
+            // No extra click handler; Alpine will manage toggle via x-data and @click
+        });
+    }
+
 
     // ===== MAIN COMMENT FORM SUBMIT =====
     window.submitMainCommentForm = async function(form) {
@@ -307,4 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize scroll infinite when DOM is loaded
     initializeScrollInfinite();
+    // Initialize toggle for replies collapse/expand
+    initReplyToggleButtons();
 });

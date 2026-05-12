@@ -1,12 +1,13 @@
+{% load blog_filters %}
 {% for comment in comments %}
-<div class="thread-item">
+<div class="thread-item" x-data="{open:false}">
     <div class="thread-avatar-col">
         <div class="thread-avatar" style="background-color: {{ comment.avatar_color }};">{{ comment.avatar_initials }}</div>
     </div>
     <div class="thread-body">
         <div class="thread-header">
             <span class="thread-author">{{ comment.name }}</span>
-            <span class="thread-time">{{ comment.created_at|timesince }} ago</span>
+<span class="thread-time">{{ comment.created_at|naturaltime_es }} | {{ comment.created_at|date_es }}</span>
             {% if comment.identification_level == 'anonymous' %}
                 <span class="thread-badge thread-badge-anon">Anónimo</span>
             {% elif comment.identification_level == 'identified' %}
@@ -39,6 +40,11 @@
             </div>
         </div>
 
+        <!-- Botón para contraer/expandir respuestas -->
+        <button class="thread-toggle-replies-btn" type="button" @click="open = !open">
+            <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i> <span class="replies-count">{{ comment.replies.count }}</span> respuestas
+        </button>
+        <div class="replies-wrapper" id="replies-{{ comment.id }}" x-show="open" style="display:none;">
         {% for reply in comment.replies.all %}
         <div class="thread-replies">
             <div class="thread-reply-item">
@@ -50,7 +56,7 @@
                     <div class="thread-body">
                         <div class="thread-header">
                             <span class="thread-author">{{ reply.name }}</span>
-                            <span class="thread-time">{{ reply.created_at|timesince }} ago</span>
+<span class="thread-time">{{ reply.created_at|naturaltime_es }} | {{ reply.created_at|date_es }}</span>
                             {% if reply.identification_level == 'anonymous' %}
                                 <span class="thread-badge thread-badge-anon">Anónimo</span>
                             {% elif reply.identification_level == 'identified' %}

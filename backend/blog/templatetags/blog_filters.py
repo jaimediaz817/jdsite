@@ -135,19 +135,20 @@ def naturaltime_es(value):
     time_str = timesince(value)
 
     # Mapeo de traducciones
+    # Mapeo de traducciones más completo
     translations = {
         "year": "año",
         "years": "años",
         "month": "mes",
         "months": "meses",
-        "week": "sem",
-        "weeks": "sems",
+        "week": "semana",
+        "weeks": "semanas",
         "day": "día",
         "days": "días",
-        "hour": "h",
-        "hours": "h",
-        "minute": "min",
-        "minutes": "min",
+        "hour": "hora",
+        "hours": "horas",
+        "minute": "minuto",
+        "minutes": "minutos",
     }
 
     for eng, esp in translations.items():

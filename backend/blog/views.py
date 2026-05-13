@@ -8,7 +8,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
-from blog.models import BlogPost
+from blog.models import BlogComment, BlogPost
 from blog.forms import CommentForm, QuickSignupForm
 from blog.services import create_comment, get_approved_comments, get_comment_count
 
@@ -42,8 +42,7 @@ class BlogDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["comment_form"] = CommentForm()
-        # Solo cargar los primeros 3 comentarios inicialmente para scroll infinito
-        context["comments"] = get_approved_comments(self.object.slug, limit=3)
+        context["comments"] = get_approved_comments(self.object.slug, limit=10)
         context["comment_count"] = get_comment_count(self.object.slug)
         return context
 
@@ -163,16 +162,33 @@ def quick_signup(request):
 def load_more_comments(request, slug):
     page = request.GET.get("page", 2)
     comments = get_approved_comments(slug)
-    # Cargar de 3 en 3 comentarios para scroll infinito
-    paginator = Paginator(comments, 3)
+    # Cargar de 10 en 10 comentarios para scroll infinito
+    paginator = Paginator(comments, 10)
     if int(page) > paginator.num_pages:
         response = HttpResponse()
         response["X-Has-More"] = "false"
         return response
     page_obj = paginator.get_page(page)
     html = render_to_string(
-        "blog/partials/_comments_list.html", {"comments": page_obj}
+        "blog/partials/_comments_list.html",
+        {"comments": page_obj, "has_more": page_obj.has_next()},
     )
     response = HttpResponse(html)
     response["X-Has-More"] = "true" if page_obj.has_next() else "false"
     return response
+
+
+@require_http_methods(["GET"])
+def check_comment_status(request, slug, comment_id):
+    """
+    Verifica el estado de un comentario específico (approved/rejected/pending)
+    """
+    try:
+        comment = BlogComment.objects.get(id=comment_id, blog_slug=slug)
+        return JsonResponse({"success": True, "status": comment.status})
+    except BlogComment.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Comentario no encontrado"}, status=404
+        )
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)

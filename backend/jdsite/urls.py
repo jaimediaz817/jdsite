@@ -92,7 +92,7 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap",
     ),
     # ✅ SISTEMA DE BLOGS
-    path("blog/", include(("blog.urls", "blog"), namespace="blog")),
+    path("blog/", include("blog.urls")),
     # ✅ SISTEMA DE REACCIONES
     path("", include(("reactions.urls", "reactions"), namespace="reactions")),
     # ✅ HOME SIEMPRE AL FINAL! (Django evalua rutas en ORDEN - error mas comun)

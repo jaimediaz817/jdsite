@@ -8,23 +8,32 @@
 function insertSkeletonPending(container, commentId) {
     var skId = 'sk-pending-' + commentId;
     if (document.getElementById(skId)) return;
+
+    // El skeleton debe tener data-comment-id para que sea reconocido como comentario visible
+    // en restoreSkeletonPending() y no sea eliminado automáticamente
     container.insertAdjacentHTML('afterbegin',
-        '<div id="' + skId + '" class="sk-comment" data-pending-id="' + commentId + '">'
-        + '<div class="sk-comment-avatar"></div>'
-        + '<div class="sk-comment-body">'
-        + '<div class="sk-line sk-line-short"></div>'
-        + '<div class="sk-line sk-line-medium"></div>'
-        + '<div class="sk-line sk-line-long"></div>'
-        + '<div class="sk-comment-actions">'
-        + '<div class="sk-line sk-line-btn"></div>'
-        + '<div class="sk-line sk-line-btn"></div>'
-        + '</div>'
-        + '<div class="sk-pending-msg">'
-        + '<span class="sk-pending-icon">⏳</span>'
-        + '<span class="sk-pending-text">Comentario pendiente de aprobación. Aparecerá una vez revisado.</span>'
-        + '</div>'
-        + '</div></div>'
+        '<div id="' + skId + '" class="jd-comment sk-pending-comment" ' +
+        'data-comment-id="' + commentId + '" ' +
+        'style="opacity:1 !important; visibility:visible !important;">' +
+        '<div class="jd-comment-avatar sk-comment-avatar"></div>' +
+        '<div class="jd-comment-body">' +
+        '<div class="jd-comment-bubble">' +
+        '<div class="jd-comment-meta">' +
+        '<div class="sk-line sk-line-short jd-skeleton-line"></div>' +
+        '<div class="sk-line sk-line-medium jd-skeleton-line"></div>' +
+        '<div class="sk-line sk-line-long jd-skeleton-line"></div>' +
+        '</div>' +
+        '<div class="jd-comment-actions">' +
+        '<div class="sk-line sk-line-btn jd-skeleton-line"></div>' +
+        '<div class="sk-line sk-line-btn jd-skeleton-line"></div>' +
+        '</div>' +
+        '<div class="sk-pending-msg">' +
+        '<span class="sk-pending-icon">⏳</span>' +
+        '<span class="sk-pending-text">Comentario pendiente de aprobación. Aparecerá una vez revisado.</span>' +
+        '</div>' +
+        '</div></div></div>'
     );
+    console.log('✅ Skeleton creado para ID pendiente:', commentId);
 }
 
 // ===== Gestionar lista de IDs pendientes en localStorage =====
@@ -33,7 +42,11 @@ function addPendingId(commentId) {
         var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
         if (!ids.includes(commentId)) ids.push(commentId);
         localStorage.setItem('jd_pending_ids', JSON.stringify(ids));
-    } catch(e) {}
+        console.log('✅ ID', commentId, 'añadido a pending_ids. Total:', ids.length);
+        console.log('📋 localStorage actualizado:', localStorage.getItem('jd_pending_ids'));
+    } catch(e) {
+        console.error('❌ Error al guardar pending_id:', e);
+    }
 }
 
 function removePendingId(commentId) {
@@ -41,44 +54,198 @@ function removePendingId(commentId) {
         var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
         var filtered = ids.filter(function(id) { return id !== commentId; });
         localStorage.setItem('jd_pending_ids', JSON.stringify(filtered));
-    } catch(e) {}
+        console.log('❌ ID', commentId, 'removido de pending_ids. Total:', filtered.length);
+        console.log('📋 localStorage actualizado:', localStorage.getItem('jd_pending_ids'));
+    } catch(e) {
+        console.error('❌ Error al remover pending_id:', e);
+    }
 }
 
 function getPendingIds() {
-    try { return JSON.parse(localStorage.getItem('jd_pending_ids') || '[]'); }
-    catch(e) { return []; }
+    try {
+        var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
+        console.log('📋 pending_ids recuperados del localStorage:', ids);
+        console.log('📋 Valor crudo de localStorage:', localStorage.getItem('jd_pending_ids'));
+        return ids;
+    }
+    catch(e) {
+        console.error('⚠️ Error al leer pending_ids del localStorage:', e);
+        return [];
+    }
 }
 
-// ===== Restaurar skeletons según IDs pendientes =====
-function restoreSkeletonPending() {
-    var pendingIds = getPendingIds();
-    if (pendingIds.length === 0) return;
+    // ===== Restaurar skeletons según IDs pendientes =====
+    function restoreSkeletonPending() {
+        console.log('🔄 Iniciando restoreSkeletonPending()...');
 
-    var list = document.getElementById('comments-list');
-    if (!list) return;
+        var pendingIds = getPendingIds();
+        console.log('📋 pendingIds recuperados:', pendingIds);
 
-    // Obtener IDs de comentarios ya aprobados visibles en la página
-    var approvedIds = [];
-    list.querySelectorAll('.jd-comment').forEach(function(el) {
-        // Buscar el data-comment-id en el contenedor de reacciones
-        var reactions = el.querySelector('.comment-reactions');
-        if (reactions) approvedIds.push(parseInt(reactions.dataset.commentId, 10));
-    });
-
-    // Por cada ID pendiente, si NO está en la lista de aprobados → mostrar skeleton
-    var remaining = [];
-    pendingIds.forEach(function(id) {
-        if (approvedIds.indexOf(parseInt(id, 10)) === -1) {
-            remaining.push(id);
-            insertSkeletonPending(list, id);
+        if (pendingIds.length === 0) {
+            console.log('❌ No hay pendingIds - saliendo de restoreSkeletonPending');
+            return;
         }
-    });
 
-    // Actualizar localStorage solo con los que siguen pendientes
-    localStorage.setItem('jd_pending_ids', JSON.stringify(remaining));
-}
+        var list = document.getElementById('comments-list');
+        if (!list) {
+            console.error('❌ No se encontró #comments-list en el DOM');
+            return;
+        }
 
-// ===== MAIN COMMENT FORM SUBMIT (definido fuera de DOMContentLoaded para disponibilidad inmediata) =====
+        console.log('🔍 Buscando comentarios visibles en el DOM...');
+
+        // Obtener IDs de comentarios visibles en la página
+        var visibleComments = {};
+
+        list.querySelectorAll('[data-comment-id]').forEach(function(el) {
+            var commentId = parseInt(el.getAttribute('data-comment-id'), 10);
+            var jdComment = el.closest('.jd-comment');
+            if (jdComment) {
+                visibleComments[commentId] = {
+                    element: jdComment,
+                    hasReactions: jdComment.querySelector('.comment-reactions') !== null,
+                    isRejected: jdComment.querySelector('.badge-danger') !== null ||
+                               (jdComment.querySelector('[class*="badge"]') !== null &&
+                                jdComment.querySelector('[class*="badge"]').textContent.toLowerCase().includes('rechazado'))
+                };
+            }
+        });
+
+        console.log('📊 Comentarios visibles encontrados:', Object.keys(visibleComments));
+
+        // Procesar IDs pendientes - detectar estados reales
+        var remainingPendings = [];
+
+        pendingIds.forEach(function(id) {
+            var idNum = parseInt(id, 10);
+            var commentState = visibleComments[idNum];
+            var skeletonEl = document.getElementById('sk-pending-' + idNum);
+            var commentEl = commentState ? commentState.element : null;
+
+            console.log('🔎 Procesando ID:', idNum, '| Estado:', commentState ? 'visible' : 'no visible',
+                       '| Skeleton existe:', skeletonEl !== null,
+                       '| HTML existe:', commentEl !== null);
+
+            // Caso 1: Comentario ya aprobado en backend (tiene reactions en HTML)
+            if (commentState && commentState.hasReactions) {
+                console.log("🔵 STATUS: APPROVED -> Comentario ID", idNum, "ya aprobado, removemos skeleton");
+                removePendingId(id);
+
+                // Remover skeleton si existe
+                if (skeletonEl) skeletonEl.remove();
+                return;
+            }
+
+            // Caso 2: Comentario rechazado en backend (badge-danger o texto "rechazado")
+            if (commentState && commentState.isRejected) {
+                console.log("🔴 STATUS: REJECTED -> Comentario ID", idNum, "fue rechazado, removemos permanentemente");
+                removePendingId(id);
+
+                // Remover skeleton y comentario visible
+                if (skeletonEl) skeletonEl.remove();
+                if (commentEl) commentEl.remove();
+                return;
+            }
+
+            // Caso 3: Comentario no visible en HTML (backend lo aceptó/rechazó y ya no está)
+            if (!commentState && skeletonEl) {
+                console.log("⚪ Comentario ID", idNum, "no encontrado en HTML. Eliminando skeleton de localStorage");
+                removePendingId(id);
+                skeletonEl.remove();
+                return;
+            }
+
+            // Caso 4: Comentario sigue pendiente en localStorage y existe en HTML
+            if (commentState && !commentState.hasReactions && !commentState.isRejected) {
+                console.log("⏳ STATUS: PENDING -> Comentario ID", idNum, "sigue pendiente, manteniendo skeleton");
+                remainingPendings.push(id);
+            }
+
+            // Caso 5: Comentario pendiente en localStorage pero NO existe en HTML (puede ser nuevo)
+            if (!commentState && !skeletonEl) {
+                console.log("⚠️ Comentario ID", idNum, "no encontrado en HTML pero no tiene skeleton. Insertando skeleton...");
+                insertSkeletonPending(list, id);
+                remainingPendings.push(id);
+            }
+
+            // Caso 6: Comentario pendiente en localStorage pero no tenemos información del backend
+            if (!commentState && skeletonEl) {
+                console.log("⚠️ Comentario ID", idNum, "pendiente pero no tenemos información del backend. Verificando estado...");
+                checkCommentStatus(idNum, skeletonEl, list, remainingPendings);
+            }
+        });
+
+        console.log('💾 Guardando remainingPendings:', remainingPendings);
+        localStorage.setItem('jd_pending_ids', JSON.stringify(remainingPendings));
+        console.log('✅ restoreSkeletonPending() completado');
+    }
+
+    // ===== Función para verificar el estado de un comentario con el backend =====
+    function checkCommentStatus(commentId, skeletonEl, list, remainingPendings) {
+        console.log("🔍 Verificando estado del comentario ID", commentId, "con el backend...");
+
+        // Obtener la URL del blog actual
+        var currentUrl = window.location.pathname;
+        var blogSlug = currentUrl.split('/').filter(Boolean).pop();
+
+        // Construir la URL para verificar el estado del comentario
+        var checkUrl = `/blog/${blogSlug}/comment/${commentId}/status/`;
+
+        // Verificar si la ruta existe antes de hacer la petición
+        fetch(checkUrl, {
+            method: 'HEAD',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Si obtenemos 404, significa que la ruta no existe
+                if (response.status === 404) {
+                    console.log("⚠️ Ruta no encontrada para verificar estado del comentario. Usando ruta alternativa...");
+                    // Intentar con la ruta completa
+                    checkUrl = `/blog/${blogSlug}/comment/${commentId}/status/`;
+                    return fetch(checkUrl, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    });
+                }
+                throw new Error('Error al verificar estado del comentario: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("📋 Estado del comentario ID", commentId, ":", data.status);
+
+            if (data.status === "approved") {
+                console.log("🔵 STATUS: APPROVED -> Comentario ID", commentId, "aprobado, removemos skeleton");
+                removePendingId(commentId);
+                if (skeletonEl) skeletonEl.remove();
+            }
+            else if (data.status === "rejected") {
+                console.log("🔴 STATUS: REJECTED -> Comentario ID", commentId, "rechazado, removemos permanentemente");
+                removePendingId(commentId);
+                if (skeletonEl) skeletonEl.remove();
+            }
+            else {
+                console.log("⏳ STATUS: PENDING -> Comentario ID", commentId, "sigue pendiente, manteniendo skeleton");
+                remainingPendings.push(commentId);
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error al verificar estado del comentario ID", commentId, ":", error);
+            // Si hay error, mantenemos el skeleton por seguridad
+            remainingPendings.push(commentId);
+        });
+    }
+
+// ===== MAIN COMMENT FORM SUBMIT =====
 window.submitMainCommentForm = async function(form) {
     const submitBtn = form.querySelector('button[type="submit"]');
     if (!submitBtn) return;
@@ -125,12 +292,13 @@ window.submitMainCommentForm = async function(form) {
             alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.');
         }
 
-        // Guardar ID del comentario pendiente en localStorage (para persistencia por ID)
+        // Guardar ID del comentario pendiente en localStorage y mostrar skeleton
         if (data.comment_id) {
-            addPendingId(data.comment_id);
+            console.log('🎯 Respuesta del backend:', data);
+            addPendingId(data.comment_id);  // Registrar ID como pendiente
             var commentsList = document.getElementById('comments-list');
             if (commentsList) {
-                insertSkeletonPending(commentsList, data.comment_id);
+                insertSkeletonPending(commentsList, data.comment_id);  // Mostrar skeleton inmediatamente
             }
         }
 
@@ -169,7 +337,7 @@ window.handleCommentSubmit = function(e) {
 
 // ===== DOMContentLoaded: scroll infinite, reply toggles =====
 document.addEventListener('DOMContentLoaded', function() {
-    var CONFIG = { COMMENTS_PER_PAGE: 3, SCROLL_MARGIN_PX: 150, ANIMATION_DURATION_MS: 280, DEBUG_MODE: false };
+    var CONFIG = { COMMENTS_PER_PAGE: 10, SCROLL_MARGIN_PX: 150, ANIMATION_DURATION_MS: 280, DEBUG_MODE: false };
     var state = { page: 1, loading: false, hasMore: true, observer: null, commentsList: null, sentinel: null };
 
     function initializeScrollInfinite() {
@@ -228,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
             animateAppearanceComments();
             // ✅ Inicializar reacciones en los nuevos comentarios cargados
             if (window.Reactions && window.Reactions.loadCommentReactions) {
-                state.commentsList.querySelectorAll('.thread-reactions:not([data-reactions-initialized])').forEach(function(container) {
+                state.commentsList.querySelectorAll('.comment-reactions:not([data-reactions-initialized]), .thread-reactions:not([data-reactions-initialized])').forEach(function(container) {
                     var commentId = container.dataset.commentId;
                     if (commentId) {
                         container.setAttribute('data-reactions-initialized', 'true');
@@ -279,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function animateAppearanceComments() {
-        var comentariosNuevos = state.commentsList.querySelectorAll('.comment-wrapper:not(.loaded)');
+        var comentariosNuevos = state.commentsList.querySelectorAll('.jd-comment:not(.loaded)');
         comentariosNuevos.forEach(function(comentario, indice) {
             setTimeout(function() {
                 comentario.classList.add('loaded');
@@ -289,28 +457,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Initialize click handlers for the reply toggle buttons added in the template.
-     * Each button has class 'thread-toggle-replies-btn' and a data-comment-id attribute.
-     * The corresponding replies wrapper has id 'replies-<comment-id>'.
-     * 
-     * IMPORTANT: If Alpine.js is present, let it handle the toggle to avoid conflicts.
-     * Alpine.js uses x-data="{open:false}" and x-show="open" on the replies wrapper.
-     * We only use vanilla JS as fallback when Alpine.js is not available.
-     */
+    /** * Initialize click handlers for the reply toggle buttons added in the template. */
     function initReplyToggleButtons() {
-        // Check if Alpine.js is available and being used for this functionality
         var isAlpineAvailable = typeof window.Alpine !== 'undefined' || document.querySelector('[x-data]');
-        
         if (isAlpineAvailable) {
             console.log('Alpine.js detectado, delegando toggle de respuestas a Alpine.js');
-            // Alpine.js will handle the toggle via @click="open = !open" in the template
-            // We just need to ensure the button has the correct data attributes
             initializeAlpineToggleButtons();
             return;
         }
-        
-        // Fallback: Use vanilla JS when Alpine.js is not available
         console.log('Alpine.js no detectado, usando vanilla JS para toggle de respuestas');
         var toggleButtons = document.querySelectorAll('.thread-toggle-replies-btn');
         toggleButtons.forEach(function(btn) {
@@ -320,7 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!wrapper) return;
                 var isHidden = wrapper.style.display === 'none' || wrapper.style.display === '';
                 wrapper.style.display = isHidden ? 'block' : 'none';
-                // Toggle icon direction
                 var icon = btn.querySelector('i');
                 if (icon) {
                     icon.classList.toggle('fa-chevron-down');
@@ -330,14 +483,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Initialize Alpine.js toggle buttons with proper data attributes.
-     * This ensures Alpine.js can properly track and toggle the replies.
-     */
     function initializeAlpineToggleButtons() {
         var toggleButtons = document.querySelectorAll('.thread-toggle-replies-btn');
         toggleButtons.forEach(function(btn) {
-            // Ensure the button has data-comment-id for Alpine to work with
             if (!btn.hasAttribute('data-comment-id')) {
                 var wrapper = btn.nextElementSibling;
                 if (wrapper && wrapper.classList.contains('replies-wrapper')) {
@@ -348,15 +496,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            // No extra click handler; Alpine will manage toggle via x-data and @click
         });
     }
 
-
     // Reply form template (global for Alpine.js)
-    // NOTE: Using onclick on button instead of onsubmit on form to work properly with Alpine.js x-html injection
     window.getReplyFormHtml = function(commentId) {
-        // Build the reply form HTML with optional pre-filled name/email for authenticated users
         var nameValue = '';
         var emailValue = '';
         if (window.USER_AUTHENTICATED) {
@@ -377,41 +521,28 @@ document.addEventListener('DOMContentLoaded', function() {
         return html;
     };
 
-    // Submit reply form (global for Alpine.js)
     window.submitReplyForm = function(commentId) {
         const form = document.querySelector('#reply-form-' + commentId);
         if (!form) {
             console.error('Form not found: #reply-form-' + commentId);
             return;
         }
-        
         const submitBtn = form.querySelector('button[type="button"].btn-primary');
         const original = submitBtn.innerHTML;
-        
-    // Validate that content is not empty
         const contentTextarea = document.getElementById('reply-content-' + commentId);
-        console.log('Buscando textarea con ID: reply-content-' + commentId);
-        console.log('Textarea encontrado:', contentTextarea);
-        if (contentTextarea) {
-            console.log('Valor del textarea:', contentTextarea.value);
-        }
         if (!contentTextarea) {
-            console.error('Textarea no encontrado en el DOM');
-        }
-        if (!contentTextarea || !contentTextarea.value.trim()) {
-            console.log('Validación fallida - mostrando error');
             const errorMsg = 'El contenido de la respuesta no puede estar vacío.';
             if (typeof $ !== 'undefined' && $.toast) {
-                $.toast({ heading:'Error', text:errorMsg, icon:'error', position:'top-right', hideAfter:5500 });
+                $.toast({ heading: 'Error', text: errorMsg, icon: 'error', position: 'top-right', hideAfter: 5500 });
             } else {
                 alert(errorMsg);
             }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = original;
             return;
         }
-        
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
-        
         fetch(form.action, {
             method: 'POST',
             body: new FormData(form),
@@ -428,24 +559,62 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (!data.success) throw new Error('Error en el servidor');
             if (typeof $ !== 'undefined' && $.toast) {
-                $.toast({ heading:'Comentario enviado!', text:'Tu comentario está pendiente de aprobación.', icon:'success', position:'top-right', hideAfter:4500 });
-            } else { alert('Comentario enviado!'); }
+                $.toast({ heading: 'Comentario enviado!', text: 'Tu comentario está pendiente de aprobación.', icon: 'success', position: 'top-right', hideAfter: 4500 });
+            } else {
+                alert('Comentario enviado!');
+            }
             window.location.reload();
         })
         .catch(err => {
-            submitBtn.disabled = false; submitBtn.innerHTML = original;
-            const msg = err.message || 'Error al enviar el comentario';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = original;
+            var msg = err.message || 'Error al enviar el comentario';
             if (typeof $ !== 'undefined' && $.toast) {
-                $.toast({ heading:'Error', text:msg, icon:'error', position:'top-right', hideAfter:5500 });
-            } else { alert('Error: ' + msg); }
+                $.toast({ heading: 'Error', text: msg, icon: 'error', position: 'top-right', hideAfter: 5500 });
+            } else {
+                alert('Error: ' + msg);
+            }
         });
     };
 
-    // Restaurar skeleton pendiente desde localStorage (persiste al recargar)
-    restoreSkeletonPending();
+    // Restaurar skeleton pendiente desde localStorage
+    // 🔥 IMPORTANTE: Llamar restoreSkeletonPending() DESPUÉS de inicializar el scroll infinito
+    // para que los skeletons se inserten en el DOM correctamente
+    // También después de tener el HTML completo cargado, por lo que usamos un timeout mayor
+    setTimeout(restoreSkeletonPending, 300);
 
-    // Initialize scroll infinite when DOM is loaded
+    // Initialize scroll infinito when DOM is loaded
     initializeScrollInfinite();
+
     // Initialize toggle for replies collapse/expand
     initReplyToggleButtons();
+
+    // Verificar localStorage en consola
+    console.log('🔍 Estado actual de localStorage:');
+    console.log('pending_ids:', localStorage.getItem('jd_pending_ids'));
+    console.log('📋 Verificando si hay skeletons pendientes en el DOM...');
+
+    // Verificar localStorage y restaurar skeletons en segundo plano después del DOM
+    setTimeout(function() {
+        var pendingIds = getPendingIds();
+        if (pendingIds.length > 0) {
+            pendingIds.forEach(function(id) {
+                var skId = 'sk-pending-' + id;
+                var skEl = document.getElementById(skId);
+                console.log('ID', id, 'skeleton existe:', skEl !== null);
+                if (skEl) {
+                    console.log('✅ Skeleton encontrado en DOM para ID:', id);
+                } else {
+                    // Solo intentar insertar si todavía está pendiente
+                    console.log('⚠️ Skeleton NO encontrado en DOM para ID:', id, '- insertando ahora...');
+                    var list = document.getElementById('comments-list');
+                    if (list) {
+                        insertSkeletonPending(list, id);
+                    }
+                }
+            });
+        } else {
+            console.log('❌ No hay pending_ids en localStorage - no se pueden restaurar skeletons');
+        }
+    }, 400); // Démora extra para asegurar que el DOM esté completamente actualizado
 });

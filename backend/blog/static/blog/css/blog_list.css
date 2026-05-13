@@ -17,11 +17,6 @@
     background-color: #f5faff;
 }
 
-.blog-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.08) !important;
-}
-
 /* --- Imagen de la Card --- */
 .blog-card-image {
     border-top-left-radius: 12px;
@@ -261,4 +256,50 @@ body.home-p {
     .blog-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Skeleton loader for comments */
+.comment-skeleton {
+    animation: fadeIn 0.3s ease;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    border-left: 4px solid #6366f1;
+}
+
+.comment-skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    margin-right: 1rem;
+    float: left;
+}
+
+.comment-skeleton-content {
+    overflow: hidden;
+}
+
+.comment-skeleton-line {
+    height: 8px;
+    background-color: #e0e0e0;
+    /* Color gris tenue */
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.comment-skeleton-line.short {
+    width: 40%;
+}
+
+.comment-skeleton-line.medium {
+    width: 60%;
+    margin-top: 0.5rem;
+}
+
+.comment-skeleton-line.long {
+    width: 80%;
+    margin-top: 0.5rem;
 }

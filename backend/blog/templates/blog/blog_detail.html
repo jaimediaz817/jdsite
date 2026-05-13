@@ -100,8 +100,6 @@
     <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}" />
-    <!-- Alpine.js for interactive UI (e.g., comment toggle) -->
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <!-- ✅ FUENTES: Syne + DM Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -404,7 +402,7 @@
                   <!-- Lista de comentarios -->
                   <div id="comments-list" class="jd-comments-list">
                     {% for comment in comments %}
-                      <div class="jd-comment" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0" x-data="{open:false}">
+                      <div class="jd-comment" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0">
 
                         <!-- Avatar -->
                         <div class="jd-comment-avatar" style="background-color: {{ comment.avatar_color }};">
@@ -483,22 +481,14 @@
 
                             <!-- Botón para contraer/expandir respuestas -->
                             {% if comment.replies.all %}
-                              <button class="jd-toggle-replies-btn" type="button"
-                                      @click="open = !open">
-                                <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                                <span x-text="open ? 'Ocultar' : 'Ver'"></span>
+                              <button class="jd-toggle-replies-btn" type="button">
+                                <i class="fas fa-chevron-down"></i>
+                                <span>Ver</span>
                                 {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize:",s" }}
                               </button>
 
                               <!-- Respuestas anidadas -->
-                              <div class="jd-replies"
-                                   x-show="open"
-                                   x-transition:enter="jd-transition"
-                                   x-transition:enter-start="jd-transition-start"
-                                   x-transition:enter-end="jd-transition-end"
-                                   x-transition:leave="jd-transition"
-                                   x-transition:leave-start="jd-transition-end"
-                                   x-transition:leave-end="jd-transition-start">
+                              <div class="jd-replies" style="display:none;">
                               {% for reply in comment.replies.all %}
                                 <div class="jd-reply">
                                   <div class="jd-reply-avatar" style="background-color: {{ reply.avatar_color }};">
@@ -598,35 +588,16 @@
     <!-- ✨ SISTEMA DE REACCIONES -->
     <script src="{% static 'blog/js/reactions.js' %}"></script>
 
-    <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, etc.) -->
-    <script src="{% static 'blog/js/comments_handler.js' %}"></script>
-
-    <!-- ✨ INTERACCIONES COMENTARIOS -->
+    {% if comments_status_json %}
     <script>
-      // Char counter
-      const textarea = document.getElementById('{{ comment_form.content.id_for_label }}');
-      const charNum = document.getElementById('jd-char-num');
-      if (textarea && charNum) {
-        textarea.addEventListener('input', function() {
-          charNum.textContent = this.value.length;
-        });
-      }
-
-      // Reply toggle
-      document.querySelectorAll('.reply-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          const id = this.dataset.commentId;
-          const form = document.getElementById('reply-form-' + id);
-          if (!form) return;
-          const isOpen = form.style.display !== 'none';
-          document.querySelectorAll('.jd-inline-reply').forEach(function(f) { f.style.display = 'none'; });
-          if (!isOpen) {
-            form.style.display = 'block';
-            form.querySelector('textarea').focus();
-          }
-        });
-      });
+        window.COMMENTS_STATUS = {{ comments_status_json|safe }};
+        console.log('📋 COMMENTS_STATUS del servidor:', window.COMMENTS_STATUS);
+        window.PENDING_COMMENTS = {{ pending_comments_json|safe }};
+        console.log('📋 PENDING_COMMENTS del servidor:', window.PENDING_COMMENTS);
     </script>
+    {% endif %}
+    <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, skeletons, char counter, toggles) -->
+    <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
     <style>
       @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }

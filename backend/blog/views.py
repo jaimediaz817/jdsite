@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
@@ -44,6 +46,28 @@ class BlogDetailView(DetailView):
         context["comment_form"] = CommentForm()
         context["comments"] = get_approved_comments(self.object.slug, limit=10)
         context["comment_count"] = get_comment_count(self.object.slug)
+        # Pasar mapa {id: status} de TODOS los comentarios para que el frontend
+        # pueda decidir qué skeletons mostrar sin llamar N endpoints
+        all_comments = BlogComment.objects.filter(
+            blog_slug=self.object.slug
+        ).values("id", "status")
+        comments_status_map = {str(c["id"]): c["status"] for c in all_comments}
+        context["comments_status_json"] = json.dumps(comments_status_map)
+
+        # Pasar datos de comentarios pendientes para mostrar skeletons con info real
+        pending_comments = BlogComment.objects.filter(
+            blog_slug=self.object.slug, status="pending"
+        ).values("id", "name", "content")[:20]
+        pending_list = []
+        for pc in pending_comments:
+            pending_list.append(
+                {
+                    "id": str(pc["id"]),
+                    "name": pc["name"],
+                    "content": pc["content"][:200],  # truncar para no saturar
+                }
+            )
+        context["pending_comments_json"] = json.dumps(pending_list)
         return context
 
 

@@ -1,3 +1,4 @@
+{% load blog_filters %}
 <div id="comments-list">
     <!-- Skeletons pendientes se inyectan acá vía JS -->
     <div id="pending-skeletons-container"></div>
@@ -82,6 +83,14 @@
     </div>
     {% endfor %}
 
+    <!-- Mensaje de fin de comentarios (se muestra solo cuando no hay más) -->
+    <div class="jd-comments-end" style="display:none;">
+        <span class="jd-comments-end-line"></span>
+        <i class="fas fa-check-double jd-comments-end-icon"></i>
+        <span class="jd-comments-end-text">Has visto todos los comentarios</span>
+        <span class="jd-comments-end-line"></span>
+    </div>
+    
     <!-- Sentinel para scroll infinito -->
     <div id="comments-load-sentinel" style="height:1px;width:100%;opacity:0;"></div>
 </div>

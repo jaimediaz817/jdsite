@@ -358,23 +358,13 @@ function initToggleReplies() {
         if (state.sentinel) { state.sentinel.remove(); state.sentinel = null; }
     }
 
+    // No se muestra el mensaje al cargar la página; se controla en loadMoreComments
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initializeScrollInfinite();
-            // Si la cantidad de comentarios iniciales es menor al límite, mostrar mensaje de fin
-            var initialComments = document.querySelectorAll('.jd-comment').length;
-            if (initialComments < CONFIG.COMMENTS_PER_PAGE) {
-                var endEl = document.querySelector('.jd-comments-end');
-                if (endEl) endEl.style.display = 'block';
-            }
         });
     } else {
         initializeScrollInfinite();
-        var initialComments = document.querySelectorAll('.jd-comment').length;
-        if (initialComments < CONFIG.COMMENTS_PER_PAGE) {
-            var endEl = document.querySelector('.jd-comments-end');
-            if (endEl) endEl.style.display = 'block';
-        }
     }
 })();
 

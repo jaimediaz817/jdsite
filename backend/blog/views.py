@@ -206,19 +206,59 @@ def quick_signup(request):
 
 @require_http_methods(["GET"])
 def load_more_comments(request, slug):
-    page = request.GET.get("page", 2)
-    comments = get_approved_comments(slug)
-    # Cargar de 10 en 10 comentarios para scroll infinito
-    paginator = Paginator(comments, 10)
-    if int(page) > paginator.num_pages:
-        response = HttpResponse()
+    """Carga paginada de comentarios vía AJAX.
+
+    La vista original lanzaba una excepción cuando el parámetro ``page``
+    no era convertible a entero o cuando ``page`` superaba el número de
+    páginas disponibles.  Además, devolvía una respuesta vacía sin cuerpo
+    cuando no había más comentarios, lo que provocaba que el cliente
+    intentara procesar ``response.text()`` sobre un cuerpo inexistente y
+    generara un error 500.
+
+    Esta versión protege la conversión de ``page`` y siempre devuelve
+    contenido HTML (aunque sea vacío) junto con la cabecera ``X-Has-More``
+    que indica si existen más páginas.
+    """
+    # Obtener número de página, garantizando que sea un entero válido.
+    try:
+        page = int(request.GET.get("page", 2))
+    except (TypeError, ValueError):
+        # Si el parámetro es inválido, devolvemos la primera página.
+        page = 2
+
+    # Obtener queryset de comentarios aprobados.
+    try:
+        comments_qs = get_approved_comments(slug)
+    except Exception as e:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.exception(
+            "Error al obtener comentarios aprobados para slug %s: %s", slug, e
+        )
+        return HttpResponse(status=500)
+
+    # Paginación de 10 comentarios por página.
+    paginator = Paginator(comments_qs, 10)
+
+    # Si la página solicitada supera el total, devolvemos una respuesta
+    # vacía pero con la cabecera indicando que no hay más datos.
+    if page > paginator.num_pages:
+        response = HttpResponse("")
         response["X-Has-More"] = "false"
         return response
+
+    # Obtener la página solicitada.
     page_obj = paginator.get_page(page)
+
+    # Renderizar los comentarios usando el mismo template que la vista
+    # principal.  El contexto incluye ``has_more`` para que el template
+    # pueda, si lo desea, mostrar un indicador.
     html = render_to_string(
         "blog/partials/_comments_list.html",
         {"comments": page_obj, "has_more": page_obj.has_next()},
     )
+
     response = HttpResponse(html)
     response["X-Has-More"] = "true" if page_obj.has_next() else "false"
     return response

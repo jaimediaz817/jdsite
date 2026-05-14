@@ -1,16 +1,76 @@
 <div id="comments-list">
+    <!-- Skeletons pendientes se inyectan acá vía JS -->
+    <div id="pending-skeletons-container"></div>
+
     {% for comment in comments %}
     <div class="jd-comment" data-comment-id="{{ comment.id }}">
-        <div class="jd-comment-avatar">
-            <div class="jd-author-avatar">{{ comment.author|first|upper }}</div>
+        <!-- Avatar con color y iniciales -->
+        <div class="jd-comment-avatar" style="background-color: {{ comment.avatar_color }};">
+            {{ comment.avatar_initials }}
         </div>
         <div class="jd-comment-body">
             <div class="jd-comment-bubble">
                 <div class="jd-comment-meta">
-                    <span class="jd-comment-name">{{ comment.author }}</span>
-                    <span class="jd-comment-date">{{ comment.created_at|date:"d/m/Y" }}</span>
+                    <strong class="jd-comment-name">{{ comment.name }}</strong>
+                    {% if comment.identification_level == 'anonymous' %}
+                        <span class="jd-badge jd-badge-anon">Anónimo</span>
+                    {% elif comment.identification_level == 'identified' %}
+                        <span class="jd-badge jd-badge-identified">Identificado</span>
+                    {% elif comment.identification_level == 'registered' %}
+                        <span class="jd-badge jd-badge-registered">Registrado</span>
+                    {% endif %}
+                    {% if comment.is_admin %}
+                        <span class="jd-badge jd-badge-admin"><i class="fas fa-shield-alt mr-1"></i>Admin</span>
+                    {% endif %}
+                    <time class="jd-comment-date">{{ comment.created_at|date:"d M Y" }} {{ comment.created_at|naturaltime_es }}</time>
                 </div>
-                <p class="jd-comment-text">{{ comment.content }}</p>
+                <p class="jd-comment-text">{{ comment.content|linebreaksbr }}</p>
+                <div class="jd-comment-actions">
+                    <div class="jd-comment-reactions comment-reactions" data-comment-id="{{ comment.id }}">
+                        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="like" title="Me gusta"><i class="far fa-thumbs-up"></i> <span class="count">0</span></button>
+                        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="love" title="Me encanta"><i class="fas fa-heart"></i> <span class="count">0</span></button>
+                        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="fire" title="Excelente"><i class="fas fa-fire"></i> <span class="count">0</span></button>
+                    </div>
+                    <button class="jd-reply-toggle reply-btn" data-comment-id="{{ comment.id }}"><i class="fas fa-corner-down-right mr-1"></i>Responder</button>
+                </div>
+                <!-- Formulario de respuesta inline -->
+                <div class="jd-inline-reply" id="reply-form-{{ comment.id }}" style="display:none;">
+                    <div class="jd-inline-reply-inner">
+                        <div class="jd-inline-reply-arrow"></div>
+                        <textarea class="jd-reply-textarea" placeholder="Responder a {{ comment.name }}..." rows="2" maxlength="500"></textarea>
+                        <div class="jd-inline-reply-actions">
+                            <button class="jd-btn-cancel-reply" onclick="document.getElementById('reply-form-{{ comment.id }}').style.display='none'">Cancelar</button>
+                            <button class="jd-btn-send-reply"><i class="fas fa-paper-plane mr-1"></i>Responder</button>
+                        </div>
+                    </div>
+                </div>
+                {% if comment.replies.all %}
+                    <button class="jd-toggle-replies-btn" type="button"><i class="fas fa-chevron-down"></i> <span>Ver</span> {{ comment.replies.count }} respuesta{{ comment.replies.count|pluralize:",s" }}</button>
+                    <div class="jd-replies" style="display:none;">
+                        {% for reply in comment.replies.all %}
+                            <div class="jd-reply">
+                                <div class="jd-reply-avatar" style="background-color: {{ reply.avatar_color }};">{{ reply.avatar_initials }}</div>
+                                <div class="jd-reply-bubble">
+                                    <div class="jd-reply-meta">
+                                        <strong class="jd-reply-name">{{ reply.name }}</strong>
+                                        {% if reply.identification_level == 'anonymous' %}
+                                            <span class="jd-badge jd-badge-anon">Anónimo</span>
+                                        {% elif reply.identification_level == 'identified' %}
+                                            <span class="jd-badge jd-badge-identified">Identificado</span>
+                                        {% elif reply.identification_level == 'registered' %}
+                                            <span class="jd-badge jd-badge-registered">Registrado</span>
+                                        {% endif %}
+                                        {% if reply.is_admin %}
+                                            <span class="jd-badge jd-badge-admin"><i class="fas fa-shield-alt mr-1"></i>Admin</span>
+                                        {% endif %}
+                                        <time class="jd-reply-date">{{ reply.created_at|naturaltime_es }}</time>
+                                    </div>
+                                    <p class="jd-reply-text">{{ reply.content|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -21,9 +81,6 @@
         <div class="jd-comments-empty-sub">Sé el primero en comentar.</div>
     </div>
     {% endfor %}
-
-    <!-- Skeletons pendientes se inyectan acá vía JS -->
-    <div id="pending-skeletons-container"></div>
 
     <!-- Sentinel para scroll infinito -->
     <div id="comments-load-sentinel" style="height:1px;width:100%;opacity:0;"></div>

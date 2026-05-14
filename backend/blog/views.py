@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from allauth.socialaccount.models import SocialAccount
 from django.template.loader import render_to_string
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from blog.models import BlogComment, BlogPost
@@ -55,9 +56,30 @@ class BlogDetailView(DetailView):
         context["comments_status_json"] = json.dumps(comments_status_map)
 
         # Pasar datos de comentarios pendientes para mostrar skeletons con info real
-        pending_comments = BlogComment.objects.filter(
-            blog_slug=self.object.slug, status="pending"
-        ).values("id", "name", "content")[:20]
+        # ---------------------------------------------------------------------
+        # Comentarios pendientes del usuario autenticado
+        # ---------------------------------------------------------------------
+        # Anteriormente filtrábamos por el nombre completo del usuario (`full_name`
+        # o `username`). En la práctica los comentarios pendientes se guardan con
+        # el nombre tal cual lo ingresa el usuario al crear el comentario, lo que
+        # puede no coincidir exactamente con `full_name`. Para evitar que los
+        # skeletons desaparezcan por una diferencia de mayúsculas/minúsculas o
+        # por usar el nombre completo en vez del username, ahora filtramos de
+        # forma case‑insensitive (`iexact`). De esta manera, siempre que el
+        # nombre almacenado sea una variante del username o del nombre del
+        # usuario, el comentario pendiente será incluido.
+        if self.request.user.is_authenticated:
+            # Preferimos el username porque es único y siempre está presente.
+            user_name = self.request.user.username
+            pending_comments = BlogComment.objects.filter(
+                Q(name__iexact=user_name)
+                | Q(name__iexact=self.request.user.get_full_name()),
+                blog_slug=self.object.slug,
+                status="pending",
+            ).values("id", "name", "content")[:20]
+        else:
+            # Para usuarios anónimos, no mostramos skeletons de pendientes (no pueden ver pendientes de otros)
+            pending_comments = BlogComment.objects.none()
         pending_list = []
         for pc in pending_comments:
             pending_list.append(

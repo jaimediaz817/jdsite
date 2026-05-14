@@ -531,14 +531,15 @@
                       </div>
                     {% endfor %}
 
-                    {% if comments %}
-                      <div class="jd-comments-end">
-                        <span class="jd-comments-end-line"></span>
-                        <i class="fas fa-check-double jd-comments-end-icon"></i>
-                        <span class="jd-comments-end-text">Has visto todos los comentarios</span>
-                        <span class="jd-comments-end-line"></span>
-                      </div>
-                    {% endif %}
+                      {% if comments %}
+                        <!-- El mensaje de fin de comentarios se muestra solo cuando no hay más comentarios por cargar -->
+                        <div class="jd-comments-end" style="display:none;">
+                          <span class="jd-comments-end-line"></span>
+                          <i class="fas fa-check-double jd-comments-end-icon"></i>
+                          <span class="jd-comments-end-text">Has visto todos los comentarios</span>
+                          <span class="jd-comments-end-line"></span>
+                        </div>
+                      {% endif %}
                   </div>
 
                 </section>

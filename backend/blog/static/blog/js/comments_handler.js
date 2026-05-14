@@ -15,6 +15,9 @@ function initCharCounter() {
     }
 }
 
+// TODO LIST UPDATE:
+// - [x] Search for skeletonPulse keyframes
+
 // ===== HTML ESCAPE (via DOM) =====
 function escapeHtml(str) {
     if (!str) return '';
@@ -34,6 +37,34 @@ function getAvatarColor(id) {
     return AVATAR_COLORS[Math.abs(Number(id)) % AVATAR_COLORS.length];
 }
 
+// ===== SKELETON HTML REUTILIZABLE =====
+/**
+ * buildSkeletonHTML – Genera el markup del skeleton para un comentario pendiente.
+ *
+ * Se utiliza la estructura `.sk-comment` que ya incluye las barras grisáceas
+ * con animación shimmer definidas en `blog_detail.css`. De esta forma el
+ * skeleton muestra un avatar placeholder y tres líneas de ancho variable que
+ * simulan el texto del comentario, junto al badge de "Pendiente de aprobación".
+ */
+function buildSkeletonHTML(skId, commentId, badgeText) {
+    var dataAttr = commentId ? (' data-comment-id="' + commentId + '"') : '';
+    // Avatar placeholder (circular) y cuerpo con líneas de carga
+    var html = '' +
+        '<div id="' + skId + '" class="sk-comment"' + dataAttr + '>' +
+            '<div class="sk-comment-avatar"></div>' +
+            '<div class="sk-comment-body">' +
+                '<div class="sk-line sk-line-long"></div>' +
+                '<div class="sk-line sk-line-medium"></div>' +
+                '<div class="sk-line sk-line-short"></div>' +
+            '</div>' +
+        '</div>' +
+        // Mensaje opcional debajo del skeleton con el badge de pendiente
+        '<div class="sk-pending-msg">' +
+            '<i class="fas fa-clock"></i> ' + badgeText +
+        '</div>';
+    return html;
+}
+
 // ===== MAIN COMMENT FORM SUBMIT (con card del comentario real + badge pendiente) =====
 function showPendingCardOnSubmit(commentId, name, content) {
     var container = document.getElementById('pending-skeletons-container');
@@ -42,62 +73,23 @@ function showPendingCardOnSubmit(commentId, name, content) {
         if (!commentsList) return;
         container = document.createElement('div');
         container.id = 'pending-skeletons-container';
-        commentsList.appendChild(container);
+        // Insertamos el contenedor al inicio de la lista de comentarios para que los skeletons aparezcan antes que los comentarios reales
+        if (commentsList.firstChild) {
+            commentsList.insertBefore(container, commentsList.firstChild);
+        } else {
+            commentsList.appendChild(container);
+        }
     }
 
     var skId = 'sk-pending-' + commentId;
     if (document.getElementById(skId)) return;
 
-    var initials = getInitials(name);
-    var avatarColor = getAvatarColor(commentId);
+    // Generamos el HTML del skeleton con la función reutilizable
+    var html = buildSkeletonHTML(skId, commentId, 'Pendiente de aprobación');
 
-    var html = '<div id="' + skId + '" class="jd-comment sk-pending-comment loaded" data-comment-id="' + commentId + '">' +
-        '<div class="jd-comment-avatar" style="background-color:' + avatarColor + ';">' + initials + '</div>' +
-        '<div class="jd-comment-body">' +
-            '<div class="jd-comment-bubble">' +
-                '<div class="jd-comment-meta">' +
-                    '<strong class="jd-comment-name">' + escapeHtml(name) + '</strong>' +
-                    '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;font-size:0.7rem;color:#92400e;font-weight:500;">' +
-                        '<span style="font-size:0.75rem;">&#9203;</span> Pendiente' +
-                    '</span>' +
-                    '<time class="jd-comment-date">Ahora</time>' +
-                '</div>' +
-                '<p class="jd-comment-text">' + escapeHtml(content) + '</p>' +
-            '</div>' +
-        '</div>' +
-    '</div>';
-
-    container.insertAdjacentHTML('beforeend', html);
-}
-
-// Save pending comment data to localStorage for restoration after reload
-function savePendingData(commentId, data) {
-    try {
-        var allData = JSON.parse(localStorage.getItem('jd_pending_data') || '{}');
-        allData[commentId] = data;
-        localStorage.setItem('jd_pending_data', JSON.stringify(allData));
-    } catch(e) {
-        console.error('Error al guardar pending_data:', e);
-    }
-}
-
-function getPendingData(commentId) {
-    try {
-        var allData = JSON.parse(localStorage.getItem('jd_pending_data') || '{}');
-        return allData[commentId] || null;
-    } catch(e) {
-        return null;
-    }
-}
-
-function removePendingData(commentId) {
-    try {
-        var allData = JSON.parse(localStorage.getItem('jd_pending_data') || '{}');
-        delete allData[commentId];
-        localStorage.setItem('jd_pending_data', JSON.stringify(allData));
-    } catch(e) {
-        console.error('Error al remover pending_data:', e);
-    }
+    // Insertamos el skeleton al inicio de la lista de comentarios para que aparezca primero
+    // Usamos 'afterbegin' para que quede antes de los comentarios ya renderizados.
+    container.insertAdjacentHTML('afterbegin', html);
 }
 
 window.submitMainCommentForm = async function(form) {
@@ -157,8 +149,7 @@ window.submitMainCommentForm = async function(form) {
 
         if (data.comment_id) {
             showPendingCardOnSubmit(data.comment_id, userName, userContent);
-            addPendingId(data.comment_id);
-            savePendingData(data.comment_id, {name: userName, content: userContent});
+            // LocalStorage persistence removed; no addPendingId or savePendingData
             form.reset();
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalContent;
@@ -178,9 +169,9 @@ window.submitMainCommentForm = async function(form) {
                 alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.');
             }
 
-            setTimeout(function() {
-                window.location.reload();
-            }, 800);
+            // Eliminamos la recarga automática para que el skeleton permanezca visible
+            // hasta que el comentario sea aprobado por el servidor.
+            // La página ya muestra el skeleton inmediatamente después de enviar.
             return;
         }
 
@@ -258,36 +249,6 @@ function initToggleReplies() {
     });
 }
 
-// ===== LOCALSTORAGE pending IDs =====
-function addPendingId(commentId) {
-    try {
-        var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
-        if (!ids.includes(commentId)) ids.push(commentId);
-        localStorage.setItem('jd_pending_ids', JSON.stringify(ids));
-    } catch(e) {
-        console.error('Error al guardar pending_id:', e);
-    }
-}
-
-function removePendingId(commentId) {
-    try {
-        var ids = JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
-        var filtered = ids.filter(function(id) { return id !== commentId; });
-        localStorage.setItem('jd_pending_ids', JSON.stringify(filtered));
-        removePendingData(commentId);
-    } catch(e) {
-        console.error('Error al remover pending_id:', e);
-    }
-}
-
-function getPendingIds() {
-    try {
-        return JSON.parse(localStorage.getItem('jd_pending_ids') || '[]');
-    } catch(e) {
-        return [];
-    }
-}
-
 // ===== SCROLL INFINITE =====
 (function() {
     var CONFIG = { COMMENTS_PER_PAGE: 10, SCROLL_MARGIN_PX: 150 };
@@ -332,6 +293,11 @@ function getPendingIds() {
             });
             if (!response.ok) throw new Error('Error servidor: ' + response.status);
             state.hasMore = response.headers.get('X-Has-More') === 'true';
+            // Si no hay más comentarios, mostrar el mensaje de fin de lista
+            if (!state.hasMore) {
+                var endEl = document.querySelector('.jd-comments-end');
+                if (endEl) endEl.style.display = 'block';
+            }
             var htmlNuevosComentarios = await response.text();
             hideSkeletonLoader();
             if (state.sentinel) {
@@ -360,7 +326,11 @@ function getPendingIds() {
 
     function showSkeletonLoader() {
         if (document.getElementById('comments-loader-wrapper')) return;
-        var html = '<div id="comments-loader-wrapper" style="animation: fadeIn 200ms ease;"><div class="comment-skeleton"><div class="comment-skeleton-avatar"></div><div class="comment-skeleton-content"><div class="comment-skeleton-line short"></div><div class="comment-skeleton-line medium"></div><div class="comment-skeleton-line long"></div></div></div><div class="comment-skeleton mt-3"><div class="comment-skeleton-avatar"></div><div class="comment-skeleton-content"><div class="comment-skeleton-line short"></div><div class="comment-skeleton-line long"></div></div></div></div>';
+        var badgeText = 'Cargando más comentarios...';
+        var html = '<div id="comments-loader-wrapper" style="animation: fadeIn 200ms ease;">' +
+            buildSkeletonHTML('sk-scroll-1', '', badgeText) +
+            '<div class="mt-3">' + buildSkeletonHTML('sk-scroll-2', '', badgeText) + '</div>' +
+        '</div>';
         if (state.sentinel) state.sentinel.insertAdjacentHTML('beforebegin', html);
     }
 
@@ -389,9 +359,22 @@ function getPendingIds() {
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeScrollInfinite);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeScrollInfinite();
+            // Si la cantidad de comentarios iniciales es menor al límite, mostrar mensaje de fin
+            var initialComments = document.querySelectorAll('.jd-comment').length;
+            if (initialComments < CONFIG.COMMENTS_PER_PAGE) {
+                var endEl = document.querySelector('.jd-comments-end');
+                if (endEl) endEl.style.display = 'block';
+            }
+        });
     } else {
         initializeScrollInfinite();
+        var initialComments = document.querySelectorAll('.jd-comment').length;
+        if (initialComments < CONFIG.COMMENTS_PER_PAGE) {
+            var endEl = document.querySelector('.jd-comments-end');
+            if (endEl) endEl.style.display = 'block';
+        }
     }
 })();
 
@@ -402,107 +385,33 @@ document.addEventListener('DOMContentLoaded', function() {
     initToggleReplies();
 
     setTimeout(function() {
-        // 1. Limpiar localStorage de IDs que ya no estan pendientes (SIEMPRE se ejecuta)
-        var commentsStatus = (typeof window.COMMENTS_STATUS !== 'undefined') ? window.COMMENTS_STATUS : {};
-        var pendingIdsLocal = getPendingIds();
-        if (pendingIdsLocal.length > 0) {
-            pendingIdsLocal.forEach(function(id) {
-                var status = commentsStatus[id];
-                if (!status || status === 'approved' || status === 'rejected') {
-                    removePendingId(id);
-                }
-            });
-        }
-
-        // 2. Mostrar solo comentarios pendientes del usuario actual (IDs en localStorage)
-        var pendingIds = getPendingIds();
-        if (pendingIds.length === 0) return;
-
+        // NOTE: LocalStorage cleanup removed. The pending comments are now fully managed by the server.
+        // 2. Mostrar comentarios pendientes del servidor (ya filtrados por usuario actual)
         var container = document.getElementById('pending-skeletons-container');
         if (!container) {
             var commentsList = document.getElementById('comments-list');
             if (commentsList) {
                 container = document.createElement('div');
                 container.id = 'pending-skeletons-container';
-                commentsList.appendChild(container);
+                // Insertar contenedor al INICIO para que skeletons aparezcan primeros
+                if (commentsList.firstChild) {
+                    commentsList.insertBefore(container, commentsList.firstChild);
+                } else {
+                    commentsList.appendChild(container);
+                }
             }
         }
         if (!container) return;
 
         var pendingComments = (typeof window.PENDING_COMMENTS !== 'undefined') ? window.PENDING_COMMENTS : [];
-        pendingComments = pendingComments.filter(function(pc) {
-            return pendingIds.indexOf(pc.id) !== -1;
-        });
+        // Mostrar todos los comentarios pendientes del usuario actual (del servidor)
         pendingComments.forEach(function(pc) {
             var skId = 'sk-pending-' + pc.id;
             if (document.getElementById(skId)) return;
-            var initials = getInitials(pc.name);
-            var avatarColor = getAvatarColor(pc.id);
-            var html = '<div id="' + skId + '" class="jd-comment sk-pending-comment loaded" data-comment-id="' + pc.id + '">' +
-                '<div class="jd-comment-avatar" style="background-color:' + avatarColor + ';">' + initials + '</div>' +
-                '<div class="jd-comment-body">' +
-                    '<div class="jd-comment-bubble">' +
-                        '<div class="jd-comment-meta">' +
-                            '<strong class="jd-comment-name">' + escapeHtml(pc.name) + '</strong>' +
-                            '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;font-size:0.7rem;color:#92400e;font-weight:500;">' +
-                                '<span style="font-size:0.75rem;">&#9203;</span> Pendiente' +
-                            '</span>' +
-                            '<time class="jd-comment-date">Pendiente de aprobacion</time>' +
-                        '</div>' +
-                        '<p class="jd-comment-text">' + escapeHtml(pc.content) + '</p>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
-            container.insertAdjacentHTML('beforeend', html);
-        });
-    }, 500);
-});
-
-function mostrarSkeletonPendiente(id, container) {
-    var skId = 'sk-pending-' + id;
-    if (document.getElementById(skId)) return;
-
-    var pendingData = getPendingData(id);
-
-    if (pendingData && pendingData.name && pendingData.content) {
-        var initials = getInitials(pendingData.name);
-        var avatarColor = getAvatarColor(id);
-        var html = '<div id="' + skId + '" class="jd-comment sk-pending-comment loaded" data-comment-id="' + id + '">' +
-            '<div class="jd-comment-avatar" style="background-color:' + avatarColor + ';">' + initials + '</div>' +
-            '<div class="jd-comment-body">' +
-                '<div class="jd-comment-bubble">' +
-                    '<div class="jd-comment-meta">' +
-                        '<strong class="jd-comment-name">' + escapeHtml(pendingData.name) + '</strong>' +
-                        '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;font-size:0.7rem;color:#92400e;font-weight:500;">' +
-                            '<span style="font-size:0.75rem;">&#9203;</span> Pendiente' +
-                        '</span>' +
-                        '<time class="jd-comment-date">Ahora</time>' +
-                    '</div>' +
-                    '<p class="jd-comment-text">' + escapeHtml(pendingData.content) + '</p>' +
-                '</div>' +
-            '</div>' +
-        '</div>';
-        container.insertAdjacentHTML('beforeend', html);
-    } else {
-        var html = '<div id="' + skId + '" class="jd-comment sk-pending-comment" data-comment-id="' + id + '">' +
-            '<div class="jd-comment-avatar"><div class="sk-comment-avatar"></div></div>' +
-            '<div class="jd-comment-body">' +
-                '<div class="jd-comment-bubble">' +
-                    '<div class="jd-comment-meta">' +
-                        '<div class="sk-line sk-line-short" style="width:35%;height:16px;"></div>' +
-                        '<div class="sk-line sk-line-medium" style="width:40%;height:12px;margin-top:4px;"></div>' +
-                    '</div>' +
-                    '<div style="margin-top:8px;">' +
-                        '<div class="sk-line" style="width:90%;height:12px;"></div>' +
-                        '<div class="sk-line" style="width:70%;height:12px;margin-top:6px;"></div>' +
-                    '</div>' +
-                    '<div class="sk-pending-msg" style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;">' +
-                        '<span style="font-size:0.9rem;">&#9203;</span>' +
-                        '<span style="font-family:DM Sans,sans-serif;font-size:0.75rem;color:#92400e;">Pendiente de aprobacion</span>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-        '</div>';
-        container.insertAdjacentHTML('beforeend', html);
-    }
-}
+            // Renderizamos cada comentario pendiente usando la función reutilizable
+            var html = buildSkeletonHTML(skId, pc.id, 'Pendiente de aprobación');
+            // Insertamos cada skeleton pendiente al inicio para que aparezca antes que los comentarios reales
+            container.insertAdjacentHTML('afterbegin', html);
+        }); // Closing parenthesis for the pendingComments.forEach loop
+    }); // Closing parenthesis for the setTimeout function
+}); // Closing parenthesis for the DOMContentLoaded event listener

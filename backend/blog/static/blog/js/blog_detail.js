@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var progressFill = progressBar.querySelector('.reading-progress-fill');
         if (progressFill) {
             progressFill.style.width = porcentaje + '%';
-            console.log('Progreso actualizado:', porcentaje + '%');
+            //console.log('Progreso actualizado:', porcentaje + '%');
         }
         if (porcentaje > 5) {
             progressBar.classList.add('visible');

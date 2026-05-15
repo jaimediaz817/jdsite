@@ -1,11 +1,9 @@
 {% load blog_filters %}
-<div id="comments-list">
-    <!-- Skeletons pendientes se inyectan acá vía JS -->
-    <div id="pending-skeletons-container"></div>
+<!-- Skeletons pendientes se inyectan acá vía JS -->
+<div id="pending-skeletons-container"></div>
 
-    {% for comment in comments %}
+{% for comment in comments %}
     <div class="jd-comment" data-comment-id="{{ comment.id }}">
-        <!-- Avatar con color y iniciales -->
         <div class="jd-comment-avatar" style="background-color: {{ comment.avatar_color }};">
             {{ comment.avatar_initials }}
         </div>
@@ -75,22 +73,4 @@
             </div>
         </div>
     </div>
-    {% empty %}
-    <div class="jd-comments-empty">
-        <div class="jd-comments-empty-icon"><i class="fas fa-comment-dots"></i></div>
-        <div class="jd-comments-empty-title">Sin comentarios aún</div>
-        <div class="jd-comments-empty-sub">Sé el primero en comentar.</div>
-    </div>
-    {% endfor %}
-
-    <!-- Mensaje de fin de comentarios (se muestra solo cuando no hay más) -->
-    <div class="jd-comments-end" style="display:none;">
-        <span class="jd-comments-end-line"></span>
-        <i class="fas fa-check-double jd-comments-end-icon"></i>
-        <span class="jd-comments-end-text">Has visto todos los comentarios</span>
-        <span class="jd-comments-end-line"></span>
-    </div>
-    
-    <!-- Sentinel para scroll infinito -->
-    <div id="comments-load-sentinel" style="height:1px;width:100%;opacity:0;"></div>
-</div>
+{% endfor %}

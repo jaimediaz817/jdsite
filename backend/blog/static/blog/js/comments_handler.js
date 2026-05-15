@@ -207,6 +207,7 @@ window.handleCommentSubmit = function(e) {
     return false;
 };
 
+
 // ===== REPLY BUTTON TOGGLE =====
 function initReplyToggle() {
     document.querySelectorAll('.reply-btn').forEach(function(btn) {
@@ -222,6 +223,10 @@ function initReplyToggle() {
                 form.style.display = 'block';
                 var textarea = form.querySelector('textarea');
                 if (textarea) textarea.focus();
+                // Ensure Alpine.js is initialized on the form so x-on directives work
+                if (typeof Alpine !== 'undefined') {
+                    Alpine.start(form);
+                }
             }
         });
     });
@@ -334,13 +339,19 @@ function initToggleReplies() {
         if (state.sentinel) state.sentinel.insertAdjacentHTML('beforebegin', html);
     }
 
-    function hideSkeletonLoader() {
-        var loader = document.getElementById('comments-loader-wrapper');
-        if (loader) {
+
+function hideSkeletonLoader() {
+    var loader = document.getElementById('comments-loader-wrapper');
+    if (loader) {
+        // Mantener el loader visible brevemente para que el usuario lo perciba
+        setTimeout(function() {
             loader.style.opacity = '0';
-            setTimeout(function() { if (loader.parentNode) loader.remove(); }, 200);
-        }
+            setTimeout(function() {
+                if (loader.parentNode) loader.remove();
+            }, 200);
+        }, 1000); // 1 s de retraso antes de iniciar la desaparición
     }
+}
 
     function animateAppearanceComments() {
         if (!state.commentsList) return;

@@ -253,7 +253,7 @@ function handleCommentSubmit(e) {
     if (window.submitMainCommentForm) window.submitMainCommentForm(e.target);
 }
 
-// Reply form template - global for Alpine.js
+// Reply form template - Vanilla JS
 window.getReplyFormHtml = function(commentId) {
     function esc(s) {
         if (!s) return '';
@@ -270,32 +270,52 @@ window.getReplyFormHtml = function(commentId) {
         er = ' readonly="readonly"';
     }
     return '<div class="reply-form-container mt-3 ml-5" style="animation: fadeIn 200ms ease;">' +
-        '<form id="reply-form-' + commentId + '" method="POST" action="' + window.location.pathname + 'comment/" x-data="{loading: false}" x-on:submit.prevent="if(!loading){loading=true;window.submitReplyForm(' + commentId + ')}">' +
+        '<form id="frm-' + commentId + '" method="POST" action="' + window.location.pathname + 'comment/">' +
         '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrf + '">' +
         '<input type="hidden" name="parent_id" value="' + commentId + '">' +
         '<input type="hidden" name="website" value="">' +
         '<div class="form-group"><input type="text" name="name" class="form-control form-control-sm" placeholder="Tu nombre" value="' + n + '" required' + nr + '></div>' +
         '<div class="form-group"><input type="email" name="email" class="form-control form-control-sm" placeholder="Tu email (opcional)" value="' + e + '"' + er + '></div>' +
-        '<div class="form-group"><textarea name="content" class="form-control form-control-sm" rows="2" placeholder="Escribe tu respuesta..." required autofocus></textarea></div>' +
-        '<div class="d-flex gap-2"><button type="submit" class="btn btn-primary btn-sm" x-text="loading ? \'Enviando...\' : \'Responder\'"><i class="fas fa-paper-plane mr-1"></i></button>' +
-        '<button type="button" class="btn btn-outline-secondary btn-sm cancel-reply" x-on:click="$el.closest(\'.jd-inline-reply\').style.display=\'none\'">Cancelar</button></div></form></div>';
+        '<div class="form-group"><textarea name="content" class="form-control form-control-sm" rows="2" placeholder="Escribe tu respuesta..." required></textarea></div>' +
+        '<div class="d-flex gap-2">' +
+        '<button type="submit" id="reply-submit-btn-' + commentId + '" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane mr-1"></i> Responder</button>' +
+        '<button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById(\'reply-form-' + commentId + '\').style.display=\'none\'">Cancelar</button>' +
+        '</div></form></div>';
 };
 
-// Submit reply form (global for Alpine.js)
+// Submit reply form - AJAX POST, muestra skeleton, NO recarga pagina
 window.submitReplyForm = function(commentId) {
-    var form = document.querySelector('#reply-form-' + commentId);
-    if (!form) { console.error('Form not found'); return; }
-    var btn = form.querySelector('button[type="submit"]');
+    var form = document.getElementById('frm-' + commentId);
+    if (!form) { console.error('Form not found'); return false; }
+    var btn = document.getElementById('reply-submit-btn-' + commentId);
+    if (!btn) return false;
     var orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
+
     fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
     .then(function(r) { if (!r.ok) throw new Error('Error ' + r.status); return r.json(); })
     .then(function(d) {
         if (!d.success) throw new Error('Error en el servidor');
-        if (typeof $ !== 'undefined' && $.toast) { $.toast({ heading:'Enviado!', text:'Pendiente de aprobacion.', icon:'success', position:'top-right', hideAfter:4500 }); }
-        else { alert('Enviado!'); }
-        window.location.reload();
+        if (!d.comment_id) throw new Error('No se obtuvo ID del comentario');
+        var inlineReply = document.getElementById('reply-form-' + commentId);
+        if (inlineReply) inlineReply.style.display = 'none';
+        var commentEl = inlineReply ? inlineReply.closest('.jd-comment') : null;
+        if (commentEl) {
+            var pendingHtml = '<div class="jd-pending-reply mt-2" style="animation: fadeIn 300ms ease; padding: 10px 14px; background: rgba(124,58,237,0.08); border-left: 3px solid #7c3aed; border-radius: 8px; margin-left: 50px;">' +
+                '<div style="display:flex;align-items:center;gap:8px;">' +
+                '<div class="sk-comment-avatar" style="width:28px;height:28px;min-width:28px;border-radius:50%;background:#e5e7eb;animation:pulse 1.5s ease infinite;"></div>' +
+                '<div style="flex:1;"><div class="sk-line" style="height:10px;width:120px;background:#e5e7eb;border-radius:4px;margin-bottom:6px;animation:pulse 1.5s ease infinite;"></div>' +
+                '<div class="sk-line" style="height:10px;width:80px;background:#e5e7eb;border-radius:4px;animation:pulse 1.5s ease infinite;"></div></div>' +
+                '<span style="font-size:11px;color:#7c3aed;white-space:nowrap;"><i class="fas fa-clock mr-1"></i> Pendiente</span></div></div>';
+            var actionsEl = commentEl.querySelector('.jd-comment-actions');
+            if (actionsEl) { actionsEl.insertAdjacentHTML('afterend', pendingHtml); }
+            else { commentEl.querySelector('.jd-comment-body').insertAdjacentHTML('beforeend', pendingHtml); }
+        }
+        if (typeof $ !== 'undefined' && $.toast) { $.toast({ heading:'Enviado!', text:'Respuesta pendiente de aprobacion.', icon:'success', position:'top-right', hideAfter:3000 }); }
+        form.reset();
+        btn.disabled = false;
+        btn.innerHTML = orig;
     })
     .catch(function(err) {
         btn.disabled = false; btn.innerHTML = orig;
@@ -303,4 +323,5 @@ window.submitReplyForm = function(commentId) {
         if (typeof $ !== 'undefined' && $.toast) { $.toast({ heading:'Error', text:msg, icon:'error', position:'top-right', hideAfter:5500 }); }
         else { alert('Error: ' + msg); }
     });
+    return false;
 };

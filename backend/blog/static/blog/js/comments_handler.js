@@ -206,6 +206,21 @@ function initReplyToggle() {
                 return;
             }
             inlineReply.style.display = 'block';
+
+            // Attach submit listener to prevent default form submission
+            var form = document.getElementById('frm-' + id);
+            if (form && typeof window.submitReplyForm === 'function') {
+                // Remove any existing listener to avoid duplicates
+                form._submitHandler = form._submitHandler || null;
+                if (form._submitHandler) {
+                    form.removeEventListener('submit', form._submitHandler);
+                }
+                form._submitHandler = function(ev) {
+                    ev.preventDefault();
+                    window.submitReplyForm(id);
+                };
+                form.addEventListener('submit', form._submitHandler);
+            }
             if (typeof Alpine !== 'undefined') {
                 Alpine.initTree(inlineReply);
             }

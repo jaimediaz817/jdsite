@@ -591,6 +591,23 @@ REPLACE
         window.USER_EMAIL = '{{ user.email|escapejs }}';
     </script>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar reacciones del blog
+        var blogReactions = document.querySelector('.blog-reactions');
+        if (blogReactions && blogReactions.dataset.slug) {
+            window.Reactions.initBlogReactions(blogReactions.dataset.slug);
+        }
+        // Inicializar reacciones de comentarios
+        document.querySelectorAll('.comment-reactions').forEach(function(container) {
+            var commentId = container.dataset.commentId;
+            if (commentId) {
+                window.Reactions.initCommentReactions(commentId, container);
+            }
+        });
+    });
+    </script>
+
     <!-- ✨ SISTEMA DE REACCIONES -->
     <script src="{% static 'blog/js/reactions.js' %}"></script>
 

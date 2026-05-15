@@ -584,7 +584,12 @@
     </dialog>
 
     <!-- ✨ VARIABLE AUTENTICACION PARA JS -->
-    <script>window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};</script>
+REPLACE
+    <script>
+        window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+        window.USER_NAME = '{{ user.get_full_name|default:user.username|escapejs }}';
+        window.USER_EMAIL = '{{ user.email|escapejs }}';
+    </script>
 
     <!-- ✨ SISTEMA DE REACCIONES -->
     <script src="{% static 'blog/js/reactions.js' %}"></script>

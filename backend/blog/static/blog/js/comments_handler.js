@@ -1,7 +1,7 @@
 /***
  * Comments Handler - Centralized logic for comments
  * Includes: scroll infinite, comment submission, reply forms, char counter
- * Vanilla JS only - no Alpine dependency
+ * Uses Alpine.js for reply forms
  */
 
 // ===== CHAR COUNTER =====
@@ -14,9 +14,6 @@ function initCharCounter() {
         });
     }
 }
-
-// TODO LIST UPDATE:
-// - [x] Search for skeletonPulse keyframes
 
 // ===== HTML ESCAPE (via DOM) =====
 function escapeHtml(str) {
@@ -38,17 +35,8 @@ function getAvatarColor(id) {
 }
 
 // ===== SKELETON HTML REUTILIZABLE =====
-/**
- * buildSkeletonHTML – Genera el markup del skeleton para un comentario pendiente.
- *
- * Se utiliza la estructura `.sk-comment` que ya incluye las barras grisáceas
- * con animación shimmer definidas en `blog_detail.css`. De esta forma el
- * skeleton muestra un avatar placeholder y tres líneas de ancho variable que
- * simulan el texto del comentario, junto al badge de "Pendiente de aprobación".
- */
 function buildSkeletonHTML(skId, commentId, badgeText) {
     var dataAttr = commentId ? (' data-comment-id="' + commentId + '"') : '';
-    // Avatar placeholder (circular) y cuerpo con líneas de carga
     var html = '' +
         '<div id="' + skId + '" class="sk-comment"' + dataAttr + '>' +
             '<div class="sk-comment-avatar"></div>' +
@@ -58,14 +46,13 @@ function buildSkeletonHTML(skId, commentId, badgeText) {
                 '<div class="sk-line sk-line-short"></div>' +
             '</div>' +
         '</div>' +
-        // Mensaje opcional debajo del skeleton con el badge de pendiente
         '<div class="sk-pending-msg">' +
             '<i class="fas fa-clock"></i> ' + badgeText +
         '</div>';
     return html;
 }
 
-// ===== MAIN COMMENT FORM SUBMIT (con card del comentario real + badge pendiente) =====
+// ===== MAIN COMMENT FORM SUBMIT =====
 function showPendingCardOnSubmit(commentId, name, content) {
     var container = document.getElementById('pending-skeletons-container');
     if (!container) {
@@ -73,22 +60,15 @@ function showPendingCardOnSubmit(commentId, name, content) {
         if (!commentsList) return;
         container = document.createElement('div');
         container.id = 'pending-skeletons-container';
-        // Insertamos el contenedor al inicio de la lista de comentarios para que los skeletons aparezcan antes que los comentarios reales
         if (commentsList.firstChild) {
             commentsList.insertBefore(container, commentsList.firstChild);
         } else {
             commentsList.appendChild(container);
         }
     }
-
     var skId = 'sk-pending-' + commentId;
     if (document.getElementById(skId)) return;
-
-    // Generamos el HTML del skeleton con la función reutilizable
-    var html = buildSkeletonHTML(skId, commentId, 'Pendiente de aprobación');
-
-    // Insertamos el skeleton al inicio de la lista de comentarios para que aparezca primero
-    // Usamos 'afterbegin' para que quede antes de los comentarios ya renderizados.
+    var html = buildSkeletonHTML(skId, commentId, 'Pendiente de aprobaci\u00f3n');
     container.insertAdjacentHTML('afterbegin', html);
 }
 
@@ -115,13 +95,11 @@ window.submitMainCommentForm = async function(form) {
     if (contentTextarea) userContent = contentTextarea.value;
 
     try {
-        // Usar FormData del form pero limpiar website (honeypot) si esta vacio
         var formData = new FormData(form);
         var websiteVal = formData.get('website');
         if (websiteVal === '' || websiteVal === null) {
             formData.delete('website');
         }
-
         var response = await fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -131,29 +109,23 @@ window.submitMainCommentForm = async function(form) {
                 'Accept': 'application/json'
             }
         });
-
         if (!response.ok) {
             if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la pagina.');
             if (response.status === 500) throw new Error('Error interno en el servidor.');
             throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
         }
-
         var data;
         try {
             data = await response.json();
         } catch (jsonError) {
             throw new Error('Error al procesar la respuesta del servidor.');
         }
-
         if (!data.success) throw new Error('Error en el servidor');
-
         if (data.comment_id) {
             showPendingCardOnSubmit(data.comment_id, userName, userContent);
-            // LocalStorage persistence removed; no addPendingId or savePendingData
             form.reset();
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalContent;
-
             if (typeof $ !== 'undefined' && $.toast) {
                 $.toast({
                     heading: 'Comentario enviado!',
@@ -168,13 +140,8 @@ window.submitMainCommentForm = async function(form) {
             } else {
                 alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.');
             }
-
-            // Eliminamos la recarga automática para que el skeleton permanezca visible
-            // hasta que el comentario sea aprobado por el servidor.
-            // La página ya muestra el skeleton inmediatamente después de enviar.
             return;
         }
-
         form.reset();
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
@@ -207,29 +174,47 @@ window.handleCommentSubmit = function(e) {
     return false;
 };
 
-
-// ===== REPLY BUTTON TOGGLE =====
+// ===== REPLY BUTTON TOGGLE (event delegation) =====
 function initReplyToggle() {
-    document.querySelectorAll('.reply-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var id = this.dataset.commentId;
-            var form = document.getElementById('reply-form-' + id);
-            if (!form) return;
-            var isOpen = form.style.display !== 'none';
-            document.querySelectorAll('.jd-inline-reply').forEach(function(f) {
-                f.style.display = 'none';
-            });
-            if (!isOpen) {
-                form.style.display = 'block';
-                var textarea = form.querySelector('textarea');
-                if (textarea) textarea.focus();
-                // Ensure Alpine.js is initialized on the form so x-on directives work
-                if (typeof Alpine !== 'undefined') {
-                    Alpine.start(form);
-                }
-            }
+    var commentsList = document.getElementById('comments-list');
+    if (!commentsList) return;
+
+    if (commentsList._replyToggleListener) {
+        commentsList.removeEventListener('click', commentsList._replyToggleListener);
+    }
+
+    commentsList._replyToggleListener = function(e) {
+        var btn = e.target.closest('.reply-btn');
+        if (!btn) return;
+        var id = btn.dataset.commentId;
+        if (!id) return;
+        var inlineReply = document.getElementById('reply-form-' + id);
+        if (!inlineReply) return;
+        var isOpen = inlineReply.style.display !== 'none';
+
+        document.querySelectorAll('.jd-inline-reply').forEach(function(f) {
+            f.style.display = 'none';
         });
-    });
+
+        if (!isOpen) {
+            if (typeof window.getReplyFormHtml === 'function') {
+                inlineReply.innerHTML = window.getReplyFormHtml(id);
+            } else {
+                inlineReply.style.display = 'block';
+                var textarea = inlineReply.querySelector('textarea');
+                if (textarea) textarea.focus();
+                return;
+            }
+            inlineReply.style.display = 'block';
+            if (typeof Alpine !== 'undefined') {
+                Alpine.initTree(inlineReply);
+            }
+            var newTextarea = inlineReply.querySelector('textarea');
+            if (newTextarea) newTextarea.focus();
+        }
+    };
+
+    commentsList.addEventListener('click', commentsList._replyToggleListener);
 }
 
 // ===== TOGGLE REPLIES =====
@@ -298,7 +283,6 @@ function initToggleReplies() {
             });
             if (!response.ok) throw new Error('Error servidor: ' + response.status);
             state.hasMore = response.headers.get('X-Has-More') === 'true';
-            // Si no hay más comentarios, mostrar el mensaje de fin de lista
             if (!state.hasMore) {
                 var endEl = document.querySelector('.jd-comments-end');
                 if (endEl) endEl.style.display = 'block';
@@ -331,7 +315,7 @@ function initToggleReplies() {
 
     function showSkeletonLoader() {
         if (document.getElementById('comments-loader-wrapper')) return;
-        var badgeText = 'Cargando más comentarios...';
+        var badgeText = 'Cargando m\u00e1s comentarios...';
         var html = '<div id="comments-loader-wrapper" style="animation: fadeIn 200ms ease;">' +
             buildSkeletonHTML('sk-scroll-1', '', badgeText) +
             '<div class="mt-3">' + buildSkeletonHTML('sk-scroll-2', '', badgeText) + '</div>' +
@@ -339,19 +323,17 @@ function initToggleReplies() {
         if (state.sentinel) state.sentinel.insertAdjacentHTML('beforebegin', html);
     }
 
-
-function hideSkeletonLoader() {
-    var loader = document.getElementById('comments-loader-wrapper');
-    if (loader) {
-        // Mantener el loader visible brevemente para que el usuario lo perciba
-        setTimeout(function() {
-            loader.style.opacity = '0';
+    function hideSkeletonLoader() {
+        var loader = document.getElementById('comments-loader-wrapper');
+        if (loader) {
             setTimeout(function() {
-                if (loader.parentNode) loader.remove();
-            }, 200);
-        }, 1000); // 1 s de retraso antes de iniciar la desaparición
+                loader.style.opacity = '0';
+                setTimeout(function() {
+                    if (loader.parentNode) loader.remove();
+                }, 200);
+            }, 1000);
+        }
     }
-}
 
     function animateAppearanceComments() {
         if (!state.commentsList) return;
@@ -369,7 +351,6 @@ function hideSkeletonLoader() {
         if (state.sentinel) { state.sentinel.remove(); state.sentinel = null; }
     }
 
-    // No se muestra el mensaje al cargar la página; se controla en loadMoreComments
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initializeScrollInfinite();
@@ -379,22 +360,19 @@ function hideSkeletonLoader() {
     }
 })();
 
-// ===== PENDING COMMENTS: mostrar TODOS los pendientes del servidor =====
+// ===== PENDING COMMENTS =====
 document.addEventListener('DOMContentLoaded', function() {
     initCharCounter();
     initReplyToggle();
     initToggleReplies();
 
     setTimeout(function() {
-        // NOTE: LocalStorage cleanup removed. The pending comments are now fully managed by the server.
-        // 2. Mostrar comentarios pendientes del servidor (ya filtrados por usuario actual)
         var container = document.getElementById('pending-skeletons-container');
         if (!container) {
             var commentsList = document.getElementById('comments-list');
             if (commentsList) {
                 container = document.createElement('div');
                 container.id = 'pending-skeletons-container';
-                // Insertar contenedor al INICIO para que skeletons aparezcan primeros
                 if (commentsList.firstChild) {
                     commentsList.insertBefore(container, commentsList.firstChild);
                 } else {
@@ -403,16 +381,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         if (!container) return;
-
         var pendingComments = (typeof window.PENDING_COMMENTS !== 'undefined') ? window.PENDING_COMMENTS : [];
-        // Mostrar todos los comentarios pendientes del usuario actual (del servidor)
         pendingComments.forEach(function(pc) {
             var skId = 'sk-pending-' + pc.id;
             if (document.getElementById(skId)) return;
-            // Renderizamos cada comentario pendiente usando la función reutilizable
-            var html = buildSkeletonHTML(skId, pc.id, 'Pendiente de aprobación');
-            // Insertamos cada skeleton pendiente al inicio para que aparezca antes que los comentarios reales
+            var html = buildSkeletonHTML(skId, pc.id, 'Pendiente de aprobaci\u00f3n');
             container.insertAdjacentHTML('afterbegin', html);
-        }); // Closing parenthesis for the pendingComments.forEach loop
-    }); // Closing parenthesis for the setTimeout function
-}); // Closing parenthesis for the DOMContentLoaded event listener
+        });
+    });
+});

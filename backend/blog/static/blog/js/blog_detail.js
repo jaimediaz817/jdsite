@@ -103,7 +103,7 @@ console.log('Iniciando barra progreso');
 var hideTimeout;
 document.addEventListener('DOMContentLoaded', function() {
     var progressBar = document.querySelector('.reading-progress-bar');
-    if (!progressBar) { console.warn('No se encontró .reading-progress-bar'); return; }
+    if (!progressBar) { console.warn('No se encontro .reading-progress-bar'); return; }
     console.log('Barra de progreso encontrada');
     window.onscroll = function() {
         var scrol = window.pageYOffset || document.documentElement.scrollTop;
@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var progressFill = progressBar.querySelector('.reading-progress-fill');
         if (progressFill) {
             progressFill.style.width = porcentaje + '%';
-            //console.log('Progreso actualizado:', porcentaje + '%');
         }
         if (porcentaje > 5) {
             progressBar.classList.add('visible');
@@ -148,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.close(); });
     }
 });
-
 
 // ===== SHARE BUTTONS =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -224,172 +222,85 @@ window.submitMainCommentForm = async function(form) {
             method: 'POST',
             body: new FormData(form),
             credentials: 'same-origin',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         });
-        
         if (!response.ok) throw new Error('Error ' + response.status);
-        
         var data;
-        try { 
-            data = await response.json(); 
-        } catch (jsonError) {
-            if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la página.');
+        try { data = await response.json(); } catch (jsonError) {
+            if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la pagina.');
             if (response.status === 500) throw new Error('Error interno en el servidor.');
             throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
         }
-        
         if (!data.success) throw new Error('Error en el servidor');
-        
         if (typeof $ !== 'undefined' && $.toast) {
-            $.toast({ 
-                heading: 'Comentario enviado!', 
-                text: 'Tu comentario esta pendiente de aprobacion y sera publicado pronto.', 
-                icon: 'success', 
-                position: 'top-right', 
-                hideAfter: 4500, 
-                stack: 4, 
-                bgColor: '#7c3aed', 
-                loaderBg: '#6366f1' 
-            });
-        } else { 
-            alert('Comentario enviado! Tu comentario esta pendiente de aprobacion.'); 
-        }
-        
-        var commentsList = document.getElementById('comments-list');
-        if (commentsList) {
-            var skeletonHtml = '<div id="temp-comment-skeleton" style="animation: fadeIn 300ms ease;"><div class="comment-skeleton"><div class="comment-skeleton-avatar"></div><div class="comment-skeleton-content"><div class="comment-skeleton-line short"></div><div class="comment-skeleton-line medium"></div><div class="comment-skeleton-line long"></div></div></div>';
-            commentsList.insertAdjacentHTML('afterbegin', skeletonHtml);
-            setTimeout(function() { 
-                var skeleton = document.getElementById('temp-comment-skeleton'); 
-                if (skeleton) { 
-                    skeleton.style.opacity = '0'; 
-                    setTimeout(function() { skeleton.remove(); }, 300); 
-                } 
-            }, 3000);
-        }
-        
+            $.toast({ heading: 'Comentario enviado!', text: 'Tu comentario esta pendiente de aprobacion y sera publicado pronto.', icon: 'success', position: 'top-right', hideAfter: 4500, stack: 4, bgColor: '#7c3aed', loaderBg: '#6366f1' });
+        } else { alert('Comentario enviado!'); }
         form.reset();
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
     } catch (error) {
-        submitBtn.disabled = false; 
+        submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
-        var errorMessage = error.message || 'Ha ocurrido un error al enviar el comentario';
+        var msg = error.message || 'Ha ocurrido un error';
         if (typeof $ !== 'undefined' && $.toast) {
-            $.toast({ 
-                heading: 'Error', 
-                text: errorMessage, 
-                icon: 'error', 
-                position: 'top-right', 
-                hideAfter: 5500, 
-                stack: 4, 
-                bgColor: '#dc2626', 
-                loaderBg: '#f87171' 
-            });
-        } else { 
-            alert('Error: ' + errorMessage); 
-        }
+            $.toast({ heading: 'Error', text: msg, icon: 'error', position: 'top-right', hideAfter: 5500, stack: 4, bgColor: '#dc2626', loaderBg: '#f87171' });
+        } else { alert('Error: ' + msg); }
     }
 };
 
-// Función manejadora para Alpine.js
 function handleCommentSubmit(e) {
     e.preventDefault();
-    if (window.submitMainCommentForm) {
-        window.submitMainCommentForm(e.target);
-    }
+    if (window.submitMainCommentForm) window.submitMainCommentForm(e.target);
 }
 
-// Reply form template (global for Alpine.js)
+// Reply form template - global for Alpine.js
 window.getReplyFormHtml = function(commentId) {
-    return '<div class="reply-form-container mt-3 ml-5" style="animation: fadeIn 200ms ease;"><form id="reply-form-' + commentId + '" method="POST" action="' + window.location.pathname + 'comment/" x-on:submit.prevent="window.submitReplyForm(' + commentId + ')">' +
-        '<input type="hidden" name="csrfmiddlewaretoken" value="' + document.querySelector('[name=csrfmiddlewaretoken]').value + '">' +
+    function esc(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(s));
+        return d.innerHTML;
+    }
+    var csrf = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+    var n = '', e = '', nr = '', er = '';
+    if (window.USER_AUTHENTICATED) {
+        n = esc(window.USER_NAME || '');
+        e = esc(window.USER_EMAIL || '');
+        nr = ' readonly="readonly"';
+        er = ' readonly="readonly"';
+    }
+    return '<div class="reply-form-container mt-3 ml-5" style="animation: fadeIn 200ms ease;">' +
+        '<form id="reply-form-' + commentId + '" method="POST" action="' + window.location.pathname + 'comment/" x-data="{loading: false}" x-on:submit.prevent="if(!loading){loading=true;window.submitReplyForm(' + commentId + ')}">' +
+        '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrf + '">' +
         '<input type="hidden" name="parent_id" value="' + commentId + '">' +
         '<input type="hidden" name="website" value="">' +
-        '<div class="form-group"><input type="text" name="name" class="form-control form-control-sm" placeholder="Tu nombre" required></div>' +
-        '<div class="form-group"><input type="email" name="email" class="form-control form-control-sm" placeholder="Tu email (opcional)"></div>' +
+        '<div class="form-group"><input type="text" name="name" class="form-control form-control-sm" placeholder="Tu nombre" value="' + n + '" required' + nr + '></div>' +
+        '<div class="form-group"><input type="email" name="email" class="form-control form-control-sm" placeholder="Tu email (opcional)" value="' + e + '"' + er + '></div>' +
         '<div class="form-group"><textarea name="content" class="form-control form-control-sm" rows="2" placeholder="Escribe tu respuesta..." required autofocus></textarea></div>' +
-        '<div class="d-flex gap-2"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane mr-1"></i> Responder</button>' +
-        '<button type="button" class="btn btn-outline-secondary btn-sm cancel-reply" x-on:click="replyId = null">Cancelar</button></div></form></div>';
+        '<div class="d-flex gap-2"><button type="submit" class="btn btn-primary btn-sm" x-text="loading ? \'Enviando...\' : \'Responder\'"><i class="fas fa-paper-plane mr-1"></i></button>' +
+        '<button type="button" class="btn btn-outline-secondary btn-sm cancel-reply" x-on:click="$el.closest(\'.jd-inline-reply\').style.display=\'none\'">Cancelar</button></div></form></div>';
 };
 
 // Submit reply form (global for Alpine.js)
 window.submitReplyForm = function(commentId) {
-    const form = document.querySelector('#reply-form-' + commentId);
-    if (!form) {
-        console.error('Form not found: #reply-form-' + commentId);
-        return;
-    }
-    
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const original = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
-    
-    fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        credentials: 'same-origin',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => {
-        if (!res.ok) throw new Error('Error ' + res.status);
-        return res.json();
-    })
-    .then(data => {
-        if (!data.success) throw new Error('Error en el servidor');
-        if (typeof $ !== 'undefined' && $.toast) {
-            $.toast({ heading:'Comentario enviado!', text:'Tu comentario está pendiente de aprobación.', icon:'success', position:'top-right', hideAfter:4500 });
-        } else { alert('Comentario enviado!'); }
+    var form = document.querySelector('#reply-form-' + commentId);
+    if (!form) { console.error('Form not found'); return; }
+    var btn = form.querySelector('button[type="submit"]');
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
+    fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+    .then(function(r) { if (!r.ok) throw new Error('Error ' + r.status); return r.json(); })
+    .then(function(d) {
+        if (!d.success) throw new Error('Error en el servidor');
+        if (typeof $ !== 'undefined' && $.toast) { $.toast({ heading:'Enviado!', text:'Pendiente de aprobacion.', icon:'success', position:'top-right', hideAfter:4500 }); }
+        else { alert('Enviado!'); }
         window.location.reload();
     })
-    .catch(err => {
-        submitBtn.disabled = false; submitBtn.innerHTML = original;
-        const msg = err.message || 'Error al enviar el comentario';
-        if (typeof $ !== 'undefined' && $.toast) {
-            $.toast({ heading:'Error', text:msg, icon:'error', position:'top-right', hideAfter:5500 });
-        } else { alert('Error: ' + msg); }
+    .catch(function(err) {
+        btn.disabled = false; btn.innerHTML = orig;
+        var msg = err.message || 'Error';
+        if (typeof $ !== 'undefined' && $.toast) { $.toast({ heading:'Error', text:msg, icon:'error', position:'top-right', hideAfter:5500 }); }
+        else { alert('Error: ' + msg); }
     });
 };
-
-// ===== QUICK SIGNUP FORM (Modal) =====
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('quickSignupForm');
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            var submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Registrando...'; }
-            try {
-                var response = await fetch('/blog/quick-signup/', { 
-                    method: 'POST', 
-                    body: new FormData(form), 
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                });
-                if (!response.ok) throw new Error('Error ' + response.status);
-                var data = await response.json();
-                if (data.success) { window.location.href = data.redirect || '/blog/'; }
-                else {
-                    var msgDiv = document.getElementById('signupMessages');
-                    var errorMsg = data.error || (data.errors && Object.values(data.errors)[0]) || 'Error en el registro';
-                    if (msgDiv) { msgDiv.innerHTML = '<div class="alert alert-danger" style="background: rgba(220,38,38,0.2); border-color: rgba(220,38,38,0.5); color: white;">' + errorMsg + '</div>'; }
-                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'Registrarse'; }
-                }
-            } catch (error) {
-                var msgDiv = document.getElementById('signupMessages');
-                if (msgDiv) { msgDiv.innerHTML = '<div class="alert alert-danger" style="background: rgba(220,38,38,0.2); border-color: rgba(220,38,38,0.5); color: white;">' + error.message + '</div>'; }
-                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'Registrarse'; }
-            }
-        });
-    }
-});

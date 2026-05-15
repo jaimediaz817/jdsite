@@ -14,7 +14,7 @@
     --reaction-shadow-active: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
-/* === BARRA FLOTANTE LATERAL IZQUIERDA (tamaños originales) === */
+/* === BARRA FLOTANTE LATERAL IZQUIERDA === */
 .floating-reaction-bar {
     display: flex;
     flex-direction: column;
@@ -27,7 +27,6 @@
     align-items: center;
 }
 
-/* Botones de reacción en barra flotante */
 .floating-reaction-bar .reaction-button,
 .floating-reaction-bar .btn-reaction-float {
     width: 44px;
@@ -47,11 +46,6 @@
     position: relative;
 }
 
-.floating-reaction-bar .reaction-button+.reaction-button,
-.floating-reaction-bar .btn-reaction-float+.btn-reaction-float {
-    margin-top: 4px;
-}
-
 .floating-reaction-bar .reaction-button:hover,
 .floating-reaction-bar .btn-reaction-float:hover {
     background: var(--reaction-bg-hover);
@@ -63,299 +57,67 @@
     transform: scale(0.92);
 }
 
-/* Estado activo (usuario ha reaccionado) */
-.floating-reaction-bar .reaction-button.active,
-.floating-reaction-bar .btn-reaction-float.active {
-    background: var(--reaction-active-bg);
-    color: var(--reaction-active-text);
-    box-shadow: var(--reaction-shadow-active);
-    border: 1px solid #c4b5fd;
-    font-weight: 600;
+/* ==============================
+   COLORES POR TIPO DE REACCIÓN
+   ============================== */
+
+/* LIKE – verde */
+.blog-reactions .reaction-button[data-reaction="like"].active,
+.comment-reactions .reaction-comment-btn[data-reaction="like"].active,
+.floating-reaction-bar .reaction-button[data-reaction="like"].active {
+    background: #dcfce7 !important;
+    color: #16a34a !important;
+    border-color: #86efac !important;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2) !important;
 }
 
-.floating-reaction-bar .reaction-button.active:hover,
-.floating-reaction-bar .btn-reaction-float.active:hover {
-    background: var(--reaction-active-hover);
+.blog-reactions .reaction-button[data-reaction="like"]:hover,
+.comment-reactions .reaction-comment-btn[data-reaction="like"]:hover,
+.floating-reaction-bar .reaction-button[data-reaction="like"]:hover {
+    background: #bbf7d0 !important;
 }
 
-.floating-reaction-bar .reaction-button i,
-.floating-reaction-bar .btn-reaction-float i {
-    font-size: 18px;
-    line-height: 1;
-    transition: transform 0.2s ease, color 0.2s ease;
+/* LOVE – rojo */
+.blog-reactions .reaction-button[data-reaction="love"].active,
+.comment-reactions .reaction-comment-btn[data-reaction="love"].active,
+.floating-reaction-bar .reaction-button[data-reaction="love"].active {
+    background: #ffe4e6 !important;
+    color: #e11d48 !important;
+    border-color: #fda4af !important;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2) !important;
 }
 
-.floating-reaction-bar .reaction-button:hover i,
-.floating-reaction-bar .btn-reaction-float:hover i {
-    color: #374151;
+.blog-reactions .reaction-button[data-reaction="love"]:hover,
+.comment-reactions .reaction-comment-btn[data-reaction="love"]:hover,
+.floating-reaction-bar .reaction-button[data-reaction="love"]:hover {
+    background: #fecdd3 !important;
 }
 
-.floating-reaction-bar .reaction-button .count,
-.floating-reaction-bar .btn-reaction-float .count {
-    font-size: 10px;
-    font-weight: 600;
-    margin-top: 1px;
-    color: #9ca3af;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1;
+/* IDEA – amarillo/dorado */
+.blog-reactions .reaction-button[data-reaction="idea"].active,
+.comment-reactions .reaction-comment-btn[data-reaction="idea"].active,
+.floating-reaction-bar .reaction-button[data-reaction="idea"].active {
+    background: #fef9c3 !important;
+    color: #ca8a04 !important;
+    border-color: #fde047 !important;
+    box-shadow: 0 2px 8px rgba(202, 138, 4, 0.2) !important;
 }
 
-.floating-reaction-bar .reaction-button.active .count,
-.floating-reaction-bar .btn-reaction-float.active .count {
-    color: #7c3aed;
-    font-weight: 700;
+.blog-reactions .reaction-button[data-reaction="idea"]:hover,
+.comment-reactions .reaction-comment-btn[data-reaction="idea"]:hover,
+.floating-reaction-bar .reaction-button[data-reaction="idea"]:hover {
+    background: #fef08a !important;
 }
 
-.floating-reaction-bar .reaction-button:hover .count,
-.floating-reaction-bar .btn-reaction-float:hover .count {
-    color: #6b7280;
+/* FIRE – naranja */
+.blog-reactions .reaction-button[data-reaction="fire"].active,
+.comment-reactions .reaction-comment-btn[data-reaction="fire"].active,
+.floating-reaction-bar .reaction-button[data-reaction="fire"].active {
+    background: #ffedd5 !important;
+    color: #ea580c !important;
+    border-color: #fdba74 !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
 }
 
-/* Botón de comentarios - anular Bootstrap */
-.floating-reaction-bar .comment-button {
-    width: 44px !important;
-    height: 44px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    border-radius: 12px !important;
-    background: transparent !important;
-    color: var(--reaction-text) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-decoration: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    font-size: 12px !important;
-}
-
-.floating-reaction-bar .comment-button:hover {
-    background: var(--reaction-bg-hover) !important;
-    color: #374151 !important;
-    text-decoration: none !important;
-}
-
-.floating-reaction-bar .comment-button i {
-    font-size: 18px;
-    line-height: 1;
-}
-
-.floating-reaction-bar .comment-button .count {
-    font-size: 10px;
-    font-weight: 600;
-    margin-top: 1px;
-    color: #9ca3af;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1;
-}
-
-.floating-reaction-bar .comment-button:hover .count {
-    color: #6b7280;
-}
-
-/* Separador visual */
-.floating-reaction-bar .border-top {
-    width: 28px;
-    border-color: #e5e7eb !important;
-    opacity: 1;
-}
-
-/* === BOTONES DEL ARTICULO (inferiores) - UI/UX profesional === */
-.blog-reactions .reaction-button {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 4px 8px;
-    min-width: 44px;
-    min-height: 40px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #6b7280;
-    font-size: 0.65rem;
-    font-weight: 500;
-    transition: all 0.18s ease;
-    cursor: pointer;
-    box-shadow: none;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.01em;
-    margin: 0 4px;
-}
-
-.blog-reactions .reaction-button:hover {
-    background: #faf9ff;
-    border-color: #d4c8f0;
-}
-
-.blog-reactions .reaction-button:active {
-    transform: scale(0.94);
-}
-
-.blog-reactions .reaction-button.active {
-    background: linear-gradient(135deg, #f5f0ff 0%, #faf9ff 100%);
-    color: #6f42c1;
-    border-color: #c4b5fd;
-    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.12);
-    font-weight: 600;
-}
-
-.blog-reactions .reaction-button .icon {
-    font-size: 20px;
-    line-height: 1;
-    color: #9ca3af;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.blog-reactions .reaction-button:hover .icon {
-    color: #8b7ec8;
-    transform: scale(1.1);
-}
-
-.blog-reactions .reaction-button.active .icon {
-    color: #6f42c1;
-}
-
-.blog-reactions .reaction-button .count {
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: #a0aec0;
-    min-width: 20px;
-    text-align: center;
-    line-height: 1;
-    transition: color 0.2s ease;
-}
-
-.blog-reactions .reaction-button.active .count {
-    color: #6f42c1;
-    font-weight: 700;
-}
-
-/* Animación pulsación */
-@keyframes reactionPulse {
-    0% {
-        transform: scale(1);
-    }
-
-    40% {
-        transform: scale(1.15);
-    }
-
-    60% {
-        transform: scale(0.95);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Foco accesible */
-.reaction-button:focus-visible {
-    outline: 2px solid #7c3aed;
-    outline-offset: 2px;
-}
-
-/* Estados de carga */
-.reaction-button.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .floating-reaction-bar {
-        width: 48px;
-        padding: 4px;
-        gap: 4px;
-    }
-
-    .floating-reaction-bar .reaction-button,
-    .floating-reaction-bar .comment-button {
-        width: 38px !important;
-        height: 38px !important;
-    }
-
-    .floating-reaction-bar .reaction-button .icon,
-    .floating-reaction-bar .comment-button .icon {
-        font-size: 16px;
-    }
-}
-
-/* ===== REACCIONES EN COMENTARIOS ===== */
-.comment-reactions {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 6px;
-    background: #f9fafb;
-    border-radius: 20px;
-    border: 1px solid #e5e7eb;
-}
-
-.comment-reactions .reaction-comment-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 4px 8px;
-    min-height: 28px;
-    border: none;
-    border-radius: 14px;
-    background: transparent;
-    color: #9ca3af;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.comment-reactions .reaction-comment-btn:hover {
-    background: #e5e7eb;
-    color: #6b7280;
-}
-
-.comment-reactions .reaction-comment-btn:active {
-    transform: scale(0.9);
-}
-
-.comment-reactions .reaction-comment-btn .icon {
-    font-size: 15px;
-    line-height: 1;
-    color: currentColor;
-}
-
-.comment-reactions .reaction-comment-btn .count {
-    font-size: 11px;
-    font-weight: 600;
-    color: currentColor;
-}
-
-/* Estado activo en comentarios - morado */
-.comment-reactions .reaction-comment-btn.active {
-    background: #f5f3ff;
-    color: #7c3aed;
-    border: 1px solid #c4b5fd;
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(124, 58, 237, 0.15);
-}
-
-.comment-reactions .reaction-comment-btn.active:hover {
-    background: #ede9fe;
-}
-
-.comment-reactions .reaction-comment-btn.active .icon {
-    color: #7c3aed;
-}
-
-.comment-reactions .reaction-comment-btn.active .count {
-    color: #7c3aed;
-    font-weight: 700;
-}
+.blog-reactions .reaction-button[data-reaction="fire"]:hover,
+.comment-reactions .reaction-comment-btn

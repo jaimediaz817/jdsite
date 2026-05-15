@@ -184,9 +184,9 @@ window.Reactions = {
             } else {
                 button.classList.remove('active');
             }
-            // Update icon
+            // Update icon (solo toggle far/fas si el icono tiene ambas variantes)
             const icon = button.querySelector('i');
-            if (icon) {
+            if (icon && !icon.classList.contains('fa-fire')) {
                 icon.classList.toggle('far', !isActive);
                 icon.classList.toggle('fas', isActive);
             }
@@ -209,9 +209,9 @@ window.Reactions = {
             } else {
                 button.classList.remove('active');
             }
-            // Update icon
+            // Update icon (solo toggle far/fas si el icono tiene ambas variantes)
             const icon = button.querySelector('i');
-            if (icon) {
+            if (icon && !icon.classList.contains('fa-fire')) {
                 icon.classList.toggle('far', !isActive);
                 icon.classList.toggle('fas', isActive);
             }
@@ -226,7 +226,7 @@ window.Reactions = {
             button.classList.remove('active');
         }
         const icon = button.querySelector('i');
-        if (icon) {
+        if (icon && !icon.classList.contains('fa-fire')) {
             icon.classList.toggle('far', !active);
             icon.classList.toggle('fas', active);
         }

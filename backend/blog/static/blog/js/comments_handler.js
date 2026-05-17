@@ -440,6 +440,86 @@ function initToggleReplies() {
     }
 })();
 
+// ===== DELETE COMMENT via window function - usado como onclick en HTML =====
+window.deleteComment = function(commentId, slug) {
+    if (!commentId || !slug) return;
+
+    if (!confirm('¿Estás seguro de eliminar este comentario? Esta acción no se puede deshacer.')) {
+        return;
+    }
+
+    var csrf = document.querySelector('[name=csrfmiddlewaretoken]');
+    var csrfValue = csrf ? csrf.value : '';
+
+    fetch('/blog/' + slug + '/comment/' + commentId + '/delete/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfValue,
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'delete' })
+    })
+    .then(function(r) {
+        if (!r.ok) {
+            return r.json().then(function(d) {
+                throw new Error(d.error || 'Error al eliminar');
+            });
+        }
+        return r.json();
+    })
+    .then(function(d) {
+        if (d.success) {
+            // Encontrar el elemento a eliminar (usando data-comment-id del contenedor)
+            var commentEl = document.querySelector('[data-comment-id="' + commentId + '"]') || document.querySelector('.jd-del-comment-btn[data-comment-id="' + commentId + '"]');
+            if (commentEl) {
+                // Si encontramos por data-comment-id, subimos al contenedor jd-comment o jd-reply
+                if (commentEl.classList.contains('jd-comment') || commentEl.classList.contains('jd-reply')) {
+                    // ya es el contenedor correcto
+                } else {
+                    commentEl = commentEl.closest('.jd-comment, .jd-reply');
+                }
+                if (commentEl) {
+                    commentEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    commentEl.style.opacity = '0';
+                    commentEl.style.transform = 'translateX(20px)';
+                    setTimeout(function() {
+                        if (commentEl.parentNode) commentEl.remove();
+                    }, 300);
+                }
+            }
+            if (typeof $ !== 'undefined' && $.toast) {
+                $.toast({
+                    heading: 'Eliminado',
+                    text: 'Comentario eliminado correctamente.',
+                    icon: 'success',
+                    position: 'top-right',
+                    hideAfter: 3000,
+                    stack: 4,
+                    bgColor: '#dc2626',
+                    loaderBg: '#f87171'
+                });
+            }
+        }
+    })
+    .catch(function(err) {
+        if (typeof $ !== 'undefined' && $.toast) {
+            $.toast({
+                heading: 'Error',
+                text: err.message || 'No se pudo eliminar el comentario.',
+                icon: 'error',
+                position: 'top-right',
+                hideAfter: 4000,
+                stack: 4,
+                bgColor: '#dc2626',
+                loaderBg: '#f87171'
+            });
+        } else {
+            alert('Error: ' + (err.message || 'No se pudo eliminar'));
+        }
+    });
+};
+
 // ===== PENDING COMMENTS =====
 document.addEventListener('DOMContentLoaded', function() {
     initCharCounter();

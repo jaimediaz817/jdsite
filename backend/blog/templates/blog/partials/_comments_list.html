@@ -22,6 +22,9 @@
                         <span class="jd-badge jd-badge-admin"><i class="fas fa-shield-alt mr-1"></i>Admin</span>
                     {% endif %}
                     <time class="jd-comment-date">{{ comment.created_at|date:"d M Y" }} {{ comment.created_at|naturaltime_es }}</time>
+                    {% if user.is_superuser %}
+                        <button class="jd-del-comment-btn" onclick="window.deleteComment({{ comment.id }}, '{{ comment.blog_slug }}')" title="Eliminar comentario"><i class="fas fa-times"></i></button>
+                    {% endif %}
                 </div>
                 <p class="jd-comment-text">{{ comment.content|linebreaksbr }}</p>
                 <div class="jd-comment-actions">
@@ -65,6 +68,9 @@
                                             <span class="jd-badge jd-badge-admin"><i class="fas fa-shield-alt mr-1"></i>Admin</span>
                                         {% endif %}
                                         <time class="jd-reply-date">{{ reply.created_at|naturaltime_es }}</time>
+                                        {% if user.is_superuser %}
+                                            <button class="jd-del-comment-btn" onclick="window.deleteComment({{ reply.id }}, '{{ reply.blog_slug }}')" title="Eliminar respuesta"><i class="fas fa-times"></i></button>
+                                        {% endif %}
                                     </div>
                                     <p class="jd-reply-text">{{ reply.content|linebreaksbr }}</p>
                                     <!-- Reacciones en respuestas -->

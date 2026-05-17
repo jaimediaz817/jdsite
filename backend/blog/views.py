@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from blog.models import BlogComment, BlogPost
 from blog.forms import CommentForm, QuickSignupForm
 from blog.services import create_comment, get_approved_comments, get_comment_count
@@ -254,9 +255,18 @@ def load_more_comments(request, slug):
     # Renderizar los comentarios usando el mismo template que la vista
     # principal.  El contexto incluye ``has_more`` para que el template
     # pueda, si lo desea, mostrar un indicador.
+    from django.contrib.auth.models import AnonymousUser
+
+    request_user = (
+        request.user if request.user.is_authenticated else AnonymousUser()
+    )
     html = render_to_string(
         "blog/partials/_comments_list.html",
-        {"comments": page_obj, "has_more": page_obj.has_next()},
+        {
+            "comments": page_obj,
+            "has_more": page_obj.has_next(),
+            "user": request_user,
+        },
     )
 
     response = HttpResponse(html)
@@ -272,6 +282,36 @@ def check_comment_status(request, slug, comment_id):
     try:
         comment = BlogComment.objects.get(id=comment_id, blog_slug=slug)
         return JsonResponse({"success": True, "status": comment.status})
+    except BlogComment.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Comentario no encontrado"}, status=404
+        )
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+@csrf_protect
+@require_http_methods(["POST"])
+@login_required
+def delete_comment(request, slug, comment_id):
+    """
+    Elimina un comentario o respuesta. Solo accesible para superusuarios.
+    Método POST con protección CSRF.
+    """
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "No tienes permisos para eliminar comentarios.",
+            },
+            status=403,
+        )
+    try:
+        comment = BlogComment.objects.get(id=comment_id, blog_slug=slug)
+        comment.delete()
+        return JsonResponse(
+            {"success": True, "message": "Comentario eliminado correctamente."}
+        )
     except BlogComment.DoesNotExist:
         return JsonResponse(
             {"success": False, "error": "Comentario no encontrado"}, status=404

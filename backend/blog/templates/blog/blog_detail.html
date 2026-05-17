@@ -430,9 +430,12 @@
                               {% endif %}
 
                           <!-- Mostrar tiempo relativo y fecha completa -->
-                          <time class="jd-comment-date">
-                              {{ comment.created_at|date:"d M Y" }} {{ comment.created_at|naturaltime_es }}
-                          </time>
+                                <time class="jd-comment-date">
+                                    {{ comment.created_at|date:"d M Y" }} {{ comment.created_at|naturaltime_es }}
+                                </time>
+                                {% if user.is_superuser %}
+                                    <button class="jd-del-comment-btn" onclick="window.deleteComment({{ comment.id }}, '{{ post.slug }}')" title="Eliminar comentario"><i class="fas fa-times"></i></button>
+                                {% endif %}
                             </div>
 
                             <p class="jd-comment-text">{{ comment.content|linebreaksbr }}</p>
@@ -516,6 +519,9 @@
                                       {% endif %}
 
                                       <time class="jd-reply-date">{{ reply.created_at|naturaltime_es }}</time>
+                                      {% if user.is_superuser %}
+                                          <button class="jd-del-comment-btn" onclick="window.deleteComment({{ reply.id }}, '{{ post.slug }}')" title="Eliminar respuesta"><i class="fas fa-times"></i></button>
+                                      {% endif %}
                                     </div>
                                      <p class="jd-reply-text">{{ reply.content|linebreaksbr }}</p>
                                      <!-- Reacciones en respuestas -->
@@ -634,9 +640,100 @@ REPLACE
     <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, skeletons, char counter, toggles) -->
     <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
+    <!-- ✨ MODAL DE CONFIRMACIÓN PARA ELIMINAR COMENTARIOS -->
+    <dialog id="jd-confirm-delete-modal">
+      <div class="jd-confirm-content">
+        <div class="jd-confirm-icon"><i class="fas fa-trash-alt"></i></div>
+        <h4 class="jd-confirm-title">Eliminar comentario</h4>
+        <p class="jd-confirm-text">¿Estás seguro de eliminar este comentario? Esta acción no se puede deshacer.</p>
+        <div class="jd-confirm-actions">
+          <button class="jd-confirm-cancel" id="jd-confirm-cancel-btn">Cancelar</button>
+          <button class="jd-confirm-delete" id="jd-confirm-delete-btn"><i class="fas fa-trash-alt mr-1"></i>Eliminar</button>
+        </div>
+      </div>
+    </dialog>
+
     <style>
       @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
       @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+      /* Modal confirmación eliminar */
+      #jd-confirm-delete-modal {
+        border: none;
+        border-radius: 16px;
+        padding: 0;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: modalIn 250ms ease;
+      }
+      #jd-confirm-delete-modal::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+      }
+      .jd-confirm-content {
+        padding: 2rem 1.5rem 1.5rem;
+        text-align: center;
+      }
+      .jd-confirm-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: #dc2626;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+      }
+      .jd-confirm-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+      }
+      .jd-confirm-text {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+      .jd-confirm-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+      .jd-confirm-cancel {
+        padding: 10px 24px;
+        border-radius: 100px;
+        border: 1.5px solid #e5e7eb;
+        background: #fff;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.85rem;
+        color: #374151;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .jd-confirm-cancel:hover {
+        background: #f3f4f6;
+      }
+      .jd-confirm-delete {
+        padding: 10px 24px;
+        border-radius: 100px;
+        border: none;
+        background: #dc2626;
+        color: #fff;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .jd-confirm-delete:hover {
+        background: #b91c1c;
+      }
     </style>
   </body>
 </html>

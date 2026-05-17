@@ -6,6 +6,7 @@ from blog.views import (
     load_more_comments,
     quick_signup,
     check_comment_status,
+    delete_comment,
 )
 
 app_name = "blog"
@@ -25,5 +26,10 @@ urlpatterns = [
         "<slug:slug>/comments/load-more/",
         load_more_comments,
         name="load_more_comments",
+    ),
+    path(
+        "<slug:slug>/comment/<int:comment_id>/delete/",
+        delete_comment,
+        name="delete_comment",
     ),
 ]

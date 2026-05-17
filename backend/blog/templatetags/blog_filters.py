@@ -45,9 +45,11 @@ def tag_color(value):
 
 
 @register.filter
-def blog_thumbnail(image_field):
-    """Devuelve la URL de la miniatura del blog. Si ``image_field`` es ``None`` o no tiene atributo ``url``, devuelve una cadena vacía."""
-    if not image_field:
+def blog_thumbnail(post):
+    """Devuelve la URL de la imagen de portada del blog post.
+    ``cover_image`` es un ``CharField`` que ya contiene la ruta completa
+    (ej: ``/static/blogs/test_blog/image.png``).
+    Si no hay portada, devuelve una cadena vacía."""
+    if not post:
         return ""
-    # Algunos campos pueden ser ``ImageField`` o ``FileField``; ambos tienen ``url`` cuando están guardados.
-    return getattr(image_field, "url", "")
+    return post.cover_image or ""

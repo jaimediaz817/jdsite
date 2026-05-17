@@ -3,7 +3,7 @@ title: "Por qué las integraciones de Zoho SIEMPRE fallan en el 6to mes"
 description: "Aprende las 5 causas mas comunes por las que tus integraciones Zoho fallan y como solucionarlas definitivamente."
 date: 2026-04-24
 draft: false
-image: "image-1.png"
+image: "image.png"
 author: "Jaime Díaz"
 category: "Tecnologia"
 tags: ["Zoho", "Integraciones", "CRM", "Desarrollo", "API"]

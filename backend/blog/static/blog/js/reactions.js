@@ -7,34 +7,41 @@ window.Reactions = {
     debounceTimer: null,
 
     initBlogReactions(slug) {
+        console.log('Initializing blog reactions for slug:', slug);
         this.loadBlogReactions(slug);
     },
 
     initCommentReactions(commentId, container) {
+        console.log('Initializing comment reactions for commentId:', commentId);
         this.loadCommentReactions(commentId, container);
     },
 
     async loadBlogReactions(slug) {
         try {
+            console.log('Loading blog reactions for slug:', slug);
             const response = await fetch('/api/blog/' + slug + '/reactions/');
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
+            console.log('Blog reactions data:', data);
             const userReactions = Array.isArray(data.user_reactions) ? data.user_reactions : [];
             this.updateBlogUI(data.counts || {}, userReactions);
         } catch (e) {
-            console.warn('No se pudieron cargar las reacciones del artículo');
+            console.error('Error loading blog reactions:', e);
             this.updateBlogUI({}, []);
         }
     },
 
     async loadCommentReactions(commentId, container) {
         try {
+            console.log('Loading comment reactions for commentId:', commentId);
             const response = await fetch('/api/comment/' + commentId + '/reactions/');
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
+            console.log('Comment reactions data:', data);
             const userReactions = Array.isArray(data.user_reactions) ? data.user_reactions : [];
             this.updateCommentUI(container, data.counts || {}, userReactions);
         } catch (e) {
+            console.error('Error loading comment reactions:', e);
             this.updateCommentUI(container, {}, []);
         }
     },
@@ -42,7 +49,7 @@ window.Reactions = {
     toggleReaction(event, type, identifier) {
         // Debug: log event to console
         console.log('toggleReaction called', { event, type, identifier });
-        
+
         // Get the button element - handle both direct clicks and Alpine.js events
         let button = null;
         if (event) {
@@ -52,12 +59,12 @@ window.Reactions = {
                 button = button.closest('button.reaction-button');
             }
         }
-        
+
         if (!button) {
             console.error('No reaction button found for event', event);
             return;
         }
-        
+
         const reactionType = button.dataset.reaction;
         if (!reactionType) {
             console.error('No reaction type found on button', button);
@@ -119,6 +126,7 @@ window.Reactions = {
 
     async sendReaction(reactionType, button, previousState, type, identifier) {
         try {
+            console.log('Sending reaction:', { reactionType, button, type, identifier });
             let url;
             if (type === 'blog') {
                 url = '/api/blog/' + identifier + '/reactions/toggle/';
@@ -138,6 +146,7 @@ window.Reactions = {
             if (!response.ok) throw new Error('Error en la petición');
 
             const data = await response.json();
+            console.log('Reaction response:', data);
 
             // Si el backend devuelve conteos actualizados, los actualizamos
             if (data.counts) {
@@ -160,16 +169,21 @@ window.Reactions = {
         } catch (e) {
             // Revert optimistic UI on error
             this.updateButtonState(button, previousState);
-            console.warn('No se pudo guardar la reacción');
+            console.error('Error sending reaction:', e);
         }
     },
 
     getCSRFToken() {
         const token = document.querySelector('[name=csrfmiddlewaretoken]');
-        return token ? token.value : '';
+        if (!token) {
+            console.error('CSRF token not found');
+            return '';
+        }
+        return token.value;
     },
 
     updateBlogUI(counts, userActive) {
+        console.log('Updating blog UI with counts:', counts, 'and userActive:', userActive);
         const activeReactions = Array.isArray(userActive) ? userActive : [];
         document.querySelectorAll('.blog-reactions button.reaction-button').forEach((button) => {
             const type = button.dataset.reaction;
@@ -195,6 +209,7 @@ window.Reactions = {
     },
 
     updateCommentUI(container, counts, userActive) {
+        console.log('Updating comment UI with counts:', counts, 'and userActive:', userActive);
         const activeReactions = Array.isArray(userActive) ? userActive : [];
         container.querySelectorAll('.reaction-button').forEach((button) => {
             const type = button.dataset.reaction;
@@ -234,8 +249,8 @@ window.Reactions = {
     }
 };
 
-// Initialize reactions when DOM is loaded (for elements that are not handled by Alpine yet)
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event fired');
     // Initialize blog reactions if container exists
     const blogContainer = document.querySelector('.blog-reactions');
     if (blogContainer) {

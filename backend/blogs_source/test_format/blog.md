@@ -7,11 +7,16 @@ meta_description: "Test blog post following the formatting rules defined in blog
 keywords: "test, format, markdown"
 ---
 
+![alt text](image.png)
+
+
 # Test Format
 
 Esta es una línea. Esta es otra línea. Esta es la tercera línea.
 
 Nuevo párrafo.
+
+![alt text](image.png)
 
 <!-- reimport 2026-05-06 -->
 

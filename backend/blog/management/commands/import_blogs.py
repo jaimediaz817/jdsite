@@ -13,7 +13,6 @@ from blog.models import BlogPost, Category, Tag
 import markdown
 from bs4 import BeautifulSoup
 
-
 class Command(BaseCommand):
     help = "Importa todos los blogs desde la carpeta blogs_source"
 
@@ -999,7 +998,10 @@ class Command(BaseCommand):
                         self.stdout.write(
                             "✅ Imagen de portada detectada automaticamente"
                         )
-                        break
+                        break  # Detener la búsqueda después de encontrar la primera imagen
+
+        # Debug statement to print the cover_image_path value
+        self.stdout.write(f"🔍 Valor de cover_image_path: {cover_image_path}")
 
         return cover_image_path, "\n".join(lines)
 

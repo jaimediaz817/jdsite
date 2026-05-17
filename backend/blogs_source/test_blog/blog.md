@@ -3,7 +3,7 @@ title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más ti
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
 date: 2026-04-26
 draft: false
-image: "cover.jpg"
+image: "image-1.png"
 author: "Jaime Díaz"
 category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
@@ -21,7 +21,7 @@ Y este es el cuarto renglon.
 
 Nuevo parrafo aqui.
 
-![cover](image.png)
+![cover](image-1.png)
 
 ## Introduccion
 

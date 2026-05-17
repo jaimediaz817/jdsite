@@ -224,12 +224,29 @@ window.submitMainCommentForm = async function(form) {
             credentials: 'same-origin',
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         });
-        if (!response.ok) throw new Error('Error ' + response.status);
-        var data;
-        try { data = await response.json(); } catch (jsonError) {
+        if (!response.ok) {
+            // Intentar extraer errores de validación del body en 400
+            try {
+                var errorData = await response.clone().json();
+                if (errorData && errorData.errors) {
+                    var msgs = [];
+                    for (var field in errorData.errors) {
+                        if (errorData.errors.hasOwnProperty(field)) {
+                            msgs.push(errorData.errors[field].join(' '));
+                        }
+                    }
+                    if (msgs.length) throw new Error(msgs.join(' '));
+                }
+            } catch (e) {
+                if (e.message !== 'Failed to fetch' && !e.message.startsWith('Error')) throw e;
+            }
             if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la pagina.');
             if (response.status === 500) throw new Error('Error interno en el servidor.');
             throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
+        }
+        var data;
+        try { data = await response.json(); } catch (jsonError) {
+            throw new Error('Error al procesar la respuesta del servidor.');
         }
         if (!data.success) throw new Error('Error en el servidor');
         if (typeof $ !== 'undefined' && $.toast) {
@@ -294,7 +311,26 @@ window.submitReplyForm = function(commentId) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
 
     fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
-    .then(function(r) { if (!r.ok) throw new Error('Error ' + r.status); return r.json(); })
+    .then(function(r) {
+        if (!r.ok) {
+            // Intentar extraer errores de validación del body en 400
+            return r.json().then(function(errorData) {
+                if (errorData && errorData.errors) {
+                    var msgs = [];
+                    for (var field in errorData.errors) {
+                        if (errorData.errors.hasOwnProperty(field)) {
+                            msgs.push(errorData.errors[field].join(' '));
+                        }
+                    }
+                    if (msgs.length) throw new Error(msgs.join(' '));
+                }
+                throw new Error('Error ' + r.status + ': Ha ocurrido un problema');
+            }).catch(function(e) {
+                throw e;
+            });
+        }
+        return r.json();
+    })
     .then(function(d) {
         if (!d.success) throw new Error('Error en el servidor');
         if (!d.comment_id) throw new Error('No se obtuvo ID del comentario');

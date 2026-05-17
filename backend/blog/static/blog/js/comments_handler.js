@@ -112,6 +112,21 @@ window.submitMainCommentForm = async function(form) {
         if (!response.ok) {
             if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la pagina.');
             if (response.status === 500) throw new Error('Error interno en el servidor.');
+            // Intentar extraer errores de validación del body (ej: content mínimo 10 caracteres)
+            try {
+                var errorData = await response.json();
+                if (errorData && errorData.errors) {
+                    var msgs = [];
+                    for (var field in errorData.errors) {
+                        if (errorData.errors.hasOwnProperty(field)) {
+                            msgs.push(errorData.errors[field].join(' '));
+                        }
+                    }
+                    if (msgs.length) throw new Error(msgs.join(' '));
+                }
+            } catch (e) {
+                if (e.message !== 'Failed to fetch' && !e.message.startsWith('Error')) throw e;
+            }
             throw new Error('Error ' + response.status + ': Ha ocurrido un problema');
         }
         var data;

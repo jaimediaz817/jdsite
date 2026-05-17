@@ -50,13 +50,13 @@ window.Reactions = {
         // Debug: log event to console
         console.log('toggleReaction called', { event, type, identifier });
 
-        // Get the button element - handle both direct clicks and Alpine.js events
+        // Get the button element - support both .reaction-button and .thread-reaction-btn
         let button = null;
         if (event) {
             button = event.currentTarget || event.target;
             // If we got the icon instead of the button, find the button
-            if (button && !button.classList.contains('reaction-button')) {
-                button = button.closest('button.reaction-button');
+            if (button && !button.classList.contains('reaction-button') && !button.classList.contains('thread-reaction-btn')) {
+                button = button.closest('button.reaction-button, button.thread-reaction-btn');
             }
         }
 
@@ -106,9 +106,9 @@ window.Reactions = {
                 void btn.offsetWidth;
             });
         } else {
-            const container = button.closest('.comment-reactions');
+            const container = button.closest('.comment-reactions, .thread-reactions');
             if (container) {
-                container.querySelectorAll('.reaction-button').forEach((btn) => {
+                container.querySelectorAll('.reaction-button, .thread-reaction-btn').forEach((btn) => {
                     if (btn.dataset.reaction === reactionType) {
                         this.updateButtonState(btn, newState);
                     } else {
@@ -156,11 +156,12 @@ window.Reactions = {
                         btn.querySelector('.count').textContent = (data.counts[t] || 0);
                     });
                 } else {
-                    const container = button.closest('.comment-reactions');
+                    const container = button.closest('.comment-reactions, .thread-reactions');
                     if (container) {
-                        container.querySelectorAll('.reaction-button').forEach((btn) => {
+                        container.querySelectorAll('.reaction-button, .thread-reaction-btn').forEach((btn) => {
                             const t = btn.dataset.reaction;
-                            btn.querySelector('.count').textContent = (data.counts[t] || 0);
+                            const countEl = btn.querySelector('.count');
+                            if (countEl) countEl.textContent = (data.counts[t] || 0);
                         });
                     }
                 }
@@ -211,7 +212,7 @@ window.Reactions = {
     updateCommentUI(container, counts, userActive) {
         console.log('Updating comment UI with counts:', counts, 'and userActive:', userActive);
         const activeReactions = Array.isArray(userActive) ? userActive : [];
-        container.querySelectorAll('.reaction-button').forEach((button) => {
+        container.querySelectorAll('.reaction-button, .thread-reaction-btn').forEach((button) => {
             const type = button.dataset.reaction;
             const count = (counts && counts[type]) || 0;
             const isActive = activeReactions.includes(type);

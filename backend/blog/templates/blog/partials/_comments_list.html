@@ -66,6 +66,13 @@
                                         <time class="jd-reply-date">{{ reply.created_at|naturaltime_es }}</time>
                                     </div>
                                     <p class="jd-reply-text">{{ reply.content|linebreaksbr }}</p>
+                                    <!-- Reacciones en respuestas -->
+                                    <div class="thread-reactions" data-comment-id="{{ reply.id }}">
+                                        <button class="thread-reaction-btn" data-reaction="like" title="Me gusta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ reply.id }})"><i class="far fa-thumbs-up"></i> <span class="count">0</span></button>
+                                        <button class="thread-reaction-btn" data-reaction="love" title="Me encanta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ reply.id }})"><i class="fas fa-heart"></i> <span class="count">0</span></button>
+                                        <button class="thread-reaction-btn" data-reaction="fire" title="Excelente" onclick="window.Reactions.toggleReaction(event, 'comment', {{ reply.id }})"><i class="fas fa-fire"></i> <span class="count">0</span></button>
+                                        <button class="thread-reaction-btn" data-reaction="idea" title="Buena idea" onclick="window.Reactions.toggleReaction(event, 'comment', {{ reply.id }})"><i class="far fa-lightbulb"></i> <span class="count">0</span></button>
+                                    </div>
                                 </div>
                             </div>
                         {% endfor %}

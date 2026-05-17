@@ -120,4 +120,98 @@
 }
 
 .blog-reactions .reaction-button[data-reaction="fire"]:hover,
-.comment-reactions .reaction-comment-btn
+.comment-reactions .reaction-comment-btn[data-reaction="fire"]:hover,
+.floating-reaction-bar .reaction-button[data-reaction="fire"]:hover {
+    background: #ffedd5 !important;
+}
+
+/* ==============================
+   ESTILOS BASE para reacciones en replies (.thread-reactions)
+   ============================== */
+.thread-reactions {
+    display: flex;
+    gap: 2px;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.thread-reaction-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--reaction-text);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.thread-reaction-btn:hover {
+    background: var(--reaction-bg-hover);
+    color: #374151;
+}
+
+.thread-reaction-btn:active {
+    transform: scale(0.92);
+}
+
+.thread-reaction-btn i {
+    font-size: 0.85rem;
+}
+
+.thread-reaction-btn .count {
+    font-size: 0.7rem;
+    min-width: 8px;
+    display: inline-block;
+}
+
+/* Estados activos para thread-reaction-btn */
+.thread-reaction-btn[data-reaction="like"].active {
+    background: #dcfce7 !important;
+    color: #16a34a !important;
+    border-color: #86efac !important;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2) !important;
+}
+
+.thread-reaction-btn[data-reaction="love"].active {
+    background: #ffe4e6 !important;
+    color: #e11d48 !important;
+    border-color: #fda4af !important;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2) !important;
+}
+
+.thread-reaction-btn[data-reaction="fire"].active {
+    background: #ffedd5 !important;
+    color: #ea580c !important;
+    border-color: #fdba74 !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
+}
+
+.thread-reaction-btn[data-reaction="idea"].active {
+    background: #fef9c3 !important;
+    color: #ca8a04 !important;
+    border-color: #fde047 !important;
+    box-shadow: 0 2px 8px rgba(202, 138, 4, 0.2) !important;
+}
+
+.thread-reaction-btn[data-reaction="like"]:hover {
+    background: #bbf7d0 !important;
+}
+
+.thread-reaction-btn[data-reaction="love"]:hover {
+    background: #fecdd3 !important;
+}
+
+.thread-reaction-btn[data-reaction="fire"]:hover {
+    background: #ffedd5 !important;
+}
+
+.thread-reaction-btn[data-reaction="idea"]:hover {
+    background: #fef08a !important;
+}

@@ -326,7 +326,7 @@ function initToggleReplies() {
             initReplyToggle();
             initToggleReplies();
             if (window.Reactions && window.Reactions.loadCommentReactions) {
-                state.commentsList.querySelectorAll('.comment-reactions:not([data-reactions-initialized])').forEach(function(container) {
+                state.commentsList.querySelectorAll('.comment-reactions:not([data-reactions-initialized]), .thread-reactions:not([data-reactions-initialized])').forEach(function(container) {
                     var commentId = container.dataset.commentId;
                     if (commentId) {
                         container.setAttribute('data-reactions-initialized', 'true');

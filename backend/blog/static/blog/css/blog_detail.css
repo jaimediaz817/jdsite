@@ -1484,7 +1484,8 @@
     border-radius: 0 0 10px 10px;
 }
 
-.jd-char-count {
+.jd-char-count,
+.jd-reply-char-count {
     font-family: 'DM Sans', sans-serif;
     font-size: 0.75rem;
     color: #c1c7d0;

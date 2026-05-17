@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from datetime import timedelta
+from django.db.models import Prefetch
 
 from .models import BlogComment
 
@@ -26,6 +27,12 @@ def create_comment(
     # Sanitizar todo el contenido
     name = escape(name.strip())
     content = escape(content.strip())
+
+    # Validar longitud máxima (el modelo permite 1000)
+    if len(content) > 1000:
+        raise ValueError(
+            "El contenido del comentario no puede exceder los 1000 caracteres."
+        )
 
     if email:
         email = email.strip().lower()
@@ -109,7 +116,12 @@ def get_approved_comments(blog_slug, limit=None):
             blog_slug=blog_slug, status="approved", parent__isnull=True
         )
         .order_by("-created_at")
-        .prefetch_related("replies")
+        .prefetch_related(
+            Prefetch(
+                "replies",
+                queryset=BlogComment.objects.filter(status="approved"),
+            )
+        )
     )
     if limit is not None:
         return queryset[:limit]

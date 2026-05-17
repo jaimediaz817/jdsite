@@ -293,7 +293,8 @@ window.getReplyFormHtml = function(commentId) {
         '<input type="hidden" name="website" value="">' +
         '<div class="form-group"><input type="text" name="name" class="form-control form-control-sm" placeholder="Tu nombre" value="' + n + '" required' + nr + '></div>' +
         '<div class="form-group"><input type="email" name="email" class="form-control form-control-sm" placeholder="Tu email (opcional)" value="' + e + '"' + er + '></div>' +
-        '<div class="form-group"><textarea name="content" class="form-control form-control-sm" rows="2" placeholder="Escribe tu respuesta..." required></textarea></div>' +
+        '<div class="form-group"><textarea name="content" class="form-control form-control-sm jd-reply-textarea-dynamic" rows="2" maxlength="500" placeholder="Escribe tu respuesta..." required></textarea>' +
+        '<div class="d-flex justify-content-between align-items-center mt-1"><small class="text-muted jd-reply-dynamic-count"><span class="jd-reply-dynamic-num">0</span>/500</small></div></div>' +
         '<div class="d-flex gap-2">' +
         '<button type="submit" id="reply-submit-btn-' + commentId + '" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane mr-1"></i> Responder</button>' +
         '<button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById(\'reply-form-' + commentId + '\').style.display=\'none\'">Cancelar</button>' +

@@ -13,6 +13,48 @@ function initCharCounter() {
             charNum.textContent = this.value.length;
         });
     }
+
+    // Inicializar contadores de replies estáticos (los del HTML inline original)
+    document.querySelectorAll('.jd-reply-textarea').forEach(function(ta) {
+        initSingleReplyCounter(ta);
+    });
+
+    // Inicializar contadores de replies dinámicos (los de getReplyFormHtml en blog_detail.js)
+    document.querySelectorAll('.jd-reply-textarea-dynamic').forEach(function(ta) {
+        initDynamicReplyCounter(ta);
+    });
+}
+
+// Para replies estáticas (estructura .jd-inline-reply-inner > textarea + .jd-inline-reply-actions > .jd-reply-char-num)
+function initSingleReplyCounter(textarea) {
+    if (textarea._replyCounterInit) return;
+    textarea._replyCounterInit = true;
+
+    var inner = textarea.closest('.jd-inline-reply-inner');
+    if (!inner) return;
+    var actions = inner.querySelector('.jd-inline-reply-actions');
+    if (!actions) return;
+    var charNumEl = actions.querySelector('.jd-reply-char-num');
+    if (!charNumEl) return;
+
+    textarea.addEventListener('input', function() {
+        charNumEl.textContent = this.value.length;
+    });
+}
+
+// Para replies dinámicas (estructura .form-group > textarea + small.jd-reply-dynamic-count)
+function initDynamicReplyCounter(textarea) {
+    if (textarea._replyCounterInit) return;
+    textarea._replyCounterInit = true;
+
+    var formGroup = textarea.closest('.form-group');
+    if (!formGroup) return;
+    var charNumEl = formGroup.querySelector('.jd-reply-dynamic-num');
+    if (!charNumEl) return;
+
+    textarea.addEventListener('input', function() {
+        charNumEl.textContent = this.value.length;
+    });
 }
 
 // ===== HTML ESCAPE (via DOM) =====
@@ -213,19 +255,27 @@ function initReplyToggle() {
 
         if (!isOpen) {
             if (typeof window.getReplyFormHtml === 'function') {
+                // Usa el template JS de blog_detail.js (formulario dinámico con Bootstrap)
                 inlineReply.innerHTML = window.getReplyFormHtml(id);
+                inlineReply.style.display = 'block';
+                // Inicializar contador del textarea dinámico
+                var ta = inlineReply.querySelector('.jd-reply-textarea-dynamic');
+                if (ta) {
+                    initDynamicReplyCounter(ta);
+                    ta.focus();
+                }
             } else {
+                // Usa el HTML inline estático (estructura .jd-inline-reply-inner)
                 inlineReply.style.display = 'block';
                 var textarea = inlineReply.querySelector('textarea');
-                if (textarea) textarea.focus();
-                return;
+                if (textarea) {
+                    textarea.focus();
+                    initSingleReplyCounter(textarea);
+                }
             }
-            inlineReply.style.display = 'block';
-
             // Attach submit listener to prevent default form submission
             var form = document.getElementById('frm-' + id);
             if (form && typeof window.submitReplyForm === 'function') {
-                // Remove any existing listener to avoid duplicates
                 form._submitHandler = form._submitHandler || null;
                 if (form._submitHandler) {
                     form.removeEventListener('submit', form._submitHandler);
@@ -239,8 +289,6 @@ function initReplyToggle() {
             if (typeof Alpine !== 'undefined') {
                 Alpine.initTree(inlineReply);
             }
-            var newTextarea = inlineReply.querySelector('textarea');
-            if (newTextarea) newTextarea.focus();
         }
     };
 
@@ -325,6 +373,8 @@ function initToggleReplies() {
             animateAppearanceComments();
             initReplyToggle();
             initToggleReplies();
+            // Inicializar contadores de replies en los nuevos comentarios
+            initCharCounter();
             if (window.Reactions && window.Reactions.loadCommentReactions) {
                 state.commentsList.querySelectorAll('.comment-reactions:not([data-reactions-initialized]), .thread-reactions:not([data-reactions-initialized])').forEach(function(container) {
                     var commentId = container.dataset.commentId;

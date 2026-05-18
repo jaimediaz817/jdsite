@@ -93,6 +93,8 @@ html body #navigation-menu {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #navigation-menu .navbar-nav .nav-item .nav-link:hover {
@@ -158,8 +160,8 @@ html body #navigation-menu {
 
 /* Avatar de usuario */
 #navigation-menu .user-avatar {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%);
     display: flex;

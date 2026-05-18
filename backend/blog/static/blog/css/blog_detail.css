@@ -3,7 +3,13 @@
    ========================================================================== */
 
 /* ==========================================================================
-   1. SLIDES (bloques :::slides)
+   1. SLIDES (bloques :::slides) – CARRUSEL DE IMÁGENES CON TÍTULO Y DESCRIPCIÓN
+   ========================================================================== 
+   Diseño responsive que se adapta al contenido:
+   - Mobile (≤767px): Imagen arriba, caption abajo, apilados verticalmente
+   - Desktop (≥768px): Caption izquierda (35%), imagen derecha (65%) lado a lado
+   - El contenedor se expande según el slide activo (sin altura fija)
+   - El caption siempre visible, con tipografía clara y sin cortes
    ========================================================================== */
 .slides-container {
     position: relative;
@@ -13,119 +19,158 @@
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     background: #fff;
-    overflow: visible;
-    min-height: 400px;
+    overflow: hidden;
+    /* La altura la determina el slide activo */
     height: auto;
-    transition: height 0.3s ease;
-    padding-bottom: 2rem;
+    transition: min-height 0.4s ease;
 }
 
+/* ── Slide base (inactivo: oculto pero con position absolute) ── */
 .slides-container .slide {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
-    padding: 1rem;
+    padding: 0;
     box-sizing: border-box;
-    overflow-y: visible;
+    pointer-events: none;
 }
 
-@media (min-width: 768px) {
-    .slides-container .slide {
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        overflow-y: hidden;
-    }
-
-    .slides-container .slide .slide-caption {
-        order: 1;
-        flex: 0 0 35%;
-        padding: 1.5rem;
-        margin-top: 0;
-        align-items: flex-start;
-        max-width: none;
-    }
-
-    .slides-container .slide img {
-        order: 2;
-        flex: 0 0 65%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-}
-
+/* ── Slide activo (ocupa espacio real, expande el contenedor) ── */
 .slides-container .slide.active {
     opacity: 1;
+    visibility: visible;
     z-index: 2;
     position: relative;
-    height: auto;
-    overflow-y: visible;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
+/* ── Imagen dentro del slide ── */
 .slides-container .slide img {
+    width: 100%;
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
+    max-height: 70vh;
+    border-radius: 8px 8px 0 0;
     display: block;
     object-fit: contain;
+    object-position: top;
 }
 
+/* ── Caption (título + descripción) ── */
 .slide-caption {
-    margin-top: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 1rem 1.25rem 1.25rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    max-width: 90%;
+    gap: 0.25rem;
     font-family: 'Montserrat', sans-serif;
     text-align: left;
+    background: #fff;
+    border-top: 1px solid #f3f4f6;
 }
 
 .slide-caption strong {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: #1f2937;
-    margin-bottom: 0.15rem;
-    line-height: 1.2;
+    margin-bottom: 0.1rem;
+    line-height: 1.3;
+    display: block;
 }
 
 .slide-caption span {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #6b7280;
-    line-height: 1.4;
+    line-height: 1.5;
+    display: block;
 }
 
-/* ==============================================================
-   ESTILOS DE CONTENIDO DEL ARTÍCULO
-   ============================================================== */
-.blog-content {
-    font-family: 'Montserrat', sans-serif;
-    line-height: 1.6;
-    color: #2d3748;
+/* ── DESKTOP (≥768px): lado a lado ── */
+@media (min-width: 768px) {
+    .slides-container .slide.active {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .slides-container .slide {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .slides-container .slide img {
+        flex: 0 0 60%;
+        max-width: 60%;
+        max-height: 75vh;
+        border-radius: 8px 0 0 8px;
+        object-position: center;
+    }
+
+    .slide-caption {
+        flex: 1;
+        max-width: none;
+        padding: 1.75rem 1.75rem 1.75rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0.5rem;
+        border-top: none;
+        border-left: 1px solid #f3f4f6;
+        background: #fafbfc;
+    }
+
+    .slide-caption strong {
+        font-size: 1.35rem;
+        line-height: 1.35;
+        margin-bottom: 0;
+    }
+
+    .slide-caption span {
+        font-size: 1.05rem;
+        line-height: 1.55;
+        color: #4b5563;
+    }
+
+    /* En desktop, la navegación está sobre un fondo más grande */
+    .slides-container {
+        padding-bottom: 4rem;
+    }
 }
 
-.blog-content h1,
-.blog-content h2,
-.blog-content h3,
-.blog-content h4,
-.blog-content h5,
-.blog-content h6 {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: #1a202c;
-}
+/* ── PANTALLAS MUY GRANDES (≥1200px) ── */
+@media (min-width: 1200px) {
+    .slides-container .slide img {
+        flex: 0 0 65%;
+        max-width: 65%;
+    }
 
-.blog-content p {
-    margin-bottom: 1rem;
+    .slide-caption {
+        padding: 2rem 2rem 2rem 1.75rem;
+    }
+
+    .slide-caption strong {
+        font-size: 1.5rem;
+    }
+
+    .slide-caption span {
+        font-size: 1.1rem;
+    }
 }
 
 /* Navegación del slider */
@@ -220,6 +265,10 @@
 
     .slide-caption {
         max-width: 100%;
+    }
+
+    .slides-container .slide img {
+        max-height: 50vh;
     }
 }
 
@@ -349,54 +398,90 @@
 
 .gallery-modal-image-wrapper {
     position: relative;
-    max-width: 90vw;
-    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 92vw;
+    max-height: 92vh;
+    border-radius: 16px;
+    background: #1a1a2e;
     overflow: hidden;
-    border-radius: 12px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
 }
 
 .gallery-modal-image-wrapper img {
     display: block;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 70vh;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    border-radius: 12px;
+    border-radius: 0;
 }
 
-.gallery-modal-info {
-    position: absolute;
-    bottom: 1rem;
-    left: 0;
-    right: 0;
-    padding: 0 1.5rem;
-    color: #fff;
+/* ── Info panel: título + descripción con fondo oscuro ── */
+#gallery-modal-info {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem 1.5rem 1.25rem;
+    background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, #1a1a2e 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     text-align: center;
 }
 
-.gallery-modal-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+#gallery-modal-title {
     display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.2rem;
+    line-height: 1.35;
 }
 
-.gallery-modal-desc {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    line-height: 1.4;
+#gallery-modal-desc {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin-top: 0.15rem;
+}
+
+/* En pantallas grandes, más espacio para la info */
+@media (min-width: 768px) {
+    #gallery-modal-info {
+        padding: 1.25rem 2rem 1.5rem;
+    }
+
+    #gallery-modal-title {
+        font-size: 1.35rem;
+    }
+
+    #gallery-modal-desc {
+        font-size: 1rem;
+    }
+
+    .gallery-modal-image-wrapper img {
+        max-height: 65vh;
+    }
 }
 
 .gallery-modal-counter {
     position: absolute;
-    bottom: 1rem;
-    right: 1.5rem;
-    background: rgba(0, 0, 0, 0.5);
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     color: #fff;
-    padding: 0.25rem 0.5rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
+    z-index: 10;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* ==========================================================================
@@ -1254,7 +1339,7 @@
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    padding: 12px 20px;
+    padding: 3px 8px;
     border-radius: 12px;
     border: 1.5px solid #e5e7eb;
     background: #fff;

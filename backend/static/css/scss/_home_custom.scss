@@ -956,3 +956,72 @@ SECCIÓN: CÓMO TRABAJO (JD)
     background: linear-gradient(135deg, #fc3a62 0%, #df6576 100%);
     color: #ffffff !important;
 }
+
+/* --- Estilos Blog Nav Item (colores del blog #6f42c1 / #e84a5f) --- */
+#navigation-menu .nav-link-blog {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff !important;
+    background: linear-gradient(135deg, #ff3660, #dd6978);
+    border-radius: 50px;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 12px rgba(111, 66, 193, 0.25);
+}
+
+#navigation-menu .nav-link-blog i {
+    font-size: 0.9rem;
+    color: #fff;
+    opacity: 0.95;
+}
+
+#navigation-menu .nav-link-blog:hover {
+    color: #fff !important;
+    box-shadow: 0 5px 20px rgba(111, 66, 193, 0.45);
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #ff3660, #dd6978);
+}
+
+#navigation-menu .nav-link-blog:hover i {
+    color: #fff;
+}
+
+.blog-new-badge {
+    display: inline-block;
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 5px;
+    border-radius: 20px;
+    background: #fff;
+    color: #6f42c1;
+    line-height: 1.2;
+    animation: blogBadgePulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+@keyframes blogBadgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@media (max-width: 767px) {
+    #navigation-menu .nav-link-blog {
+        padding: 0.25rem 0.75rem !important;
+    }
+
+    .blog-new-badge {
+        font-size: 0.45rem;
+        padding: 1px 4px;
+    }
+}

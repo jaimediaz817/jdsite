@@ -13,6 +13,81 @@ const LOADER_HTML = `
     </div>`;
 
 /**
+ * ── GITHUB REPOS CARRUSEL ──
+ * Construye slides con los repositorios y lanza el Swiper de scroll infinito.
+ */
+function renderGitHubCarousel(repos) {
+    const $wrapper = $('#github-carousel-wrapper');
+    if (!$wrapper.length) return;
+
+    $wrapper.empty();
+
+    // Duplicar repos para que el loop infinito se sienta natural
+    var carouselItems = repos.concat(repos);
+
+    carouselItems.forEach(function(repo) {
+        var lang = (repo.language || 'default').toLowerCase();
+        var iconClass = 'lang-default';
+        var deviconClass = 'fas fa-code';
+
+        // Mapear lenguaje a icono devicon + clase de color
+        if (lang === 'python' || lang === 'py') {
+            iconClass = 'lang-python';
+            deviconClass = 'fab fa-python';
+        } else if (lang === 'javascript' || lang === 'js') {
+            iconClass = 'lang-javascript';
+            deviconClass = 'fab fa-js';
+        } else if (lang === 'typescript' || lang === 'ts') {
+            iconClass = 'lang-typescript';
+            deviconClass = 'fab fa-js';
+        } else if (lang === 'html') {
+            iconClass = 'lang-html';
+            deviconClass = 'fab fa-html5';
+        } else if (lang === 'css') {
+            iconClass = 'lang-css';
+            deviconClass = 'fab fa-css3-alt';
+        } else if (lang === 'java') {
+            iconClass = 'lang-java';
+            deviconClass = 'fab fa-java';
+        } else if (lang === 'php') {
+            iconClass = 'lang-default';
+            deviconClass = 'fab fa-php';
+        } else if (lang === 'ruby' || lang === 'rb') {
+            iconClass = 'lang-default';
+            deviconClass = 'fas fa-gem';
+        }
+
+        var ownerTag = repo.owner_tag || 'personal';
+        var stars = repo.stars || 0;
+        var desc = repo.description || 'Sin descripción';
+        if (desc.length > 100) desc = desc.substring(0, 97) + '...';
+
+        var slideHtml =
+            '<div class="swiper-slide github-repo-slide">' +
+                '<div class="github-repo-card">' +
+                    '<div class="repo-card-header">' +
+                        '<div class="repo-card-icon ' + iconClass + '"><i class="' + deviconClass + '"></i></div>' +
+                        '<div class="repo-card-name"><a href="' + repo.html_url + '" target="_blank" rel="noopener">' + repo.name + '</a></div>' +
+                    '</div>' +
+                    '<div class="repo-card-desc">' + desc + '</div>' +
+                    '<div class="repo-card-footer">' +
+                        '<span class="repo-card-badge ' + ownerTag + '">' +
+                            '<i class="fas fa-circle" style="font-size:0.4rem;"></i> ' +
+                            (ownerTag === 'personal' ? 'Personal' : 'Profesional') +
+                        '</span>' +
+                        '<span class="repo-card-stars"><i class="fas fa-star"></i> ' + stars + '</span>' +
+                        '<a href="' + repo.html_url + '" target="_blank" rel="noopener" class="repo-card-link">' +
+                            '<i class="fas fa-external-link-alt"></i> Repo' +
+                        '</a>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+        $wrapper.append(slideHtml);
+    });
+}
+
+/**
  * @description Renderiza dinámicamente la lista de proyectos y actualiza contadores.
  * @param {object} data - Objeto JSON con las propiedades total_counts y projects_grouped.
  */
@@ -42,6 +117,9 @@ function renderGitHubRepos(data) {
 
     // Ordenar por fecha de actualización (el más reciente primero)
     allRepos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    // ── INYECTAR SLIDES DEL CARRUSEL ──
+    renderGitHubCarousel(allRepos);
 
     allRepos.forEach((repo) => {
         const ownerLabel =

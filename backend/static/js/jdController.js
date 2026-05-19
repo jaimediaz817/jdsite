@@ -973,6 +973,9 @@ $(function () {
                     repos: data.groups, // <-- Pasamos el objeto agrupado
                     counts: data.counts, // <-- Pasamos el conteo
                 });
+
+                // ── INICIALIZAR CARRUSEL DE REPOS ──
+                initGitHubReposSwiper();
             })
             .catch((error) => {
                 // 3. Fallo: Inicializa con los repositorios de FALLBACK
@@ -986,6 +989,7 @@ $(function () {
                     path: "~/portfolio",
                     repos: FALLBACK_REPOS, // <-- DATOS DE FALLBACK
                 });
+                initGitHubReposSwiper();
             });
     } else if (window.JDWelcomeTerminal) {
         console.log(
@@ -998,6 +1002,35 @@ $(function () {
             path: "~/portfolio",
             repos: FALLBACK_REPOS,
         });
+        initGitHubReposSwiper();
+    }
+
+    // ── FUNCIÓN INICIALIZACIÓN SWIPER CARRUSEL DE REPOS ──
+    function initGitHubReposSwiper() {
+        var container = document.getElementById('githubReposSwiper');
+        if (!container) return;
+        // Esperar un tick para que los slides estén en el DOM
+        setTimeout(function() {
+            new Swiper('#githubReposSwiper', {
+                slidesPerView: 'auto',
+                spaceBetween: 8,
+                loop: true,
+                speed: 8000,
+                autoplay: {
+                    delay: 0,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                freeMode: false,
+                allowTouchMove: true,
+                grabCursor: true,
+                breakpoints: {
+                    768: { spaceBetween: 12 },
+                    1200: { spaceBetween: 16 }
+                }
+            });
+            console.log("✅ Carrusel de repositorios GitHub iniciado");
+        }, 100);
     }
 
     const dialog = document.getElementById("projectGalleryDialog");

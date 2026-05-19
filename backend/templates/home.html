@@ -999,6 +999,45 @@
             </div>
         </section>        
 
+        <!-- ================================================================
+             GITHUB REPOS CARRUSEL - Scroll infinito de repositorios
+             ================================================================ -->
+        <section id="github-repos-carousel-section" class="jd-section github-repos-carousel-section py-5">
+            <div class="container">
+                <div class="row align-items-center mb-4">
+                    <div class="col-12 col-md-8">
+                        <h2 class="github-carousel-title mb-1">
+                            <i class="fab fa-github mr-2"></i>GitHub en acción
+                        </h2>
+                        <p class="github-carousel-subtitle mb-0">
+                            Mis repositorios públicos, proyectos personales y profesionales
+                        </p>
+                    </div>
+                    <div class="col-12 col-md-4 text-md-right mt-2 mt-md-0">
+                        <a href="https://github.com/jaimediaz817" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">
+                            <i class="fab fa-github mr-1"></i>Ver perfil
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid px-0">
+                <div class="swiper-container github-repos-swiper" id="githubReposSwiper">
+                    <div class="swiper-wrapper" id="github-carousel-wrapper">
+                        <!-- Los slides se inyectan dinámicamente desde github.js -->
+                        <div class="swiper-slide github-repo-slide placeholder-slide">
+                            <div class="github-repo-card">
+                                <div class="repo-card-loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Cargando repositorios...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- HOW CAN WE HELP YOU -->
         <section class="jd-section help-you d-flex align-items-center bg-secundary text-white jarallax" data-jarallax data-speed="0.7" id="howToHelp">
             <!-- PICTURE -->

@@ -11,21 +11,26 @@
             // TODO: correción posición botón acordeón en móvil
             // position: absolute;
         }
+
         .row {
             flex-direction: column-reverse;
         }
     }
+
     .jd-accordion-body {
         margin-top: 1rem;
     }
+
     .jd-accordion-toggle {
         // right: calc((100% - var(--jd-container-min)) / 2);
-    }    
+    }
+
     .container {
-        > div {
+        >div {
             padding: 0 1.5rem 1.5rem;
         }
     }
+
     .jd-accordion-toggle {
         // right: 1rem;
         position: relative;
@@ -46,7 +51,7 @@
             position: relative;
             border-radius: 18px;
             padding: 5px 14px;
-            border: 2px solid #028d95;            
+            border: 2px solid #028d95;
             right: calc((100% - var(--jd-container-min)) / 2);
         }
     }
@@ -61,13 +66,15 @@
                 width: 35px;
                 height: 35px;
             }
-        }    
+        }
+
         &.with-dots-square-left {
-            &::before {    
+            &::before {
                 width: 35px;
                 height: 35px;
             }
         }
+
         h6 {
             font: 1rem;
         }
@@ -82,11 +89,12 @@
             top: inherit;
             bottom: 3.75rem;
         }
+
         .text-slide-container {
             &::before {
                 width: 100%;
-            }            
-        }          
+            }
+        }
     }
 
     .skills-section {
@@ -121,14 +129,15 @@
                 width: 35px;
                 height: 35px;
             }
-        }    
+        }
+
         &.with-dots-square-left {
-            &::before {    
+            &::before {
                 width: 35px;
                 height: 35px;
             }
-        }     
-    } 
+        }
+    }
 }
 
 @media (min-width: 520px) {
@@ -136,19 +145,19 @@
 }
 
 @media (min-width: 576px) {
-    
+
     // Móviles grandes / Phablets
     .jd-accordion-section {
-        .jd-accordion-header {
+        .jd-accordion-header {}
 
-        }
         .jd-accordion-body {
             margin-top: 0;
-        }        
+        }
     }
 }
 
 @media (min-width: 600px) {
+
     // Tablets pequeñas
     .jd-section {
         h2 {
@@ -158,12 +167,14 @@
 }
 
 @media (min-width: 768px) {
+
     // Tablets estándar
     .jd-accordion-section {
         .jd-accordion-header {
             .jd-acordion-btn-container {
                 position: relative;
-            }            
+            }
+
             .row {
                 flex-direction: row;
             }
@@ -172,30 +183,33 @@
 
     .jd-accordion-section {
         .container {
-            > div {
+            >div {
                 padding: 3rem 3rem 3rem;
             }
         }
     }
-    
+
     .jd-section {
         &.with-dots-square-blue-right {
             &::after {
                 width: 45px;
                 height: 45px;
             }
-        }    
+        }
+
         &.with-dots-square-left {
-            &::before {    
+            &::before {
                 width: 45px;
                 height: 45px;
             }
-        }     
-    }    
+        }
+    }
+
     .swiper-container {
         .hero-logo-jd {
             left: calc((100% - var(--jd-container-max-992)) / 2);
         }
+
         // SLIDES
         &:after {
             right: calc((100% - var(--jd-container-max-992)) / 2);
@@ -204,41 +218,46 @@
         .text-slide-container {
             &::before {
                 width: 95%;
-            }            
-        }            
-    }    
+            }
+        }
+    }
 
     .projects-section {
         .swiper-pagination {
             // bottom: 7.55rem;
         }
-    }    
+    }
 }
 
 @media (min-width: 992px) {
+
     // Laptops pequeñas
     .jd-section {
         h2 {
             font-size: 2.75rem;
         }
+
         &.with-dots-square-blue-right {
             &::after {
                 width: 55px;
                 height: 55px;
             }
-        }    
+        }
+
         &.with-dots-square-left {
-            &::before {    
+            &::before {
                 width: 55px;
                 height: 55px;
             }
-        }           
+        }
     }
+
     .swiper-container {
         .hero-logo-jd {
             /* lo importante: lo alineamos al borde izquierdo del container */
             left: calc((100% - var(--jd-container-max-md)) / 2);
         }
+
         // SLIDES
         &:after {
             right: calc((100% - var(--jd-container-max-md)) / 2);
@@ -250,18 +269,19 @@
             left: inherit;
             transform: translateX(0);
             top: 1.5rem;
-            bottom: inherit;            
+            bottom: inherit;
         }
 
         .text-slide-container {
             &::before {
                 width: 75%;
-            }            
-        }           
+            }
+        }
     }
 }
 
 @media (min-width: 1200px) {
+
     // Laptops/Desktops medianos
     .jd-section {
         &.with-dots-square-blue-right {
@@ -269,40 +289,51 @@
                 width: 70px;
                 height: 70px;
             }
-        }    
+        }
+
         &.with-dots-square-left {
-            &::before {    
+            &::before {
                 width: 70px;
                 height: 70px;
             }
         }
-    }        
+    }
+
+    .swiper-container#headerSlider {
+        &:after {
+            right: calc((100% - var(--jd-container-max)) / 2);
+        }
+    }
+
+
     .swiper-container {
         .hero-logo-jd {
             /* lo importante: lo alineamos al borde izquierdo del container */
             left: calc((100% - var(--jd-container-max)) / 2);
         }
+
         // SLIDES
-        &:after {
+        &#headerSlider:after {
             right: calc((100% - var(--jd-container-max)) / 2);
         }
+
         .header-slider-cta {
-            right: calc((100% - var(--jd-container-max)) / 2);             
-        }        
+            right: calc((100% - var(--jd-container-max)) / 2);
+        }
     }
 
     .projects-section {
         .swiper-pagination {
             // bottom: 3.55rem;
         }
-    }      
+    }
 }
 
 @media (min-width: 1400px) {
     // Pantallas grandes
 
 
-    
+
 }
 
 /* Desktop First Media Queries (max-width) */
@@ -320,6 +351,7 @@
 }
 
 @media (max-width: 768px) {
+
     // Tablets estándar
     .swiper-container {
         .header-slider-cta {
@@ -337,7 +369,7 @@
             &::before {
                 // border-radius: 1rem;
                 // width: 80%;
-            }            
+            }
         }
     }
 }
@@ -347,10 +379,11 @@
 }
 
 @media (max-width: 568px) {
+
     // Tablets pequeñas
     .workflow-section {
         .workflow-steps {
-            > div {
+            >div {
                 .wf-step {
                     padding: 1rem 0 0 1rem;
                 }

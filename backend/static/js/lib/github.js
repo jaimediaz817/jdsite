@@ -26,6 +26,13 @@ function renderGitHubCarousel(repos) {
     var carouselItems = repos.concat(repos);
 
     carouselItems.forEach(function(repo) {
+        // 1. Convertimos el string en un objeto URL para poder descomponerlo
+        const urlObj = new URL(repo.html_url);
+        // 2. urlObj.pathname nos da "/jaimediaz817/jdsite"
+        // 3. Al hacer split('/') obtenemos ['', 'jaimediaz817', 'jdsite']
+        const username = urlObj.pathname.split('/')[1];
+        console.log(username); // Resultado: jaimediaz817
+
         var lang = (repo.language || 'default').toLowerCase();
         var iconClass = 'lang-default';
         var deviconClass = 'fas fa-code';
@@ -62,26 +69,32 @@ function renderGitHubCarousel(repos) {
         var desc = repo.description || 'Sin descripción';
         if (desc.length > 100) desc = desc.substring(0, 97) + '...';
 
-        var slideHtml =
-            '<div class="swiper-slide github-repo-slide">' +
-                '<div class="github-repo-card">' +
-                    '<div class="repo-card-header">' +
-                        '<div class="repo-card-icon ' + iconClass + '"><i class="' + deviconClass + '"></i></div>' +
-                        '<div class="repo-card-name"><a href="' + repo.html_url + '" target="_blank" rel="noopener">' + repo.name + '</a></div>' +
-                    '</div>' +
-                    '<div class="repo-card-desc">' + desc + '</div>' +
-                    '<div class="repo-card-footer">' +
-                        '<span class="repo-card-badge ' + ownerTag + '">' +
-                            '<i class="fas fa-circle" style="font-size:0.4rem;"></i> ' +
-                            (ownerTag === 'personal' ? 'Personal' : 'Profesional') +
-                        '</span>' +
-                        '<span class="repo-card-stars"><i class="fas fa-star"></i> ' + stars + '</span>' +
-                        '<a href="' + repo.html_url + '" target="_blank" rel="noopener" class="repo-card-link">' +
-                            '<i class="fas fa-external-link-alt"></i> Repo' +
-                        '</a>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
+        const slideHtml = `
+            <div class="swiper-slide github-repo-slide">
+                <div class="github-repo-card">
+                    <div class="repo-card-header">
+                        <div class="repo-card-icon ${iconClass}"><i class="${deviconClass}"></i></div>
+                        <div class="repo-card-name">
+                            <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+                        </div>
+                    </div>
+                    <div class="repo-card-desc">${desc}</div>
+                    <div class="repo-card-footer">
+                        <span class="repo-card-badge ${ownerTag}">
+                            <i class="fas fa-circle" style="font-size:0.4rem;"></i> 
+                            ${ownerTag === 'personal' ? 'Personal' : 'Profesional'}
+                        </span>
+                        <span class="repo-card-stars"><i class="fas fa-star"></i> ${stars}</span>
+                        <a href="${repo.html_url}" target="_blank" rel="noopener" class="repo-card-link">
+                            <i class="fas fa-external-link-alt"></i> Repo
+                        </a>
+                    </div>
+                    <div class="repo-card-footer username">
+                        <span class="repo-card-username">${username}</span>
+                    </div>
+                </div>
+            </div>
+        `;
 
         $wrapper.append(slideHtml);
     });
@@ -117,6 +130,7 @@ function renderGitHubRepos(data) {
 
     // Ordenar por fecha de actualización (el más reciente primero)
     allRepos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    console.log("Repositorios ordenados por fecha de actualización:", allRepos);
 
     // ── INYECTAR SLIDES DEL CARRUSEL ──
     renderGitHubCarousel(allRepos);
@@ -129,7 +143,7 @@ function renderGitHubRepos(data) {
         const repoHtml = `
             <div class="col-md-4 mb-4" data-aos="fade-up">
                 <div class="card h-100 shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body">                        
                         <span class="badge bg-${ownerColor} mb-2">${ownerLabel}</span>
                         <h5 class="card-title text-primary">${repo.name}</h5>
                         <p class="card-text">${

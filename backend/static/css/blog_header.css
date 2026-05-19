@@ -251,10 +251,15 @@ html body #navigation-menu {
     border: none !important;
     color: white !important;
     font-weight: 500;
-    padding: 0.6rem 1.5rem;
+    padding: 0.1rem 1.5rem;
     border-radius: 0.5rem;
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
+}
+
+.btn-outline-secondary {
+    border-radius: 0.5rem;
+    margin-left: 0.5rem;
 }
 
 .btn-primary:hover {

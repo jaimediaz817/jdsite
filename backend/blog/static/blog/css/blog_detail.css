@@ -1887,18 +1887,19 @@
     gap: 5px;
     padding: 4px 10px;
     border-radius: 100px;
-    border: none;
-    background: transparent;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, #6f42c1, #e84a5f);
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
     font-size: 0.78rem;
-    color: #c1c7d0;
+    color: #fefefe;
     margin-left: auto;
     transition: color 0.15s ease;
 }
 
 .jd-reply-toggle:hover {
-    color: #6f42c1;
+    color: #e3e1e8;
+    border: 1px solid #7268e6;
 }
 
 /* --- Reply inline form --- */

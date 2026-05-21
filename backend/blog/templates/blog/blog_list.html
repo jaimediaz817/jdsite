@@ -83,7 +83,7 @@
 
         <div class="blog-grid">
             {% for post in posts %}
-                <article class="blog-card card border-0 h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow">
+                <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow">
                     <div class="blog-card-image position-relative" style="aspect-ratio: 16/9; overflow: hidden; background: #f8f9fa;">
                         <img src="{{ post|blog_thumbnail }}" alt="{{ post.title }}" class="w-100 h-100 object-fit-cover">
                         <!-- Icono y contador de comentarios + reacciones (solo lectura) -->
@@ -116,6 +116,14 @@
                         <p class="blog-post-content_container text-muted mb-2 small flex-grow-1">
                             {{ post.content_html|striptags|truncatechars:100 }}
                         </p>
+                        {% endif %}
+                        <!-- Categoría del artículo (si existe) -->
+                        {% if post.category %}
+                        <div class="category-badge mb-2">
+                            <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="badge category-link" title="Ver más artículos de {{ post.category.name }}">
+                                <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
+                            </a>
+                        </div>
                         {% endif %}
                         <div class="blog-card-meta small text-muted d-flex align-items-center gap-3 mt-auto pt-2 border-top">
                             <span><i class="far fa-calendar-alt mr-1"></i> {{ post.publish_date|date:"d M Y" }}</span>

@@ -9,12 +9,35 @@
 }
 
 /* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
+/* --- Contenedor de la Card --- */
 .blog-card {
-    border-radius: 12px !important;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border: 1px solid #eef2f7 !important;
-    /* Fondo azul suave del blog */
+    /* Borde ultra‑minimalista: sin borde visible, solo sombra */
+    border: 2px solid rgba(1, 1, 1, 0.17);
+    border-radius: 13px;
     background-color: #f5faff;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Ensure cards that also have Bootstrap's border-0 keep the ultra‑minimal style (no border) */
+.blog-card.card.border-0 {
+    border: none !important;
+}
+
+/* Hover: mantener el mismo color de borde púrpura para mayor consistencia */
+/* Hover: mantiene el borde sutil y aumenta ligeramente la sombra */
+/* Hover: mantiene el borde ultra‑minimalista y refuerza la sombra */
+/* Hover: refuerza la sombra sin añadir borde */
+.blog-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    /* sin borde */
 }
 
 /* --- Imagen de la Card --- */
@@ -142,10 +165,9 @@
 }
 
 /* --- Extracto del contenido (resumen) --- */
+/* --- Extracto del contenido (resumen) con borde y fondo mejorados --- */
 .blog-card .card-body p.text-muted.mb-2.small {
-    background: transparent;
-    padding: 0;
-    border: none;
+    background: #f7f7f7;
     color: #64748b !important;
     line-height: 1.65;
     font-size: 0.8rem;
@@ -154,6 +176,9 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    border: 1px solid #dde2ff;
+    padding: 3px 10px;
+    border-radius: 5px;
 }
 
 /* --- Título principal con borde degradado --- */
@@ -179,11 +204,41 @@
 /* --- Metadatos (Fecha/Lectura) --- */
 .blog-card-meta {
     font-size: 0.85rem;
-    color: #95a5a6 !important;
+    color: #6f42c1 !important;
+    /* color púrpura más vivo para mejor legibilidad */
+
+    span:nth-child(1) {
+        background: rgba(111, 66, 193, 0.1);
+        color: #6f42c1;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    span:nth-child(2) {
+        background: rgba(0, 123, 255, 0.1);
+        color: #007bff;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
 }
 
 .blog-card-meta i {
-    color: #bdc3c7;
+    /* Mejora de los íconos de fecha y tiempo */
+    color: #6f42c1;
+    /* púrpura vibrante que coincide con la paleta */
+    font-size: 1.2rem;
+    /* ligeramente más grande para mejor legibilidad */
+    background: #f5f5f5;
+    border-radius: 50%;
+    padding: 2px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover efecto para los íconos de fecha y tiempo */
+.blog-card-meta span:hover i {
+    color: #3498db;
+    /* azul más vivo al pasar el cursor */
+    transform: scale(1.15);
 }
 
 /* --- Tags/Badges --- */
@@ -204,6 +259,25 @@
     border-color: #00ADB5;
     transform: translateY(-1px);
     opacity: 1;
+}
+
+/* --- Categoría (badge) --- */
+.category-badge .category-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #2c3e50;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 16px;
+    padding: 4px 10px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.category-badge .category-link:hover {
+    background: #d6d8db;
+    color: #1a202c;
 }
 
 /* --- Paginación --- */

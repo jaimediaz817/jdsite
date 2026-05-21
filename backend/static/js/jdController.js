@@ -42,6 +42,8 @@ function initScrollAnimations() {
 }
 
 $(function () {
+
+    let swiper_giyhub_repos = null;
     // TODO: evaluar para quitart
     function getCookie(name) {
         const v = `; ${document.cookie}`.split(`; ${name}=`);
@@ -761,49 +763,6 @@ $(function () {
         modal.find(".carousel").carousel(0);
     }
 
-    // 4. ASIGNACIÓN DE EVENTOS (CON LÓGICA PARA PAUSAR VIDEO)
-    // $(".project-gallery-trigger").on("click", function (e) {
-    //     e.preventDefault();
-    //     if ($(this).is(":disabled")) return;
-
-    //     const projectId = $(this).data("project-id");
-    //     _populateProjectModal(projectId);
-    //     $("#projectGalleryModal").modal("show");
-    // });
-
-    // $("#projectGalleryCarousel").on("click", ".btn-image-info", function (e) {
-    //     e.stopPropagation();
-    //     const button = $(this);
-    //     const panel = button.siblings(".image-description-panel");
-    //     button.toggleClass("active");
-    //     panel.toggleClass("is-visible");
-    // });
-
-    // $("#projectGalleryModal").on("hidden.bs.modal", function () {
-    //     // Pausa todos los videos al cerrar el modal
-    //     $(this)
-    //         .find("video")
-    //         .each(function () {
-    //             this.pause();
-    //         });
-    //     // Resetea los paneles de info
-    //     $(this).find(".btn-image-info").removeClass("active");
-    //     $(this).find(".image-description-panel").removeClass("is-visible");
-    // });
-
-    // $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
-    //     // Pausa el video del slide que se está abandonando
-    //     const previousSlide = $(this).find(".carousel-item").eq(e.from);
-    //     let video = previousSlide.find("video");
-    //     if (video.length > 0) {
-    //         video[0].play();
-    //     }
-
-    //     // Resetea el panel de info
-    //     $(this).find(".btn-image-info").removeClass("active");
-    //     $(this).find(".image-description-panel").removeClass("is-visible");
-    // });
-
     $(".project-gallery-trigger").on("click", function (e) {
         e.preventDefault();
         if ($(this).is(":disabled")) return;
@@ -878,16 +837,6 @@ $(function () {
         $(this).find(".btn-image-info").removeClass("active");
         $(this).find(".image-description-panel").removeClass("is-visible");
     });
-
-    // Evento que se dispara ANTES de que un slide cambie
-    // $("#projectGalleryCarousel").on("slide.bs.carousel", function (e) {
-    //     // Pausa el video del slide que se está abandonando
-    //     const previousSlide = $(this).find(".carousel-item").eq(e.from);
-    //     const video = previousSlide.find("video");
-    //     if (video.length > 0) {
-    //         video[0].pause();
-    //     }
-    // });
 
     // Evento que se dispara DESPUÉS de que un slide ha cambiado
     $("#projectGalleryCarousel").on("slid.bs.carousel", function (e) {
@@ -1005,33 +954,77 @@ $(function () {
         initGitHubReposSwiper();
     }
 
-    // ── FUNCIÓN INICIALIZACIÓN SWIPER CARRUSEL DE REPOS ──
+
     function initGitHubReposSwiper() {
-        var container = document.getElementById('githubReposSwiper');
-        if (!container) return;
-        // Esperar un tick para que los slides estén en el DOM
-        setTimeout(function() {
-            new Swiper('#githubReposSwiper', {
-                slidesPerView: 'auto',
-                spaceBetween: 8,
-                loop: true,
-                speed: 8000,
-                autoplay: {
-                    delay: 0,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                },
-                freeMode: false,
-                allowTouchMove: true,
-                grabCursor: true,
-                breakpoints: {
-                    768: { spaceBetween: 12 },
-                    1200: { spaceBetween: 16 }
-                }
-            });
-            console.log("✅ Carrusel de repositorios GitHub iniciado");
-        }, 100);
-    }
+        var swiperEl = document.getElementById('githubReposSwiper');
+        if (!swiperEl) return;
+
+        if (window.githubReposSwiperInstance) {
+            window.githubReposSwiperInstance.destroy(true, true);
+            window.githubReposSwiperInstance = null;
+        }
+
+        // Inicialización limpia y nativa
+        swiper_giyhub_repos = new Swiper('#githubReposSwiper', {
+            slidesPerView: 'auto',
+            spaceBetween: 8,
+            loop: true,
+            speed: 8000, // Velocidad continua
+            allowTouchMove: true,
+            grabCursor: true,
+            
+            // 1. ACTIVA EL MODO LIBRE (Evita saltos bruscos)
+            freeMode: {
+                enabled: true,
+                momentum: false, 
+            },
+            
+            // 2. CONFIGURA LA PAUSA NATIVA
+            autoplay: {
+                delay: 0, 
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true, // Swiper se encarga del Hover automáticamente
+            },
+            
+            breakpoints: {
+                768: { spaceBetween: 12 },
+                1200: { spaceBetween: 16 },
+            },            
+        });
+
+        window.githubReposSwiperInstance = swiper_giyhub_repos;
+    }    
+
+    // SWIPER Events: Pausa y reanudación matemáticamente perfectas
+    $(document).on("mouseenter", "#githubReposSwiper", function() {
+        if (swiper_giyhub_repos && swiper_giyhub_repos.autoplay) {
+            // 1. Apagamos el reloj lógico de Swiper
+            swiper_giyhub_repos.autoplay.stop();
+            
+            // 2. Leemos la posición visual actual en pixeles
+            var wrapper = swiper_giyhub_repos.wrapperEl;
+            var computedStyle = window.getComputedStyle(wrapper);
+            var currentTransform = computedStyle.transform || computedStyle.webkitTransform;
+            
+            // 3. Forzamos al CSS a congelarse en ese pixel
+            wrapper.style.setProperty('transition-duration', '0ms', 'important');
+            wrapper.style.transform = currentTransform;
+        }
+    }).on("mouseleave", "#githubReposSwiper", function() {
+        if (swiper_giyhub_repos && swiper_giyhub_repos.autoplay) {
+            var wrapper = swiper_giyhub_repos.wrapperEl;
+            
+            // 1. Removemos el inline-style del transform para que Swiper retome la rienda
+            wrapper.style.transform = '';
+            
+            // 2. Le devolvemos los 8000ms nativos antes de arrancar
+            wrapper.style.setProperty('transition-duration', '8000ms', 'important');
+            
+            // 3. Reseteamos el motor interno y despertamos el Autoplay
+            swiper_giyhub_repos.update();
+            swiper_giyhub_repos.autoplay.start();
+        }
+    });
 
     const dialog = document.getElementById("projectGalleryDialog");
     const bodyGrid = document.getElementById("projectDialogBody");
@@ -1086,4 +1079,5 @@ $(function () {
             e.clientY <= rect.bottom;
         if (!inDialog) dialog.close();
     });
+
 });

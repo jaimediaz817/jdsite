@@ -31,9 +31,22 @@ class BlogListView(ListView):
     template_name = "blog/blog_list.html"
     context_object_name = "posts"
     paginate_by = 10
+    # Base queryset sin filtro de categoría; el método ``get_queryset`` aplicará
+    # opcionalmente el filtro por slug de categoría recibido vía querystring.
     queryset = BlogPost.objects.filter(is_published=True).order_by(
         "-publish_date"
     )
+
+    def get_queryset(self):
+        """Aplica filtro de categoría si se envía ``?category=slug``.
+
+        Mantiene el orden y la paginación definidos en ``queryset``.
+        """
+        qs = super().get_queryset()
+        category_slug = self.request.GET.get("category")
+        if category_slug:
+            qs = qs.filter(category__slug=category_slug)
+        return qs
 
 
 class BlogDetailView(DetailView):

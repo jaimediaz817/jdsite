@@ -23,7 +23,7 @@ function renderGitHubCarousel(repos) {
     $wrapper.empty();
 
     // Duplicar repos para que el loop infinito se sienta natural
-    var carouselItems = repos.concat(repos);
+    var carouselItems = repos; // ← solo los originales
 
     carouselItems.forEach(function(repo) {
         // 1. Convertimos el string en un objeto URL para poder descomponerlo

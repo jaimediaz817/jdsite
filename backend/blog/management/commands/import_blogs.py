@@ -13,6 +13,7 @@ from blog.models import BlogPost, Category, Tag
 import markdown
 from bs4 import BeautifulSoup
 
+
 class Command(BaseCommand):
     help = "Importa todos los blogs desde la carpeta blogs_source"
 
@@ -236,21 +237,30 @@ class Command(BaseCommand):
         if md_content.startswith("---"):
             parts = md_content.split("---", 2)
             if len(parts) >= 3:
+                # Extract raw frontmatter block *before* any line‑normalisation.
                 frontmatter_raw = parts[1].strip()
                 content_md = parts[2].strip()
 
-                for line in frontmatter_raw.split("\n"):
-                    if ":" in line:
-                        key, value = line.split(":", 1)
-                        key = key.strip()
-                        value = value.strip()
+                # The original implementation attempted to normalise the whole
+                # markdown first, which unintentionally collapsed the frontmatter
+                # into a single line (because the normaliser treats lines without
+                # structural markers as plain text).  To make the parser robust we
+                # now parse the frontmatter directly line‑by‑line, ignoring any
+                # accidental concatenation of key/value pairs.
+                for line in frontmatter_raw.splitlines():
+                    if ":" not in line:
+                        continue
+                    key, value = line.split(":", 1)
+                    key = key.strip()
+                    value = value.strip()
 
-                        if (value.startswith('"') and value.endswith('"')) or (
-                            value.startswith("'") and value.endswith("'")
-                        ):
-                            value = value[1:-1].strip()
+                    # Remove surrounding quotes if present
+                    if (value.startswith('"') and value.endswith('"')) or (
+                        value.startswith("'") and value.endswith("'")
+                    ):
+                        value = value[1:-1].strip()
 
-                        frontmatter[key] = value
+                    frontmatter[key] = value
 
         # ✅ Eliminar comentarios HTML del contenido
         content_md = re.sub(

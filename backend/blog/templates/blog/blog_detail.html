@@ -177,8 +177,16 @@
                 <!-- ═══════════════════════════════════════
                      HEADER DEL ARTÍCULO
                 ═══════════════════════════════════════ -->
-                <header class="jd-article-header mb-5">
-                  <h1 class="jd-article-title">{{ post.title }}</h1>
+                    <header class="jd-article-header mb-5">
+                        <h1 class="jd-article-title">{{ post.title }}</h1>
+                        <!-- Categoría del artículo (si existe) -->
+                        {% if post.category %}
+                        <div class="category-badge mb-3">
+                            <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="badge category-link" title="Ver más artículos de {{ post.category.name }}">
+                                <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
+                            </a>
+                        </div>
+                        {% endif %}
 
                   <!-- Meta row -->
                   <div class="jd-article-meta">
@@ -441,30 +449,30 @@
                             <p class="jd-comment-text">{{ comment.content|linebreaksbr }}</p>
 
                             <!-- Acciones del comentario -->
-<div class="jd-comment-actions">
-    <div class="jd-comment-reactions comment-reactions" data-comment-id="{{ comment.id }}">
-        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="like" title="Me gusta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
-            <i class="far fa-thumbs-up"></i>
-            <span class="count">0</span>
-        </button>
-        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="love" title="Me encanta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
-            <i class="fas fa-heart"></i>
-            <span class="count">0</span>
-        </button>
-        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="fire" title="Excelente" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
-            <i class="fas fa-fire"></i>
-            <span class="count">0</span>
-        </button>
-        <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="idea" title="Buena idea" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
-            <i class="far fa-lightbulb"></i>
-            <span class="count">0</span>
-        </button>
-    </div>
-    <button class="jd-reply-toggle reply-btn" data-comment-id="{{ comment.id }}">
-        <i class="fas fa-corner-down-right mr-1"></i>
-        Responder
-    </button>
-</div>
+                            <div class="jd-comment-actions">
+                                <div class="jd-comment-reactions comment-reactions" data-comment-id="{{ comment.id }}">
+                                    <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="like" title="Me gusta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                                        <i class="far fa-thumbs-up"></i>
+                                        <span class="count">0</span>
+                                    </button>
+                                    <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="love" title="Me encanta" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                                        <i class="fas fa-heart"></i>
+                                        <span class="count">0</span>
+                                    </button>
+                                    <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="fire" title="Excelente" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                                        <i class="fas fa-fire"></i>
+                                        <span class="count">0</span>
+                                    </button>
+                                    <button class="jd-react-btn reaction-button reaction-comment-btn" data-reaction="idea" title="Buena idea" onclick="window.Reactions.toggleReaction(event, 'comment', {{ comment.id }})">
+                                        <i class="far fa-lightbulb"></i>
+                                        <span class="count">0</span>
+                                    </button>
+                                </div>
+                                <button class="jd-reply-toggle reply-btn" data-comment-id="{{ comment.id }}">
+                                    <i class="fas fa-corner-down-right mr-1"></i>
+                                    Responder
+                                </button>
+                            </div>
 
                             <!-- Formulario de respuesta (inline) -->
                             <div class="jd-inline-reply" id="reply-form-{{ comment.id }}" style="display:none;">

@@ -4,169 +4,171 @@
    SECCIÓN PROYECTOS REALES
    ============================ */
 .projects-section {
-    position: relative;
-    .swiper-slide {
+  position: relative;
+
+  .swiper-slide {
     height: auto !important;
     min-height: 1px;
-    }
+  }
 
-    .projects-section {
+  .projects-section {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-    }
+  }
 
-    .projects-surface {
+  .projects-surface {
     border-radius: 24px;
     background: #ffffff;
     box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-    }
+  }
 
-    /* Cabecera */
-    // TODO: refactorizar
-    .projects-title {
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: #0f172a;
-    }
+  /* Cabecera */
+  // TODO: refactorizar
+  .projects-title {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+  }
 
-    .projects-subtitle {
+  .projects-subtitle {
     font-size: 0.98rem;
     color: #64748b;
-    }
+  }
 
-    /* Grid de proyectos */
-    .project-grid {
+  /* Grid de proyectos */
+  .project-grid {
     margin-top: 0.5rem;
-    }
+  }
 
-    /* Card base */
-    .project-card {
+  /* Card base */
+  .project-card {
     border-radius: 18px;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
+    width: 100%;
+  }
 
-    .project-card:hover {
+  .project-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
-    }
+  }
 
-    .card-section-item-container {
-      border-top-left-radius: 17px;
-      border-top-right-radius: 17px;
-      padding: 1.25rem;
-    }
-    .project-card-header {
-      background-color: #f5feff;
-      border-bottom: 2px solid #efefef;
-    }
-    .project-card-body {
-      background-color: vars.$bg_color_yellow_ultra_light;
-      border-bottom: 2px solid #efefef;
-    }
-    .project-card-footer {
-      
-    }
-    .project-actions {
-      border-top: 2px solid #efefef;
-      background-color: #fbfbfb;
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      border-bottom-left-radius: 17px;
-      border-bottom-right-radius: 17px;
-    }
+  .card-section-item-container {
+    border-top-left-radius: 17px;
+    border-top-right-radius: 17px;
+    padding: 1.25rem;
+  }
 
-    /* Texto dentro de cada card */
-    .project-title {
+  .project-card-header {
+    background-color: #f5feff;
+    border-bottom: 2px solid #efefef;
+  }
+
+  .project-card-body {
+    background-color: vars.$bg_color_yellow_ultra_light;
+    border-bottom: 2px solid #efefef;
+  }
+
+  .project-card-footer {}
+
+  .project-actions {
+    border-top: 2px solid #efefef;
+    background-color: #fbfbfb;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 17px;
+    border-bottom-right-radius: 17px;
+  }
+
+  /* Texto dentro de cada card */
+  .project-title {
     font-size: 1.15rem;
     font-weight: 700;
     color: #0f172a;
-    }
+  }
 
-    .card-title-descripcion {
-      font-size: 1.15rem;
-      display: inline-block;
-      font-weight: 700;
-      margin-top: 0.25rem;
-      margin-bottom: 0.75rem;
-      text-decoration: underline;
-    }
+  .card-title-descripcion {
+    font-size: 1.15rem;
+    display: inline-block;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+    text-decoration: underline;
+  }
 
 
-    .project-meta {
-      font-size: 1rem;
-    }
+  .project-meta {
+    font-size: 1rem;
+  }
 
-    .project-points {
-      font-size: 1.05rem;
-      color: #334155;
-      margin-bottom: 0;
+  .project-points {
+    font-size: 1.05rem;
+    color: #334155;
+    margin-bottom: 0;
 
-    }
+  }
 
-    .project-points li + li {
+  .project-points li+li {
     margin-top: 0.2rem;
-    }
+  }
 
-    .badges-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        align-items: center;
-        justify-content: flex-start;
-    }
-    
+  .badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
+  }
 
-    /* Badges de tecnologías */
-    .badge-tech {
+
+  /* Badges de tecnologías */
+  .badge-tech {
     font-size: 1rem;
     font-weight: 600;
     border-radius: 999px;
     padding: 0.25rem 0.6rem;
     background: #e0f2fe;
     color: #0369a1;
-    }
+  }
 
-    .actions-project-container {
-      flex-direction: row;
-      @media (max-width: 568px) {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: inherit !important;
-      }
-    }
+  .actions-project-container {
+    flex-direction: row;
 
-    /* Botón "Ver capturas" */
-    .project-gallery-trigger {
+    @media (max-width: 568px) {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: inherit !important;
+    }
+  }
+
+  /* Botón "Ver capturas" */
+  .project-gallery-trigger {
     font-size: 1rem;
     border-radius: 999px;
-    }
+  }
 
-    .project-gallery-trigger i {
+  .project-gallery-trigger i {
     font-size: 0.9rem;
-    }
+  }
 
-    .project-gallery-disabled {
+  .project-gallery-disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    }
+  }
 
-    /* Texto de aviso al final */
-    .projects-surface .small.text-muted {
+  /* Texto de aviso al final */
+  .projects-surface .small.text-muted {
     font-size: 0.78rem;
-    }
+  }
 
-    button.project-gallery-trigger {
-        font-size: 1rem;
-        border-radius: 0.72rem;
-    }
+  button.project-gallery-trigger {
+    font-size: 1rem;
+    border-radius: 0.72rem;
+  }
 
-    a.btn-addtext-to-form-opc1 {
-        font-size: 1rem;
-        border-radius: 0.72rem;
-    }
-
+  a.btn-addtext-to-form-opc1 {
+    font-size: 1rem;
+    border-radius: 0.72rem;
+  }
 }
-
-
 
 /* ============================
    MODAL + CARRUSEL DE CAPTURAS
@@ -224,131 +226,143 @@
 /* 1. Contenedor de la imagen */
 /* Asegura que el panel de descripción se posicione correctamente dentro de la imagen */
 .project-image-wrapper {
-    position: relative;
-    overflow: hidden; /* Oculta el panel cuando está fuera de la vista */
-    border-radius: 8px; /* Opcional: suaviza los bordes de la imagen */
+  position: relative;
+  overflow: hidden;
+  /* Oculta el panel cuando está fuera de la vista */
+  border-radius: 8px;
+  /* Opcional: suaviza los bordes de la imagen */
 }
 
 /* 2. Panel de descripción (el cambio principal está aquí) */
 .image-description-panel {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(13, 15, 20, 0.9); /* Fondo sólido oscuro y traslúcido */
-    backdrop-filter: blur(8px); /* Efecto "glass" para un look premium */
-    -webkit-backdrop-filter: blur(8px);
-    color: #f1f5f9; /* Un blanco más suave que el blanco puro */
-    padding: 1.25rem 1.5rem;
-    
-    /* Estado inicial: oculto y desplazado hacia abajo */
-    transform: translateY(100%);
-    opacity: 0;
-    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.35s ease;
-    pointer-events: none; /* No interactuable cuando está oculto */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(13, 15, 20, 0.9);
+  /* Fondo sólido oscuro y traslúcido */
+  backdrop-filter: blur(8px);
+  /* Efecto "glass" para un look premium */
+  -webkit-backdrop-filter: blur(8px);
+  color: #f1f5f9;
+  /* Un blanco más suave que el blanco puro */
+  padding: 1.25rem 1.5rem;
+
+  /* Estado inicial: oculto y desplazado hacia abajo */
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.35s ease;
+  pointer-events: none;
+  /* No interactuable cuando está oculto */
 }
 
 /* 3. Estado visible del panel */
 .image-description-panel.is-visible {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-    border-top: 5px solid vars.$primary;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;    
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  border-top: 5px solid vars.$primary;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 /* 4. Párrafo dentro del panel */
 .image-description-panel p {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    margin: 0;
-    @media (max-width: 567.98px) {
-      font-size: 1rem;
-    }
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin: 0;
+
+  @media (max-width: 567.98px) {
+    font-size: 1rem;
+  }
 }
 
 /* 5. Botón de información */
 .btn-image-info {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 999;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #F6364F;
+
+  /* Contenedor para los iconos para poder animarlos */
+  .icon-container {
+    position: relative;
+    width: 1em;
+    height: 1em;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  i {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 999;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #F6364F;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    font-size: 1rem;
+  }
 
-    /* Contenedor para los iconos para poder animarlos */
-    .icon-container {
-        position: relative;
-        width: 1em;
-        height: 1em;
-        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    }
-
-    i {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        transition: opacity 0.3s ease;
-        font-size: 1rem;
-    }
-
-    .fa-times {
-        opacity: 0;
-    }
+  .fa-times {
+    opacity: 0;
+  }
 }
 
 /* 6. Estado activo del botón */
 .btn-image-info.active {
-    background: var(--jd-primary);
-    border-color: var(--jd-primary);
-    
-    .icon-container {
-        transform: rotate(270deg); /* Gira el contenedor */
-    }
+  background: var(--jd-primary);
+  border-color: var(--jd-primary);
 
-    .fa-info-circle {
-        opacity: 0;
-    }
-    .fa-times {
-        opacity: 1;
-    }
+  .icon-container {
+    transform: rotate(270deg);
+    /* Gira el contenedor */
+  }
+
+  .fa-info-circle {
+    opacity: 0;
+  }
+
+  .fa-times {
+    opacity: 1;
+  }
 }
 
 .btn-image-info:hover:not(.active) {
-    transform: scale(1.1);
-    background: rgba(13, 15, 20, 0.8);
+  transform: scale(1.1);
+  background: rgba(13, 15, 20, 0.8);
 }
 
 
 
-  #projectGalleryModal {
-    /* Imagen dentro del carrusel */
-    .project-gallery-img {
-        border-radius: 8px;
-        max-height: 75vh;
-        object-fit: contain;
-    }
+#projectGalleryModal {
+
+  /* Imagen dentro del carrusel */
+  .project-gallery-img {
+    border-radius: 8px;
+    max-height: 75vh;
+    object-fit: contain;
   }
+}
 
 /* === INICIO: AJUSTE DE POSICIÓN DE INDICADORES === */
 /* Reposiciona toda la lista de indicadores para evitar que el panel de descripción los tape */
 #projectGalleryModal {
-  .carousel-control-next, .carousel-control-prev {
+
+  .carousel-control-next,
+  .carousel-control-prev {
     // width: 5%;
     // height: 10%;
     // top: 50%;
@@ -359,60 +373,66 @@
     background: rgba(1, 1, 1, 0.85);
     z-index: 9999;
     transform: translateY(-50%);
-    border-radius: 50px;    
+    border-radius: 50px;
   }
+
   .carousel-indicators {
-      top: 1rem; /* Sube los indicadores desde su posición por defecto */
-      transition: bottom 0.35s ease; /* Anima el cambio de posición */
-      margin-right: 6%;
-      margin-left: 6%;
-  }  
+    top: 1rem;
+    /* Sube los indicadores desde su posición por defecto */
+    transition: bottom 0.35s ease;
+    /* Anima el cambio de posición */
+    margin-right: 6%;
+    margin-left: 6%;
+  }
 }
+
 /* === FIN: AJUSTE DE POSICIÓN DE INDICADORES === */
 .carousel-inner {
-    border: 3px solid #6b787a;
-    border-radius: 10px;
-    background: #000000;
+  border: 3px solid #6b787a;
+  border-radius: 10px;
+  background: #000000;
 }
+
 /* ============================
    NUEVO: Estilos para el video dentro del carrusel
    ============================ */
 /* Imagen dentro del carrusel */
 .project-gallery-img {
-    border-radius: 8px;
-    max-height: 75vh;
-    object-fit: contain;
+  border-radius: 8px;
+  max-height: 75vh;
+  object-fit: contain;
 }
 
 /* NUEVO: Estilos para el video dentro del carrusel */
 .project-gallery-video {
-    border-radius: 8px;
-    max-height: 75vh;
-    background-color: #000; /* Fondo negro por si el video no carga */
+  border-radius: 8px;
+  max-height: 75vh;
+  background-color: #000;
+  /* Fondo negro por si el video no carga */
 }
 
 #projectGalleryModal .modal-title {
-    line-height: 1.2;
+  line-height: 1.2;
 }
 
 /* NUEVO: Estilo para el icono de tipo de medio en el header del modal */
 #projectGalleryMediaIcon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 173, 181, 0.15);
-    color: #00adb5;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-    line-height: 1;
-    vertical-align: middle;
-    width: 30px;
-    height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 173, 181, 0.15);
+  color: #00adb5;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
 
-    i {
-      font-size: 22px;
-    }
+  i {
+    font-size: 22px;
+  }
 }
 
 
@@ -467,11 +487,11 @@
   }
 
   .projects-slider {
-    .project-grid > .col-12.col-md-6  {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 100%;
-      }
+    .project-grid>.col-12.col-md-6 {
+      width: 100%;
+      max-width: 100%;
+      flex: 0 0 100%;
+    }
   }
 }
 
@@ -480,7 +500,8 @@
     display: flex;
     flex-wrap: wrap;
   }
-  .project-grid > .col-12.col-md-6 {
+
+  .project-grid>.col-12.col-md-6 {
     width: 50%;
     max-width: 50%;
     flex: 0 0 50%;
@@ -525,50 +546,56 @@
 /* Controles del carrusel de proyectos */
 .projects-slider {
   position: relative;
-  padding-bottom: 2.5rem; /* espacio para la paginación */
+  padding-bottom: 2.5rem;
+  /* espacio para la paginación */
 }
+
 .projects-section {
-    /* Flechas del carrusel de proyectos más hacia los extremos */
+
+  /* Flechas del carrusel de proyectos más hacia los extremos */
+  .projects-prev,
+  .projects-next {
+    color: #0f172a;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Moverlas hacia fuera del contenido */
+  .projects-prev {
+    left: 0;
+    /* prueba -20, -24 o -28 si quieres más fuera */
+  }
+
+  .projects-next {
+    right: 0;
+    /* idem: ajusta si quieres más separación */
+  }
+
+  /* Íconos centrados dentro del botón */
+  .projects-prev::after,
+  .projects-next::after {
+    font-size: 0.9rem;
+  }
+
+  .projects-pagination {
+    margin-top: 1rem;
+  }
+
+  /* En móviles ocultamos flechas y dejamos solo bullets */
+  @media (max-width: 575.98px) {
+
     .projects-prev,
     .projects-next {
-        color: #0f172a;
-        width: 30px;
-        height: 30px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
-        top: 50%;
-        transform: translateY(-50%);
+      display: none;
     }
+  }
 
-    /* Moverlas hacia fuera del contenido */
-    .projects-prev {
-    left: 0;   /* prueba -20, -24 o -28 si quieres más fuera */
-    }
-
-    .projects-next {
-    right: 0;  /* idem: ajusta si quieres más separación */
-    }
-
-    /* Íconos centrados dentro del botón */
-    .projects-prev::after,
-    .projects-next::after {
-    font-size: 0.9rem;
-    }
-
-    .projects-pagination {
-    margin-top: 1rem;
-    }
-
-    /* En móviles ocultamos flechas y dejamos solo bullets */
-    @media (max-width: 575.98px) {
-        .projects-prev,
-        .projects-next {
-            display: none;
-        }
-    }
-
-.btn-gradient-green {
+  .btn-gradient-green {
     position: relative;
     overflow: hidden;
     display: inline-flex;
@@ -585,9 +612,9 @@
     box-shadow: 0 4px 18px -6px rgba(0, 173, 181, 0.13);
     transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s;
     z-index: 1;
-}
+  }
 
-.btn-gradient-green::after {
+  .btn-gradient-green::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -596,25 +623,25 @@
     transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
     pointer-events: none;
-}
+  }
 
-.btn-gradient-green .btn-content {
+  .btn-gradient-green .btn-content {
     position: relative;
     z-index: 3;
     color: #fff !important;
-}
+  }
 
-.btn-gradient-green:hover::after,
-.btn-gradient-green:focus::after {
+  .btn-gradient-green:hover::after,
+  .btn-gradient-green:focus::after {
     opacity: 1;
-}
+  }
 
-.btn-gradient-green:hover,
-.btn-gradient-green:focus {
+  .btn-gradient-green:hover,
+  .btn-gradient-green:focus {
     box-shadow: 0 8px 28px -8px rgba(0, 173, 181, 0.18);
-}
+  }
 
-.btn-gradient-red {
+  .btn-gradient-red {
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, #ff5858 0%, #c80000 100%);
@@ -623,9 +650,9 @@
     z-index: 1;
     transition: box-shadow 0.25s;
     box-shadow: 0 4px 18px -6px rgba(200, 0, 0, 0.18);
-}
+  }
 
-.btn-gradient-red::after {
+  .btn-gradient-red::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -634,33 +661,33 @@
     transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
     pointer-events: none;
-}
+  }
 
-.btn-gradient-red .btn-content {
+  .btn-gradient-red .btn-content {
     position: relative;
     z-index: 3;
     color: #fff !important;
-}
+  }
 
-.btn-gradient-red:hover::after,
-.btn-gradient-red:focus::after {
+  .btn-gradient-red:hover::after,
+  .btn-gradient-red:focus::after {
     opacity: 1;
-}
+  }
 
-.btn-gradient-red:hover,
-.btn-gradient-red:focus {
+  .btn-gradient-red:hover,
+  .btn-gradient-red:focus {
     box-shadow: 0 8px 28px -8px rgba(200, 0, 0, 0.22);
-}
+  }
 
-    /* Estado disabled (cuando no hay imágenes) */
-    .project-gallery-trigger.project-gallery-disabled,
-    .project-gallery-trigger:disabled {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        color: #94a3b8;
-        box-shadow: none;
-        cursor: not-allowed;
-    }
+  /* Estado disabled (cuando no hay imágenes) */
+  .project-gallery-trigger.project-gallery-disabled,
+  .project-gallery-trigger:disabled {
+    // background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
 
 
 }

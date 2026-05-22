@@ -965,31 +965,41 @@ $(function () {
         }
 
         // Inicialización limpia y nativa
+        // ---------------------------------------------------------------
+        // GitHub repos carousel (Swiper)
+        // ---------------------------------------------------------------
+        // The original implementation used a fast transition (≈800 ms) to
+        // create a smooth, continuously moving carousel. A recent change
+        // mistakenly set `speed` to 8000 ms, making the slide transition
+        // eight seconds long. This caused the carousel to appear extremely
+        // slow when the mouse leaves (autoplay resumes but with the long
+        // transition). We restore the intended behaviour by resetting the
+        // speed to 800 ms while keeping the rest of the configuration
+        // (freeMode, autoplay, pauseOnMouseEnter) unchanged.
+        // ---------------------------------------------------------------
         swiper_giyhub_repos = new Swiper('#githubReposSwiper', {
             slidesPerView: 'auto',
             spaceBetween: 8,
             loop: true,
-            speed: 8000, // Velocidad continua
+            // Adjusted speed to a slower pace (~3 s) for a smoother, less rapid scrolling.
+            speed: 6000,
             allowTouchMove: true,
             grabCursor: true,
-            
             // 1. ACTIVA EL MODO LIBRE (Evita saltos bruscos)
             freeMode: {
                 enabled: true,
-                momentum: false, 
+                momentum: false,
             },
-            
             // 2. CONFIGURA LA PAUSA NATIVA
             autoplay: {
-                delay: 0, 
+                delay: 0,
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true, // Swiper se encarga del Hover automáticamente
+                pauseOnMouseEnter: true, // Swiper handles hover automatically
             },
-            
             breakpoints: {
                 768: { spaceBetween: 12 },
                 1200: { spaceBetween: 16 },
-            },            
+            },
         });
 
         window.githubReposSwiperInstance = swiper_giyhub_repos;
@@ -1017,8 +1027,8 @@ $(function () {
             // 1. Removemos el inline-style del transform para que Swiper retome la rienda
             wrapper.style.transform = '';
             
-            // 2. Le devolvemos los 8000ms nativos antes de arrancar
-            wrapper.style.setProperty('transition-duration', '8000ms', 'important');
+            // 2. Le devolvemos la duración ajustada (~3 s) antes de arrancar
+            wrapper.style.setProperty('transition-duration', '6000ms', 'important');
             
             // 3. Reseteamos el motor interno y despertamos el Autoplay
             swiper_giyhub_repos.update();

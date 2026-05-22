@@ -1,0 +1,12 @@
+{
+    "model": "haiku",
+    "autoUpdatesChannel": "latest",
+    "theme": "dark",
+    "env": {
+        "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+        "ANTHROPIC_AUTH_TOKEN": "<REDACTED>",
+        "ANTHROPIC_API_KEY": "",
+        "ANTHROPIC_MODEL": "inclusionai/ling-2.6-1t:free",
+        "ANTHROPIC_SMALL_FAST_MODEL": "google/gemma-4-31b-it:free"
+    }
+}

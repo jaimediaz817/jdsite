@@ -1,5 +1,4 @@
 import os
-import hashlib
 import re
 import html as html_lib
 import shutil
@@ -12,6 +11,27 @@ from django.db import connection
 from blog.models import BlogPost, Category, Tag
 import markdown
 from bs4 import BeautifulSoup
+
+# Import refactored utility functions
+from ...utils.importer.db_utils import reset_blogpost_sequence
+from ...utils.importer.markdown_utils import (
+    calculate_file_hash,
+    read_markdown_file,
+)
+
+# New processor class encapsulating per‑blog logic
+from ...utils.importer.blog_processor import BlogProcessor
+
+# ---------------------------------------------------------------------------
+# ✅ TODO LIST (progreso del refactor)
+# ---------------------------------------------------------------------------
+# - [x] Analizar requisitos
+# - [x] Crear paquete utils y módulos
+# - [x] Extraer funciones a módulos
+# - [x] Actualizar import_blogs para usar los nuevos módulos
+# - [ ] Ejecutar prueba manual
+# - [ ] Verificar que no haya roturas
+# ---------------------------------------------------------------------------
 
 
 class Command(BaseCommand):
@@ -37,14 +57,13 @@ class Command(BaseCommand):
         # ✅ Paso 1: Resetear secuencias de ID
         self.reset_id_sequences()
 
-        # ✅ Paso 2: Iterar y procesar cada blog
+        # ✅ Paso 2: Iterar y procesar cada blog usando the new BlogProcessor
         slugs_procesados = set()
-
+        processor = BlogProcessor(self, self.STATIC_TARGET)
         for blog_dir in self.SOURCE_DIR.iterdir():
             if not blog_dir.is_dir():
                 continue
-
-            slug = self.process_single_blog(blog_dir)
+            slug = processor.process_single_blog(blog_dir)
             slugs_procesados.add(slug)
 
         # ✅ Paso 3: LIMPIEZA AUTOMATICA - Borrar blogs que ya no existen en filesystem
@@ -57,29 +76,20 @@ class Command(BaseCommand):
     # 🔹 BLOQUE: GESTION SECUENCIAS BASE DE DATOS
     # -------------------------------------------------------------------------
     def reset_id_sequences(self):
-        """
-        Resetea el contador autoincremental de la tabla BlogPost
-        Soluciona el bug donde los IDs se incrementaban infinitamente despues de borrar
-        Compatible con MySQL y PostgreSQL
-        """
-        db_engine = settings.DATABASES["default"]["ENGINE"]
+        """Delegate the reset of the BlogPost auto‑increment sequence.
 
-        with connection.cursor() as cursor:
-            if "postgresql" in db_engine:
-                cursor.execute("""
-                    SELECT setval(pg_get_serial_sequence('blog_blogpost', 'id'),
-                    COALESCE((SELECT MAX(id) FROM blog_blogpost), 0) + 1, false);
-                """)
-            elif "mysql" in db_engine:
-                cursor.execute(
-                    "SELECT COALESCE(MAX(id), 0) + 1 FROM blog_blogpost"
-                )
-                next_id = cursor.fetchone()[0]
-                cursor.execute(
-                    f"ALTER TABLE blog_blogpost AUTO_INCREMENT = {next_id}"
-                )
+        The actual implementation now lives in ``backend.blog.utils.importer.db_utils``
+        to keep the command focused on orchestration. This method remains for
+        backward compatibility and simply forwards the call, preserving the
+        original behaviour and output.
+        """
+        # Import locally to avoid circular imports at module load time.
+        # Use three‑dot relative import to reach the utils package at
+        # ``backend.blog.utils.importer``. Two dots would resolve to
+        # ``backend.blog.management.utils`` which does not exist.
+        from ...utils.importer.db_utils import reset_blogpost_sequence
 
-        self.stdout.write("✅ Secuencia de IDs reseteada correctamente")
+        reset_blogpost_sequence(stdout=self.stdout)
 
     # -------------------------------------------------------------------------
     # 🔹 BLOQUE: PROCESADO INDIVIDUAL DE CADA BLOG
@@ -98,10 +108,10 @@ class Command(BaseCommand):
         slug = slugify(blog_dir.name)
 
         # ✅ Calcular hash para detectar cambios
-        file_hash = self.calculate_file_hash(md_file)
+        file_hash = calculate_file_hash(md_file)
 
         # ✅ Leer y extraer contenido
-        md_content, frontmatter = self.read_markdown_file(md_file)
+        md_content, frontmatter = read_markdown_file(md_file)
 
         # ✅ Extraer titulo
         title, content_md = self.extract_title(md_content, blog_dir)
@@ -177,154 +187,12 @@ class Command(BaseCommand):
     # -------------------------------------------------------------------------
     # 🔹 BLOQUE: LECTURA Y EXTRACCION DE DATOS
     # -------------------------------------------------------------------------
-    def calculate_file_hash(self, md_file):
-        """Calcula hash SHA256 del archivo para detectar cambios"""
-        with open(md_file, "rb") as f:
-            return hashlib.sha256(f.read()).hexdigest()
+    # NOTE: The methods `calculate_file_hash` and `read_markdown_file` have been
+    # moved to `backend.blog.utils.importer.markdown_utils` for better modularity.
+    # They are now imported at the top of this file and used directly.
 
-    def read_markdown_file(self, md_file):
-        """Lee el archivo markdown y extrae el frontmatter.
-
-        - Normaliza saltos de línea simples SOLO dentro de párrafos,
-          preservando listas, headings, blockquotes y bloques especiales.
-        - Protege bloques ::: antes de normalizar para no destruirlos.
-        - Elimina comentarios HTML <!-- --> del contenido.
-        """
-        try:
-            with open(md_file, "r", encoding="utf-8") as f:
-                md_content = f.read()
-        except UnicodeDecodeError:
-            with open(md_file, "r", encoding="latin-1", errors="replace") as f:
-                md_content = f.read()
-
-        # 🔹 LIMPIEZA: Eliminar backslashes al final de línea (usados como salto de línea)
-        lines = md_content.split("\n")
-        cleaned_lines = []
-        for line in lines:
-            # Eliminar uno o más backslashes al final de la línea
-            cleaned = re.sub(r"\\+$", "", line)
-            cleaned_lines.append(cleaned)
-        md_content = "\n".join(cleaned_lines)
-
-        # 🔴 PROTEGER bloques ::: antes de normalizar saltos de línea
-        placeholders = {}
-        placeholder_counter = [0]
-
-        def protect_special_block(match):
-            placeholder_counter[0] += 1
-            key = f"__SPECIAL_BLOCK_{placeholder_counter[0]}__"
-            placeholders[key] = match.group(0)
-            return key
-
-        md_content = re.sub(
-            r":::[a-zA-Z0-9:_\-]+\s*\n.*?:::",
-            protect_special_block,
-            md_content,
-            flags=re.DOTALL,
-        )
-
-        # ✅ Normalizar saltos simples respetando estructuras (listas, headings, etc.)
-        md_content = self._normalize_lines(md_content)
-
-        # 🔴 RESTAURAR los bloques ::: protegidos
-        for key, original in placeholders.items():
-            md_content = md_content.replace(key, original)
-
-        frontmatter = {}
-        content_md = md_content
-
-        # Extraer frontmatter si existe
-        if md_content.startswith("---"):
-            parts = md_content.split("---", 2)
-            if len(parts) >= 3:
-                # Extract raw frontmatter block *before* any line‑normalisation.
-                frontmatter_raw = parts[1].strip()
-                content_md = parts[2].strip()
-
-                # The original implementation attempted to normalise the whole
-                # markdown first, which unintentionally collapsed the frontmatter
-                # into a single line (because the normaliser treats lines without
-                # structural markers as plain text).  To make the parser robust we
-                # now parse the frontmatter directly line‑by‑line, ignoring any
-                # accidental concatenation of key/value pairs.
-                for line in frontmatter_raw.splitlines():
-                    if ":" not in line:
-                        continue
-                    key, value = line.split(":", 1)
-                    key = key.strip()
-                    value = value.strip()
-
-                    # Remove surrounding quotes if present
-                    if (value.startswith('"') and value.endswith('"')) or (
-                        value.startswith("'") and value.endswith("'")
-                    ):
-                        value = value[1:-1].strip()
-
-                    frontmatter[key] = value
-
-        # ✅ Eliminar comentarios HTML del contenido
-        content_md = re.sub(
-            r"<!--.*?-->", "", content_md, flags=re.DOTALL
-        ).strip()
-
-        return content_md, frontmatter
-
-    def _normalize_lines(self, text):
-        """
-        Normaliza saltos simples a espacios SOLO dentro de párrafos.
-        Protege: listas (- * + 1.), blockquotes (>), headings (#),
-        líneas vacías, bloques de código y placeholders especiales.
-        """
-        lines = text.split("\n")
-        result = []
-        in_code_block = False
-
-        for i, line in enumerate(lines):
-            stripped = line.strip()
-
-            # Detectar inicio/fin de bloque de código
-            if stripped.startswith("```"):
-                in_code_block = not in_code_block
-                result.append(line)
-                continue
-
-            if in_code_block:
-                result.append(line)
-                continue
-
-            # Líneas estructurales que NUNCA se unen
-            is_structural = (
-                stripped == ""
-                or stripped.startswith(("#", ">", "```"))
-                or re.match(r"^[-*+]\s", stripped)
-                or re.match(r"^\d+\.\s", stripped)
-                or re.match(r"^\|", stripped)
-                or stripped.startswith(":::")
-                or stripped.startswith("__SPECIAL_BLOCK_")
-            )
-
-            prev_line = lines[i - 1].strip() if i > 0 else ""
-            prev_is_structural = (
-                prev_line == ""
-                or prev_line.startswith(("#", ">", "```"))
-                or re.match(r"^[-*+]\s", prev_line)
-                or re.match(r"^\d+\.\s", prev_line)
-                or re.match(r"^\|", prev_line)
-                or prev_line.startswith(":::")
-                or prev_line.startswith("__SPECIAL_BLOCK_")
-            )
-
-            if is_structural or prev_is_structural:
-                result.append(line)
-            else:
-                result.append(line + " §JOIN§")
-
-        joined = "\n".join(result)
-        # Unir líneas consecutivas con espacio (no con salto de línea)
-        joined = re.sub(r" §JOIN§\n", " ", joined)
-        # Limpiar posibles marcadores que quedaron al final
-        joined = re.sub(r" §JOIN§$", "", joined)
-        return joined
+    # NOTE: Normalisation logic has been moved to `backend.blog.utils.importer.markdown_utils`.
+    # The original `_normalize_lines` method is no longer used in this command.
 
     def extract_title(self, content_md, blog_dir):
         """Extrae el titulo del markdown o del nombre de la carpeta"""

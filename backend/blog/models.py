@@ -1,6 +1,11 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+
+# Import avatar helper functions from the sibling ``utils.py`` module.
+# Using ``.utils.utils`` avoids the circular import caused by importing the
+# package ``utils`` (which previously attempted to re-export these symbols).
+# Import avatar helper functions directly from the sibling ``utils.py`` module.
 from .utils import generate_avatar_seed, get_avatar_color, get_avatar_initials
 
 

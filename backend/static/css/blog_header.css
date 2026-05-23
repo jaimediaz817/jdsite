@@ -38,6 +38,14 @@ html body #navigation-menu {
     margin-right: 0 !important;
 }
 
+.logo-mark-to-post {
+    img {
+        width: 174px;
+        object-fit: contain;
+        height: 50px;
+    }
+}
+
 #navigation-menu.sticky-top {
     position: sticky;
     top: 0;

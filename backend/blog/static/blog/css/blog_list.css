@@ -47,6 +47,13 @@
     overflow: hidden;
 }
 
+.title-article-content {
+    background-color: white;
+    padding: 0.25rem;
+    border-radius: 5px;
+    border: 1px solid rgba(1, 1, 1, 0.1);
+}
+
 .blog-card-image::after {
     content: '';
     position: absolute;
@@ -187,6 +194,17 @@
     display: inline-block;
     padding-bottom: 0.5rem;
     font-weight: 700;
+    background-color: white;
+    padding: 0 14px 10px;
+    border-radius: 9px;
+}
+
+.section-sub-title {
+    background-color: white;
+    width: 50%;
+    text-align: center;
+    margin: auto;
+    border-radius: 10px;
 }
 
 .section-title::after {
@@ -205,6 +223,7 @@
 .blog-card-meta {
     font-size: 0.85rem;
     color: #6f42c1 !important;
+    justify-content: space-between;
     /* color púrpura más vivo para mejor legibilidad */
 
     span:nth-child(1) {
@@ -314,6 +333,30 @@ body.home-p {
     gap: 2rem 1.5rem;
 }
 
+.jd-section {
+    position: relative;
+
+    .addon-imagen-background__blog-list {
+        position: absolute;
+        width: 100%;
+        height: 24vh;
+        /* border: 1px solid red; */
+        left: 0;
+        top: 0;
+        overflow: hidden;
+        background-image: url(/static/images/addons/addon_metodologia_trabajo.png);
+        background-repeat: repeat-x;
+        background-size: 54%;
+        background-color: rgba(255, 255, 255, 0.85);
+        /* background-position-y: -44px; */
+        /* background-position-x: -19.5rem; */
+        background-blend-mode: overlay;
+        background-position: center;
+        filter: brightness(.95);
+    }
+}
+
+
 @media (min-width: 1200px) {
     .blog-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -323,6 +366,14 @@ body.home-p {
 @media (max-width: 991px) {
     .blog-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .section-sub-title {
+        background-color: white;
+        width: 100%;
+        text-align: center;
+        margin: auto;
+        border-radius: 10px;
     }
 }
 

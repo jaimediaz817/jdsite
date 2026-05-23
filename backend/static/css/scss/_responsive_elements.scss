@@ -347,7 +347,15 @@
 }
 
 @media (max-width: 992px) {
+
     // Laptops pequeñas
+    .hero-scroll-indicator.swipe-item-home {
+        left: 0;
+        right: auto;
+        transform: none;
+        margin-left: 1rem;
+        /* optional spacing from the edge */
+    }
 }
 
 @media (max-width: 768px) {
@@ -373,6 +381,9 @@
         }
     }
 }
+
+/* Align hero scroll indicator to the left on tablets (portrait) and mobile devices */
+@media (max-width: 768px) {}
 
 @media (max-width: 600px) {
     // Tablets pequeñas

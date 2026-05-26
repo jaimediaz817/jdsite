@@ -30,7 +30,8 @@ class BlogListView(ListView):
     model = BlogPost
     template_name = "blog/blog_list.html"
     context_object_name = "posts"
-    paginate_by = 10
+    # Según la HU‑005.7 la paginación debe ser de 12 posts por página.
+    paginate_by = 12
     # Base queryset sin filtro de categoría; el método ``get_queryset`` aplicará
     # opcionalmente el filtro por slug de categoría recibido vía querystring.
     queryset = BlogPost.objects.filter(is_published=True).order_by(
@@ -47,6 +48,25 @@ class BlogListView(ListView):
         if category_slug:
             qs = qs.filter(category__slug=category_slug)
         return qs
+
+    def get_context_data(self, **kwargs):
+        """Añade al contexto la lista de categorías y el ``query_string``.
+
+        ``query_string`` contiene todos los parámetros de la query‑string actual
+        excepto ``page``; esto permite que los enlaces de paginación mantengan
+        cualquier filtro activo (por ejemplo ``?category=slug``).
+        """
+        context = super().get_context_data(**kwargs)
+        # Lista de todas las categorías para el sidebar
+        from .models import Category
+
+        context["categories"] = Category.objects.all()
+        # Construir query_string sin el parámetro ``page``
+        query = self.request.GET.copy()
+        if "page" in query:
+            query.pop("page")
+        context["query_string"] = query.urlencode()
+        return context
 
 
 class BlogDetailView(DetailView):

@@ -29,7 +29,7 @@ html body #navigation-menu {
 #navigation-menu .container .navbar-toggler {
     float: none !important;
     position: static !important;
-    margin: 0 !important;
+    /* margin: 0 !important; */
     order: -1 !important;
 }
 
@@ -275,6 +275,7 @@ html body #navigation-menu {
     -webkit-transform: translateY(-2px);
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+    top: 1rem;
 }
 
 #navigation-menu .dropdown-item {
@@ -399,8 +400,10 @@ html body #navigation-menu {
     #navigation-menu .navbar-toggler,
     #navigation-menu .navbar-toggler.collapsed,
     #navigation-menu .navbar-toggler:not(.collapsed) {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        /* margin-left: 0 !important;
+        margin-right: 0 !important; */
+        margin-left: 1rem;
+        ;
     }
 
     #navigation-menu .navbar-toggler::before {
@@ -526,6 +529,11 @@ html body #navigation-menu {
         /* Menos espacio inferior */
     }
 
+    /* Eliminar padding superior del contenedor principal en móvil */
+    .jd-section.py-5 {
+        padding-top: 0 !important;
+    }
+
     /* Ajuste para las cards en móvil si es necesario */
     .blog-card .card-body {
         padding: 1rem !important;
@@ -534,5 +542,24 @@ html body #navigation-menu {
     .blog-card h3.h6 {
         font-size: 0.95rem;
         /* Ajuste fino para móviles */
+    }
+
+    /* Botón de toggle del sidebar en el header (solo móvil) */
+    .sidebar-header-toggle {
+        position: absolute;
+        top: 0.5rem;
+        right: 1rem;
+        z-index: 1100;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%);
+        color: #fff;
+        font-size: 1.2rem;
+        border: none;
     }
 }

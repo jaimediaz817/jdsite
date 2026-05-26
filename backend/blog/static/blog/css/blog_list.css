@@ -333,6 +333,7 @@ body.home-p {
     gap: 2rem 1.5rem;
 }
 
+
 .jd-section {
     position: relative;
 
@@ -353,7 +354,15 @@ body.home-p {
         background-blend-mode: overlay;
         background-position: center;
         filter: brightness(.95);
+        z-index: 0;
+        /* colocar detrás del contenido */
     }
+}
+
+/* Aseguramos que el contenedor del blog quede por encima de la capa decorativa */
+.jd-section .container {
+    position: relative;
+    z-index: 1;
 }
 
 

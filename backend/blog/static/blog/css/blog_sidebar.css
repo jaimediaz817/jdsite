@@ -1,0 +1,169 @@
+/* Sidebar styling for the blog list page */
+
+.blog-sidebar {
+    background: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+    /* Cumple con el requisito de ancho del sidebar */
+}
+
+/* Versión absoluta del sidebar para que no se quede fijo al hacer scroll */
+/* Sidebar absoluto en pantallas de escritorio */
+/* Sidebar fixed on the left, overlaying the content without affecting layout */
+/* Sidebar se vuelve sticky para que ocupe todo el alto disponible sin solapar el footer */
+/* ------------------------------------------------------------------
+   Sidebar fijo (sticky) para pantallas de escritorio
+   ------------------------------------------------------------------ */
+/* Sidebar sticky on the left, using flexbox layout to avoid overlay */
+/* Sidebar container (sticky) */
+.absolute-sidebar {
+    position: sticky;
+    top: 0;
+    flex: 0 0 auto;
+    /* fixed width */
+    /* Allow height to shrink/expand with content; remove fixed overflow */
+    overflow: visible;
+    background: #f8f9fa;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    z-index: 1000;
+    align-self: flex-start;
+}
+
+/* Ajuste del contenedor principal cuando el sidebar está fijado */
+/* Contenedor principal del blog. Dejamos espacio para el sidebar en escritorio */
+/* Main content area – flex item that takes remaining space */
+.blog-main {
+    flex: 1 1 0;
+    padding: 1rem;
+    /* No left margin needed when using flex layout */
+}
+
+/* Flex container that holds the sidebar and main content */
+/* Flex container that holds the sidebar and main content */
+.blog-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    /* Align items to the start so the sidebar can shrink/expand with its content */
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+/* Responsividad: en pantallas pequeñas el sidebar deja de ser fijo y el contenido vuelve a ocupar todo el ancho */
+@media (max-width: 767px) {
+    .absolute-sidebar {
+        /* On mobile we want the sidebar to behave like a normal block element */
+        position: static;
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        display: none;
+        /* hidden by default, will be shown when .open is added */
+    }
+
+    /* Ensure the open state overrides the default hidden state on mobile */
+    .absolute-sidebar.open {
+        display: block !important;
+        /* show when toggled */
+    }
+
+    .blog-main {
+        flex: 1 1 100%;
+        padding: 1rem;
+    }
+
+    /* Stack sidebar above main content on mobile */
+    .blog-wrapper {
+        flex-direction: column;
+    }
+
+    /* Allow sidebar to shrink to full width on mobile */
+    .blog-sidebar {
+        min-width: 0;
+    }
+
+    /* Floating hamburger button for mobile */
+    .sidebar-float-toggle {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        z-index: 1100;
+        /* Ensure the button is visible above other content */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 1.5rem;
+    }
+}
+
+.blog-sidebar .sidebar-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-item {
+    margin-bottom: 0.5rem;
+}
+
+.category-link {
+    text-decoration: none;
+    color: #495057;
+    display: block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Arrow icon for collapsible menus */
+.arrow {
+    transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+    line-height: 1;
+    font-size: 1rem;
+    color: #555;
+    margin-left: 0.25rem;
+}
+
+/* Rotate class applied by Alpine when menu is open */
+.rotate-180 {
+    transform: rotate(180deg);
+    /* Change color when menu is open for better visual cue */
+    color: #5d25d5;
+}
+
+/* Hover effect for better UX */
+.sidebar-title:hover .arrow {
+    color: #007bff;
+    /* primary accent */
+}
+
+/* Focus style for keyboard navigation */
+.sidebar-title:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Ensure each collapsible menu has spacing */
+.sidebar-menu {
+    margin-bottom: 1rem;
+}
+
+.category-item.active .category-link,
+.category-link:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}

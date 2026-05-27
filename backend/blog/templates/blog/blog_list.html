@@ -100,7 +100,45 @@
                             </div>
                         </div>
 
-                        <div class="blog-grid">
+                        <div class="mb-4"></div>                    <!-- 🔍 Buscador de artículos -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <form method="get" action="{% url 'blog:blog_list' %}" class="blog-search-form" role="search">
+                                <div class="input-group blog-search-group">
+                                    <span class="input-group-text blog-search-icon">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text"
+                                           name="q"
+                                           id="blog-search-input"
+                                           class="form-control blog-search-input"
+                                           placeholder="Buscar artículos por título, contenido, categoría..."
+                                           value="{{ search_query }}"
+                                           aria-label="Buscar artículos">
+                                    <button type="submit" class="btn blog-search-btn">
+                                        <i class="fas fa-search d-md-none"></i>
+                                        <span class="d-none d-md-inline">Buscar</span>
+                                    </button>
+                                    {% if search_query or request.GET.category %}
+                                    <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar filtros">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            {% if search_query %}
+                            <div class="blog-search-hint">
+                                <i class="fas fa-filter mr-1"></i>
+                                Mostrando resultados para: <strong>"{{ search_query }}"</strong>
+                                {% if request.GET.category %}
+                                    · Categoría: <strong>{{ request.GET.category }}</strong>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="blog-grid">
                             {% for post in posts %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow">
                                 <div class="blog-card-image position-relative" style="aspect-ratio: 16/9; overflow: hidden; background: #f8f9fa;">

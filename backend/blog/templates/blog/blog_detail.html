@@ -110,7 +110,7 @@
       .jd-logo-dark img { display: block !important; width: 40px !important; height: auto !important; max-width: 100% !important; } {% endcomment %}
     </style>
   </head>
-  <body class="home-p blog-detail-page">
+  <body class="home-p blog-detail-page" x-data="readingMode()">
     {% include 'partials/_navigation_menu.html' %}
 
     <!-- ✨ Barra progreso lectura -->
@@ -146,7 +146,11 @@
     </div>
 
     <!-- ✨ BARRA FLOTANTE DERECHA NAVEGACION -->
-    <div class="floating-right-nav d-flex" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%);">
+    <div class="floating-right-nav d-flex flex-column" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%); gap: 8px;">
+      <button type="button" class="float-nav-btn reading-mode-float-btn" @click="toggle" :title="'Modo lectura: ' + getLabel()" aria-label="Alternar modo lectura">
+        <span class="reading-mode-icon" x-text="getIcon()"></span>
+        <span class="d-none d-lg-block ml-2" style="font-size:0.75rem;font-weight:500;" x-text="getLabel()"></span>
+      </button>
       <a href="{% url 'blog:blog_list' %}" class="float-nav-btn back-btn" title="Volver al listado de artículos">
         <i class="fas fa-arrow-left"></i>
         <span class="d-none d-lg-block ml-2" style="font-size: 0.8rem; font-weight: 500;">Blog</span>
@@ -646,6 +650,9 @@
     {% endif %}
     <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, skeletons, char counter, toggles) -->
     <script src="{% static 'blog/js/comments_handler.js' %}"></script>
+
+    <!-- ALPINE.JS CDN -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <!-- ✨ MODAL DE CONFIRMACIÓN PARA ELIMINAR COMENTARIOS -->
     <dialog id="jd-confirm-delete-modal">

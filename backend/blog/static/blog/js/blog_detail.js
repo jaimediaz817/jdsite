@@ -362,3 +362,33 @@ window.submitReplyForm = function(commentId) {
     });
     return false;
 };
+
+// ===== MODO LECTURA (Alpine Component) =====
+document.addEventListener('alpine:init', function() {
+    Alpine.data('readingMode', function() {
+        return {
+            mode: localStorage.getItem('jd-reading-mode') || 'normal',
+            init: function() {
+                this.applyMode(this.mode);
+            },
+            toggle: function() {
+                var modes = ['normal', 'sepia', 'dark'];
+                var idx = modes.indexOf(this.mode);
+                this.mode = modes[(idx + 1) % modes.length];
+                this.applyMode(this.mode);
+                localStorage.setItem('jd-reading-mode', this.mode);
+            },
+            applyMode: function(mode) {
+                document.documentElement.setAttribute('data-reading-mode', mode);
+            },
+            getIcon: function() {
+                var icons = { normal: '☀️', sepia: '📖', dark: '🌙' };
+                return icons[this.mode] || '☀️';
+            },
+            getLabel: function() {
+                var labels = { normal: 'Normal', sepia: 'Sepia', dark: 'Oscuro' };
+                return labels[this.mode] || 'Normal';
+            }
+        };
+    });
+});

@@ -391,3 +391,143 @@ body.home-p {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   🔍 Buscador de artículos
+   ========================================= */
+
+.blog-search-form {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.blog-search-group {
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 2px solid transparent;
+}
+
+.blog-search-group:focus-within {
+    box-shadow: 0 4px 20px rgba(106, 17, 203, 0.15);
+    border-color: #6a11cb;
+}
+
+.blog-search-icon {
+    background: #fff;
+    border: none;
+    color: #6a11cb;
+    padding-left: 20px;
+    padding-right: 10px;
+    font-size: 1rem;
+}
+
+.blog-search-input {
+    border: none;
+    padding: 12px 10px;
+    font-size: 0.95rem;
+    font-family: 'Roboto', sans-serif;
+    background: #fff;
+    color: #333;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.blog-search-input::placeholder {
+    color: #aaa;
+    font-weight: 300;
+}
+
+.blog-search-input:focus {
+    box-shadow: none !important;
+    border-color: transparent;
+}
+
+.blog-search-btn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    border-radius: 0 50px 50px 0 !important;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.blog-search-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    color: #fff;
+}
+
+.blog-search-btn:active {
+    transform: scale(0.98);
+}
+
+.blog-clear-btn {
+    background: transparent;
+    color: #999;
+    border: none;
+    font-size: 1.1rem;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+    border-radius: 0 !important;
+}
+
+.blog-clear-btn:hover {
+    color: #e74c3c;
+    transform: scale(1.15);
+    background: transparent;
+}
+
+.blog-search-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 10px;
+    background: #f8f4ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.blog-search-hint strong {
+    color: #6a11cb;
+}
+
+/* Responsive: mobile */
+@media (max-width: 576px) {
+    .blog-search-form {
+        max-width: 100%;
+    }
+
+    .blog-search-input {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+
+    .blog-search-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .blog-clear-btn {
+        padding: 10px 12px;
+    }
+
+    .blog-search-icon {
+        padding-left: 12px;
+        padding-right: 6px;
+    }
+}

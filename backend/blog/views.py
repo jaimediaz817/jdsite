@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from blog.models import BlogComment, BlogPost
+from blog.models import BlogComment, BlogPost, Category
 from blog.forms import CommentForm, QuickSignupForm
 from blog.services import create_comment, get_approved_comments, get_comment_count
 
@@ -39,14 +39,33 @@ class BlogListView(ListView):
     )
 
     def get_queryset(self):
-        """Aplica filtro de categoría si se envía ``?category=slug``.
+        """Aplica filtro de categoría y/o búsqueda por texto.
 
-        Mantiene el orden y la paginación definidos en ``queryset``.
+        - ``?category=slug`` → filtra por categoría
+        - ``?q=termino`` → busca en title, content_html, description,
+          slug, category__name, tags__name (icontains)
+        - Ambos pueden combinarse: ``?category=slug&q=termino``
+
+        La paginación se aplica DESPUÉS sobre el queryset ya filtrado,
+        así que la búsqueda barre todos los posts, no solo la página actual.
         """
         qs = super().get_queryset()
         category_slug = self.request.GET.get("category")
+        search_query = self.request.GET.get("q", "").strip()
+
         if category_slug:
             qs = qs.filter(category__slug=category_slug)
+
+        if search_query:
+            qs = qs.filter(
+                Q(title__icontains=search_query)
+                | Q(content_html__icontains=search_query)
+                | Q(description__icontains=search_query)
+                | Q(slug__icontains=search_query)
+                | Q(category__name__icontains=search_query)
+                | Q(tags__name__icontains=search_query)
+            ).distinct()
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -55,12 +74,14 @@ class BlogListView(ListView):
         ``query_string`` contiene todos los parámetros de la query‑string actual
         excepto ``page``; esto permite que los enlaces de paginación mantengan
         cualquier filtro activo (por ejemplo ``?category=slug``).
+
+        También pasa ``search_query`` para mantener el valor del input de búsqueda
+        y mostrar un hint de resultados.
         """
         context = super().get_context_data(**kwargs)
-        # Lista de todas las categorías para el sidebar
-        from .models import Category
-
         context["categories"] = Category.objects.all()
+        # Pasar el término de búsqueda actual al template
+        context["search_query"] = self.request.GET.get("q", "")
         # Construir query_string sin el parámetro ``page``
         query = self.request.GET.copy()
         if "page" in query:

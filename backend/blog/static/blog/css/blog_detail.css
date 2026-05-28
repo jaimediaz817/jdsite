@@ -2,6 +2,28 @@
    BLOG DETAIL - Estilos Específicos para Galerías, Carruseles y Slides
    ========================================================================== */
 
+/* ---- Smooth scroll for the whole page (ensures back-to-top works smoothly) */
+html {
+    scroll-behavior: smooth !important;
+}
+
+.addon-imagen-background__blog-list {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    left: 0px;
+    top: 0px;
+    background-image: url(/static/images/addons/addon_detalle_blog.png);
+    background-repeat: repeat-x;
+    background-size: 54%;
+    background-color: rgba(255, 255, 255, 0.85);
+    background-blend-mode: overlay;
+    filter: brightness(0.95);
+    z-index: 0;
+    overflow: hidden;
+    background-position: center center;
+}
+
 /* ==========================================================================
    1. SLIDES (bloques :::slides) – CARRUSEL DE IMÁGENES CON TÍTULO Y DESCRIPCIÓN
    ========================================================================== 
@@ -170,6 +192,50 @@
 
     .slide-caption span {
         font-size: 1.1rem;
+    }
+
+    /* ---------------------------------------------------------------
+   Back to Top button (used on blog detail page)
+   --------------------------------------------------------------- */
+    /* Base style: hidden by default */
+    .back-to-top {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        width: 48px;
+        height: 48px;
+        /* Gradient matching the blog theme */
+        background: linear-gradient(135deg, #6f42c1, #e84a5f);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.2s ease;
+        z-index: 1000;
+    }
+
+    /* Show state for back-to-top button */
+    .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Visible when the .show class is added via JS */
+    .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Hover effect */
+    .back-to-top:hover {
+        /* Hover gradient (slightly darker) */
+        background: linear-gradient(135deg, #5a33a0, #d73a5c);
     }
 }
 
@@ -1644,6 +1710,42 @@
 
 .jd-login-invite:hover {
     border-color: #c4a8f5;
+}
+
+/* ---------------------------------------------------------------
+   Back to Top button (global styles)
+   --------------------------------------------------------------- */
+/* Base style: hidden by default */
+.back-to-top {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    width: 48px;
+    height: 48px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.2s ease;
+    z-index: 1000;
+}
+
+/* Visible when the .show class is added via JS */
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hover effect */
+.back-to-top:hover {
+    background-color: #555;
 }
 
 .jd-login-invite-icon {

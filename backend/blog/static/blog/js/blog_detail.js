@@ -47,6 +47,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (slides.length) setActiveSlide(0);
 });
 
+// Back to top button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var backBtn = document.getElementById('back-to-top');
+    if (!backBtn) return;
+    // Show/hide on scroll
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backBtn.classList.add('show');
+        } else {
+            backBtn.classList.remove('show');
+        }
+    });
+    // Smooth scroll to top on click
+    backBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
 // ===== GALLERY POPUP =====
 window.openGalleryPopup = function(element) {
     var raw = element.querySelector('.gallery-images').value;

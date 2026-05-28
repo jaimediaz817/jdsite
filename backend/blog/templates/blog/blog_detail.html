@@ -105,10 +105,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
     <!-- ✅ ASEGURAR VISIBILIDAD DEL LOGO EN HEADER -->
-    <style>
-      {% comment %} .jd-logo-dark { display: block !important; visibility: visible !important; opacity: 1 !important; }
-      .jd-logo-dark img { display: block !important; width: 40px !important; height: auto !important; max-width: 100% !important; } {% endcomment %}
-    </style>
   </head>
   <body class="home-p blog-detail-page" x-data="readingMode()">
     {% include 'partials/_navigation_menu.html' %}
@@ -117,6 +113,8 @@
     <div class="reading-progress-bar">
       <div class="reading-progress-fill"></div>
     </div>
+
+    <div class="addon-imagen-background__blog-list"></div>
 
     <!-- ✨ BARRA LATERAL FLOTANTE REACCIONES -->
     <div class="floating-reaction-bar d-none d-lg-flex blog-reactions" data-slug="{{ post.slug }}">
@@ -608,6 +606,11 @@
     <!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
     <script src="{% static 'blog/js/blog_detail.js' %}"></script>
 
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Ir arriba">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <!-- Modal nativo HTML5 para zoom de imagenes -->
     <dialog id="image-zoom-modal">
       <img id="image-zoom-content" src="" alt="" />
@@ -651,8 +654,8 @@
     <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, skeletons, char counter, toggles) -->
     <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
-    <!-- ALPINE.JS CDN -->
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- ALPINE.JS CDN (updated to jsdelivr for reliability) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
 
     <!-- ✨ MODAL DE CONFIRMACIÓN PARA ELIMINAR COMENTARIOS -->
     <dialog id="jd-confirm-delete-modal">

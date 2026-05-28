@@ -31,7 +31,7 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
     z-index: 1000;
-    align-self: flex-start;
+    align-self: stretch;
 }
 
 /* Ajuste del contenedor principal cuando el sidebar está fijado */

@@ -46,6 +46,26 @@ html body #navigation-menu {
     }
 }
 
+/* ---------------------------------------------------
+   Slogan del header
+   --------------------------------------------------- */
+.header-slogan {
+    font-size: 0.95rem;
+    /* Tamaño de fuente legible */
+    color: #0891b2;
+    /* Color iodea (azul marca) */
+    font-weight: 500;
+    /* Peso medio para buena presencia */
+    margin-left: 0;
+    /* Sin margen lateral para evitar desplazamiento */
+    margin-bottom: 0.5rem;
+    /* Espacio bajo el slogan */
+    display: block;
+    /* Mostrar en bloque para que quede encima del h1 */
+    white-space: normal;
+    /* Permitir salto de línea si es necesario */
+}
+
 #navigation-menu.sticky-top {
     position: sticky;
     top: 0;

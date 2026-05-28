@@ -57,6 +57,9 @@ Nuestro unico objetivo fue:
 ✅ Reducir todo el esfuerzo cognitivo
 ✅ Hacer que leer sea tan facil como respirar
 
+- acá un video de prueba:
+ <video controls src="20260528-2051-02.4027044.mp4" title="Title"></video>
+
 ---
 
 ## Los cambios concretos que implementamos

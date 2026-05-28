@@ -104,6 +104,13 @@
     min-height: 28px;
 }
 
+.header-slogan {
+    color: #8543af;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
 .comment-info {
     right: 12px;
 }
@@ -299,19 +306,33 @@
     color: #1a202c;
 }
 
-/* --- Paginación --- */
+/* --- Paginación profesional con colores del blog --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
 .pagination .page-link {
-    border-radius: 50px;
-    margin: 0 3px;
-    border: none;
-    color: #3498db;
-    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid transparent;
+    color: #6f42c1;
+    background-color: #f5f5ff;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #e0e0ff;
+    border-color: #6f42c1;
+    color: #4a1a8e;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #3498db;
-    color: white;
-    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4);
+    background-color: #6f42c1;
+    color: #fff;
+    border-color: #6f42c1;
 }
 
 /* --- Footer pegado al fondo (CSS Grid - no afecta nav ni section) --- */
@@ -340,7 +361,7 @@ body.home-p {
     .addon-imagen-background__blog-list {
         position: absolute;
         width: 100%;
-        height: 50%;
+        height: 50vh;
         /* border: 1px solid red; */
         left: 0;
         top: 0;
@@ -355,7 +376,6 @@ body.home-p {
         background-position: center;
         filter: brightness(.95);
         z-index: 0;
-        /* colocar detrás del contenido */
     }
 }
 
@@ -467,6 +487,10 @@ body.home-p {
     display: flex;
     align-items: center;
     gap: 6px;
+
+    span {
+        font-family: 'Montserrat', sans-serif;
+    }
 }
 
 .blog-search-btn:hover {
@@ -479,7 +503,7 @@ body.home-p {
     transform: scale(0.98);
 }
 
-.blog-clear-btn {
+/* .blog-clear-btn {
     background: transparent;
     color: #999;
     border: none;
@@ -490,7 +514,7 @@ body.home-p {
     justify-content: center;
     transition: color 0.2s ease, transform 0.2s ease;
     border-radius: 0 !important;
-}
+} */
 
 .blog-clear-btn:hover {
     color: #e74c3c;

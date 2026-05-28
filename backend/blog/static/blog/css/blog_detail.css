@@ -175,6 +175,10 @@ html {
     }
 }
 
+.header-slogan {
+    color: #8543af;
+}
+
 /* ── PANTALLAS MUY GRANDES (≥1200px) ── */
 @media (min-width: 1200px) {
     .slides-container .slide img {

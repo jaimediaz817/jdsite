@@ -381,9 +381,14 @@ document.addEventListener('alpine:init', function() {
             applyMode: function(mode) {
                 document.documentElement.setAttribute('data-reading-mode', mode);
             },
+            // Icono usando FontAwesome: devuelve el HTML del icono
             getIcon: function() {
-                var icons = { normal: '☀️', sepia: '📖', dark: '🌙' };
-                return icons[this.mode] || '☀️';
+                var icons = {
+                    normal: '<i class="fas fa-sun"></i>',
+                    sepia: '<i class="fas fa-book"></i>',
+                    dark: '<i class="fas fa-moon"></i>'
+                };
+                return icons[this.mode] || '';
             },
             getLabel: function() {
                 var labels = { normal: 'Normal', sepia: 'Sepia', dark: 'Oscuro' };

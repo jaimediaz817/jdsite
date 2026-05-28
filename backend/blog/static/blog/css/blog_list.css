@@ -409,6 +409,10 @@ body.home-p {
     border: 2px solid transparent;
 }
 
+.blog-search-group {
+    border-color: #1d76db;
+}
+
 .blog-search-group:focus-within {
     box-shadow: 0 4px 20px rgba(106, 17, 203, 0.15);
     border-color: #6a11cb;

@@ -1003,6 +1003,7 @@
     transition: opacity 0.3s ease;
 }
 
+
 .floating-reaction-bar .d-flex {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -1015,6 +1016,7 @@
 .floating-right-nav {
     z-index: 99999;
     transition: opacity 0.3s ease;
+    width: 114px;
 }
 
 .float-nav-btn {
@@ -1079,6 +1081,27 @@
     }
 
     .floating-right-nav {
+        position: fixed !important;
+        top: 1rem !important;
+        right: 1rem !important;
+        left: auto !important;
+        transform: none !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+    }
+
+    .floating-right-nav .float-nav-btn {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .floating-right-nav .float-nav-btn .d-none {
+        display: inline !important;
+    }
+
+    .floating-right-nav .float-nav-btn .d-lg-block {
         display: none !important;
     }
 }
@@ -2110,6 +2133,8 @@
     white-space: nowrap;
 }
 
+/* PATCH NOTE: Updated task progress */
+
 /* ==========================================================================
    13. RESPONSIVE MÓVIL
    ========================================================================== */
@@ -2250,4 +2275,304 @@
     height: 6px;
     background: linear-gradient(135deg, #6f42c1, #e84a5f);
     border-radius: 50%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   🎨 MODOS DE LECTURA
+   ========================================= */
+
+/* --- MODO SEPIA (Lectura claro) --- */
+html[data-reading-mode="sepia"] body.home-p.blog-detail-page {
+    background: #faf0e6 !important;
+}
+
+html[data-reading-mode="sepia"] .card.border-0.shadow-sm {
+    background: #fdf6ee !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-reading-mode="sepia"] .blog-content {
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: #3d2e1e;
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+html[data-reading-mode="sepia"] .blog-content p {
+    margin-bottom: 1.5rem;
+}
+
+html[data-reading-mode="sepia"] .blog-content h2,
+html[data-reading-mode="sepia"] .blog-content h3,
+html[data-reading-mode="sepia"] .blog-content h4 {
+    color: #2d1f0e;
+}
+
+html[data-reading-mode="sepia"] .jd-article-header h1 {
+    color: #2d1f0e;
+}
+
+html[data-reading-mode="sepia"] .jd-article-meta {
+    opacity: 0.7;
+}
+
+html[data-reading-mode="sepia"] .jd-tags-row,
+html[data-reading-mode="sepia"] .category-badge {
+    opacity: 0.75;
+}
+
+html[data-reading-mode="sepia"] .reading-mode-toggle {
+    border-color: #d4a373;
+    color: #8b5e3c;
+    background: rgba(253, 246, 238, 0.9);
+}
+
+html[data-reading-mode="sepia"] .reading-mode-toggle:hover {
+    border-color: #8b5e3c;
+    color: #5a3d28;
+}
+
+/* --- MODO OSCURO --- */
+html[data-reading-mode="dark"] body.home-p.blog-detail-page {
+    background: #1a1a2e !important;
+}
+
+html[data-reading-mode="dark"] .card.border-0.shadow-sm {
+    background: #16213e !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-reading-mode="dark"] .blog-content {
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: #e2e8f0;
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+html[data-reading-mode="dark"] .jd-article-meta {
+    span {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+html[data-reading-mode="dark"] .blog-content p {
+    margin-bottom: 1.5rem;
+}
+
+html[data-reading-mode="dark"] .blog-content h2,
+html[data-reading-mode="dark"] .blog-content h3,
+html[data-reading-mode="dark"] .blog-content h4 {
+    color: #f1f5f9;
+}
+
+html[data-reading-mode="dark"] .blog-content a {
+    color: #93c5fd;
+}
+
+html[data-reading-mode="dark"] .blog-content code,
+html[data-reading-mode="dark"] .blog-content pre {
+    background: #0f3460 !important;
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .blog-content blockquote {
+    border-left-color: #6366f1;
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-article-header h1 {
+    color: #f1f5f9;
+}
+
+/* Texto de metadatos más claro en modo oscuro */
+html[data-reading-mode="dark"] .jd-article-meta {
+    opacity: 0.9;
+    /* casi blanco */
+    color: #f5f5f5 !important;
+}
+
+html[data-reading-mode="dark"] .jd-tags-row,
+html[data-reading-mode="dark"] .category-badge {
+    opacity: 0.7;
+}
+
+html[data-reading-mode="dark"] .reading-mode-toggle {
+    border-color: #4f46e5;
+    color: #a5b4fc;
+    background: rgba(22, 33, 62, 0.9);
+}
+
+html[data-reading-mode="dark"] .reading-mode-toggle:hover {
+    border-color: #818cf8;
+    color: #c7d2fe;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+html[data-reading-mode="dark"] .jd-back-link,
+html[data-reading-mode="dark"] .jd-back-link span {
+    color: #93c5fd;
+}
+
+html[data-reading-mode="dark"] .jd-share-section .jd-share-text {
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-share-btn {
+    color: #94a3b8;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-share-btn:hover {
+    color: #e2e8f0;
+    border-color: #64748b;
+}
+
+html[data-reading-mode="dark"] .jd-reactions-label {
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-reaction-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-reaction-btn .jd-reaction-count {
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-reaction-btn .jd-reaction-name {
+    color: #94a3b8;
+}
+
+/* MODO OSCURO: Correcciones de contraste */
+html[data-reading-mode="dark"] .jd-comments-title {
+    color: #f1f5f9;
+}
+
+html[data-reading-mode="dark"] .jd-comments-badge {
+    background: rgba(111, 66, 193, 0.3);
+    color: #c4b5fd;
+}
+
+html[data-reading-mode="dark"] .jd-form-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-form-user-name {
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-textarea {
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-comment-bubble {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-comment-name {
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-comment-text {
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-btn-back {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-reactions-section {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+/* DARK FIXES */
+html[data-reading-mode="dark"] .jd-comments-title {
+    color: #f1f5f9;
+}
+
+html[data-reading-mode="dark"] .jd-form-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-comment-bubble {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-comment-name {
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-comment-text {
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-comment-date {
+    color: #64748b;
+}
+
+html[data-reading-mode="dark"] .jd-textarea {
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-btn-back {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+html[data-reading-mode="dark"] .jd-btn-back:hover {
+    background: #6f42c1;
+    color: #fff;
+}
+
+html[data-reading-mode="dark"] .jd-reactions-section {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-login-invite {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="dark"] .jd-login-invite-title {
+    color: #e2e8f0;
+}
+
+html[data-reading-mode="dark"] .jd-login-invite-text {
+    color: #94a3b8;
 }

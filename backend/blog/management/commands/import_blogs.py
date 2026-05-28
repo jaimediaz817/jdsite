@@ -152,6 +152,11 @@ class Command(BaseCommand):
             processed_html, blog_dir, blog_static_dir, slug
         )
 
+        # ✅ Procesar videos (convertir img de video a <video>)
+        processed_html = self.process_videos(
+            processed_html, blog_dir, blog_static_dir, slug
+        )
+
         # ✅ Auto crear carruseles de imagenes seguidas
         processed_html = self.auto_create_carousels(processed_html)
 
@@ -231,17 +236,15 @@ class Command(BaseCommand):
     # 🔹 BLOQUE: ARCHIVOS ESTATICOS E IMAGENES
     # -------------------------------------------------------------------------
     def copy_blog_images(self, blog_dir, blog_static_dir):
-        """Copia todas las imagenes del directorio fuente a static"""
+        """Copia todas las imagenes y videos del directorio fuente a static"""
         blog_static_dir.mkdir(exist_ok=True)
+        IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
 
         for archivo in blog_dir.iterdir():
             if archivo.is_file() and archivo.suffix.lower() in (
-                ".png",
-                ".jpg",
-                ".jpeg",
-                ".gif",
-                ".webp",
-                ".svg",
+                *IMAGE_EXTENSIONS,
+                *VIDEO_EXTENSIONS,
             ):
                 destino = blog_static_dir / archivo.name
                 shutil.copy2(archivo, destino)
@@ -666,11 +669,19 @@ class Command(BaseCommand):
         """
 
     def process_images(self, html_content, blog_dir, blog_static_dir, slug):
-        """Procesa todas las imagenes normales del contenido"""
+        """Procesa todas las imagenes normales del contenido.
+
+        Los archivos de video se convierten a <video> en process_videos().
+        """
         soup = BeautifulSoup(html_content, "html.parser")
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
 
         for img in soup.find_all("img"):
             img_src = img["src"]
+            # Saltar archivos de video - se procesan en process_videos()
+            src_lower = img_src.lower()
+            if any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
 
             if not img_src.startswith(("http://", "https://", "/")):
                 source_img = blog_dir / img_src
@@ -693,6 +704,169 @@ class Command(BaseCommand):
                         )
 
         return str(soup)
+
+    def process_videos(self, html_content, blog_dir, blog_static_dir, slug):
+        """Detecta videos en el HTML y los envuelve en un reproductor estilizado.
+
+        Maneja dos casos:
+        1. <img> tags que apuntan a archivos de video (sintaxis markdown: ![alt](video.mp4))
+        2. <video> tags ya existentes (HTML directo en markdown)
+
+        Soporta: .mp4, .webm, .mov, .avi, .mkv, .ogv
+        Genera un reproductor responsive con controles nativos del navegador.
+        """
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
+        soup = BeautifulSoup(html_content, "html.parser")
+        modified = False
+
+        # ── CASO 1: Convertir <img> tags de video a <video> ──
+        for img in soup.find_all("img"):
+            img_src = img.get("src", "")
+            src_lower = img_src.lower()
+
+            if not any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
+
+            video_title = img.get("alt", "")
+            if not video_title:
+                file_name = (
+                    img_src.rsplit("/", 1)[-1] if "/" in img_src else img_src
+                )
+                video_title = (
+                    file_name.rsplit(".", 1)[0]
+                    .replace("-", " ")
+                    .replace("_", " ")
+                    .title()
+                )
+
+            # Resolver ruta del video
+            video_src = self._resolve_video_src(
+                img_src, blog_dir, blog_static_dir, slug
+            )
+
+            # Construir el HTML del reproductor
+            video_html = self._build_video_html(video_src, video_title)
+
+            parent = img.parent
+            if parent and parent.name == "p":
+                video_tag = BeautifulSoup(video_html, "html.parser")
+                parent.replace_with(video_tag)
+            else:
+                video_tag = BeautifulSoup(video_html, "html.parser")
+                img.replace_with(video_tag)
+
+            self.stdout.write(f"🎬 Video (img→video) convertido: {video_src}")
+            modified = True
+
+        # ── CASO 2: Reescribir rutas de <video> tags existentes ──
+        for video in soup.find_all("video"):
+            video_src = ""
+            video_title = video.get("title", "")
+
+            # Buscar <source> dentro del <video>
+            source_tag = video.find("source")
+            if source_tag:
+                video_src = source_tag.get("src", "")
+
+            # Fallback: atributo src directo en <video>
+            if not video_src:
+                video_src = video.get("src", "")
+
+            if not video_src:
+                continue
+
+            src_lower = video_src.lower()
+            if not any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
+
+            # Resolver ruta del video
+            resolved_src = self._resolve_video_src(
+                video_src, blog_dir, blog_static_dir, slug
+            )
+
+            # Si no tiene título, generar uno del nombre del archivo
+            if not video_title:
+                file_name = (
+                    video_src.rsplit("/", 1)[-1]
+                    if "/" in video_src
+                    else video_src
+                )
+                video_title = (
+                    file_name.rsplit(".", 1)[0]
+                    .replace("-", " ")
+                    .replace("_", " ")
+                    .title()
+                )
+
+            # Construir el HTML del reproductor estilizado
+            new_video_html = self._build_video_html(resolved_src, video_title)
+
+            # Reemplazar el <video> original
+            new_video_tag = BeautifulSoup(new_video_html, "html.parser")
+            video.replace_with(new_video_tag)
+
+            self.stdout.write(f"🎬 Video (html tag) reescrito: {resolved_src}")
+            modified = True
+
+        if modified:
+            return str(soup)
+        return html_content
+
+    def _resolve_video_src(self, video_src, blog_dir, blog_static_dir, slug):
+        """Resuelve la ruta del archivo de video a la ubicación en static."""
+        if video_src.startswith(("http://", "https://", "/static/")):
+            return video_src
+
+        if not video_src.startswith("/"):
+            source_video = blog_dir / video_src
+            if source_video.exists():
+                target_video = blog_static_dir / source_video.name
+                shutil.copy2(source_video, target_video)
+                return f"/static/blogs/{slug}/{source_video.name}"
+
+        # Si ya fue procesada o es ruta absoluta
+        return video_src
+
+    def _build_video_html(self, video_src, video_title=""):
+        """Construye el HTML del reproductor de video estilizado."""
+        caption_html = ""
+        if video_title:
+            caption_html = (
+                f'<div class="blog-video-caption">'
+                f'<span class="blog-video-title">{video_title}</span>'
+                f"</div>"
+            )
+
+        return (
+            f'<div class="blog-video-container mb-5">'
+            f'<div class="blog-video-wrapper">'
+            f"<video "
+            f"controls "
+            f'preload="metadata" '
+            f"playsinline "
+            f'class="blog-video-player"'
+            f">"
+            f'<source src="{video_src}" type="{self._get_video_mime_type(video_src)}">'
+            f"Tu navegador no soporta la reproducción de video."
+            f"</video>"
+            f"{caption_html}"
+            f"</div>"
+            f"</div>"
+        )
+
+    @staticmethod
+    def _get_video_mime_type(video_src):
+        """Retorna el MIME type basado en la extensión del video"""
+        ext = video_src.rsplit(".", 1)[-1].lower() if "." in video_src else "mp4"
+        mime_map = {
+            "mp4": "video/mp4",
+            "webm": "video/webm",
+            "ogv": "video/ogg",
+            "mov": "video/mp4",
+            "avi": "video/x-msvideo",
+            "mkv": "video/x-matroska",
+        }
+        return mime_map.get(ext, "video/mp4")
 
     def auto_create_carousels(self, html_content):
         """
@@ -840,10 +1014,12 @@ class Command(BaseCommand):
         Busca la PRIMERA imagen del markdown que NO esté dentro de un bloque :::,
         la extrae como portada y la ELIMINA del contenido.
         No aparece nunca en el detalle del blog. Solo en listados y redes.
+        Los archivos de video se saltan (no se usan como portada).
         """
         lines = content_md.strip().split("\n")
         cover_image_path = None
         inside_special_block = False
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
 
         for i, line in enumerate(lines):
             stripped = line.strip()
@@ -864,6 +1040,9 @@ class Command(BaseCommand):
             match = re.search(r"!\[.*?\]\((.*?)\)", stripped)
             if match:
                 img_src = match.group(1).strip()
+                # Saltar archivos de video - no se usan como portada
+                if any(img_src.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
+                    continue
                 if not img_src.startswith(("http://", "https://", "/")):
                     source_img = blog_dir / img_src
                     if source_img.exists():

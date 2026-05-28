@@ -107,6 +107,11 @@ class BlogProcessor:
             processed_html, blog_dir, blog_static_dir, slug
         )
 
+        # Process videos (convert img→video, rewrite <video> tags)
+        processed_html = self.process_videos(
+            processed_html, blog_dir, blog_static_dir, slug
+        )
+
         # Auto‑create carousels for consecutive images
         processed_html = self.auto_create_carousels(processed_html)
 
@@ -172,16 +177,14 @@ class BlogProcessor:
         return existing_by_slug, necesita_actualizar
 
     def copy_blog_images(self, blog_dir: Path, blog_static_dir: Path):
-        """Copy all image files from the source directory to the static target."""
+        """Copy all image and video files from the source directory to static."""
         blog_static_dir.mkdir(exist_ok=True)
+        IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
         for archivo in blog_dir.iterdir():
             if archivo.is_file() and archivo.suffix.lower() in (
-                ".png",
-                ".jpg",
-                ".jpeg",
-                ".gif",
-                ".webp",
-                ".svg",
+                *IMAGE_EXTENSIONS,
+                *VIDEO_EXTENSIONS,
             ):
                 destino = blog_static_dir / archivo.name
                 shutil.copy2(archivo, destino)
@@ -230,6 +233,12 @@ class BlogProcessor:
         blog_static_dir: Path,
         slug: str,
     ) -> str:
+        # """Delegate to the command's full implementation which includes all block types:
+        # slides, callout (info/warning/tip), pullquote, codefile, popup:gallery, [vl] tags.
+        # """
+        # return self.command.replace_special_blocks_md(
+        #     markdown_content, blog_dir, blog_static_dir, slug
+        # )
         # The implementation is identical to the original; only a subset is needed for the
         # current refactor.  For brevity we keep the full method unchanged.
         # --- Slides handling -------------------------------------------------
@@ -360,9 +369,14 @@ class BlogProcessor:
     def process_images(
         self, html_content: str, blog_dir: Path, blog_static_dir: Path, slug: str
     ) -> str:
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
         soup = BeautifulSoup(html_content, "html.parser")
         for img in soup.find_all("img"):
             img_src = img["src"]
+            # Skip video files - they are processed in process_videos()
+            src_lower = img_src.lower()
+            if any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
             if not img_src.startswith(("http://", "https://", "/")):
                 source_img = blog_dir / img_src
                 if source_img.exists():
@@ -381,6 +395,131 @@ class BlogProcessor:
                             f"✅ Atributo alt generado automaticamente: {nombre_limpio}"
                         )
         return str(soup)
+
+    def process_videos(
+        self, html_content: str, blog_dir: Path, blog_static_dir: Path, slug: str
+    ) -> str:
+        """Detect video files in HTML and convert them to styled video players."""
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
+        soup = BeautifulSoup(html_content, "html.parser")
+        modified = False
+
+        # Case 1: Convert <img> tags pointing to video files
+        for img in soup.find_all("img"):
+            img_src = img.get("src", "")
+            src_lower = img_src.lower()
+            if not any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
+
+            video_title = img.get("alt", "")
+            if not video_title:
+                file_name = (
+                    img_src.rsplit("/", 1)[-1] if "/" in img_src else img_src
+                )
+                video_title = (
+                    file_name.rsplit(".", 1)[0]
+                    .replace("-", " ")
+                    .replace("_", " ")
+                    .title()
+                )
+
+            video_src = self._resolve_video_src(
+                img_src, blog_dir, blog_static_dir, slug
+            )
+            video_html = self._build_video_html(video_src, video_title)
+
+            parent = img.parent
+            if parent and parent.name == "p":
+                new_tag = BeautifulSoup(video_html, "html.parser")
+                parent.replace_with(new_tag)
+            else:
+                new_tag = BeautifulSoup(video_html, "html.parser")
+                img.replace_with(new_tag)
+
+            self.stdout.write(f"🎬 Video convertido: {video_src}")
+            modified = True
+
+        # Case 2: Rewrite existing <video> tags
+        for video in soup.find_all("video"):
+            video_src = ""
+            video_title = video.get("title", "")
+            source_tag = video.find("source")
+            if source_tag:
+                video_src = source_tag.get("src", "")
+            if not video_src:
+                video_src = video.get("src", "")
+            if not video_src:
+                continue
+            src_lower = video_src.lower()
+            if not any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
+                continue
+
+            resolved_src = self._resolve_video_src(
+                video_src, blog_dir, blog_static_dir, slug
+            )
+            if not video_title:
+                file_name = (
+                    video_src.rsplit("/", 1)[-1]
+                    if "/" in video_src
+                    else video_src
+                )
+                video_title = (
+                    file_name.rsplit(".", 1)[0]
+                    .replace("-", " ")
+                    .replace("_", " ")
+                    .title()
+                )
+
+            new_video_html = self._build_video_html(resolved_src, video_title)
+            new_tag = BeautifulSoup(new_video_html, "html.parser")
+            video.replace_with(new_tag)
+            self.stdout.write(f"🎬 Video (html tag) reescrito: {resolved_src}")
+            modified = True
+
+        return str(soup) if modified else html_content
+
+    def _resolve_video_src(self, video_src, blog_dir, blog_static_dir, slug):
+        """Resolve video source path to the static location."""
+        if video_src.startswith(("http://", "https://", "/static/")):
+            return video_src
+        if not video_src.startswith("/"):
+            source_video = blog_dir / video_src
+            if source_video.exists():
+                target_video = blog_static_dir / source_video.name
+                shutil.copy2(source_video, target_video)
+                return f"/static/blogs/{slug}/{source_video.name}"
+        return video_src
+
+    def _build_video_html(self, video_src, video_title=""):
+        """Build styled video player HTML."""
+        caption_html = ""
+        if video_title:
+            caption_html = f'<div class="blog-video-caption"><span class="blog-video-title">{video_title}</span></div>'
+        mime_type = self._get_video_mime_type(video_src)
+        return (
+            f'<div class="blog-video-container mb-5">'
+            f'<div class="blog-video-wrapper">'
+            f'<video controls preload="metadata" playsinline class="blog-video-player">'
+            f'<source src="{video_src}" type="{mime_type}">'
+            f"Tu navegador no soporta la reproducción de video."
+            f"</video>"
+            f"{caption_html}"
+            f"</div>"
+            f"</div>"
+        )
+
+    @staticmethod
+    def _get_video_mime_type(video_src):
+        ext = video_src.rsplit(".", 1)[-1].lower() if "." in video_src else "mp4"
+        mime_map = {
+            "mp4": "video/mp4",
+            "webm": "video/webm",
+            "ogv": "video/ogg",
+            "mov": "video/mp4",
+            "avi": "video/x-msvideo",
+            "mkv": "video/x-matroska",
+        }
+        return mime_map.get(ext, "video/mp4")
 
     def auto_create_carousels(self, html_content: str) -> str:
         # Re‑use the original implementation (trimmed for brevity)
@@ -422,8 +561,8 @@ class BlogProcessor:
 
     # The following methods delegate to the original command's implementations.
     def apply_custom_formatting(self, html: str) -> str:
-        # Placeholder – actual implementation resides in the original command.
-        return html
+        """Delegate to the command's full formatting implementation."""
+        return self.command.apply_custom_formatting(html)
 
     def get_or_create_category(self, frontmatter: dict):
         # Simplified – reuse the original logic via the command instance.
@@ -459,8 +598,8 @@ class BlogProcessor:
     def extract_cover_image(
         self, content_md: str, blog_dir: Path, blog_static_dir: Path, slug: str
     ):
-        # Re‑use the original implementation (trimmed for brevity).
-        # Detect first image markdown and treat it as cover.
+        """Extract the first image as cover, skipping video files."""
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
         lines = content_md.split("\n")
         cover_path = None
         new_content = []
@@ -468,6 +607,10 @@ class BlogProcessor:
             img_match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
             if img_match and not cover_path:
                 img_src = img_match.group(2).strip()
+                # Skip video files - don't use as cover
+                if any(img_src.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
+                    new_content.append(line)
+                    continue
                 if not img_src.startswith(("http://", "https://", "/")):
                     source_img = blog_dir / img_src
                     if source_img.exists():
@@ -475,7 +618,6 @@ class BlogProcessor:
                         shutil.copy2(source_img, target_img)
                         img_src = f"/static/blogs/{slug}/{source_img.name}"
                 cover_path = img_src
-                # Skip adding this line to content (remove cover from body)
                 continue
             new_content.append(line)
         return cover_path, "\n".join(new_content)

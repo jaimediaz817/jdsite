@@ -57,8 +57,9 @@ Nuestro unico objetivo fue:
 ✅ Reducir todo el esfuerzo cognitivo
 ✅ Hacer que leer sea tan facil como respirar
 
-- acá un video de prueba:
- <video controls src="20260528-2051-02.4027044.mp4" title="Title"></video>
+Acá un video de prueba:
+
+![Video de prueba: Mejoras UI/UX](20260528-2051-02.4027044.mp4)
 
 ---
 
@@ -193,9 +194,7 @@ Esto es solo el principio. Ahora que tenemos la base solida, vamos a implementar
  *Si te parecio util este articulo, puedes compartirlo en LinkedIn, ahi es donde paso la mayor parte del tiempo hablando de estas cosas.*
 
 <!-- force reimport -->
-<!-- reimport trigger v2 -->
 
 #
 
 
-<!-- reimport 2026-05-06 -->

@@ -41,10 +41,10 @@ html {
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     background: #fff;
-    overflow: hidden;
-    /* La altura la determina el slide activo */
     height: auto;
     transition: min-height 0.4s ease;
+    /* Padding inferior para dar espacio a la navegación en todos los tamaños */
+    padding-bottom: 4.5rem;
 }
 
 /* ── Slide base (inactivo: oculto pero con position absolute) ── */
@@ -175,9 +175,6 @@ html {
     }
 }
 
-.header-slogan {
-    color: #8543af;
-}
 
 /* ── PANTALLAS MUY GRANDES (≥1200px) ── */
 @media (min-width: 1200px) {
@@ -542,7 +539,7 @@ html {
 .gallery-modal-counter {
     position: absolute;
     top: 1rem;
-    right: 1rem;
+    /* right: 1rem; */
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     color: #fff;
@@ -1012,9 +1009,9 @@ html {
 }
 
 /* ==========================================================================
-   3. ZOOM DE IMÁGENES
+   3. ZOOM DE IMÁGENES (excluye imágenes dentro de slides)
    ========================================================================== */
-.blog-content img {
+.blog-content img:not(.slides-container img) {
     cursor: zoom-in !important;
     transition: transform 220ms ease;
     position: relative;
@@ -1022,8 +1019,16 @@ html {
     pointer-events: all !important;
 }
 
-.blog-content img:hover {
+.blog-content img:not(.slides-container img):hover {
     transform: scale(1.01);
+}
+
+/* Las imágenes dentro de slides NO deben tener zoom ni lupa */
+.slides-container .slide img {
+    cursor: default !important;
+    pointer-events: auto !important;
+    transition: none;
+    transform: none;
 }
 
 #image-zoom-modal {
@@ -2681,4 +2686,164 @@ html[data-reading-mode="dark"] .jd-login-invite-title {
 
 html[data-reading-mode="dark"] .jd-login-invite-text {
     color: #94a3b8;
+}
+
+/* ==========================================================================
+   4. REPRODUCTOR DE VIDEO BLOG - Estilos atractivos y responsive
+   ==========================================================================
+   Contenedor estilizado con sombra, bordes redondeados y controles nativos.
+   Los videos se muestran con un caption debajo y hover sutil.
+   ========================================================================== */
+
+/* ── Contenedor principal del video ── */
+.blog-video-container {
+    position: relative;
+    margin: 1.5rem 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0a0a0a;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.blog-video-container:hover {
+    box-shadow:
+        0 12px 48px rgba(111, 66, 193, 0.15),
+        0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ── Wrapper interno ── */
+.blog-video-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* ── Reproductor de video - responsive y aspect ratio 16:9 ── */
+.blog-video-player {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 65vh;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #000;
+    border-radius: 16px 16px 0 0;
+}
+
+/* ── Controles del video - personalización sutil ── */
+.blog-video-player::-webkit-media-controls-panel {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+.blog-video-player::-webkit-media-controls-play-button {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.blog-video-player::-webkit-media-controls-timeline {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+/* ── Caption / Título del video ── */
+.blog-video-caption {
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
+    border-top: 1px solid rgba(111, 66, 193, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-video-caption::before {
+    content: '🎬';
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.blog-video-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+}
+
+/* ── Focus visible para accesibilidad ── */
+.blog-video-player:focus-visible {
+    outline: 3px solid #6f42c1;
+    outline-offset: 2px;
+    border-radius: 16px 16px 0 0;
+}
+
+/* ── RESPONSIVE: Mobile ── */
+@media (max-width: 767px) {
+    .blog-video-container {
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+
+    .blog-video-player {
+        border-radius: 12px 12px 0 0;
+        max-height: 50vh;
+    }
+
+    .blog-video-caption {
+        padding: 0.6rem 1rem;
+    }
+
+    .blog-video-title {
+        font-size: 0.82rem;
+    }
+
+    .blog-video-player:focus-visible {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .jd-comments-list {
+        .jd-comment {
+            flex-direction: column;
+            padding: 0.5rem 0;
+        }
+    }
+}
+
+/* ── RESPONSIVE: Desktop grande ── */
+@media (min-width: 1200px) {
+    .blog-video-container {
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+
+    .blog-video-player {
+        max-height: 55vh;
+    }
+}
+
+/* ── Modo lectura oscuro ── */
+html[data-reading-mode="dark"] .blog-video-container {
+    background: #0f172a;
+    border-color: #334155;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+html[data-reading-mode="dark"] .blog-video-container:hover {
+    box-shadow:
+        0 12px 48px rgba(111, 66, 193, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+html[data-reading-mode="dark"] .blog-video-caption {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-top-color: rgba(111, 66, 193, 0.2);
+}
+
+html[data-reading-mode="dark"] .blog-video-title {
+    color: #e2e8f0;
 }

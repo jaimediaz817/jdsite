@@ -77,8 +77,12 @@ function getAvatarColor(id) {
 }
 
 // ===== SKELETON HTML REUTILIZABLE =====
-function buildSkeletonHTML(skId, commentId, badgeText) {
+function buildSkeletonHTML(skId, commentId, badgeText, isSuperuser, slug) {
     var dataAttr = commentId ? (' data-comment-id="' + commentId + '"') : '';
+    var deleteBtn = '';
+    if (isSuperuser && commentId && slug) {
+        deleteBtn = '<button class="jd-del-comment-btn sk-del-btn" onclick="window.deleteComment(' + commentId + ', \'' + slug + '\')" title="Eliminar comentario pendiente"><i class="fas fa-times"></i></button>';
+    }
     var html = '' +
         '<div id="' + skId + '" class="sk-comment"' + dataAttr + '>' +
             '<div class="sk-comment-avatar"></div>' +
@@ -90,6 +94,7 @@ function buildSkeletonHTML(skId, commentId, badgeText) {
         '</div>' +
         '<div class="sk-pending-msg">' +
             '<i class="fas fa-clock"></i> ' + badgeText +
+            deleteBtn +
         '</div>';
     return html;
 }
@@ -110,7 +115,9 @@ function showPendingCardOnSubmit(commentId, name, content) {
     }
     var skId = 'sk-pending-' + commentId;
     if (document.getElementById(skId)) return;
-    var html = buildSkeletonHTML(skId, commentId, 'Pendiente de aprobaci\u00f3n');
+    var slug = window.BLOG_SLUG || '';
+    var isSuper = window.IS_SUPERUSER || false;
+    var html = buildSkeletonHTML(skId, commentId, 'Pendiente de aprobaci\u00f3n', isSuper, slug);
     container.insertAdjacentHTML('afterbegin', html);
 }
 
@@ -470,6 +477,22 @@ window.deleteComment = function(commentId, slug) {
     })
     .then(function(d) {
         if (d.success) {
+            // Buscar primero el skeleton pendiente (sk-comment)
+            var pendingEl = document.querySelector('.sk-comment[data-comment-id="' + commentId + '"]');
+            if (pendingEl) {
+                // Eliminar el skeleton y su mensaje pendiente (hermano siguiente)
+                var pendingMsg = pendingEl.nextElementSibling;
+                if (pendingMsg && pendingMsg.classList.contains('sk-pending-msg')) {
+                    pendingMsg.style.transition = 'opacity 0.3s ease';
+                    pendingMsg.style.opacity = '0';
+                    setTimeout(function() { if (pendingMsg.parentNode) pendingMsg.remove(); }, 300);
+                }
+                pendingEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                pendingEl.style.opacity = '0';
+                pendingEl.style.transform = 'translateX(20px)';
+                setTimeout(function() { if (pendingEl.parentNode) pendingEl.remove(); }, 300);
+                return;
+            }
             // Encontrar el elemento a eliminar (usando data-comment-id del contenedor)
             var commentEl = document.querySelector('[data-comment-id="' + commentId + '"]') || document.querySelector('.jd-del-comment-btn[data-comment-id="' + commentId + '"]');
             if (commentEl) {
@@ -541,11 +564,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         if (!container) return;
+        var slug = window.BLOG_SLUG || '';
+        var isSuper = window.IS_SUPERUSER || false;
         var pendingComments = (typeof window.PENDING_COMMENTS !== 'undefined') ? window.PENDING_COMMENTS : [];
         pendingComments.forEach(function(pc) {
             var skId = 'sk-pending-' + pc.id;
             if (document.getElementById(skId)) return;
-            var html = buildSkeletonHTML(skId, pc.id, 'Pendiente de aprobaci\u00f3n');
+            var html = buildSkeletonHTML(skId, pc.id, 'Pendiente de aprobaci\u00f3n', isSuper, slug);
             container.insertAdjacentHTML('afterbegin', html);
         });
     });

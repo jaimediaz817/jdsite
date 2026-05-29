@@ -1,1 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Detail</title>
+    <!-- Enlaces a CSS globales del proyecto -->
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}">
+</head>
+<body>
+    {% include "partials/_navigation_menu.html" %}
+    {% include "partials/_sidebar.html" %}
 
+    <div class="container mt-4">
+        <!-- Aquí iría el contenido del detalle del blog -->
+    </div>
+
+    <!-- Botón flotante "Ir arriba" -->
+    <a href="#" class="back-to-top" title="Volver arriba" aria-label="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // Mostrar/ocultar el botón al hacer scroll
+        const backToTopBtn = document.querySelector('.back-to-top');
+        const toggleVisibility = () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        };
+        window.addEventListener('scroll', toggleVisibility);
+
+        // Scroll suave progresivo (ease-out) al hacer click
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const startPosition = window.scrollY;
+            const duration = 800;
+            const startTime = performance.now();
+
+            function easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+
+            function scrollStep(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress);
+                window.scrollTo(0, startPosition * (1 - easedProgress));
+                if (progress < 1) {
+                    requestAnimationFrame(scrollStep);
+                }
+            }
+            requestAnimationFrame(scrollStep);
+        });
+    </script>
+</body>
+</html>
+</write_to_file>

@@ -665,6 +665,7 @@ html {
 
 /* Mensaje descriptivo debajo del skeleton */
 .sk-pending-msg {
+    color: #5d6673;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -2402,6 +2403,138 @@ html {
 
 
 
+.jd-pending-reply {
+    padding: 10px 14px;
+    background: #fffbeb;
+    border-radius: 8px;
+    margin-left: 30px;
+    border: 1px solid #fde68a;
+    animation: fadeIn 400ms ease;
+}
+
+.jd-pending-reply .sk-comment-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-avatar {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    background: #c1c6ce;
+    animation: pulse 1.5s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-body {
+    flex: 1;
+    gap: 6px;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-body .sk-line {
+    height: 10px;
+    width: 180px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f3f4f6 50%, #e0e0e0 75%);
+    border-radius: 4px;
+    animation: pulse 1.5s ease infinite;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-body .sk-line {
+    position: relative;
+    overflow: hidden;
+
+    height: 10px;
+    width: 180px;
+    border-radius: 4px;
+
+    background: #e5e7eb;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-body .sk-line::after {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    left: -150px;
+
+    width: 150px;
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, .6),
+            transparent);
+
+    animation: shimmer_response 1.2s infinite;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-body .sk-line:nth-child(2) {
+    width: 110px;
+}
+
+.jd-pending-reply .sk-comment-content span {
+    font-size: 1rem;
+    color: #5d6673;
+    white-space: nowrap;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-avatar {
+    position: relative;
+    overflow: hidden;
+
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+
+    background: #e5e7eb;
+}
+
+.jd-pending-reply .sk-comment-content .sk-comment-avatar::after {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    left: -100px;
+
+    width: 100px;
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, .7),
+            transparent);
+
+    animation: shimmer_response 1.2s infinite;
+}
+
+
+@keyframes shimmer_response {
+    100% {
+        transform: translateX(350px);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2688,6 +2821,22 @@ html[data-reading-mode="dark"] .jd-login-invite-text {
     color: #94a3b8;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================================
    4. REPRODUCTOR DE VIDEO BLOG - Estilos atractivos y responsive
    ==========================================================================
@@ -2779,6 +2928,28 @@ html[data-reading-mode="dark"] .jd-login-invite-text {
     outline-offset: 2px;
     border-radius: 16px 16px 0 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ── RESPONSIVE: Mobile ── */
 @media (max-width: 767px) {

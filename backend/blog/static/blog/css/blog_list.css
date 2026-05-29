@@ -419,6 +419,8 @@ body.home-p {
 .blog-search-form {
     max-width: 700px;
     margin: 0 auto;
+    display: flex;
+    align-items: stretch;
 }
 
 .blog-search-group {
@@ -503,23 +505,64 @@ body.home-p {
     transform: scale(0.98);
 }
 
-/* .blog-clear-btn {
-    background: transparent;
-    color: #999;
-    border: none;
-    font-size: 1.1rem;
-    padding: 12px 16px;
-    display: flex;
+/* ==========================================================================
+   BOTÓN LIMPIAR FILTROS - Ancla profesional
+   ========================================================================== */
+.blog-clear-btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s ease, transform 0.2s ease;
-    border-radius: 0 !important;
-} */
+    gap: 8px;
+    padding: 8px 16px;
+    margin-left: 12px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 50px !important;
+    color: #6b7280;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.blog-clear-btn i {
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+}
 
 .blog-clear-btn:hover {
-    color: #e74c3c;
-    transform: scale(1.15);
-    background: transparent;
+    color: #ef4444;
+    background: #fef2f2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    text-decoration: none;
+}
+
+.blog-clear-btn:hover i {
+    transform: rotate(90deg);
+}
+
+.blog-clear-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive: en mobile se achica */
+@media (max-width: 767px) {
+    .blog-clear-btn {
+        padding: 8px 12px;
+        margin-left: 6px;
+        font-size: 0.75rem;
+    }
+
+    .blog-clear-btn span {
+        display: none;
+    }
 }
 
 .blog-search-hint {
@@ -563,5 +606,84 @@ body.home-p {
     .blog-search-icon {
         padding-left: 12px;
         padding-right: 6px;
+    }
+}
+
+/* ==========================================================================
+   BOTÓN FLOTANTE "IR ARRIBA"
+   ========================================================================== */
+/* ---------------------------------------------------------------
+   Back to Top button (global styles)
+   --------------------------------------------------------------- */
+/* Base style: hidden by default */
+.back-to-top {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    width: 48px;
+    height: 48px;
+    /* Gradient matching the blog theme */
+    background: linear-gradient(135deg, #6f42c1, #e84a5f);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.2s ease;
+    z-index: 1000;
+
+    /* position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    width: 48px;
+    height: 48px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.2s ease;
+    z-index: 1000; */
+}
+
+/* Show state for back-to-top button */
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Visible when the .show class is added via JS */
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hover effect */
+.back-to-top:hover {
+    background: linear-gradient(135deg, #5a33a0, #d73a5c);
+    color: inherit;
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive: mobile */
+@media (max-width: 576px) {
+    .back-to-top {
+        right: 1rem;
+        bottom: 1rem;
+        width: 2.4rem;
+        height: 2.4rem;
+        font-size: 1rem;
     }
 }

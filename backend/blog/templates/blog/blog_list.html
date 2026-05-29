@@ -116,12 +116,13 @@
                                         <i class="fas fa-search d-md-none"></i>
                                         <span class="d-none d-md-inline">Buscar</span>
                                     </button>
-                                    {% if search_query or request.GET.category %}
-                                    <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar filtros">
-                                        <i class="fas fa-times"></i>
-                                    </a>
-                                    {% endif %}
                                 </div>
+                                 {% if search_query or request.GET.category %}
+                                 <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar filtros">
+                                     <i class="fas fa-times-circle"></i>
+                                     <span>Limpiar filtros</span>
+                                 </a>
+                                 {% endif %}
                             </form>
                             {% if search_query %}
                             <div class="blog-search-hint">
@@ -254,5 +255,50 @@
     <!-- ALPINE.JS CDN (jsdelivr) -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js" defer></script>
-</body>
-</html>
+
+    <!-- Botón flotante "Ir arriba" -->
+    <a href="#" class="back-to-top" title="Volver arriba" aria-label="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // Mostrar/ocultar el botón al hacer scroll
+        const backToTopBtn = document.querySelector('.back-to-top');
+        const toggleVisibility = () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        };
+        window.addEventListener('scroll', toggleVisibility);
+
+        // Scroll suave progresivo (ease-out) al hacer click
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const startPosition = window.scrollY;
+            const duration = 800; // ms – más lento y elegante
+            const startTime = performance.now();
+
+            function easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+
+            function scrollStep(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress);
+
+                window.scrollTo(0, startPosition * (1 - easedProgress));
+
+                if (progress < 1) {
+                    requestAnimationFrame(scrollStep);
+                }
+            }
+
+            requestAnimationFrame(scrollStep);
+        });
+    </script>
+
+    </body>
+    </html>

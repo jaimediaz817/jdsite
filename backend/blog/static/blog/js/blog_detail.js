@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Back to top button functionality
+// Back to top button functionality
 document.addEventListener('DOMContentLoaded', function() {
     var backBtn = document.getElementById('back-to-top');
     if (!backBtn) return;
@@ -59,10 +60,29 @@ document.addEventListener('DOMContentLoaded', function() {
             backBtn.classList.remove('show');
         }
     });
-    // Smooth scroll to top on click
+
+    // Smooth progressive scroll
     backBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const startPosition = window.scrollY;
+        const duration = 800;
+        const startTime = performance.now();
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+        function scrollStep(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+            window.scrollTo(
+                0,
+                startPosition * (1 - easedProgress)
+            );
+            if (progress < 1) {
+                requestAnimationFrame(scrollStep);
+            }
+        }
+        requestAnimationFrame(scrollStep);
     });
 });
 
@@ -81,6 +101,7 @@ window.openGalleryPopup = function(element) {
     var modal = document.createElement('div');
     modal.className = 'gallery-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center';
     modal.style.cssText = 'z-index:999999999;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);opacity:0;transition:opacity 150ms ease;position:fixed;top:0;left:0;width:100vw;height:100vh;';
+
     modal.innerHTML = '<button class="gallery-modal-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>' +
         '<button class="gallery-modal-nav prev" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button>' +
         '<button class="gallery-modal-nav next" onclick="nextImage()"><i class="fas fa-chevron-right"></i></button>' +
@@ -88,6 +109,7 @@ window.openGalleryPopup = function(element) {
         '<div id="gallery-modal-info"><span id="gallery-modal-title">' + titles[0] + '</span>' +
         '<span id="gallery-modal-desc">' + descriptions[0] + '</span></div></div>' +
         '<div class="gallery-modal-counter">1 / ' + images.length + '</div>';
+        
     
     function updateImage() {
         document.getElementById('gallery-modal-img').src = images[currentIndex];
@@ -358,12 +380,23 @@ window.submitReplyForm = function(commentId) {
         if (inlineReply) inlineReply.style.display = 'none';
         var commentEl = inlineReply ? inlineReply.closest('.jd-comment') : null;
         if (commentEl) {
-            var pendingHtml = '<div class="jd-pending-reply mt-2" style="animation: fadeIn 300ms ease; padding: 10px 14px; background: rgba(124,58,237,0.08); border-left: 3px solid #7c3aed; border-radius: 8px; margin-left: 50px;">' +
-                '<div style="display:flex;align-items:center;gap:8px;">' +
-                '<div class="sk-comment-avatar" style="width:28px;height:28px;min-width:28px;border-radius:50%;background:#e5e7eb;animation:pulse 1.5s ease infinite;"></div>' +
-                '<div style="flex:1;"><div class="sk-line" style="height:10px;width:120px;background:#e5e7eb;border-radius:4px;margin-bottom:6px;animation:pulse 1.5s ease infinite;"></div>' +
-                '<div class="sk-line" style="height:10px;width:80px;background:#e5e7eb;border-radius:4px;animation:pulse 1.5s ease infinite;"></div></div>' +
-                '<span style="font-size:11px;color:#7c3aed;white-space:nowrap;"><i class="fas fa-clock mr-1"></i> Pendiente</span></div></div>';
+
+            var pendingHtml = `
+                <div class="jd-pending-reply mt-2">
+                    <div class="sk-comment-content">
+                        <div class="sk-comment-avatar"></div>
+                        <div class="sk-comment-body">
+                            <div class="sk-line"></div>
+                            <div class="sk-line"></div>
+                        </div>
+                        <span>
+                            <i class="fas fa-clock mr-1"></i> Pendiente
+                        </span>
+                    </div>
+                </div>                
+            `;
+
+
             var actionsEl = commentEl.querySelector('.jd-comment-actions');
             if (actionsEl) { actionsEl.insertAdjacentHTML('afterend', pendingHtml); }
             else { commentEl.querySelector('.jd-comment-body').insertAdjacentHTML('beforeend', pendingHtml); }

@@ -621,6 +621,8 @@
         window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
         window.USER_NAME = '{{ user.get_full_name|default:user.username|escapejs }}';
         window.USER_EMAIL = '{{ user.email|escapejs }}';
+        window.IS_SUPERUSER = {{ user.is_superuser|yesno:"true,false" }};
+        window.BLOG_SLUG = '{{ post.slug|escapejs }}';
     </script>
 
     <script>

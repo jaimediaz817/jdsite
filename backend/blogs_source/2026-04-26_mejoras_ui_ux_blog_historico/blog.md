@@ -63,6 +63,23 @@ Acá un video de prueba:
 
 ---
 
+## Tutorial en video
+
+Si prefieres ver el proceso en acción, aquí tienes un mosaico interactivo con el video de YouTube:
+
+<div class="youtube-mosaic compact" onclick="window.open('https://www.youtube.com/watch?v=ydvR27eZEj4', '_blank')">
+  <img src="https://img.youtube.com/vi/ydvR27eZEj4/0.jpg" alt="Miniatura del video tutorial de UI/UX" />
+  <div class="play-overlay">
+    <i class="fas fa-play play-icon"></i>
+  </div>
+  <div class="caption">Ver tutorial en YouTube - Cursor Composer 2.5</div>
+</div>
+
+<p class="text-center mt-2">
+  <small>Haz clic en el mosaico para ver el video completo en nuestro canal de YouTube</small>
+</p>
+
+
 ## Los cambios concretos que implementamos
 
 ### 1. Ancho de linea perfecto

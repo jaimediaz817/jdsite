@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initScrollAnimations();
     initJdAccordions();
     initLibIntroJS();
+    initProgressBar();
 });
 
 function initScrollAnimations() {
@@ -39,6 +40,48 @@ function initScrollAnimations() {
     animatedElements.forEach((el) => {
         observer.observe(el);
     });
+}
+
+function initProgressBar() {
+    // const progressBar = document.querySelector('.reading-progress-fill');
+    // if (!progressBar) return;
+    // window.addEventListener('scroll', () => {
+    //     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    //     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    //     const scrolled = (winScroll / height) * 100;
+    //     progressBar.style.width = scrolled + "%";
+    // });
+    // ✅ DEFINITIVAMENTE, FORZADO AL MAXIMO
+    console.log('✅ Iniciando barra progreso');
+
+    // ✨ BARRA PROGRESO LECTURA HU-005.5
+    let hideTimeout;
+    const progressBar = document.querySelector('.reading-progress-bar');    
+        
+    window.onscroll = function() {
+        let scrol = window.pageYOffset || document.documentElement.scrollTop;
+        let altoTotal = document.body.scrollHeight - window.innerHeight;
+        
+        // ✅ Proteccion contra division por cero y valores invalidos
+        if (altoTotal <= 0) altoTotal = 1;
+        let porcentaje = Math.min(100, Math.max(0, (scrol / altoTotal) * 100));
+        
+        // Aplicar valor final
+        document.querySelector('.reading-progress-fill').style.width = porcentaje + '%';
+
+        // ✅ Logica visibilidad barra progreso
+        if (porcentaje > 5) {
+            progressBar.classList.add('visible');
+            
+            // Reset timeout para ocultar despues de inactividad
+            clearTimeout(hideTimeout);
+            // hideTimeout = setTimeout(() => {
+            //     progressBar.classList.remove('visible');
+            // }, 2000);
+        } else {
+            progressBar.classList.remove('visible');
+        }
+    };    
 }
 
 $(function () {

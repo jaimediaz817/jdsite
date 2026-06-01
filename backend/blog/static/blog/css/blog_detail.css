@@ -1836,6 +1836,59 @@ html {
     color: #fff;
 }
 
+/* --- DIVIDER: "o" entre botones sociales y login tradicional --- */
+.jd-login-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0.75rem 0;
+    padding: 0 2rem;
+}
+
+.jd-login-divider-line {
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.jd-login-divider-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+html[data-reading-mode="dark"] .jd-login-divider-line {
+    background: #374151;
+}
+
+html[data-reading-mode="dark"] .jd-login-divider-text {
+    color: #6b7280;
+}
+
+/* --- BOTÓN LOGIN TRADICIONAL --- */
+.jd-btn-traditional {
+    background: #374151;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 1.25rem;
+}
+
+.jd-btn-traditional:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    background: #1f2937;
+}
+
+html[data-reading-mode="dark"] .jd-btn-traditional {
+    background: #4b5563;
+}
+
+html[data-reading-mode="dark"] .jd-btn-traditional:hover {
+    background: #6b7280;
+}
+
+/* --- SIN MARGEN EN FOOTER CUANDO HAY BOTÓN TRADICIONAL --- */
 .jd-login-footer {
     display: flex;
     align-items: center;

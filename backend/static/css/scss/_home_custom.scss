@@ -725,6 +725,15 @@ M E D I A  Q U E R I E S
 }
 
 
+/* ===========================
+SECCIÓN: SKILLS (JD)
+=========================== */
+section.skills-section {
+    .skills-surface {
+        background: #f8f8f8;
+        border: 2px solid rgba(0, 0, 0, 0.12);
+    }
+}
 
 
 /* ===========================
@@ -740,7 +749,7 @@ SECCIÓN: CÓMO TRABAJO (JD)
     background: #ffffff;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.17);
+    border: 2px solid rgba(0, 0, 0, 0.12);
 }
 
 /* Títulos */
@@ -782,6 +791,17 @@ SECCIÓN: CÓMO TRABAJO (JD)
     z-index: 0;
 }
 
+
+/* ===========================
+SECCIÓN: CÓMO TRABAJO (JD)
+=========================== */
+section.projects-section {
+    .projects-surface {
+        border: 2px solid rgba(0, 0, 0, 0.12);
+    }
+}
+
+
 /* ===========================
    CONTENEDOR PRINCIPAL
 =========================== */
@@ -792,7 +812,8 @@ SECCIÓN: CÓMO TRABAJO (JD)
 
 .workflow-surface {
     position: relative;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgb(243 243 243 / 90%);
+    // background: rgba(255, 255, 255, 0.9);
     border-radius: 22px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(5px);

@@ -14,25 +14,12 @@
         </h4>
     </div>
     <div class="card-body">
-        <!-- Botones de redes sociales y acceso al blog -->
-        <!-- Botones de acceso alineados horizontalmente con estilo outline */
-        <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
-            <a href="/blog/" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 260px;">
-                <i class="fas fa-blog"></i>
-                <span>Ir al blog</span>
+        <!-- Enlace volver atrás -->
+        <div class="mb-3">
+            <a href="{{ request.META.HTTP_REFERER|default:'/blog/' }}" class="btn-back-link">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver a la página anterior</span>
             </a>
-            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 260px;">
-                <i class="fab fa-google"></i>
-                <span>Google</span>
-            </a>
-            <a href="/accounts/github/login/" class="btn btn-outline-gradient" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 260px;">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-            </a>
-        </div>
-
-        <div class="text-center mb-4" style="color: #6c757d;">
-            <small>o ingresa con tu cuenta</small>
         </div>
 
         <!-- Formulario de login -->
@@ -92,6 +79,8 @@
                 <div class="spinner-border spinner-border-sm text-light d-none" role="status" id="login-spinner" style="margin-left: 0.5rem;"></div>
             </button>
         </form>
+
+        
 
         <div class="text-center mt-3">
             <a href="{% url 'account_reset_password' %}" class="text-muted small">¿Olvidaste tu contraseña?</a>
@@ -164,6 +153,25 @@
     /* Refuerzo de estilos para el checkbox usando mayor especificidad y !important */
     /* Eliminado el estilo conflictivo para .form-check-input ya que usamos .custom-checkbox */
     /* Eliminado bloque .large-checkbox y código erróneo que causaba CSS malformado */
+    /* Estilo enlace volver atrás */
+    .btn-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        padding: 4px 0;
+    }
+    .btn-back-link:hover {
+        color: #0891b2;
+    }
+    .btn-back-link i {
+        font-size: 0.8rem;
+    }
+
     /* Cuando el checkbox está marcado */
     .form-check-input {
         width: 1.5rem;

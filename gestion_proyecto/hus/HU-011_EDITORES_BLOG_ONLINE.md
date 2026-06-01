@@ -9,6 +9,89 @@
 
 ---
 
+## 🚨 INSTRUCCIONES DE DESARROLLO (LEER ANTES DE EMPEZAR)
+
+> ⚠️ **REGLAS DE ORO PARA IMPLEMENTAR ESTA HU:**
+
+### 🟢 1. Una Fase a la Vez
+- Esta HU tiene **8 fases** de aproximadamente **20 minutos cada una**
+- **NUNCA** implementes más de una fase en una sola sesión
+- Cada fase es **independiente** y se puede probar por separado
+- Al terminar cada fase: ✅ probar, ✅ confirmar con el usuario, ✅ pasar a la siguiente
+
+### 🟢 2. Sin Dependencias Nuevas Sin Aprobación
+- Todas las librerías son **CDN** (no requieren `pip install` ni `npm install`)
+- Si durante el desarrollo se necesita algo adicional, **preguntar primero**
+
+### 🟢 3. Nunca Romper lo Existente
+- Todo lo que funciona hoy debe seguir funcionando mañana
+- Cualquier modificación debe ser **aditiva**
+- **NUNCA** borrar código existente, solo comentar si es estrictamente necesario
+
+### 🟢 4. Flujo de Trabajo Recomendado
+```
+Cada fase:
+1. Leer la fase completa
+2. Implementar los cambios
+3. Probar manualmente
+4. Confirmar con el usuario
+5. PASAR A LA SIGUIENTE FASE
+```
+
+### 🟢 5. TODO DENTRO DE `blog/` (ORDEN ESTRUCTURAL)
+> ⚠️ **CRÍTICO:** Todo artefacto debe vivir dentro de la app `blog/` para mantener el orden cuando el portafolio crezca.
+
+```
+✅ CORRECTO (todo dentro de blog/):
+
+  backend/blog/
+  ├── templates/blog/
+  │   └── blog_editor.html           # ✅ Template del editor
+  ├── static/blog/
+  │   ├── css/
+  │   │   └── blog_editor.css        # ✅ Estilos del editor
+  │   └── js/
+  │       └── blog_editor.js         # ✅ JS del editor
+  ├── services.py                    # ✅ save_blog_to_source(), etc.
+  ├── views.py                       # ✅ blog_editor_view, approve_blog
+  ├── urls.py                        # ✅ /editor/, /api/save-draft/
+  └── management/commands/
+      └── cleanup_blog_uploads.py    # ✅ Comando de limpieza
+
+❌ INCORRECTO (archivos regados):
+  backend/
+  ├── nueva_app/                     # ❌ No crear nuevas apps
+  ├── static/js/editor.js            # ❌ No fuera de blog/
+  ├── templates/editor.html          # ❌ No fuera de blog/
+  └── core/views.py                  # ❌ No mezclar con otras apps
+```
+
+✅ No se crean nuevas apps de Django.
+✅ Todo debe ir dentro de `backend/blog/` manteniendo la estructura actual.
+
+### 🟢 6. Estimación de Consumo
+```
+Fase 1:  ~20 min  →  Backend API guardado
+Fase 2:  ~20 min  →  Backend API upload + limpieza
+Fase 3:  ~20 min  →  Frontend editor EasyMDE
+Fase 4:  ~20 min  →  Frontend FilePond upload
+Fase 5:  ~20 min  →  Frontend botón acceso + anti-spam
+Fase 6:  ~20 min  →  Edición blogs existentes
+Fase 7:  ~20 min  →  Auto-save + notificaciones
+Fase 8:  ~20 min  →  Testing y pulido
+─────────────────────────────────────────
+Total:   ~160 min (~2.5 horas en total, pero solo 20 min por sesión)
+```
+</content>
+<task_progress>
+- [x] HU-011 creada con diagnóstico técnico completo
+- [x] Instrucciones de desarrollo granular agregadas
+- [x] Regla de orden estructural agregada (todo dentro de blog/)
+- [x] HU-011 finalizada y completa
+</task_progress>
+
+---
+
 ## 🎯 Objetivo
 
 Crear un editor markdown online que permita a usuarios autenticados escribir artículos del blog desde el navegador, con soporte para pegar imágenes (igual que VS Code), y que al guardar genere **exactamente** la misma estructura de archivos que el flujo manual actual — ejecutando `import_blogs` automáticamente para publicación inmediata, con protecciones anti-spam y moderación por roles.

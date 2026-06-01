@@ -98,6 +98,16 @@ class BlogPost(models.Model):
         help_text="Ruta a imagen de portada",
     )
 
+    # Tiempo de lectura (HU-014)
+    reading_time = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text=(
+            "Tiempo de lectura en minutos, leido del frontmatter "
+            "'tiempo_lectura' o 'reading_time'."
+        ),
+    )
+
     class Meta:
         ordering = ["-publish_date"]
         verbose_name = "Entrada de blog"

@@ -1,11 +1,4 @@
-"""Utilities for handling markdown files used by the blog import command.
-
-The original ``import_blogs`` command contained a handful of helper methods
-related to reading a markdown file, normalising line breaks and calculating a
-SHA‑256 hash of the source file.  To improve modularity we move those helpers
-into this dedicated module.  The public API mirrors the previous private
-methods so that the command can be updated with minimal changes.
-"""
+"""Utilities for handling markdown files used by the blog import command."""
 
 import hashlib
 import re
@@ -13,22 +6,13 @@ from pathlib import Path
 
 
 def calculate_file_hash(md_path: Path) -> str:
-    """Return a SHA‑256 hash of the given markdown file.
-
-    The function reads the file in binary mode to ensure a deterministic hash
-    regardless of the platform's newline handling.
-    """
+    """Return a SHA-256 hash of the given markdown file."""
     with md_path.open("rb") as f:
         return hashlib.sha256(f.read()).hexdigest()
 
 
 def _normalize_lines(text: str) -> str:
-    """Normalise simple line breaks to spaces inside paragraphs.
-
-    This implementation is extracted verbatim from the original command.  It
-    preserves structural lines such as headings, lists, blockquotes, code
-    blocks and special ``:::`` blocks while joining soft‑wrapped lines.
-    """
+    """Normalise simple line breaks to spaces inside paragraphs."""
     lines = text.split("\n")
     result = []
     in_code_block = False
@@ -74,37 +58,31 @@ def _normalize_lines(text: str) -> str:
             result.append(line + " §JOIN§")
 
     joined = "\n".join(result)
-    # Replace the join markers with a single space
     joined = re.sub(r" §JOIN§\n", " ", joined)
     joined = re.sub(r" §JOIN§$", "", joined)
     return joined
 
 
 def read_markdown_file(md_path: Path):
-    """Read a markdown file and return a tuple ``(content_md, frontmatter)``.
-
-    The logic is a direct extraction from the original ``read_markdown_file``
-    method, preserving the handling of back‑slash line continuations, protection
-    of special ``:::`` blocks, front‑matter parsing and removal of HTML comments.
-    """
-    # Load file with UTF‑8 fallback to latin‑1 (mirrors original behaviour)
+    """Read a markdown file and return (content_md, frontmatter_dict)."""
+    # 1) Leer el archivo
     try:
         md_content = md_path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
         md_content = md_path.read_text(encoding="latin-1", errors="replace")
 
-    # Remove trailing backslashes used as line continuations
+    # 2) Quitar backslashes de continuacion
     lines = md_content.split("\n")
     cleaned_lines = [re.sub(r"\\+$", "", line) for line in lines]
     md_content = "\n".join(cleaned_lines)
 
-    # Protect special ::: blocks before normalisation
+    # 3) Proteger bloques ::: antes de normalizar
     placeholders = {}
-    placeholder_counter = [0]
+    counter = [0]
 
     def _protect(match):
-        placeholder_counter[0] += 1
-        key = f"__SPECIAL_BLOCK_{placeholder_counter[0]}__"
+        counter[0] += 1
+        key = f"__SPECIAL_BLOCK_{counter[0]}__"
         placeholders[key] = match.group(0)
         return key
 
@@ -115,34 +93,46 @@ def read_markdown_file(md_path: Path):
         flags=re.DOTALL,
     )
 
-    # Normalise line breaks inside paragraphs
+    # 4) Normalizar lineas
     md_content = _normalize_lines(md_content)
 
-    # Restore protected blocks
+    # 5) Restaurar bloques
     for key, original in placeholders.items():
         md_content = md_content.replace(key, original)
 
+    # 6) Parsear frontmatter MANUAL pero ROBUSTO
+    # Estrategia: la primera linea debe ser exactamente ---
+    # luego vienen lineas de frontmatter hasta encontrar OTRA linea --- exacta
     frontmatter: dict = {}
     content_md = md_content
 
     if md_content.startswith("---"):
-        parts = md_content.split("---", 2)
-        if len(parts) >= 3:
-            raw = parts[1].strip()
-            content_md = parts[2].strip()
-            for line in raw.splitlines():
+        all_lines = md_content.split("\n")
+        # Buscar el segundo --- en su propia linea
+        close_idx = None
+        for i in range(1, len(all_lines)):
+            if all_lines[i].strip() == "---":
+                close_idx = i
+                break
+
+        if close_idx is not None:
+            # lineas [1:close_idx] son el frontmatter
+            for line in all_lines[1:close_idx]:
                 if ":" not in line:
                     continue
                 k, v = line.split(":", 1)
                 k = k.strip()
                 v = v.strip()
+                # Quitar comillas externas
                 if (v.startswith('"') and v.endswith('"')) or (
                     v.startswith("'") and v.endswith("'")
                 ):
                     v = v[1:-1].strip()
                 frontmatter[k] = v
+            # Todo despues del segundo --- es contenido
+            content_md = "\n".join(all_lines[close_idx + 1 :]).strip()
 
-    # Strip HTML comments from the markdown body
+    # 7) Quitar comentarios HTML
     content_md = re.sub(r"<!--.*?-->", "", content_md, flags=re.DOTALL).strip()
 
     return content_md, frontmatter

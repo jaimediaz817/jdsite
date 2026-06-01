@@ -206,7 +206,13 @@
                     </div>
                     <div class="jd-meta-item">
                       <i class="far fa-clock"></i>
-                      <span>{% widthratio post.content_html|length 1500 1 %} min de lectura</span>
+                      <span>
+                        {% if post.reading_time %}
+                          {{ post.reading_time }} min de lectura
+                        {% else %}
+                          {% widthratio post.content_html|length 1500 1 %} min de lectura
+                        {% endif %}
+                      </span>
                     </div>
                   </div>
 

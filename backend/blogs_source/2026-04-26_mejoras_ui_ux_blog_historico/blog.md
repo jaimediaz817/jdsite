@@ -11,6 +11,7 @@ image: "./image-1.png"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
 twitter_card: "summary_large_image"
+tiempo_lectura: 817
 ---
 
 ## Mi Introduccion

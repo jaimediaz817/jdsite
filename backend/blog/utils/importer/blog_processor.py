@@ -48,11 +48,7 @@ class BlogProcessor:
     # Public entry point used by ``import_blogs``
     # ---------------------------------------------------------------------
     def process_single_blog(self, blog_dir: Path) -> str:
-        """Process a single blog directory and return its slug.
-
-        The implementation follows the original method verbatim, delegating to the
-        helper methods defined below.
-        """
+        """Process a single blog directory and return its slug."""
         md_file = blog_dir / "blog.md"
 
         if not md_file.exists():
@@ -65,8 +61,30 @@ class BlogProcessor:
         # Compute hash to detect changes
         file_hash = calculate_file_hash(md_file)
 
-        # Read markdown content and front‑matter
+        # Read markdown content and front-matter
         md_content, frontmatter = read_markdown_file(md_file)
+
+        # ✅ HU-014: Re-leer el .md DIRECTAMENTE y extraer tiempo_lectura
+        # Bypassea cualquier bug del parser de markdown_utils
+        try:
+            raw_md = md_file.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            raw_md = md_file.read_text(encoding="latin-1", errors="replace")
+
+        for line in raw_md.split("\n")[:30]:
+            stripped = line.strip()
+            if stripped.startswith("tiempo_lectura:") or stripped.startswith(
+                "reading_time:"
+            ):
+                valor = stripped.split(":", 1)[1].strip().strip('"').strip("'")
+                if valor:
+                    key = (
+                        "tiempo_lectura"
+                        if "tiempo_lectura" in stripped
+                        else "reading_time"
+                    )
+                    if key not in frontmatter or not frontmatter[key]:
+                        frontmatter[key] = valor
 
         # Extract title
         title, content_md = self.extract_title(md_content, blog_dir)

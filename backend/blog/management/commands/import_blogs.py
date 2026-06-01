@@ -113,6 +113,29 @@ class Command(BaseCommand):
         # ✅ Leer y extraer contenido
         md_content, frontmatter = read_markdown_file(md_file)
 
+        # ✅ HU-014: Re-leer el .md DIRECTAMENTE y extraer tiempo_lectura
+        # Lo hacemos por si el parser de markdown_utils no captura este campo
+        try:
+            raw_md = md_file.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            raw_md = md_file.read_text(encoding="latin-1", errors="replace")
+
+        # Buscar 'tiempo_lectura:' o 'reading_time:' en las primeras 30 lineas
+        for line in raw_md.split("\n")[:30]:
+            stripped = line.strip()
+            if stripped.startswith("tiempo_lectura:") or stripped.startswith(
+                "reading_time:"
+            ):
+                valor = stripped.split(":", 1)[1].strip().strip('"').strip("'")
+                if valor and valor not in frontmatter:
+                    frontmatter[
+                        (
+                            "tiempo_lectura"
+                            if "tiempo_lectura" in stripped
+                            else "reading_time"
+                        )
+                    ] = valor
+
         # ✅ Extraer titulo
         title, content_md = self.extract_title(md_content, blog_dir)
 
@@ -1112,6 +1135,22 @@ class Command(BaseCommand):
             fecha = parse_date(frontmatter["date"])
             if fecha:
                 defaults["publish_date"] = fecha
+
+        # ✅ HU-014: Leer tiempo de lectura del frontmatter
+        # Acepta 'tiempo_lectura' (espanol, retrocompatible) o 'reading_time' (ingles)
+        reading_time_raw = frontmatter.get("reading_time") or frontmatter.get(
+            "tiempo_lectura"
+        )
+        if reading_time_raw is not None and reading_time_raw != "":
+            try:
+                defaults["reading_time"] = int(str(reading_time_raw).strip())
+            except (ValueError, TypeError):
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"⚠️  Tiempo de lectura invalido en '{title}': "
+                        f"{reading_time_raw!r}. Se omite."
+                    )
+                )
 
         obj, created = BlogPost.objects.update_or_create(
             slug=slug,

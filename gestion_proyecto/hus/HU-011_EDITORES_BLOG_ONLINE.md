@@ -1,741 +1,581 @@
 # 📋 HU-011: Editor Online de Blog con Guardado como Markdown
 
-> **ID:** HU-011  
-> **Fecha:** 30/04/2026  
-> **Responsable:** Cline  
-> **Estado:** 🔵 Pendiente  
-> **Tiempo estimado total:** 8 fases (~20 min cada una)  
-> **Dependencias:** HU-001 (sistema blogs), HU-001.1 (frontmatter completo), HU-008 (usuarios OAuth)
+> **ID:** HU-011
+> **Fecha:** 30/04/2026
+> **Estado:** 🔵 Pendiente
+> **Tiempo estimado total:** 3 fases (~20 min cada una, sub-divididas si es necesario)
+> **Dependencias:** HU-001, HU-001.1, HU-008, HU-014 (reading_time)
 
 ---
 
-## 🚨 INSTRUCCIONES DE DESARROLLO (LEER ANTES DE EMPEZAR)
+## 📌 NOTAS ACLARATORIAS (importante leer antes)
 
-> ⚠️ **REGLAS DE ORO PARA IMPLEMENTAR ESTA HU:**
+### ✅ Sobre el editor (librería de terceros)
+- **EasyMDE es una librería de terceros** que se carga por CDN (`https://cdn.jsdelivr.net/npm/easymde/`).
+- **Cero instalaciones** en el proyecto (no requiere `pip install` ni `npm install`).
+- Es un wrapper de CodeMirror con toolbar, preview y autoguardado en localStorage ya integrado.
+- Si en el futuro se quiere migrar a otro editor (ej. TinyMCE, Quill, EditorJS), solo se cambia el JS y el HTML, el backend no se toca.
 
-### 🟢 1. Una Fase a la Vez
-- Esta HU tiene **8 fases** de aproximadamente **20 minutos cada una**
-- **NUNCA** implementes más de una fase en una sola sesión
-- Cada fase es **independiente** y se puede probar por separado
-- Al terminar cada fase: ✅ probar, ✅ confirmar con el usuario, ✅ pasar a la siguiente
+### ✅ Sobre el formato del contenido
+El autor puede escribir el contenido del artículo en **DOS formatos**, ambos soportados:
 
-### 🟢 2. Sin Dependencias Nuevas Sin Aprobación
-- Todas las librerías son **CDN** (no requieren `pip install` ni `npm install`)
-- Si durante el desarrollo se necesita algo adicional, **preguntar primero**
+1. **Markdown simplificado (por defecto):**
+   ```markdown
+   # Título del artículo
+   ## Sección
+   ![alt](./imagen.png)
+   **negrita**, *cursiva*, [link](https://ejemplo.com)
+   ```
 
-### 🟢 3. Nunca Romper lo Existente
-- Todo lo que funciona hoy debe seguir funcionando mañana
-- Cualquier modificación debe ser **aditiva**
-- **NUNCA** borrar código existente, solo comentar si es estrictamente necesario
+2. **HTML directo (para escritores avanzados):**
+   ```html
+   <h1>Título del artículo</h1>
+   <div class="layout-dos-columnas">
+     <p>Columna izquierda</p>
+     <p>Columna derecha</p>
+   </div>
+   <img src="./imagen.png" alt="descripción">
+   ```
 
-### 🟢 4. Flujo de Trabajo Recomendado
-```
-Cada fase:
-1. Leer la fase completa
-2. Implementar los cambios
-3. Probar manualmente
-4. Confirmar con el usuario
-5. PASAR A LA SIGUIENTE FASE
-```
+El mecanismo `import_blogs` se encarga de generar el HTML respectivo a partir del markdown (usando `python-markdown`). Si el autor ya escribió HTML directo, se respeta tal cual. **El editor no necesita distinguir entre ambos formatos** porque Markdown acepta HTML embebido de forma nativa.
 
-### 🟢 5. TODO DENTRO DE `blog/` (ORDEN ESTRUCTURAL)
-> ⚠️ **CRÍTICO:** Todo artefacto debe vivir dentro de la app `blog/` para mantener el orden cuando el portafolio crezca.
-
-```
-✅ CORRECTO (todo dentro de blog/):
-
-  backend/blog/
-  ├── templates/blog/
-  │   └── blog_editor.html           # ✅ Template del editor
-  ├── static/blog/
-  │   ├── css/
-  │   │   └── blog_editor.css        # ✅ Estilos del editor
-  │   └── js/
-  │       └── blog_editor.js         # ✅ JS del editor
-  ├── services.py                    # ✅ save_blog_to_source(), etc.
-  ├── views.py                       # ✅ blog_editor_view, approve_blog
-  ├── urls.py                        # ✅ /editor/, /api/save-draft/
-  └── management/commands/
-      └── cleanup_blog_uploads.py    # ✅ Comando de limpieza
-
-❌ INCORRECTO (archivos regados):
-  backend/
-  ├── nueva_app/                     # ❌ No crear nuevas apps
-  ├── static/js/editor.js            # ❌ No fuera de blog/
-  ├── templates/editor.html          # ❌ No fuera de blog/
-  └── core/views.py                  # ❌ No mezclar con otras apps
-```
-
-✅ No se crean nuevas apps de Django.
-✅ Todo debe ir dentro de `backend/blog/` manteniendo la estructura actual.
-
-### 🟢 6. Estimación de Consumo
-```
-Fase 1:  ~20 min  →  Backend API guardado
-Fase 2:  ~20 min  →  Backend API upload + limpieza
-Fase 3:  ~20 min  →  Frontend editor EasyMDE
-Fase 4:  ~20 min  →  Frontend FilePond upload
-Fase 5:  ~20 min  →  Frontend botón acceso + anti-spam
-Fase 6:  ~20 min  →  Edición blogs existentes
-Fase 7:  ~20 min  →  Auto-save + notificaciones
-Fase 8:  ~20 min  →  Testing y pulido
-─────────────────────────────────────────
-Total:   ~160 min (~2.5 horas en total, pero solo 20 min por sesión)
-```
-</content>
-<task_progress>
-- [x] HU-011 creada con diagnóstico técnico completo
-- [x] Instrucciones de desarrollo granular agregadas
-- [x] Regla de orden estructural agregada (todo dentro de blog/)
-- [x] HU-011 finalizada y completa
-</task_progress>
+### ✅ Sobre las fases
+- Cada fase es **independiente** y se prueba por separado.
+- Si una fase se vuelve muy larga, se subdivide en `Fase X.A` y `Fase X.B` para no consumir muchos tokens en una sola sesión.
+- **Regla de las 2 preguntas**: si en una fase surgen más de 2 preguntas de diseño, se pausa y se subdivide.
 
 ---
 
-## 🎯 Objetivo
+## 🎯 Objetivo (única cosa que debe hacer)
 
-Crear un editor markdown online que permita a usuarios autenticados escribir artículos del blog desde el navegador, con soporte para pegar imágenes (igual que VS Code), y que al guardar genere **exactamente** la misma estructura de archivos que el flujo manual actual — ejecutando `import_blogs` automáticamente para publicación inmediata, con protecciones anti-spam y moderación por roles.
+Un editor markdown online donde el usuario:
+1. Escribe markdown (con toolbar)
+2. Pega imágenes y videos (Ctrl+V o drag & drop)
+3. Hace clic en **"Guardar y Publicar"**
+4. El sistema crea automáticamente:
+   - Carpeta `blogs_source/YYYY-MM-DD_slug/`
+   - Archivo `blog.md` con frontmatter (autor auto, fecha auto, tiempo de lectura mixto)
+   - Imágenes y videos en la MISMA carpeta
+5. Ejecuta `import_blogs` automáticamente
 
----
-
-## 🔍 DIAGNÓSTICO TÉCNICO COMPLETO
-
-### 1. Arquitectura Actual del Blog
-
-```
-FLUJO ACTUAL (100% local):
-                                                    
-  Autor en VS Code           GitHub              VPS Producción           Cron Job
-  ──────────────────         ────────            ────────────────         ────────
-  blogs_source/              git push            git pull                 import_blogs
-  ├── YYYY-MM-DD_slug/                           import_blogs             (cada 6h)
-  │   ├── blog.md                                (cada 6h cron)
-  │   ├── portada.jpg                            ↓
-  │   └── diagrama.png                           BlogPost en BD
-  ↓                                              ↓
-  blog.md + imágenes         ←─── sync ───→      static/blogs/slug/
-                                                ├── portada.jpg
-                                                └── diagrama.png
-```
-
-### 2. Flujo Propuesto con el Editor Online
-
-```
-FLUJO NUEVO (editor online):
-                                                    
-  Autor en Web                   Django Server                  
-  ──────────────────             ────────────────              
-  blog/editor/                   
-  ├── Escribe markdown           POST /api/save-draft/         
-  ├── Pega imágenes              POST /api/upload-image/      
-  └── Clic "Publicar"            ↓                            
-                                 1. Valida hCaptcha
-                                 2. Verifica Rate Limit
-                                 3. Crea blogs_source/
-                                 4. Guarda blog.md
-                                 5. Guarda imágenes
-                                 6. ✅ Admin: import_blogs inmediato
-                                 7. ❌ Otro: Draft + email notificación
-```
-
-### 3. Estructura de `blogs_source` (LA FUENTE DE VERDAD)
-
-```
-backend/blogs_source/
-├── 2026-04-24_por-que-las-integraciones-zoho-fallan/
-│   ├── blog.md                    ← Contenido markdown
-│   ├── captura_pantalla_1.png     ← Imágenes referenciadas
-│   └── diagrama_arq.png
-├── 2026-04-26_mejoras_ui_ux_blog_historico/
-│   ├── blog.md
-│   └── imagen1.png
-└── test_blog/
-    └── blog.md
-```
-
-**Regla de oro:** Cada blog es una carpeta con formato `YYYY-MM-DD_slug/` y dentro un archivo obligatorio `blog.md` + archivos multimedia.
-
-### 4. Formato del `blog.md` (FRONTMATTER OBLIGATORIO)
-
-```markdown
----
-title: "Título del artículo"
-description: "Descripción corta"
-date: 2026-04-24
-draft: false
-image: "cover.jpg"
-author: "Jaime Díaz"
-author_email: "jaimeivan0017@gmail.com"
-author_provider: "google"
-category: "Categoría"
-tags: ["tag1", "tag2"]
-meta_title: "Título SEO"
-meta_description: "Descripción SEO"
----
-
-# Título del artículo
-
-![alt text](imagen_portada.jpg)  ← Primera imagen = portada automática
-
-Contenido del artículo en markdown...
-
-## Sección 2
-
-Más contenido...
-```
-
-### 5. Componentes Clave del Sistema
-
-| Componente    | Archivo                                            | Función                                                                                       |
-| ------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Modelo        | `backend/blog/models.py`                           | `BlogPost`: slug, title, content_html, source_hash, cover_image, meta_title, meta_description |
-| Importador    | `backend/blog/utils/importer/blog_processor.py`    | Convierte MD → HTML, copia imágenes a `static/blogs/<slug>/`, genera slugs, extrae portada    |
-| Comando       | `backend/blog/management/commands/import_blogs.py` | Orquesta importación de todos los blogs                                                       |
-| URLs          | `backend/blog/urls.py`                             | Rutas: `/blog/` (listado), `/blog/<slug>/` (detalle)                                          |
-| Plantilla SEO | `PLANTILLA_ESTANDAR_BLOG_SEO.md`                   | Estructura obligatoria del contenido                                                          |
-
-### 6. Flujo del Importador (`blog_processor.py`)
-
-```
-blog.md + imágenes (blogs_source/)
-    ↓
-read_markdown_file() → extrae frontmatter YAML + contenido MD
-    ↓
-extract_title() → título desde # o desde nombre de carpeta
-    ↓
-check_existing_blog() → compara hash para evitar duplicados
-    ↓
-copy_blog_images() → copia imágenes/vídeos a static/blogs/slug/
-    ↓
-extract_cover_image() → primera imagen = portada (se elimina del contenido)
-    ↓
-replace_special_blocks_md() → procesa bloques especiales (:::slides, etc.)
-    ↓
-convert_markdown_to_html() → MD → HTML con markdown lib
-    ↓
-process_images() → reescribe rutas de imágenes a /static/blogs/slug/
-    ↓
-process_videos() → convierte img→video, reescribe tags <video>
-    ↓
-auto_create_carousels() → carruseles automáticos para imágenes consecutivas
-    ↓
-save_blog_post() → guarda en BD con todos los campos
-```
-
-### 7. Requisitos Críticos de Compatibilidad
-
-Para que el editor online funcione con el importador existente:
-
-1. **Nombre del archivo:** DEBE ser `blog.md`
-2. **Carpeta:** DEBE seguir formato `YYYY-MM-DD_slug/`
-3. **Imágenes:** DEBEN estar en la misma carpeta del blog
-4. **Referencias markdown:** DEBEN usar rutas relativas (`./imagen.png`)
-5. **Frontmatter:** DEBE seguir formato YAML estándar
-6. **Primera imagen:** Se convierte automáticamente en portada
+**Listo. Eso es todo. Nada más.**
 
 ---
 
-## 📦 Librerías CDN (Sin instalar nada - Zero Dependencias Nuevas)
+## 🔧 4 Librerías CDN (cero instalaciones)
 
-Para evitar reinventar la rueda, se usarán las siguientes librerías vía CDN:
-
-| Necesidad                            | Librería         | CDN                                                                    | Función                                                         |
-| ------------------------------------ | ---------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Editor markdown + toolbar**        | **EasyMDE**      | `https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js`             | Editor con toolbar (bold, italic, headings, image upload, etc.) |
-| **Estilos del editor**               | **EasyMDE CSS**  | `https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css`            | Estilos limpios del editor                                      |
-| **Preview en tiempo real**           | **Marked.js**    | `https://cdn.jsdelivr.net/npm/marked/marked.min.js`                    | Renderiza markdown a HTML al instante                           |
-| **Sanitización HTML**                | **DOMPurify**    | `https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js` | Previene XSS en el preview                                      |
-| **Upload de imágenes (drag & drop)** | **FilePond**     | `https://unpkg.com/filepond/dist/filepond.min.js`                      | Drag & drop, Ctrl+V, progreso de upload                         |
-| **Estilos FilePond**                 | **FilePond CSS** | `https://unpkg.com/filepond/dist/filepond.min.css`                     | Estilos del uploader                                            |
-
-**Ventajas de EasyMDE sobre CodeMirror puro:**
-- ✅ Toolbar incluido (negrita, cursiva, headings, listas, imágenes, etc.)
-- ✅ Soporte de drag & drop de imágenes built-in
-- ✅ Preview side-by-side
-- ✅ Autoguardado en localStorage
-- ✅ Tamaño pequeño (~50KB minified)
+| Librería      | Para qué                      |
+| ------------- | ----------------------------- |
+| **EasyMDE**   | Editor markdown con toolbar   |
+| **Marked.js** | Preview en tiempo real        |
+| **DOMPurify** | Sanitizar preview             |
+| **FilePond**  | Pegar/subir imágenes y videos |
 
 ---
 
-## 🧩 Criterios de Aceptación
+## 📂 Archivos
 
-1. [ ] Existe botón "Quiero escribir un artículo" visible en blog_list (solo para usuarios autenticados)
-2. [ ] Al hacer clic, se abre `/blog/editor/` con editor markdown (EasyMDE)
-3. [ ] El editor permite escribir en markdown con preview en tiempo real
-4. [ ] Se puede pegar imágenes (Ctrl+V) y FilePond las procesa automáticamente
-5. [ ] Se puede hacer drag & drop de imágenes
-6. [ ] Se puede adjuntar archivos desde botón de upload
-7. [ ] El editor genera frontmatter automáticamente (title, slug, date, author, author_email)
-8. [ ] Al guardar, se crea carpeta `blogs_source/YYYY-MM-DD_slug/`
-9. [ ] El archivo `blog.md` se genera con formato correcto
-10. [ ] Las imágenes se guardan en la misma carpeta del blog
-11. [ ] Las referencias en markdown usan rutas relativas (`./imagen.png`)
-12. [ ] Al publicar, se ejecuta `import_blogs` automáticamente para publicación inmediata
-13. [ ] Se muestra preview del artículo antes de publicar
-14. [ ] Soporta guardar como borrador (draft=true) y publicar después
-15. [ ] Soporta edición de blogs existentes (reescribe blog.md y re-ejecuta import_blogs)
-16. [ ] El editor es responsive y funciona en mobile
-17. [ ] Auto-save cada 30s en localStorage (no pierde contenido si cierra el navegador)
-18. [ ] Validación de tamaño máximo de imágenes (10MB) y formatos permitidos
-19. [ ] **Moderación:** Solo admin publica inmediato; otros usuarios crean drafts + notificación
-20. [ ] **Anti-spam:** hCaptcha + Rate Limit (1 artículo/24h por usuario no-admin)
-21. [ ] **Backup:** Antes de editar un blog existente, se crea backup automático
-22. [ ] **Limpieza:** Las imágenes temporales se borran automáticamente después de 24h
-23. [ ] **Notificación:** Email al admin cuando un usuario guarda o edita un artículo
-24. [ ] **Autoría:** Se guarda `author_email` y `author_provider` en el frontmatter
+```
+backend/blog/
+├── templates/blog/blog_editor.html       NUEVO
+├── static/blog/js/blog_editor.js         NUEVO
+├── static/blog/css/blog_editor.css       NUEVO
+├── views.py                              +2 vistas
+├── urls.py                               +2 URLs
+└── services.py                           save_blog_to_source()
+```
+
+**NO se tocan:** `models.py`, `import_blogs.py`, `blog_processor.py`.
 
 ---
 
-## 📐 Alcance
+## ✅ Criterios de Aceptación
 
-### ✅ Incluye
-
-- **Backend:** API para guardar blogs como archivos markdown en `blogs_source`
-- **Backend:** API para upload de imágenes
-- **Backend:** Ejecución automática de `import_blogs` al guardar/publicar
-- **Frontend:** Página de editor con **EasyMDE** (CDN) + toolbar completo
-- **Frontend:** Preview en tiempo real con **Marked.js** + **DOMPurify**
-- **Frontend:** Upload de imágenes con **FilePond** (drag & drop, Ctrl+V, botón)
-- **Frontend:** Auto-save en localStorage cada 30s
-- **UI:** Botón de acceso desde blog_list.html
-- **UI:** Formulario de frontmatter (título, descripción, categoría, tags, SEO)
-- **UI:** Modal de confirmación antes de publicar
-- **UI:** Checkbox de términos y condiciones
-- **Guardado:** Drafts (borradores) y Publicación directa
-- **Edición:** Posibilidad de editar blogs existentes (reescritura)
-- **Seguridad:** hCaptcha, Rate Limit, backup automático, limpieza de temporales
-
-### ❌ Excluye
-
-- **No** se modifica el modelo `BlogPost`
-- **No** se instalan dependencias Python nuevas (todas las librerías son CDN)
-- **No** se elimina el flujo manual (ambos flujos coexisten)
-- **No** se implementa integración con LinkedIn
+1. [ ] Botón "Escribir artículo" en `blog_list.html` (solo autenticados)
+2. [ ] Editor EasyMDE con toolbar + preview en tiempo real
+3. [ ] Pegar imágenes con Ctrl+V → FilePond las sube
+4. [ ] Pegar videos con Ctrl+V → FilePond los sube (mp4, webm, mov)
+5. [ ] Drag & drop de imágenes y videos
+6. [ ] Formulario de frontmatter: título, descripción, categoría, tags
+7. [ ] Autor se rellena automáticamente del usuario autenticado
+8. [ ] Fecha se rellena automáticamente (hoy)
+9. [ ] Tiempo de lectura: cálculo automático como sugerencia + ajuste manual
+10. [ ] Al guardar: crea `blogs_source/YYYY-MM-DD_slug/`
+11. [ ] Genera `blog.md` con frontmatter
+12. [ ] Imágenes y videos van a la misma carpeta (raíz)
+13. [ ] Referencias relativas: `./archivo.ext`
+14. [ ] Ejecuta `import_blogs` al guardar
+15. [ ] Admin publica inmediato, no-admin crea `draft: true`
+16. [ ] Auto-save en localStorage cada 30s
+17. [ ] Sanitiza preview con DOMPurify
+18. [ ] Responsive (funciona en mobile)
+19. [ ] El importador convierte videos a `<video>` automáticamente
+20. [ ] La primera imagen subida se asigna como portada
 
 ---
 
-## 🛠️ Implicaciones Técnicas Detalladas
+## 🧩 Frontmatter que se genera
 
-### 1. Manejo de Imágenes con FilePond (CRÍTICO)
-
-**Solución frontend (EasyMDE + FilePond):**
-```javascript
-const easyMDE = new EasyMDE({
-    element: document.getElementById('editor'),
-    uploadImage: true,
-    imageUploadEndpoint: '/blog/api/upload-image/',
-    imageMaxSize: 10 * 1024 * 1024, // 10MB
-    imageAccept: 'image/png, image/jpeg, image/gif, image/webp, image/svg+xml',
-    autoDownloadFontAwesome: false,
-    spellChecker: false,
-    toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'table', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
-});
-```
-
-**Solución backend:**
-```python
-# POST /blog/api/upload-image/
-# multipart/form-data: file=<imagen>, blog_slug=<slug>
-# Response: { "url": "./nombre_imagen.png" }
-
-def upload_blog_image(request):
-    file = request.FILES['file']
-    slug = request.POST.get('blog_slug')
-    temp_dir = settings.BLOG_TEMP_UPLOADS / str(request.user.id)
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    filepath = temp_dir / file.name
-    with open(filepath, 'wb+') as f:
-        for chunk in file.chunks():
-            f.write(chunk)
-    return JsonResponse({'url': f'./{file.name}'})
-```
-
-### 2. Flujo de Guardado + Moderación por Roles
-
-```python
-# POST /blog/api/save-draft/
-# Body: { title, content_md, meta, images[], publish: true/false }
-
-from django.core.management import call_command
-from django.core.mail import send_mail
-
-def save_blog_draft(request):
-    data = json.loads(request.body)
-    
-    # 1. Verificar Rate Limit (solo si no es admin)
-    if not request.user.is_superuser:
-        check_rate_limit(request.user)
-        verify_hcaptcha(data.get('hcaptcha_token'))
-    
-    slug = generate_unique_slug(data['title'])
-    date_prefix = datetime.now().strftime('%Y-%m-%d')
-    folder_name = f"{date_prefix}_{slug}"
-    
-    # 2. Crear carpeta en blogs_source
-    target_dir = settings.BLOGS_SOURCE_DIR / folder_name
-    target_dir.mkdir(exist_ok=True)
-    
-    # 3. Mover imágenes de temp a carpeta final
-    temp_dir = settings.BLOG_TEMP_UPLOADS / str(request.user.id)
-    for img in data.get('images', []):
-        src = temp_dir / img
-        if src.exists():
-            shutil.move(src, target_dir / img)
-    
-    # 4. Generar frontmatter con autoría
-    author_name = request.user.get_full_name() or request.user.username
-    frontmatter = generate_frontmatter(data, author_name, request.user.email)
-    
-    # 5. Guardar blog.md
-    blog_content = f"{frontmatter}\n\n{data['content_md']}"
-    (target_dir / 'blog.md').write_text(blog_content)
-    
-    # 6. ✅ PUBLICACIÓN según rol
-    if data.get('publish', False) and request.user.is_superuser:
-        call_command('import_blogs')
-        return JsonResponse({'slug': slug, 'folder': folder_name, 'published': True, 'status': 'published'})
-    elif data.get('publish', False):
-        # No-admin: guardar como draft y notificar
-        # El frontmatter ya tiene draft: true
-        notify_admin_new_blog(request.user, data['title'], slug)
-        return JsonResponse({'slug': slug, 'folder': folder_name, 'published': False, 'status': 'pending_review'})
-    
-    return JsonResponse({'slug': slug, 'folder': folder_name, 'published': False, 'draft': True, 'status': 'draft'})
-```
-
-### 3. Slugs Únicos Sin Conflictos
-
-```python
-def generate_unique_slug(title):
-    """Genera slug único agregando sufijo numérico si existe."""
-    base_slug = slugify(title)
-    slug = base_slug
-    counter = 1
-    while list(settings.BLOGS_SOURCE_DIR.glob(f"*_{slug}")):
-        slug = f"{base_slug}-{counter}"
-        counter += 1
-    return slug
-```
-
-### 4. Backup Automático al Editar
-
-```python
-def backup_blog(target_dir):
-    """Crea backup del blog.md antes de editarlo."""
-    backup_dir = target_dir / ".backups"
-    backup_dir.mkdir(exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    source = target_dir / "blog.md"
-    if source.exists():
-        shutil.copy2(source, backup_dir / f"blog_{timestamp}.md")
-```
-
-### 5. Comando de Limpieza de Temporales
-
-```python
-# python manage.py cleanup_blog_uploads
-# Cron diario: borra archivos temporales > 24h
-
-from django.core.management.base import BaseCommand
-import time
-
-class Command(BaseCommand):
-    def handle(self, *args, **options):
-        temp_base = settings.BLOG_TEMP_UPLOADS
-        now = time.time()
-        for user_dir in temp_base.iterdir():
-            if user_dir.is_dir():
-                for f in user_dir.iterdir():
-                    if f.is_file() and (now - f.stat().st_mtime) > 86400:
-                        f.unlink()
-                if not list(user_dir.iterdir()):
-                    user_dir.rmdir()
-```
-
-### 6. Notificación al Admin + Aprobación con 1 Clic
-
-**Flujo:**
-1. Usuario no-admin publica → se guarda como draft
-2. Te llega email con enlace de aprobación firmado
-3. Haces clic → se ejecuta `import_blogs` → artículo publicado al instante
-
-```python
-# POST /blog/api/approve/<token>/
-# Al hacer clic en el enlace del email, se ejecuta import_blogs
-
-from django.utils.crypto import constant_time_compare
-from django.core.signing import TimestampSigner, SignatureExpired
-
-def approve_blog(request, token):
-    """Aprueba un artículo con un solo clic desde el email."""
-    try:
-        # El token expira en 7 días por seguridad
-        signer = TimestampSigner()
-        slug = signer.unsign(token, max_age=604800)  # 7 días
-    except (SignatureExpired, BadSignature):
-        return HttpResponse("Enlace inválido o expirado", status=400)
-    
-    # Ejecutar import_blogs para publicar
-    call_command('import_blogs')
-    
-    return HttpResponse("""
-        <html>
-        <head><title>Artículo aprobado</title></head>
-        <body style="font-family:sans-serif;text-align:center;padding:40px;">
-            <h1>✅ Artículo publicado</h1>
-            <p>El artículo se ha publicado exitosamente.</p>
-            <p><a href="https://jaimediaz.dev/blog/{slug}/">Ver artículo</a></p>
-        </body>
-        </html>
-    """.format(slug=slug))
-
-
-def notify_admin_new_blog(user, title, slug):
-    """Email al admin con enlace de aprobación de 1 clic."""
-    signer = TimestampSigner()
-    token = signer.sign(slug)
-    
-    subject = f"📝 Nuevo artículo pendiente: {title}"
-    message = f"""
-    Usuario: {user.get_full_name()} ({user.email})
-    Título: {title}
-    
-    ✅ APROBAR CON 1 CLIC:
-    https://jaimediaz.dev/blog/api/approve/{token}/
-    
-    ✏️ EDITAR ANTES DE APROBAR:
-    https://jaimediaz.dev/blog/editor/{slug}/
-    
-    El enlace de aprobación expira en 7 días.
-    """
-    send_mail(subject, message, 'noreply@jaimediaz.dev', ['jaimeivan0017@gmail.com'])
-```
-
-### 7. Preview en Tiempo Real
-
-```javascript
-const previewElement = document.getElementById('preview');
-easyMDE.codemirror.on('change', function() {
-    const html = marked.parse(easyMDE.value());
-    const sanitized = DOMPurify.sanitize(html);
-    previewElement.innerHTML = sanitized;
-});
-```
-
-### 8. Frontmatter Automático
+El editor pre-rellena y/o calcula:
 
 ```yaml
 ---
-title: "Título del artículo"
-description: ""
-date: 2026-04-30
-draft: true
-image: ""
-author: "Nombre del usuario"
-author_email: "email@usuario.com"
-author_provider: "google"
-category: ""
-tags: []
-meta_title: ""
-meta_description: ""
+title: "..."                    # INPUT usuario
+description: "..."              # INPUT usuario
+date: 2026-06-03                # AUTO (hoy)
+draft: false                    # AUTO (true si no-admin)
+author: "Jaime Díaz"            # AUTO (request.user)
+author_email: "..."             # AUTO (request.user.email)
+author_provider: "google"       # AUTO (OAuth)
+category: "Tecnología"          # INPUT usuario
+tags: ["..."]                   # INPUT usuario (chips)
+image: "primera-img.png"        # AUTO (primera imagen subida)
+tiempo_lectura: 5               # MIXTO (auto + manual)
+meta_title: "..."               # INPUT usuario (sugerir = title)
+meta_description: "..."         # INPUT usuario
+keywords: "..."                 # INPUT usuario
+palabra_clave_principal: "..."  # INPUT usuario
 ---
 ```
 
-### 9. Seguridad
+### 🕐 Tiempo de lectura (cálculo mixto)
 
-- Solo usuarios autenticados (OAuth) pueden acceder al editor
-- hCaptcha en formulario de publicación (anti-spam)
-- Rate Limit: 1 artículo cada 24h por usuario no-admin
-- Validar tipos de archivo en upload (png, jpg, gif, webp, svg, mp4)
-- Límite de tamaño: 10MB por imagen, 50MB por vídeo
-- Sanitizar nombres de archivo
-- DOMPurify sanitiza el preview HTML
-- Backup automático antes de editar blogs existentes
-- Limpieza automática de archivos temporales > 24h
+**Fórmula JavaScript (estándar 200 ppm):**
+```javascript
+function calculateReadingTime(content) {
+    const cleanText = content
+        .replace(/```[\s\S]*?```/g, '')         // bloques de código
+        .replace(/`[^`]+`/g, '')                // código inline
+        .replace(/!\[[^\]]*\]\([^)]+\)/g, '')   // imágenes
+        .replace(/\[[^\]]*\]\([^)]+\)/g, m => m.split(']')[0].slice(1)) // links (mantiene texto)
+        .replace(/[#*_~>`-]/g, '')              // símbolos markdown
+        .replace(/:::.*?:::/gs, '');            // bloques especiales
+    
+    const words = cleanText.trim().split(/\s+/).filter(w => w).length;
+    return { words, minutes: Math.max(1, Math.round(words / 200)) };
+}
+```
+
+**Comportamiento UX:**
+- Mientras el usuario escribe → se calcula y muestra: `"245 palabras → sugerido: 1 min"`
+- Si el usuario NO edita el campo → se auto-rellena con el valor sugerido
+- Si el usuario edita el campo manualmente → se respeta su valor (no se sobreescribe)
+- Botón "Aplicar sugerencia" → vuelve al cálculo automático
+- Mínimo: 1 minuto
+
+**HTML del campo:**
+```html
+<div class="reading-time-field">
+    <label>Tiempo de lectura</label>
+    <input type="number" id="tiempo_lectura" min="1" value="1">
+    <small>
+        <span id="word-count">0 palabras</span>
+        → sugerido: <strong><span id="suggested-time">1 min</span></strong>
+        <button type="button" id="apply-suggestion">Aplicar</button>
+    </small>
+</div>
+```
+
+**JS de control:**
+```javascript
+let userOverride = false;
+
+easyMDE.codemirror.on('change', () => {
+    const content = easyMDE.value();
+    const { words, minutes } = calculateReadingTime(content);
+    document.getElementById('word-count').textContent = `${words} palabras`;
+    document.getElementById('suggested-time').textContent = `${minutes} min`;
+    if (!userOverride) {
+        document.getElementById('tiempo_lectura').value = minutes;
+    }
+});
+
+document.getElementById('tiempo_lectura').addEventListener('input', () => {
+    userOverride = true;
+});
+
+document.getElementById('apply-suggestion').addEventListener('click', () => {
+    userOverride = false;
+    const { minutes } = calculateReadingTime(easyMDE.value());
+    document.getElementById('tiempo_lectura').value = minutes;
+});
+```
 
 ---
 
-## 🛡️ Protecciones Anti-Problemas (Para que no haya líos)
+## 🚀 3 Fases
 
-### 1. Moderación por Roles
+### Fase 1: Backend (~20 min)
+**Archivos:** `views.py`, `services.py`, `urls.py`
 
+`services.py:save_blog_to_source(data, user)`:
+```python
+def save_blog_to_source(data, user):
+    # 1. Extraer datos
+    title = data['title'].strip()
+    description = data.get('description', '').strip()
+    content_md = data.get('content_md', '')
+    category = data.get('category', '').strip()
+    tags = data.get('tags', [])
+    tiempo_lectura = int(data.get('tiempo_lectura', 1))
+    meta_title = data.get('meta_title') or title
+    meta_description = data.get('meta_description') or description
+    keywords = data.get('keywords', '')
+    palabra_clave_principal = data.get('palabra_clave_principal', '')
+    files = data.get('files', [])  # [{'filename': 'img.png', 'type': 'image'}] o ya subidos
+    is_admin = user.is_superuser
+    
+    # 2. Generar slug único
+    from django.utils.text import slugify
+    base_slug = slugify(title)
+    slug = base_slug
+    counter = 1
+    source_dir = Path(settings.BASE_DIR) / "blogs_source"
+    while any(source_dir.glob(f"*_{slug}")):
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    
+    # 3. Crear carpeta
+    from datetime import datetime
+    folder_name = f"{datetime.now().strftime('%Y-%m-%d')}_{slug}"
+    target_dir = source_dir / folder_name
+    target_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 4. Mover archivos de /media/blog_editor_temp/<user_id>/ a target_dir
+    temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(user.id)
+    image_filename = ""
+    for f in files:
+        src = temp_dir / f['filename']
+        if src.exists():
+            shutil.move(str(src), str(target_dir / f['filename']))
+            if f.get('type') == 'image' and not image_filename:
+                image_filename = f['filename']
+    
+    # 5. Auto-rellenar autor
+    from allauth.socialaccount.models import SocialAccount
+    try:
+        provider = user.socialaccount_set.first().provider
+    except:
+        provider = "local"
+    
+    # 6. Generar frontmatter
+    author_name = user.get_full_name() or user.username
+    frontmatter = f"""---
+title: "{title}"
+description: "{description}"
+date: {datetime.now().strftime('%Y-%m-%d')}
+draft: {'false' if is_admin else 'true'}
+image: "{image_filename}"
+author: "{author_name}"
+author_email: "{user.email}"
+author_provider: "{provider}"
+category: "{category}"
+tags: {json.dumps(tags, ensure_ascii=False)}
+meta_title: "{meta_title}"
+meta_description: "{meta_description}"
+keywords: "{keywords}"
+tiempo_lectura: {tiempo_lectura}
+palabra_clave_principal: "{palabra_clave_principal}"
+---
+
+# {title}
+
+"""
+    
+    # 7. Guardar blog.md
+    (target_dir / "blog.md").write_text(frontmatter + content_md, encoding='utf-8')
+    
+    # 8. Ejecutar import_blogs
+    from django.core.management import call_command
+    call_command('import_blogs')
+    
+    return {'slug': slug, 'folder': folder_name, 'published': is_admin}
 ```
-¿Quién publica?          ¿Qué pasa?
-─────────────────────────────────────────────────
-TÚ (admin/superuser)     → ¡Publicación inmediata! ✅
-                           import_blogs se ejecuta al instante
 
-Otro usuario            → Borrador (draft: true) ⏳
-                           Te llega email de notificación
-                           Tú apruebas desde el admin de Django
-                           Luego ejecutas import_blogs manualmente
+`views.py`:
+```python
+@login_required
+@require_POST
+def save_blog_api(request):
+    if request.content_type == 'application/json':
+        data = json.loads(request.body)
+    else:
+        data = request.POST.dict()
+    result = save_blog_to_source(data, request.user)
+    return JsonResponse({'status': 'ok', **result})
+
+@login_required
+@require_POST
+def upload_file_api(request):
+    """Sube un archivo a /media/blog_editor_temp/<user_id>/"""
+    file = request.FILES.get('file')
+    if not file:
+        return JsonResponse({'error': 'No file'}, status=400)
+    
+    # Validar extensión
+    valid_ext = ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg',
+                 '.mp4', '.webm', '.mov', '.avi')
+    if not file.name.lower().endswith(valid_ext):
+        return JsonResponse({'error': 'Extensión no permitida'}, status=400)
+    
+    # Validar tamaño
+    max_size = 100 * 1024 * 1024  # 100MB
+    if file.size > max_size:
+        return JsonResponse({'error': 'Archivo muy grande'}, status=400)
+    
+    # Guardar
+    temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(request.user.id)
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    filepath = temp_dir / file.name
+    with open(filepath, 'wb+') as dest:
+        for chunk in file.chunks():
+            dest.write(chunk)
+    
+    ftype = 'video' if file.name.lower().endswith(('.mp4', '.webm', '.mov', '.avi')) else 'image'
+    return JsonResponse({
+        'filename': file.name,
+        'url': f'./{file.name}',
+        'type': ftype
+    })
 ```
 
-### 2. Anti-Spam en 3 Capas
-
-- **Capa 1 - hCaptcha:** Verificación en el formulario de publicación
-- **Capa 2 - Rate Limit:** Máximo 1 artículo cada 24h por usuario no-admin
-- **Capa 3 - Filtro:** DOMPurify elimina HTML malicioso + lista negra de URLs
-
-### 3. Autoría Obligatoria
-
-Cada artículo guarda `author_email` y `author_provider` en el frontmatter para saber siempre quién escribió qué.
-
-### 4. Modal de Confirmación
-
-```
-┌─────────────────────────────────────────┐
-│  ¿Publicar artículo?                    │
-│                                         │
-│  Título: "Cómo integrar Zoho con..."   │
-│  Esto hará visible el artículo en el   │
-│  blog para todos los visitantes.       │
-│                                         │
-│  [Cancelar]  [Sí, publicar]            │
-└─────────────────────────────────────────┘
-```
-
-### 5. Checkbox de Términos
-
-```
-☐ Acepto que el contenido es original y no infringe derechos de autor
+`urls.py`:
+```python
+path('api/save-blog/', views.save_blog_api, name='api_save_blog'),
+path('api/upload-file/', views.upload_file_api, name='api_upload_file'),
 ```
 
 ---
 
-## 📋 Plan de Implementación
+### Fase 2: Frontend - Editor + FilePond (~20 min)
+**Archivos:** `blog_editor.html`, `blog_editor.js`, `blog_editor.css`
 
-### Fase 1: Backend - API de Guardado con Moderación (20 min)
+`blog_editor.html` (estructura):
+```html
+{% extends "base.html" %}
+{% load static %}
 
-**Archivos a crear/modificar:**
-- `backend/blog/views.py` → `blog_editor_view`, `save_blog_draft_api`
-- `backend/blog/urls.py` → `/editor/`, `/api/save-draft/`
-- `backend/blog/services.py` → `save_blog_to_source()`, `generate_unique_slug()`, `backup_blog()`
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+{% endblock %}
 
-**Pasos:**
-1. Crear vista protegida (requiere login) para el editor
-2. Crear endpoint POST para guardar el blog
-3. Implementar lógica de creación de carpeta + blog.md con slug único
-4. Implementar moderación por roles (admin publica, no-admin crea draft)
-5. Implementar backup automático antes de editar
+{% block content %}
+<div class="blog-editor">
+    <!-- Sidebar: Frontmatter -->
+    <aside class="editor-sidebar">
+        <h3>📝 Cabecera del artículo</h3>
+        <form id="frontmatter-form">
+            <label>Título *</label>
+            <input type="text" id="title" required maxlength="60">
+            
+            <label>Descripción *</label>
+            <textarea id="description" required maxlength="155" rows="2"></textarea>
+            
+            <label>Categoría *</label>
+            <select id="category" required>
+                {% for cat in categories %}
+                <option value="{{ cat.name }}">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <label>Tags (máx 5)</label>
+            <div id="tags-container">
+                <input type="text" id="tag-input" placeholder="Escribe y presiona Enter">
+            </div>
+            
+            <label>Meta título (SEO)</label>
+            <input type="text" id="meta_title" maxlength="55">
+            
+            <label>Meta descripción (SEO)</label>
+            <textarea id="meta_description" maxlength="155" rows="2"></textarea>
+            
+            <label>Palabra clave principal</label>
+            <input type="text" id="palabra_clave_principal">
+            
+            <label>Keywords (separadas por coma)</label>
+            <input type="text" id="keywords">
+            
+            <!-- Tiempo de lectura mixto -->
+            <label>Tiempo de lectura (minutos)</label>
+            <input type="number" id="tiempo_lectura" min="1" value="1">
+            <small>
+                <span id="word-count">0 palabras</span>
+                → sugerido: <strong><span id="suggested-time">1 min</span></strong>
+                <button type="button" id="apply-suggestion">Aplicar</button>
+            </small>
+            
+            <!-- Info automática (solo lectura) -->
+            <fieldset disabled>
+                <label>Autor (automático)</label>
+                <input type="text" value="{{ user.get_full_name|default:user.username }}">
+                <label>Email (automático)</label>
+                <input type="email" value="{{ user.email }}">
+                <label>Fecha (automática)</label>
+                <input type="text" value="{% now 'Y-m-d' %}">
+            </fieldset>
+        </form>
+    </aside>
+    
+    <!-- Centro: Editor -->
+    <main class="editor-main">
+        <h2>✍️ Editor Markdown</h2>
+        <textarea id="editor"></textarea>
+        <small>💡 Tip: Pega imágenes/videos con Ctrl+V o arrástralos aquí</small>
+        
+        <!-- FilePond (oculto, se activa al paste/drop) -->
+        <input type="file" id="filepond" multiple>
+        
+        <!-- Botón publicar -->
+        <div class="editor-actions">
+            <button type="button" id="btn-save" class="btn-primary">
+                {% if user.is_superuser %}🟢 Guardar y Publicar{% else %}🟡 Guardar Borrador{% endif %}
+            </button>
+        </div>
+        
+        <!-- Mensaje de estado -->
+        <div id="status-message"></div>
+    </main>
+</div>
+{% endblock %}
 
-### Fase 2: Backend - API de Upload + Limpieza (20 min)
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+<script src="{% static 'blog/js/blog_editor.js' %}"></script>
+{% endblock %}
+```
 
-**Archivos a crear/modificar:**
-- `backend/blog/views.py` → `upload_blog_image_api`
-- `backend/blog/urls.py` → `/api/upload-image/`
-- `backend/blog/management/commands/cleanup_blog_uploads.py` → Nuevo comando
+`blog_editor.js` (lógica principal):
+```javascript
+// 1. Inicializar EasyMDE
+const easyMDE = new EasyMDE({
+    element: document.getElementById('editor'),
+    spellChecker: false,
+    autoDownloadFontAwesome: false,
+    toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 
+              'ordered-list', '|', 'link', 'image', 'table', '|', 
+              'preview', 'side-by-side', 'fullscreen', '|', 'guide'],
+    previewRender: (plainText) => {
+        const html = marked.parse(plainText);
+        return DOMPurify.sanitize(html);
+    }
+});
 
-**Pasos:**
-1. Crear endpoint POST para recibir imágenes (guarda en carpeta temporal)
-2. Validar tipo de archivo (png, jpg, gif, webp, svg)
-3. Retornar ruta relativa para insertar en markdown
-4. Crear comando `python manage.py cleanup_blog_uploads`
+// 2. Calcular tiempo de lectura
+function calculateReadingTime(content) {
+    const cleanText = content
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/`[^`]+`/g, '')
+        .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+        .replace(/[#*_~>`-]/g, '')
+        .replace(/:::.*?:::/gs, '');
+    const words = cleanText.trim().split(/\s+/).filter(w => w).length;
+    return { words, minutes: Math.max(1, Math.round(words / 200)) };
+}
 
-### Fase 3: Frontend - Página del Editor con EasyMDE (20 min)
-
-**Archivos a crear:**
-- `backend/blog/templates/blog/blog_editor.html` → Template del editor
-- `backend/blog/static/blog/css/blog_editor.css` → Estilos del editor
-- `backend/blog/static/blog/js/blog_editor.js` → Lógica del editor
-
-**Pasos:**
-1. Crear template con layout del editor (sidebar frontmatter + editor + preview)
-2. Integrar EasyMDE vía CDN (editor markdown con toolbar)
-3. Integrar Marked.js + DOMPurify para preview en tiempo real
-4. Agregar formulario de frontmatter (título, descripción, categoría, tags, SEO)
-
-### Fase 4: Frontend - Upload de Imágenes con FilePond (20 min)
-
-**Archivos a modificar:**
-- `backend/blog/static/blog/js/blog_editor.js`
-
-**Pasos:**
-1. Integrar FilePond vía CDN para drag & drop
-2. Conectar FilePond con la API de upload
-3. EasyMDE maneja Ctrl+V de imágenes automáticamente
-4. Mostrar progreso de upload con FilePond
-
-### Fase 5: Frontend - Botón de Acceso + Anti-Spam (20 min)
-
-**Archivos a modificar:**
-- `backend/blog/templates/blog/blog_list.html` → Agregar botón "Quiero escribir"
-- `backend/blog/templates/blog/blog_editor.html` → Agregar hCaptcha + términos
-- `backend/blog/static/blog/js/blog_editor.js` → Lógica del botón
-
-**Pasos:**
-1. Agregar botón visible solo para usuarios autenticados
-2. Implementar botón de "Guardar como borrador" y "Publicar"
-3. Integrar hCaptcha en el formulario
-4. Agregar modal de confirmación antes de publicar
-5. Agregar checkbox de términos y condiciones
-
-### Fase 6: Edición de Blogs Existentes (20 min)
-
-**Archivos a modificar:**
-- `backend/blog/views.py` → `edit_blog_view`, `update_blog_draft_api`
-- `backend/blog/urls.py` → `/editor/<slug:slug>/`
-- `backend/blog/static/blog/js/blog_editor.js` → Modo edición vs creación
-
-**Pasos:**
-1. Crear endpoint para cargar blog existente en el editor
-2. Crear endpoint para actualizar blog existente (con backup automático)
-3. Agregar botón "Editar" en blog_detail (solo para autor)
-
-### Fase 7: Auto-save + Notificaciones (20 min)
-
-**Archivos a modificar:**
-- `backend/blog/static/blog/js/blog_editor.js`
-- `backend/blog/services.py` → `notify_admin_new_blog()`
-
-**Pasos:**
-1. Implementar auto-save en localStorage cada 30s
-2. Detectar contenido no guardado al cerrar (beforeunload)
-3. Mostrar opción de "Recuperar borrador" al abrir el editor
-4. Implementar notificación por email al admin
-
-### Fase 8: Testing y Pulido (20 min)
-
-**Pasos:**
-1. Probar flujo admin: crear blog → pegar imagen → publicar inmediato
-2. Probar flujo usuario no-admin: crear → guarda draft → email notificación
-3. Probar hCaptcha + Rate Limit
-4. Probar backup y restauración
-5. Probar edición de blogs existentes
-6. Probar en mobile
-7. Verificar límites de tamaño de archivos
+let userOverride = false;
+easyMDE.codemirror.on('change', () => {
+    const content = easyMDE.value();
+    const { words, minutes } = calculateReadingTime(content);
+    document.getElementById('word-count').textContent = `${words} palabras`;
+    document.getElementById('suggested-time').textContent = `${minutes} min`;
+    if (!userOverride) {
+        document.getElementById('tiempo_lectura').value = minutes;
+    }
+});
+document.getElementById('tiempo_lectura').addEventListener('input', () => { userOverride = true; });
+document.getElementById('apply-suggestion').addEventListener('click', () => {
+    userOverride = false;
+    const { minutes } = calculateReadingTime(easyMDE.value());
+    document.getElementById('tiempo_lectura').value = minutes;
+});
+```
 
 ---
 
-## ⚠️ Riesgos y Mitigaciones
+## 🧪 PRUEBA DE ESCRITORIO (simulación paso a paso)
 
-| Riesgo                                           | Probabilidad | Impacto | Mitigación                                        |
-| ------------------------------------------------ | ------------ | ------- | ------------------------------------------------- |
-| `call_command('import_blogs')` es lento (2+ seg) | Media        | Medio   | Ejecutar en segundo plano con threading           |
-| Imágenes no se guardan correctamente             | Media        | Alto    | FilePond + validación backend de tipos/tamaños    |
-| Frontmatter incompatible con importador          | Baja         | Crítico | Usar exactamente el formato de PROC_001           |
-| Pérdida de contenido por cierre accidental       | Alta         | Alto    | Auto-save en localStorage cada 30s + beforeunload |
-| Editor lento en mobile                           | Media        | Medio   | EasyMDE es ligero (~50KB), lazy loading           |
-| Conflictos de nombres de archivo                 | Baja         | Medio   | `generate_unique_slug()` con sufijo numérico      |
-| Usuario publica spam                             | Media        | Alto    | hCaptcha + Rate Limit + Moderación por roles      |
-| Edición accidental borra contenido               | Baja         | Alto    | Backup automático antes de editar                 |
-| Imágenes temporales sin limpiar                  | Alta         | Bajo    | Cron diario `cleanup_blog_uploads`                |
-| Responsabilidad legal por contenido de terceros  | Baja         | Alto    | Checkbox de términos + Moderación por roles       |
+### 📍 ACTO 1: El usuario interactúa con el editor
+
+1. **El usuario abre el navegador** y va a `https://jaimediaz.dev/blog/`
+2. **Hace clic en el botón "✍️ Escribir artículo"** (visible porque está autenticado)
+3. **Se abre `/blog/editor/`** con EasyMDE cargado y el sidebar de frontmatter pre-rellenado:
+   - Autor: "Jaime Díaz" (automático)
+   - Email: "jaimeivan0017@gmail.com" (automático)
+   - Fecha: 2026-06-03 (automático)
+4. **El usuario escribe el título**: "Cómo configurar Django en producción"
+5. **El usuario escribe la descripción**: "Aprende a desplegar Django paso a paso"
+6. **Selecciona categoría** del dropdown: "Django"
+7. **Agrega 3 tags** escribiéndolos y presionando Enter: "django", "deploy", "python"
+8. **Pega (Ctrl+V) una imagen PNG** desde su portapapeles
+   - FilePond la sube automáticamente a `/blog/api/upload-file/`
+   - Al terminar, se inserta `![portada.png](./portada.png)` en el editor
+9. **Arrastra (drag & drop) un video MP4** al editor
+   - FilePond lo sube automáticamente
+   - Se inserta `![demo.mp4](./demo.mp4)` en el editor
+10. **Pega otra imagen** (captura.png) que se inserta en otra parte del artículo
+11. **Escribe contenido markdown** alrededor de las imágenes
+12. **Mira el campo "Tiempo de lectura"** que muestra: `"245 palabras → sugerido: 1 min"`
+13. **Ajusta manualmente el tiempo** a 8 minutos (porque tiene un video largo)
+14. **Hace clic en el botón "🟢 Guardar y Publicar"**
 
 ---
 
-## 📚 Referencias
+### 📍 ACTO 2: El sistema hace su trabajo (instantáneo, ~2-3 segundos)
 
-- **PROC_001:** Procedimiento para escribir blogs
-- **PLANTILLA_ESTANDAR_BLOG_SEO:** Estructura SEO obligatoria
-- **blog_processor.py:** Importador que debe ser compatible
-- **HU-001:** Sistema de blogs markdown base
-- **HU-001.1:** Frontmatter completo + imagen portada
-- **HU-008:** Sistema de usuarios OAuth (requerido)
+15. **El JavaScript** (`blog_editor.js`) recoge todos los datos del formulario
+16. **Hace un POST** a `/blog/api/save-blog/` con todos los datos + CSRF token
+17. **Django** recibe la petición, valida CSRF y autenticación ✅
+18. **Se ejecuta `save_blog_to_source(data, user)`** en `services.py`:
+    - Genera el slug: `como-configurar-django-en-produccion`
+    - Crea la carpeta: `backend/blogs_source/2026-06-03_como-configurar-django-en-produccion/`
+    - Mueve los 3 archivos desde `/media/blog_editor_temp/1/` a esa carpeta
+    - Genera el `blog.md` con frontmatter completo (15 campos)
+    - **Llama a `call_command('import_blogs')`**
+19. **`import_blogs`** se ejecuta y:
+    - Detecta la nueva carpeta
+    - Copia `portada.png` a `static/blogs/como-configurar-django-en-produccion/portada.png`
+    - Copia `captura.png` a `static/blogs/.../captura.png`
+    - Copia `demo.mp4` a `static/blogs/.../demo.mp4`
+    - Extrae la primera imagen como portada: `cover_image = "/static/blogs/.../portada.png"`
+    - Convierte el markdown a HTML
+    - **Convierte `![demo.mp4]` a `<video controls>`** (player estilizado)
+    - Crea/encuentra la categoría "Django"
+    - Crea/encuentra los tags ["django", "deploy", "python"]
+    - **Guarda el BlogPost en la BD** con `is_published=True` (porque admin)
+    - Limpia blogs huérfanos (sincronía)
+20. **El backend responde** con JSON: `{"status": "ok", "slug": "como-configurar-django-en-produccion", "published": true}`
+21. **El JavaScript** muestra el mensaje: `"✅ Artículo publicado. Ver artículo"`
+22. **Limpia el localStorage** (ya no hay borrador pendiente)
 
 ---
 
-> 📌 Última actualización: 30/04/2026  
-> 📌 Dependencia: HU-008 (usuarios) debe estar completada  
-> 📌 Librerías: EasyMDE + Marked.js + DOMPurify + FilePond (todas CDN, 0 pip install)  
-> 📌 Protecciones: hCaptcha + Rate Limit + Moderación por roles + Backup automático
+### 📍 ACTO 3: El usuario verifica el resultado
+
+23. **El usuario hace clic en "Ver artículo"** → va a `/blog/como-configurar-django-en-produccion/`
+24. **Ve su artículo publicado** con:
+    - Título: "Cómo configurar Django en producción"
+    - Portada: la imagen `portada.png` que subió
+    - Contenido renderizado en HTML
+    - El video con un player funcional (no como imagen rota)
+    - Tags visibles al final
+    - Tiempo de lectura: 8 min (lo que él ajustó)
+    - Autor: "Jaime Díaz"
+25. **También ve el artículo en el listado** `/blog/` junto a los demás
+
+---
+
+### 📍 SI FUERA UN USUARIO NO-ADMIN (escenario alternativo)
+
+- El mismo flujo, PERO en el paso 18, el `draft` se genera como `true`
+- En el paso 19, el BlogPost se guarda con `is_published=False`
+- En el paso 21, el mensaje es: `"✅ Borrador guardado"`
+- En el paso 23, el usuario NO puede ver su artículo en `/blog/`
+- El admin (tú) ve el archivo en `blogs_source/YYYY-MM-DD_slug/blog.md` con `draft: true`
+- Para aprobarlo, cambias `draft: true` a `draft: false` y ejecutas `python manage.py import_blogs`
+
+---
+
+### ⏱️ TIEMPO TOTAL: ~2-3 segundos desde el clic hasta ver el artículo publicado.

@@ -128,6 +128,10 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
+# --- MEDIA (para upload temporal del editor de blogs) ---
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 # --- EMAIL y SITE_URL ---
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"

@@ -14,7 +14,13 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from blog.models import BlogComment, BlogPost, Category
 from blog.forms import CommentForm, QuickSignupForm
-from blog.services import create_comment, get_approved_comments, get_comment_count
+from blog.services import (
+    create_comment,
+    get_approved_comments,
+    get_comment_count,
+    save_blog_to_source,
+    save_uploaded_file,
+)
 
 
 def get_client_ip(request):
@@ -342,6 +348,64 @@ def check_comment_status(request, slug, comment_id):
         )
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+# ======================================================
+# HU-011: Editor Online - Vistas
+# ======================================================
+
+
+@login_required
+def blog_editor_view(request):
+    """Vista del editor de blogs (GET)."""
+    from blog.models import Category
+
+    return render(
+        request,
+        "blog/blog_editor.html",
+        {
+            "categories": Category.objects.filter(is_active=True),
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def save_blog_api(request):
+    """Endpoint para guardar un artículo (POST).
+    Recibe JSON con title, content_md, etc.
+    """
+    try:
+        if request.content_type == "application/json":
+            data = json.loads(request.body)
+        else:
+            data = request.POST.dict()
+        result = save_blog_to_source(data, request.user)
+        return JsonResponse({"status": "ok", **result})
+    except Exception as e:
+        return JsonResponse({"status": "error", "error": str(e)}, status=400)
+
+
+@csrf_exempt  # Allow FilePond uploads without CSRF token issues
+@login_required
+@require_http_methods(["POST"])
+def upload_file_api(request):
+    """Endpoint para subir un archivo (imagen/video) temporalmente (POST)."""
+    # Intentar obtener el archivo con el nombre esperado 'file'
+    uploaded_file = request.FILES.get("file")
+    # Si no está bajo ese nombre, tomar el primer archivo recibido
+    if not uploaded_file:
+        uploaded_file = next(iter(request.FILES.values()), None)
+    if not uploaded_file:
+        return JsonResponse({"error": "No se envió ningún archivo"}, status=400)
+
+    result = save_uploaded_file(uploaded_file, request.user)
+    if result is None:
+        return JsonResponse(
+            {"error": "Tipo de archivo no permitido o demasiado grande"},
+            status=400,
+        )
+    return JsonResponse(result)
 
 
 @csrf_protect

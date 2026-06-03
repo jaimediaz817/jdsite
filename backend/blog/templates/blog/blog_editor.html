@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es" class="html-jd">
+<head>
+    <title>✍️ Editor de Artículo | Jaime Díaz</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
+    
+    <!-- EasyMDE CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <!-- FilePond CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/filepond/dist/filepond.min.css">
+    
+    <link rel="stylesheet" href="{% static 'blog/css/blog_editor.css' %}">
+    
+    <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="home-p" data-user-id="{{ user.id }}">
+    {% include "partials/_navigation_menu.html" %}
+
+    <div class="editor-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- SIDEBAR: Frontmatter -->
+                <aside class="col-md-3 editor-sidebar">
+                    <h4 class="sidebar-title">📝 Cabecera del artículo</h4>
+                    <form id="frontmatter-form">
+                        <div class="mb-3">
+                            <label class="form-label">Título *</label>
+                            <input type="text" id="title" class="form-control" required maxlength="60" placeholder="Título del artículo">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descripción *</label>
+                            <textarea id="description" class="form-control" required maxlength="155" rows="2" placeholder="Breve descripción (SEO)"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="category">Categoría *</label>
+                        <select id="category" class="form-select modern-select" required aria-describedby="categoryHelp">
+                                <option value="">Seleccionar categoría</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="categoryHelp" class="form-text">Elige la categoría que mejor describa el tema del artículo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tags (máx 5 - Enter para agregar)</label>
+                            <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
+                            <div id="tags-list" class="tags-list mt-2"></div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="meta_title">Meta título (SEO)</label>
+                            <input type="text" id="meta_title" class="form-control" maxlength="55" placeholder="Ej: Guía rápida de integración Zoho" aria-describedby="metaTitleHelp">
+                            <div id="metaTitleHelp" class="form-text">Título que aparecerá en los resultados de búsqueda. Máx 55 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="meta_description">Meta descripción (SEO)</label>
+                            <textarea id="meta_description" class="form-control" maxlength="155" rows="2" placeholder="Ej: Aprende a integrar Zoho paso a paso y evita errores comunes." aria-describedby="metaDescHelp"></textarea>
+                            <div id="metaDescHelp" class="form-text">Descripción breve que se muestra bajo el título en los buscadores. Máx 155 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="palabra_clave_principal">Palabra clave principal</label>
+                            <input type="text" id="palabra_clave_principal" class="form-control" placeholder="Ej: integraciones zoho" aria-describedby="keywordMainHelp">
+                            <div id="keywordMainHelp" class="form-text">Una palabra o frase que resume el tema central del artículo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="keywords">Keywords (separadas por coma)</label>
+                            <input type="text" id="keywords" class="form-control" placeholder="Ej: zoho, integración, API" aria-describedby="keywordsHelp">
+                            <div id="keywordsHelp" class="form-text">Lista de palabras clave relacionadas, separadas por comas. Ejemplo: "zoho, integración, API".</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Tiempo de lectura mixto -->
+                        <div class="mb-3 reading-time-field">
+                            <label class="form-label">Tiempo de lectura (minutos)</label>
+                            <input type="number" id="tiempo_lectura" class="form-control" min="1" value="1">
+                            <small class="form-text text-muted">
+                                <span id="word-count">0 palabras</span>
+                                → sugerido: <strong><span id="suggested-time">1 min</span></strong>
+                                <button type="button" id="apply-suggestion" class="btn btn-sm btn-link p-0">Aplicar</button>
+                            </small>
+                        </div>
+                        
+                        <!-- Info automática (solo lectura) -->
+                        <fieldset disabled class="mb-3">
+                            <legend class="h6">📌 Información automática</legend>
+                            <div class="mb-2">
+                                <label class="form-label small">Autor</label>
+                                <input type="text" class="form-control form-control-sm" value="{{ user.get_full_name|default:user.username }}">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Email</label>
+                                <input type="email" class="form-control form-control-sm" value="{{ user.email }}">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Fecha</label>
+                                <input type="text" class="form-control form-control-sm" value="{% now 'Y-m-d' %}">
+                            </div>
+                        </fieldset>
+                    </form>
+                </aside>
+                
+                <!-- CENTRO: Editor -->
+                <main class="col-md-9 editor-main">
+                    <h2>✍️ Editor Markdown</h2>
+                    <p class="text-muted small">Escribe en markdown o HTML directo. Pega imágenes/videos con <kbd>Ctrl+V</kbd> o arrástralos aquí.</p>
+                    
+                    <div class="editor-container mb-3">
+                        <textarea id="editor"></textarea>
+                    </div>
+                    
+                    <!-- FilePond -->
+                    <div class="filepond-container mb-3">
+                        <input type="file" id="filepond" multiple accept="image/*,video/mp4,video/webm,video/quicktime">
+                    </div>
+                    <!-- Área para previsualizar archivos subidos -->
+                    <div id="uploaded-files" class="uploaded-files mb-3 d-flex flex-wrap gap-2"></div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="editor-actions">
+                        <div class="d-flex align-items-center gap-3">
+                            <button type="button" id="btn-save" class="btn btn-lg btn-primary">
+                                {% if user.is_superuser %}🟢 Guardar y Publicar{% else %}🟡 Guardar Borrador{% endif %}
+                            </button>
+                            <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                        <div id="status-message" class="mt-3"></div>
+                    </div>
+                    
+                    <!-- Indicador de auto-save -->
+                    <div id="autosave-indicator" class="autosave-indicator">💾 Auto-guardado</div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje flotante de auto-save -->
+    <div id="autosave-toast" class="toast" style="position:fixed;bottom:20px;right:20px;z-index:9999">
+        <div class="toast-body bg-success text-white rounded">💾 Borrador guardado localmente</div>
+    </div>
+
+    {% include "partials/_footer.html" %}
+
+    <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="{% static 'blog/js/blog_editor.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+/* ======================================================
+   HU-011: Blog Editor Styles
+   EasyMDE + Sidebar + FilePond
+   ====================================================== */
+
+/* Layout principal */
+.editor-wrapper {
+    min-height: calc(100vh - 80px);
+    padding: 20px 0;
+}
+
+.editor-sidebar {
+    border-right: 1px solid #e0e0e0;
+    padding-right: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+}
+
+.editor-sidebar .sidebar-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color, #0d6efd);
+}
+
+.editor-main {
+    padding-left: 20px;
+}
+
+/* EasyMDE personalización */
+.editor-container .CodeMirror {
+    min-height: 400px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.editor-container .editor-toolbar {
+    border-radius: 4px 4px 0 0;
+}
+
+.editor-container .EasyMDEContainer .CodeMirror {
+    border-radius: 0 0 4px 4px;
+}
+
+/* Estilo del preview */
+.editor-preview {
+    padding: 15px;
+}
+
+.editor-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+/* Tags (chips) */
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tags-list .badge {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem;
+}
+
+/* FilePond */
+.filepond-container {
+    margin: 15px 0;
+}
+
+.filepond--root {
+    font-family: inherit;
+}
+
+/* Botones de acción */
+.editor-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.editor-actions .btn-lg {
+    padding: 12px 30px;
+    font-weight: 600;
+}
+
+/* Indicador de auto-save */
+.autosave-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.autosave-indicator.show {
+    opacity: 1;
+}
+
+/* Toast de auto-save */
+#autosave-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: none;
+}
+
+#autosave-toast.show {
+    display: block;
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive: en mobile el sidebar va arriba */
+@media (max-width: 768px) {
+    .editor-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding-right: 0;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .editor-main {
+        padding-left: 0;
+    }
+
+    .editor-container .CodeMirror {
+        min-height: 300px;
+    }
+
+    .editor-actions .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .editor-actions .btn-lg {
+        width: 100%;
+    }
+}
+
+/* Mensajes de estado */
+#status-message .alert {
+    margin-top: 15px;
+    padding: 15px 20px;
+}
+
+#status-message .alert a {
+    font-weight: 600;
+}
+
+/* Tiempo de lectura */
+.reading-time-field small {
+    display: block;
+    margin-top: 5px;
+}
+
+#apply-suggestion {
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+/* Info automática (fieldset disabled) */
+.auto-info .form-label,
+fieldset[disabled] .form-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+fieldset[disabled] input {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Scrollbar del sidebar */
+.editor-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.editor-sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.editor-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Separador entre campos */
+.editor-sidebar hr {
+    margin: 15px 0;
+    opacity: 0.4;
+}
+
+/* ---------------------------------------------------
+   Custom styling for form elements (UI/UX improvements)
+   --------------------------------------------------- */
+/* Primary color fallback defined in :root or via Bootstrap */
+.editor-sidebar .form-select {
+    border-color: var(--primary-color, #0d6efd);
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.editor-sidebar .form-select:focus {
+    border-color: var(--primary-color, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+    background-color: #fff;
+}
+
+.editor-sidebar .form-control:focus {
+    border-color: var(--primary-color, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+}
+
+.editor-sidebar .form-text {
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* Modern select styling (2026) */
+.modern-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M1 5l7 7 7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.modern-select:focus {
+    border-color: var(--primary-color, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+    outline: 0;
+}
+
+/* Ensure the select height matches other form controls */
+.modern-select {
+    height: calc(2.25rem + 2px);
+}

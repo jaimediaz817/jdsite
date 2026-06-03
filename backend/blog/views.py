@@ -1,5 +1,7 @@
 import json
+from pathlib import Path
 
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
@@ -390,10 +392,51 @@ def save_blog_api(request):
 @login_required
 @require_http_methods(["POST"])
 def upload_file_api(request):
-    """Endpoint para subir un archivo (imagen/video) temporalmente (POST)."""
-    # Intentar obtener el archivo con el nombre esperado 'file'
+    """Endpoint para subir o eliminar un archivo temporal del editor.
+
+    - POST con archivo: sube el archivo a ``media/blog_editor_temp/<user_id>/``.
+    - POST con campo ``action=delete`` y ``filename``: elimina el archivo físico
+      del directorio temporal del usuario.
+    """
+    # Detectar acción de borrado (usamos un campo del POST en lugar de un
+    # segundo endpoint para mantener compatibilidad con FilePond).
+    if request.POST.get("action") == "delete":
+        filename = request.POST.get("filename", "").strip()
+        if not filename:
+            return JsonResponse(
+                {"success": False, "error": "filename requerido"}, status=400
+            )
+        # Seguridad: evitar path traversal
+        safe_name = Path(filename).name
+        file_path = (
+            Path(settings.MEDIA_ROOT)
+            / "blog_editor_temp"
+            / str(request.user.id)
+            / safe_name
+        )
+        if file_path.exists() and file_path.is_file():
+            try:
+                file_path.unlink()
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "message": f"Archivo {safe_name} eliminado.",
+                    }
+                )
+            except OSError as exc:
+                return JsonResponse(
+                    {"success": False, "error": str(exc)}, status=500
+                )
+        # Si el archivo no existe, lo consideramos éxito idempotente.
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Archivo no encontrado, nada que eliminar.",
+            }
+        )
+
+    # Cargar el archivo desde la petición (FilePond)
     uploaded_file = request.FILES.get("file")
-    # Si no está bajo ese nombre, tomar el primer archivo recibido
     if not uploaded_file:
         uploaded_file = next(iter(request.FILES.values()), None)
     if not uploaded_file:

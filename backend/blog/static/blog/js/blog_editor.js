@@ -7,16 +7,135 @@ const uploadedFiles = [];
 const DRAFT_KEY = 'blog_editor_draft';
 let userOverride = false;
 
+// Iconos SVG inline (mejor calidad visual y accesibilidad)
+const ICON_EYE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3c-3.5 0-6.5 2.3-7.5 5.5C1.5 11.7 4.5 14 8 14s6.5-2.3 7.5-5.5C14.5 5.3 11.5 3 8 3zm0 9c-1.9 0-3.5-1.6-3.5-3.5S6.1 5 8 5s3.5 1.6 3.5 3.5S9.9 12 8 12zm0-5.5C7.2 6.5 6.5 7.2 6.5 8s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5z"/></svg>';
+const ICON_EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5c-1.4 0-2.7.3-3.8.8l1.6 1.6c.7-.2 1.4-.4 2.2-.4 3.5 0 6.5 2.3 7.5 5.5-.3.9-.8 1.7-1.4 2.5l-1.7-1.7zM2 2l1.4 1.4C1.9 4.5.5 6.5 0 8c0 0 1.5 2.7 4.2 4.2l-1.5 1.5 1.4 1.4 12-12L14 2 2 2zm6.4 6.4l1.2 1.2c0 .2-.1.3-.1.5 0 .8.7 1.5 1.5 1.5.2 0 .3 0 .5-.1l1.2 1.2c-.5.2-1.1.3-1.7.3-1.9 0-3.5-1.6-3.5-3.5 0-.6.1-1.2.3-1.7l-.4.6z"/></svg>';
+const ICON_TRASH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>';
+
 /**
- * Elimina la vista previa y la referencia del archivo subido.
+ * Renderiza una vista previa de un archivo subido (imagen o video).
+ * Esta función se utiliza tanto al subir archivos como al restaurar borradores.
+ * @param {{filename:string, type:string, hidden?:boolean}} file - Información del archivo.
+ */
+function renderUploadedFile(file) {
+    if (!file || !file.filename) return;
+    const userId = document.body.dataset.userId;
+    const container = document.getElementById('uploaded-files');
+    if (!container) return;
+    const fileUrl = `/media/blog_editor_temp/${userId}/${file.filename}`;
+    let element;
+    if (file.type && file.type.startsWith('video')) {
+        element = document.createElement('video');
+        element.setAttribute('src', fileUrl);
+        element.setAttribute('controls', '');
+        element.className = 'uploaded-video';
+    } else {
+        element = document.createElement('img');
+        element.setAttribute('src', fileUrl);
+        element.setAttribute('alt', file.filename);
+        element.className = 'uploaded-image';
+    }
+    const wrapper = document.createElement('div');
+    wrapper.className = 'uploaded-item';
+    if (file.hidden) wrapper.classList.add('is-hidden');
+    wrapper.dataset.filename = file.filename;
+
+    // Controles flotantes (overlay)
+    const controls = document.createElement('div');
+    controls.className = 'uploaded-controls';
+
+    // Botón toggle (ver/ocultar)
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'btn-control btn-toggle';
+    toggleBtn.setAttribute('data-tooltip', file.hidden ? 'Mostrar' : 'Ocultar');
+    toggleBtn.setAttribute('aria-label', file.hidden ? 'Mostrar archivo' : 'Ocultar archivo');
+    toggleBtn.innerHTML = file.hidden ? ICON_EYE_OFF : ICON_EYE;
+    toggleBtn.onclick = () => toggleUploadedFile(file.filename);
+
+    // Botón eliminar
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn-control btn-remove';
+    removeBtn.setAttribute('data-tooltip', 'Eliminar');
+    removeBtn.setAttribute('aria-label', 'Eliminar archivo');
+    removeBtn.innerHTML = ICON_TRASH;
+    removeBtn.onclick = () => removeUploadedFile(file.filename);
+
+    controls.appendChild(toggleBtn);
+    controls.appendChild(removeBtn);
+
+    wrapper.appendChild(controls);
+    wrapper.appendChild(element);
+    container.appendChild(wrapper);
+}
+
+/**
+ * Elimina la línea markdown del editor EasyMDE que referencia ``filename``.
+ * Soporta tanto la sintaxis de imagen ``![alt](./file)`` como la de video
+ * ``<video src="./file" ...></video>``. Si el archivo aparece varias veces,
+ * elimina todas las ocurrencias.
+ * @param {string} filename - Nombre del archivo a quitar del markdown.
+ */
+function removeMarkdownLineForFile(filename) {
+    if (!easyMDE || !filename) return;
+    const safe = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // 1) Patrón de imagen: ![alt](./<filename>)
+    const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\(\\./${safe}\\)\\s*\\n?`, 'gm');
+    // 2) Patrón de video: <video src="./<filename>" ...></video> en una línea
+    const videoRegex = new RegExp(`<video[^>]*src=["']\\./${safe}["'][^>]*></video>\\s*\\n?`, 'g');
+    let current = easyMDE.value();
+    const updated = current
+        .replace(imgRegex, '')
+        .replace(videoRegex, '')
+        // Limpiar líneas en blanco duplicadas que puedan quedar
+        .replace(/\n{3,}/g, '\n\n');
+    if (updated !== current) {
+        easyMDE.value(updated);
+    }
+}
+
+/**
+ * Pide al backend que elimine el archivo físico del directorio temporal.
+ * Es un "best effort": si falla, no bloqueamos la eliminación en el DOM.
+ * @param {string} filename - Nombre del archivo a eliminar en disco.
+ */
+function deleteFileOnServer(filename) {
+    if (!filename) return Promise.resolve();
+    const formData = new FormData();
+    formData.append('action', 'delete');
+    formData.append('filename', filename);
+    return fetch('/blog/api/upload-file/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData,
+    }).catch(err => {
+        console.warn('No se pudo eliminar el archivo en el servidor:', err);
+    });
+}
+
+/**
+ * Elimina la vista previa, la referencia en memoria, la línea markdown del
+ * editor y el archivo físico del servidor.
  * @param {string} filename - Nombre del archivo a eliminar.
  */
-function removeUploadedFile(filename) {
+async function removeUploadedFile(filename) {
+    // 1. Quitar del array uploadedFiles
     const idx = uploadedFiles.findIndex(f => f.filename === filename);
     if (idx !== -1) uploadedFiles.splice(idx, 1);
+
+    // 2. Quitar la línea markdown del editor EasyMDE
+    removeMarkdownLineForFile(filename);
+
+    // 3. Quitar del DOM
     const container = document.getElementById('uploaded-files');
     const item = container.querySelector(`.uploaded-item[data-filename="${filename}"]`);
     if (item) container.removeChild(item);
+
+    // 4. Pedir al backend que borre el archivo físico (best-effort)
+    await deleteFileOnServer(filename);
 }
 
 /**
@@ -27,9 +146,19 @@ function toggleUploadedFile(filename) {
     const container = document.getElementById('uploaded-files');
     const item = container.querySelector(`.uploaded-item[data-filename="${filename}"]`);
     if (!item) return;
-    const media = item.querySelector('img, video');
-    if (!media) return;
-    media.style.display = (media.style.display === 'none') ? '' : 'none';
+    const isHidden = item.classList.toggle('is-hidden');
+
+    // Actualizar icono y tooltip del botón
+    const toggleBtn = item.querySelector('.btn-toggle');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = isHidden ? ICON_EYE_OFF : ICON_EYE;
+        toggleBtn.setAttribute('data-tooltip', isHidden ? 'Mostrar' : 'Ocultar');
+        toggleBtn.setAttribute('aria-label', isHidden ? 'Mostrar archivo' : 'Ocultar archivo');
+    }
+
+    // Sincronizar estado en uploadedFiles
+    const f = uploadedFiles.find(f => f.filename === filename);
+    if (f) f.hidden = isHidden;
 }
 
 // ======================================================
@@ -143,29 +272,27 @@ const pond = FilePond.create(document.getElementById('filepond'), {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             onload: (response) => {
-            const data = JSON.parse(response);
-            uploadedFiles.push(data);
+                const data = JSON.parse(response);
+                uploadedFiles.push(data);
 
-            // Insertar markdown en el editor según el tipo
-            const cursor = easyMDE.codemirror.getCursor();
-            const markdown = data.type === 'video'
-                ? `![${data.filename}](./${data.filename})`
-                : `![${data.filename}](./${data.filename})`;
-            easyMDE.codemirror.replaceSelection(markdown);
+                // Insertar markdown en el editor según el tipo
+                const markdown = data.type === 'video'
+                    ? `<video src="./${data.filename}" controls></video>`
+                    : `![${data.filename}](./${data.filename})`;
+                easyMDE.codemirror.replaceSelection(markdown);
 
-        // Mostrar previsualización del archivo subido usando la función reutilizable
-        renderUploadedFile(data);
+                // Mostrar previsualización del archivo subido
+                renderUploadedFile(data);
 
-            // Si es la primera imagen, sugerirla como portada (backend ya gestiona)
-            if (data.type === 'image' && !document.getElementById('meta_title').value) {
-                // No hacemos nada aquí, solo informamos al usuario
-                const msg = document.createElement('div');
-                msg.className = 'alert alert-info mt-2 p-2';
-                msg.textContent = `✅ Imagen "${data.filename}" añadida. Puedes usarla como portada.`;
-                document.getElementById('status-message').appendChild(msg);
+                // Si es la primera imagen, sugerirla como portada
+                if (data.type === 'image' && !document.getElementById('meta_title').value) {
+                    const msg = document.createElement('div');
+                    msg.className = 'alert alert-info mt-2 p-2';
+                    msg.textContent = `✅ Imagen "${data.filename}" añadida. Puedes usarla como portada.`;
+                    document.getElementById('status-message').appendChild(msg);
+                }
+                return JSON.stringify(data);
             }
-            return JSON.stringify(data);
-        }
         },
         revert: null,
     },
@@ -246,13 +373,13 @@ window.addEventListener('load', () => {
             // Restaurar contenido del editor
             easyMDE.value(data.content_md || '');
 
-        // Restaurar archivos subidos y renderizarlos
-        if (data.files && data.files.length > 0) {
-            data.files.forEach(f => {
-                uploadedFiles.push(f);
-                renderUploadedFile(f);
-            });
-        }
+            // Restaurar archivos subidos y renderizarlos
+            if (data.files && data.files.length > 0) {
+                data.files.forEach(f => {
+                    uploadedFiles.push(f);
+                    renderUploadedFile(f);
+                });
+            }
 
             // Mostrar estado
             document.getElementById('status-message').innerHTML =
@@ -371,82 +498,3 @@ window.addEventListener('beforeunload', (e) => {
         e.returnValue = 'Tienes cambios sin guardar. ¿Estás seguro de salir?';
     }
 });
-
-/**
- * Renderiza una vista previa de un archivo subido (imagen o video).
- * Esta función se utiliza tanto al subir archivos como al restaurar borradores.
- * @param {{filename:string, type:string}} file - Información del archivo.
- */
-function renderUploadedFile(file) {
-    if (!file || !file.filename) return;
-    const userId = document.body.dataset.userId;
-    const container = document.getElementById('uploaded-files');
-    if (!container) return;
-    const fileUrl = `/media/blog_editor_temp/${userId}/${file.filename}`;
-    let element;
-    if (file.type && file.type.startsWith('video')) {
-        element = document.createElement('video');
-        element.setAttribute('src', fileUrl);
-        element.setAttribute('controls', '');
-        element.className = 'uploaded-video';
-    } else {
-        element = document.createElement('img');
-        element.setAttribute('src', fileUrl);
-        element.className = 'uploaded-image';
-    }
-    const wrapper = document.createElement('div');
-    wrapper.className = 'uploaded-item';
-    wrapper.dataset.filename = file.filename;
-
-    // Controles: eliminar y ocultar/mostrar
-    const controls = document.createElement('div');
-    controls.className = 'uploaded-controls mb-1';
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'btn btn-sm btn-danger me-1';
-    removeBtn.title = 'Eliminar archivo';
-    removeBtn.textContent = '✖';
-    removeBtn.onclick = () => removeUploadedFile(file.filename);
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.type = 'button';
-    toggleBtn.className = 'btn btn-sm btn-secondary';
-    toggleBtn.title = 'Ocultar/Mostrar archivo';
-    toggleBtn.textContent = '👁';
-    toggleBtn.onclick = () => toggleUploadedFile(file.filename);
-
-    controls.appendChild(removeBtn);
-    controls.appendChild(toggleBtn);
-
-    wrapper.appendChild(controls);
-    wrapper.appendChild(element);
-    container.appendChild(wrapper);
-}
-
-/**
- * Elimina la vista previa y la referencia del archivo subido.
- * @param {string} filename - Nombre del archivo a eliminar.
- */
-function removeUploadedFile(filename) {
-    // Quitar del array uploadedFiles
-    const idx = uploadedFiles.findIndex(f => f.filename === filename);
-    if (idx !== -1) uploadedFiles.splice(idx, 1);
-    // Quitar del DOM
-    const container = document.getElementById('uploaded-files');
-    const item = container.querySelector(`.uploaded-item[data-filename="${filename}"]`);
-    if (item) container.removeChild(item);
-}
-
-/**
- * Alterna la visibilidad del elemento multimedia (imagen o video) dentro del preview.
- * @param {string} filename - Nombre del archivo a mostrar/ocultar.
- */
-function toggleUploadedFile(filename) {
-    const container = document.getElementById('uploaded-files');
-    const item = container.querySelector(`.uploaded-item[data-filename="${filename}"]`);
-    if (!item) return;
-    const media = item.querySelector('img, video');
-    if (!media) return;
-    media.style.display = (media.style.display === 'none') ? '' : 'none';
-}

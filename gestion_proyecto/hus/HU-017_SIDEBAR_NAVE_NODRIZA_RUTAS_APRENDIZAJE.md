@@ -31,10 +31,12 @@
 - **NUNCA** borrar código existente, solo comentar si es estrictamente necesario
 - El sidebar actual se conserva, solo se agregan nuevos grupos
 
-### 🟢 4. Sidebar Único para blog_list y blog_detail
-- Usar el mismo `_sidebar.html` en ambas páginas
-- Algunos grupos son contexto-dependientes (ej: ruta activa en blog_detail)
-- El sidebar se incluye via `{% include 'blog/partials/_sidebar.html' %}`
+### 🟢 4. Layout Dual Sidebar (REGLA DE ORO)
+- **Sidebar IZQUIERDO** → Solo filtros de busqueda/navegacion (Categorias, Tags, Archivo, Tiempo lectura, RSS)
+- **Sidebar DERECHO** → Funcionalidades core y sofisticadas (Conceptos, Populares, Rutas, Minimap, Bookmarks, Toolbar)
+
+> **CRITERIO:** Si BUSCA/FILTRA → IZQUIERDO. Si es CORE/DESCUBRIMIENTO → DERECHO.
+> Algunos grupos son contexto-dependientes (ej: ruta activa solo en blog_detail).
 
 ---
 
@@ -613,15 +615,16 @@ elif reading_mode == "long":
 
 ---
 
-### ⚡ FASE 4: Conceptos Clave (HU-015 dependiente)
+### ⚡ FASE 4: Conceptos Clave (Sidebar DERECHO — funcionalidad core)
 **Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/templates/blog/partials/_sidebar.html`, `backend/blog/views.py`
+**Archivos:** `backend/blog/templates/blog/partials/_sidebar_right.html`, `backend/blog/views.py`
 
 > ⚠️ **Requiere HU-015 implementada** (modelo Concept existente en DB)
+> **NOTA:** Conceptos va en el DERECHO porque es funcionalidad core de descubrimiento temático, NO un filtro.
 
 #### 4.1 Pasar conceptos al contexto
 
-En `BlogListView.get_context_data`:
+En `BlogListView.get_context_data` (para el sidebar derecho):
 ```python
 # Conceptos clave (desde HU-015)
 context["sidebar_concepts"] = Concept.objects.filter(
@@ -632,7 +635,7 @@ context["sidebar_concepts"] = Concept.objects.filter(
 ).filter(post_count__gt=0).order_by("-post_count")[:15]
 ```
 
-#### 4.2 Agregar sección en sidebar
+#### 4.2 Agregar sección en _sidebar_right.html
 
 ```html
 <!-- 🧠 CONCEPTOS CLAVE -->
@@ -661,9 +664,11 @@ context["sidebar_concepts"] = Concept.objects.filter(
 
 ---
 
-### ⚡ FASE 5: Más Populares + RSS Feed
+### ⚡ FASE 5: RSS Feed (Sidebar IZQUIERDO — filtro)
 **Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/views.py`, `backend/blog/templates/blog/partials/_sidebar.html`
+**Archivos:** `backend/blog/views.py`, `backend/blog/templates/blog/partials/_sidebar_left.html`
+
+> **NOTA:** RSS es un filtro de suscripcion (IZQUIERDO). Los "Mas Populares" son funcionalidad CORE (DERECHO), pero ya estan contemplados en Fase 1 como parte de la seccion de descubrimiento.
 
 #### 5.1 Query de posts más populares
 
@@ -1665,8 +1670,8 @@ html[data-reading-mode="dark"] .jd-minimap-tooltip {
 | **1** | Filtros activos + Categorías con contadores | 15 min | 🔴 CRÍTICA | Ninguna              |
 | **2** | Tags populares (nube filtrable)             | 15 min | 🔴 CRÍTICA | Ninguna              |
 | **3** | Archivo mensual + Tiempo lectura            | 15 min | 🟡 ALTA    | HU-014               |
-| **4** | Conceptos clave                             | 15 min | 🟡 ALTA    | HU-015               |
-| **5** | Más populares + RSS                         | 15 min | 🟢 MEDIA   | HU-012 F4            |
+| **4** | Conceptos clave (Sidebar DERECHO)           | 15 min | 🟡 ALTA    | HU-015               |
+| **5** | RSS Feed (Sidebar IZQUIERDO)                | 15 min | 🟢 MEDIA   | HU-012 F4            |
 | **6** | 🎯 Rutas de Aprendizaje (progreso visual)    | 20 min | 🟡 ALTA    | Fase 1-2 completadas |
 | **7** | 🗺 Content Minimap (tipo VS Code)            | 20 min | 🔥 JOYA    | Ninguna              |
 

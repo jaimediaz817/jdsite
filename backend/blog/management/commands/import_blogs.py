@@ -43,6 +43,14 @@ class Command(BaseCommand):
         Orquesta todo el flujo de importacion.
         Cada responsabilidad esta delegada a un metodo individual.
         """
+        # ✅ Limpiar __pycache__ automáticamente para evitar problemas de cache
+        import shutil as _shutil
+
+        for root, dirs, _files in os.walk(Path(settings.BASE_DIR)):
+            for d in dirs:
+                if d == "__pycache__":
+                    _shutil.rmtree(os.path.join(root, d), ignore_errors=True)
+
         self.stdout.write("🔍 Iniciando importación de blogs...")
 
         # Configuracion de directorios
@@ -432,7 +440,13 @@ class Command(BaseCommand):
         def _replace_callout(match):
             variant = match.group(1).lower()
             text = match.group(2).strip()
-            icons = {"info": "ℹ️", "warning": "⚠️", "tip": "💡"}
+            icons = {
+                "info": "ℹ️",
+                "warning": "⚠️",
+                "tip": "💡",
+                "danger": "🔴",
+                "success": "🟢",
+            }
             icon = icons.get(variant, "ℹ️")
             # Convertir el texto interno de markdown a HTML
             text_html = markdown.markdown(text).strip()
@@ -448,7 +462,7 @@ class Command(BaseCommand):
             )
 
         markdown_content = re.sub(
-            r":::callout:(info|warning|tip)\s*\n(.*?):::",
+            r":::callout:(info|warning|tip|danger|success)\s*\n(.*?):::",
             _replace_callout,
             markdown_content,
             flags=re.DOTALL,

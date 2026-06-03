@@ -251,15 +251,13 @@ class BlogProcessor:
         blog_static_dir: Path,
         slug: str,
     ) -> str:
-        # """Delegate to the command's full implementation which includes all block types:
-        # slides, callout (info/warning/tip), pullquote, codefile, popup:gallery, [vl] tags.
-        # """
-        # return self.command.replace_special_blocks_md(
-        #     markdown_content, blog_dir, blog_static_dir, slug
-        # )
-        # The implementation is identical to the original; only a subset is needed for the
-        # current refactor.  For brevity we keep the full method unchanged.
-        # --- Slides handling -------------------------------------------------
+        """Delegate to the command's full implementation which includes ALL block types:
+        slides, callout (info/warning/tip), pullquote, codefile, popup:gallery, [vl] tags.
+        """
+        return self.command.replace_special_blocks_md(
+            markdown_content, blog_dir, blog_static_dir, slug
+        )
+
         def _replace_slides(match):
             content = match.group(1).strip()
             images_data: List[Tuple[str, str, str]] = []

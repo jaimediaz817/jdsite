@@ -53,3 +53,11 @@ def blog_thumbnail(post):
     if not post:
         return ""
     return post.cover_image or ""
+
+
+@register.simple_tag
+def remove_param(request, param):
+    """HU-017: Retorna la query string actual sin el parámetro especificado."""
+    query = request.GET.copy()
+    query.pop(param, None)
+    return query.urlencode()

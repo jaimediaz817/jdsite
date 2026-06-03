@@ -31,7 +31,7 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
     z-index: 1000;
-    align-self: stretch;
+    align-self: auto;
 }
 
 /* Ajuste del contenedor principal cuando el sidebar está fijado */
@@ -109,6 +109,9 @@
     margin-bottom: 0.75rem;
     font-weight: 600;
     color: #212529;
+
+    border-radius: 5px;
+    padding: 0.25rem 0.25rem;
 }
 
 .category-list {
@@ -153,8 +156,9 @@
 
 /* Focus style for keyboard navigation */
 .sidebar-title:focus {
-    outline: 2px solid #007bff;
+    outline: 2px solid #c8d0ff;
     outline-offset: 2px;
+
 }
 
 /* Ensure each collapsible menu has spacing */

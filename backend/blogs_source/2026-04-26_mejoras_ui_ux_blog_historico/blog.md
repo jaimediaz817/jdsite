@@ -124,7 +124,7 @@ El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automati
 ![Barra inferior|Reacciones al final del artículo](image-4.png)
 ![Barra inferior|Reacciones al final del artículo](image-2.png)
 :::
-
+ 
 Esta fue la mejora con mayor impacto.
 
 :::slides

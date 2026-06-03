@@ -1,62 +1,63 @@
 {% comment %}
-Partial template for the blog sidebar (category filter).
-It lists all categories provided in the context and highlights the active one.
-The active category is determined by comparing ``request.GET.category`` with the
-category slug. Links preserve other query parameters via ``query_string`` handled
-in the view.
-{% endcomment %}
+Partial template for the blog sidebar (smart filters).
+Shared between blog_list.html and blog_detail.html{% endcomment %}
 
-<!-- Collapsible menu container using Alpine.js -->
-<div x-data="{ open: true }" class="sidebar-menu">
-    <h2 class="sidebar-title" @click="open = !open" x-bind:aria-expanded="open" x-bind:aria-controls="'menu-categories'" role="button" style="cursor: pointer; user-select: none;">
-        Categorías
-        <!-- Simple indicator arrow -->
-        <!-- Arrow icon rotates based on open state -->
-        <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open}" style="float: right;"></i>
-    </h2>
-    <!-- Using x-collapse so the element collapses its height when hidden, removing empty space -->
-    <ul class="category-list" x-show="open" x-collapse x-transition>
-    <!-- Enlace para resetear el filtro y mostrar todas las categorías -->
-    {% if not request.GET.category %}
-        <li class="category-item active">
-            <a href="?" class="category-link" aria-current="page">Todas las categorías</a>
-        </li>
-    {% else %}
-        <li class="category-item">
-            <a href="?" class="category-link">Todas las categorías</a>
-        </li>
+{% load blog_filters %}
+
+<!-- 🔍 FILTROS ACTIVOS -->
+{% if request.GET.category or request.GET.tag or request.GET.month or request.GET.q %}
+<div class="jd-af-section">
+  <div class="jd-af-header">
+    <i class="fas fa-filter"></i>
+    <span>Filtros activos</span>
+  </div>
+  <div class="jd-af-list">
+    {% if request.GET.category %}
+    <span class="jd-af-badge">
+      📁 {{ request.GET.category }}
+      <a href="?{% remove_param request 'category' %}" class="jd-af-remove" title="Quitar filtro de categoría">✕</a>
+    </span>
     {% endif %}
-
-    {% for cat in categories %}
-        {% if request.GET.category == cat.slug %}
-            <li class="category-item active">
-                <a href="?category={{ cat.slug }}" class="category-link" aria-current="page">
-                    {{ cat.name }}
-                </a>
-            </li>
-        {% else %}
-            <li class="category-item">
-                <a href="?category={{ cat.slug }}" class="category-link">
-                    {{ cat.name }}
-                </a>
-            </li>
-        {% endif %}
-    {% empty %}
-        <li class="category-item">No hay categorías</li>
-    {% endfor %}
-    </ul>
+    {% if request.GET.tag %}
+    <span class="jd-af-badge">
+      🏷 {{ request.GET.tag }}
+      <a href="?{% remove_param request 'tag' %}" class="jd-af-remove" title="Quitar filtro de tag">✕</a>
+    </span>
+    {% endif %}
+    {% if request.GET.month %}
+    <span class="jd-af-badge">
+      📅 {{ request.GET.month }}
+      <a href="?{% remove_param request 'month' %}" class="jd-af-remove" title="Quitar filtro de fecha">✕</a>
+    </span>
+    {% endif %}
+    {% if request.GET.q %}
+    <span class="jd-af-badge">
+      🔍 "{{ request.GET.q|truncatechars:20 }}"
+      <a href="?{% remove_param request 'q' %}" class="jd-af-remove" title="Quitar búsqueda">✕</a>
+    </span>
+    {% endif %}
+  </div>
+  <a href="?" class="jd-af-clear">Limpiar todo</a>
 </div>
+{% endif %}
 
-<!-- Segundo menú colapsable (ejemplo) -->
-<div x-data="{ open2: true }" class="sidebar-menu">
-    <h2 class="sidebar-title" @click="open2 = !open2" x-bind:aria-expanded="open2" x-bind:aria-controls="'menu-other'" role="button" style="cursor: pointer; user-select: none;">
-        Otro Menú
-        <!-- Arrow icon rotates based on open2 state -->
-        <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open2}" style="float: right;"></i>
-    </h2>
-    <ul id="menu-other" class="category-list" x-show="open2" x-collapse x-transition>
-        <li class="category-item"><a href="#" class="category-link">Item 1</a></li>
-        <li class="category-item"><a href="#" class="category-link">Item 2</a></li>
-        <li class="category-item"><a href="#" class="category-link">Item 3</a></li>
-    </ul>
+<!-- 📁 CATEGORÍAS -->
+<div x-data="{ open: true }" class="sidebar-menu">
+  <h2 class="sidebar-title" @click="open = !open" role="button" tabindex="0">
+    📁 Categorías
+    <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open}" style="float: right;"></i>
+  </h2>
+  <ul class="category-list" x-show="open" x-collapse x-transition>
+    <li class="category-item {% if not request.GET.category %}active{% endif %}">
+      <a href="?" class="category-link">Todas las categorías</a>
+    </li>
+    {% for cat in categories %}
+    <li class="category-item {% if request.GET.category == cat.slug %}active{% endif %}">
+      <a href="?category={{ cat.slug }}" class="category-link">
+        {{ cat.name }}
+        <span class="category-count">({{ cat.posts_count }})</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
 </div>

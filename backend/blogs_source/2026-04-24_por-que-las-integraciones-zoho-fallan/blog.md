@@ -18,6 +18,7 @@ palabra_clave_principal: "integraciones zoho fallan"
 # Por qué las integraciones de Zoho SIEMPRE fallan en el 6to mes
 
 Llevo 13 años haciendo esto. Y veo exactamente el mismo patrón repetirse una y otra vez.
+Llevo 13 años haciendo esto. Y veo exactamente el mismo patrón repetirse una y otra vez 2.
 
 Tú haces una integración con Zoho CRM. Funciona perfecto. Pasas UAT. Lo pones en producción. Todo funciona genial.
 
@@ -86,6 +87,18 @@ Este es un callout de advertencia. Usalo cuando algo pueda causar problemas o re
 
 :::callout:tip
 Este es un callout de tip. Perfecto para consejos practicos, atajos o mejores practicas.
+:::
+
+### 3b. CALLOUT DANGER
+
+:::callout:danger
+Este es un callout de peligro. Usalo para errores criticos, acciones destructivas o advertencias de seguridad.
+:::
+
+### 3c. CALLOUT SUCCESS
+
+:::callout:success
+Este es un callout de exito. Ideal para confirmar que algo funciono correctamente o mostrar resultados positivos.
 :::
 
 ### 4. VL HIGHLIGHT

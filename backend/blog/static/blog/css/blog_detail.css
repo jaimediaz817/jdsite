@@ -3200,3 +3200,365 @@ html[data-reading-mode="dark"] .blog-video-caption {
 html[data-reading-mode="dark"] .blog-video-title {
     color: #e2e8f0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   HU-013 FASE 2 – UTILIDADES DE MAQUETACIÓN PARA CONTENIDO BLOG
+   ========================================================================== */
+
+/* ── 1. CALLOUT DANGER + SUCCESS ── */
+.callout-danger {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+}
+
+.callout-danger .callout-icon {
+    color: #dc2626;
+}
+
+html[data-reading-mode="dark"] .callout-danger {
+    background: #450a0a;
+    border-left-color: #ef4444;
+}
+
+html[data-reading-mode="sepia"] .callout-danger {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+}
+
+.callout-success {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+}
+
+.callout-success .callout-icon {
+    color: #16a34a;
+}
+
+html[data-reading-mode="dark"] .callout-success {
+    background: #052e16;
+    border-left-color: #22c55e;
+}
+
+html[data-reading-mode="sepia"] .callout-success {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+}
+
+/* ── 2. GRID UTILITIES (2, 3, 4 columnas) ── */
+.blog-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.blog-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.blog-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+
+    .blog-grid-3,
+    .blog-grid-4 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .blog-grid-2,
+    .blog-grid-3,
+    .blog-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.blog-grid-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+}
+
+.blog-grid-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+html[data-reading-mode="dark"] .blog-grid-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-reading-mode="sepia"] .blog-grid-card {
+    background: #fefcf5;
+    border-color: #e8dcc8;
+}
+
+/* ── 3. HIGHLIGHT BOXES (theme-aware) ── */
+.highlight-box {
+    background: #f0f4ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.highlight-box::before {
+    content: "💡";
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    font-size: 1.5rem;
+}
+
+.highlight-box-info {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.highlight-box-info::before {
+    content: "ℹ️";
+}
+
+.highlight-box-warning {
+    background: #fffbeb;
+    border-color: #fcd34d;
+}
+
+.highlight-box-warning::before {
+    content: "⚠️";
+}
+
+.highlight-box-success {
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.highlight-box-success::before {
+    content: "✅";
+}
+
+html[data-reading-mode="dark"] .highlight-box {
+    background: #1e3a5f;
+    border-color: #3b82f6;
+}
+
+html[data-reading-mode="dark"] .highlight-box-info {
+    background: #1e3a5f;
+    border-color: #3b82f6;
+}
+
+html[data-reading-mode="dark"] .highlight-box-warning {
+    background: #451a03;
+    border-color: #f59e0b;
+}
+
+html[data-reading-mode="dark"] .highlight-box-success {
+    background: #052e16;
+    border-color: #22c55e;
+}
+
+html[data-reading-mode="sepia"] .highlight-box {
+    background: #fef7e8;
+    border-color: #d4a574;
+}
+
+/* ── 4. BADGES INLINE ── */
+.badge-tech {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #4338ca;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin: 0.1rem;
+}
+
+.badge-success {
+    display: inline-block;
+    background: #dcfce7;
+    color: #15803d;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin: 0.1rem;
+}
+
+.badge-warning {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin: 0.1rem;
+}
+
+.badge-danger {
+    display: inline-block;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin: 0.1rem;
+}
+
+html[data-reading-mode="dark"] .badge-tech {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html[data-reading-mode="dark"] .badge-success {
+    background: #052e16;
+    color: #86efac;
+}
+
+html[data-reading-mode="dark"] .badge-warning {
+    background: #451a03;
+    color: #fbbf24;
+}
+
+html[data-reading-mode="dark"] .badge-danger {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+/* ── 5. FLEX UTILITIES ── */
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-2 {
+    flex: 2;
+}
+
+.flex-3 {
+    flex: 3;
+}
+
+.gap-sm {
+    gap: 0.5rem;
+}
+
+.gap-md {
+    gap: 1rem;
+}
+
+.gap-lg {
+    gap: 1.5rem;
+}
+
+.gap-xl {
+    gap: 2rem;
+}
+
+@media (max-width: 480px) {
+    .flex-row {
+        flex-direction: column;
+    }
+}
+
+/* ── 6. CODE BLOCK CON HEADER Y BOTÓN COPIAR ── */
+.blog-content pre {
+    position: relative;
+    border-radius: 12px !important;
+    margin: 1.5rem 0 !important;
+}
+
+.blog-content pre .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    border-radius: 12px 12px 0 0;
+    font-family: 'DM Sans', sans-serif;
+}
+
+html[data-reading-mode="dark"] .blog-content pre .code-header {
+    background: #0f172a;
+}
+
+.blog-content pre .copy-btn {
+    background: none;
+    border: 1px solid #475569;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.blog-content pre .copy-btn:hover {
+    background: #334155;
+    color: #e2e8f0;
+}

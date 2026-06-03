@@ -20,9 +20,7 @@
     flex-direction: column;
     gap: 6px;
     padding: 6px;
-    /* background: var(--reaction-bg); */
     border-radius: 16px;
-    box-shadow: var(--reaction-shadow);
     width: 56px;
     align-items: center;
 }

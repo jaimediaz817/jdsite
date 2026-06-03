@@ -38,6 +38,33 @@
 > **CRITERIO:** Si BUSCA/FILTRA → IZQUIERDO. Si es CORE/DESCUBRIMIENTO → DERECHO.
 > Algunos grupos son contexto-dependientes (ej: ruta activa solo en blog_detail).
 
+### 🟢 4.1 ESTADO ACTUAL: Sidebar Derecho existente
+
+Hoy el sidebar derecho solo contiene un `floating-right-nav` con 2 botones:
+```html
+<!-- floating-right-nav (Línea 146-156 de blog_detail.html) -->
+<div class="floating-right-nav" ...>
+    <button class="float-nav-btn reading-mode-float-btn">☀️/🌙 Modo lectura</button>
+    <a href="/blog/" class="float-nav-btn back-btn">← Blog</a>
+</div>
+```
+
+**Decisión clave:** Este contenedor existente es el candidato natural para **absorber toda la funcionalidad del sidebar derecho**. No crear uno nuevo, sino **evolucionar** el existente.
+
+### 🟢 4.2 Estrategia de migración (NO crear desde cero)
+
+| Paso | Qué hacer                                                                                    | Por qué                                   |
+| ---- | -------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| 1    | Mantener el `<div class="floating-right-nav">` como contenedor base                          | Ya existe, tiene posicionamiento correcto |
+| 2    | Agregar secciones internas (conceptos, populares, etc.) dentro de este div                   | Evita crear un nuevo sidebar paralelo     |
+| 3    | Mover los botones actuales (modo lectura, blog) a una sección "Controles" dentro del sidebar | Consolida lo que ya existe                |
+| 4    | Hacer responsive: en desktop es sidebar sticky, en mobile es bottom bar o drawer             | Mobile-first                              |
+
+### 🟢 4.3 Responsive: Mobile First
+- **Mobile (<768px):** Sidebar derecho como BOTTOM BAR horizontal o DRAWER oculto por defecto
+- **Tablet (768-1024px):** Sidebar derecho como drawer flotante que se abre con toggle
+- **Desktop (>1024px):** Sidebar derecho sticky con scroll independiente, como el izquierdo
+
 ---
 
 ## 🎯 OBJETIVO

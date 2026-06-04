@@ -547,6 +547,45 @@ body.home-p {
     transform: rotate(90deg);
 }
 
+/* --------------------------------------------------------------------------
+   BOTÓN "ESCRIBIR ARTÍCULO" - estilo profesional y limpio
+   -------------------------------------------------------------------------- */
+/*
+   Se agrega un estilo distintivo para el botón que permite crear un nuevo
+   artículo. Utilizamos un degradado sutil, bordes redondeados y transiciones
+   suaves para que el botón se sienta moderno sin recurrir a íconos o
+   tipografías que recuerden a IA. El icono de pluma ya está presente en el
+   HTML, por lo que solo estilizamos el contenedor.
+*/
+.blog-write-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 0.75rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.blog-write-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #ff6a45, #fd9e66);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blog-write-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .blog-clear-btn:active {
     transform: scale(0.96);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);

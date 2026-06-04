@@ -61,7 +61,87 @@
 
 .tags-list .badge {
     font-size: 0.85rem;
-    padding: 0.35rem 0.5rem;
+    padding: 0.35rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Hover effect for tag chips */
+.tags-list .badge:hover {
+    background: linear-gradient(135deg, #5a0fb0, #1e5edc);
+    transform: translateY(-1px);
+}
+
+/* Ajuste del botón de cierre dentro del chip */
+/* Close button inside tag chip – keep Bootstrap default X */
+.tags-list .badge .btn-close {
+    opacity: 0.9;
+    margin-left: 4px;
+    width: 1rem;
+    height: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: inherit;
+    line-height: normal;
+    transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+/* Ensure the X is visible – use pseudo‑element */
+/* X icon for close button – visible gray */
+.tags-list .badge .btn-close::before {
+    /* X icon for close button – visible white */
+    content: "\00d7" !important;
+    /* multiplication sign */
+    font-weight: 700;
+    font-size: 1rem !important;
+    color: #fff !important;
+    /* white for visibility */
+    display: inline-block !important;
+    line-height: 1 !important;
+}
+
+
+/* Remove custom pseudo‑element – let Bootstrap render the X */
+/* (no additional styles needed) */
+
+/* Override Bootstrap btn-close-white inside tag chips */
+.tags-list .badge .btn-close.btn-close-white {
+    background: rgba(0, 0, 0, 0.2) !important;
+    color: #fff !important;
+    opacity: 0.9 !important;
+    border: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    padding: 0 !important;
+    margin-left: 4px !important;
+    font-size: 0.7rem !important;
+    line-height: 0.7rem !important;
+    transition: background 0.2s ease, opacity 0.2s ease !important;
+}
+
+.tags-list .badge .btn-close.btn-close-white:hover {
+    background: rgba(0, 0, 0, 0.4) !important;
+    opacity: 1 !important;
+}
+
+.tags-list .badge .btn-close:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.4);
 }
 
 /* FilePond */

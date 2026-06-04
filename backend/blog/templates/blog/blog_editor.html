@@ -138,7 +138,7 @@
                             <button type="button" id="btn-save" class="btn btn-lg btn-primary">
                                 {% if user.is_superuser %}🟢 Guardar y Publicar{% else %}🟡 Guardar Borrador{% endif %}
                             </button>
-                            <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                            <a href="{% url 'blog:blog_list' %}" class="btn btn-lg btn-outline-secondary">Cancelar</a>
                         </div>
                         <div id="status-message" class="mt-3"></div>
                     </div>

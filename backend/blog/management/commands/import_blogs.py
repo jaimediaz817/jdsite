@@ -100,6 +100,42 @@ class Command(BaseCommand):
 
         reset_blogpost_sequence(stdout=self.stdout)
 
+    # ---------------------------------------------------------------------
+    # Compatibilidad: método de normalización de líneas usado en pruebas
+    # ---------------------------------------------------------------------
+    def _normalize_lines(self, text: str) -> str:
+        """Normaliza líneas consecutivas dentro de un párrafo.
+
+        - Une líneas consecutivas que no están separadas por una línea en
+          blanco, insertando un espacio entre ellas.
+        - Mantiene los saltos de línea en blanco como separadores de
+          párrafos.
+        - Preserva el orden y los espacios al inicio/final de cada línea
+          (se hace ``strip`` para evitar espacios extra).
+
+        Este método se mantiene para compatibilidad con los tests que
+        importan ``Command`` y llaman a ``_normalize_lines`` directamente.
+        """
+        if not isinstance(text, str):
+            return ""
+        lines = text.split("\n")
+        normalized = []
+        buffer = []
+        for line in lines:
+            if line.strip() == "":
+                # Si hay un buffer acumulado, lo juntamos antes de añadir
+                # la línea en blanco que separa párrafos.
+                if buffer:
+                    normalized.append(" ".join(buffer))
+                    buffer = []
+                normalized.append("")
+            else:
+                buffer.append(line.strip())
+        # Añadir cualquier resto pendiente al final.
+        if buffer:
+            normalized.append(" ".join(buffer))
+        return "\n".join(normalized)
+
     # -------------------------------------------------------------------------
     # 🔹 BLOQUE: PROCESADO INDIVIDUAL DE CADA BLOG
     # -------------------------------------------------------------------------
@@ -161,9 +197,9 @@ class Command(BaseCommand):
             self.stdout.write("✅ Imagenes verificadas y copiadas correctamente")
             return slug
 
-        # ✅ Extraer y eliminar la PRIMERA imagen como portada
+        # ✅ Extraer imagen de portada (del contenido markdown o del frontmatter)
         cover_image_path, content_sin_portada = self.extract_cover_image(
-            content_md, blog_dir, blog_static_dir, slug
+            content_md, blog_dir, blog_static_dir, slug, frontmatter
         )
 
         # ✅ Procesar bloques especiales ANTES de convertir a HTML
@@ -1046,19 +1082,26 @@ class Command(BaseCommand):
     # -------------------------------------------------------------------------
     # 🔹 BLOQUE: GUARDADO Y FINALIZACION
     # -------------------------------------------------------------------------
-    def extract_cover_image(self, content_md, blog_dir, blog_static_dir, slug):
+    def extract_cover_image(
+        self, content_md, blog_dir, blog_static_dir, slug, frontmatter=None
+    ):
         """
         ✨ MAGIA DE LA IMAGEN DE PORTADA
         Busca la PRIMERA imagen del markdown que NO esté dentro de un bloque :::,
         la extrae como portada y la ELIMINA del contenido.
         No aparece nunca en el detalle del blog. Solo en listados y redes.
         Los archivos de video se saltan (no se usan como portada).
+
+        Si no encuentra imágenes en el contenido, usa el campo ``image`` del
+        frontmatter (ej: ``image: portada.png``) como fallback para construir
+        la ruta completa ``/static/blogs/{slug}/{filename}``.
         """
         lines = content_md.strip().split("\n")
         cover_image_path = None
         inside_special_block = False
         VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
 
+        # 🔍 FASE 1: Buscar la primera imagen en el contenido markdown
         for i, line in enumerate(lines):
             stripped = line.strip()
 
@@ -1091,9 +1134,44 @@ class Command(BaseCommand):
                         )
                         del lines[i]
                         self.stdout.write(
-                            "✅ Imagen de portada detectada automaticamente"
+                            "✅ Imagen de portada detectada automaticamente en el contenido"
                         )
-                        break  # Detener la búsqueda después de encontrar la primera imagen
+                        break
+                    # Si la imagen referenciada no existe físicamente,
+                    # marcarla como portada de todas formas con la ruta que tenía
+                    cover_image_path = f"/static/blogs/{slug}/{img_src}"
+                    del lines[i]
+                    self.stdout.write(
+                        "✅ Imagen de portada del contenido (sin archivo físico)"
+                    )
+                    break
+
+        # 🔍 FASE 2: Si no se encontró imagen en el contenido, usar el frontmatter
+        if not cover_image_path and frontmatter and frontmatter.get("image"):
+            fm_image = frontmatter["image"].strip()
+            if fm_image:
+                # Construir ruta absoluta al archivo en static
+                static_file = blog_static_dir / fm_image
+                source_file = blog_dir / fm_image
+
+                # Copiar la imagen a static si existe en source_dir
+                if source_file.exists():
+                    shutil.copy2(source_file, static_file)
+
+                # Verificar si existe en static (ya copiada por copy_blog_images)
+                if static_file.exists() or source_file.exists():
+                    cover_image_path = f"/static/blogs/{slug}/{fm_image}"
+                    self.stdout.write(
+                        f"✅ Imagen de portada desde frontmatter 'image': {fm_image}"
+                    )
+                else:
+                    # El archivo no existe físicamente, pero lo ponemos como ruta
+                    # para que al menos intente cargar algo
+                    cover_image_path = f"/static/blogs/{slug}/{fm_image}"
+                    self.stdout.write(
+                        f"⚠️  Portada del frontmatter '{fm_image}' no encontrada en disco, "
+                        f"se usa de todas formas"
+                    )
 
         # Debug statement to print the cover_image_path value
         self.stdout.write(f"🔍 Valor de cover_image_path: {cover_image_path}")
@@ -1132,18 +1210,32 @@ class Command(BaseCommand):
                 f"⚠️  Meta Description truncado: '{meta_description_raw[:50]}...'"
             )
 
-        # Buscar usuario por email para asignar autor
+        # Buscar usuario por email para asignar autor.
+        # Si el email no se encuentra, preservar el autor existente
+        # (evita sobreescribir author=None al re-importar un post).
         author_email = frontmatter.get("author_email", "")
-        author = None
+        existing_post = BlogPost.objects.filter(slug=slug).first()
+        author = existing_post.author if existing_post else None
+
         if author_email:
             try:
                 author = User.objects.get(email__iexact=author_email)
             except User.DoesNotExist:
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"⚠️  Usuario con email '{author_email}' no encontrado. Autor no asignado."
+                # Si ya hay un autor existente, lo preservamos
+                if existing_post and existing_post.author:
+                    author = existing_post.author
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"⚠️  Email '{author_email}' no encontrado. "
+                            f"Se preserva autor existente: {author.username}"
+                        )
                     )
-                )
+                else:
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"⚠️  Usuario con email '{author_email}' no encontrado. Autor no asignado."
+                        )
+                    )
 
         defaults = {
             "source_hash": file_hash,
@@ -1154,7 +1246,7 @@ class Command(BaseCommand):
             "description": frontmatter.get("description", ""),
             "meta_title": meta_title,
             "meta_description": meta_description,
-            "cover_image": cover_image_path or frontmatter.get("image", None),
+            "cover_image": cover_image_path,
             "author": author,
         }
 

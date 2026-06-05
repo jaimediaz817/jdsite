@@ -398,7 +398,14 @@ def save_blog_to_source(data, user):
     # la ruta y mostrara un ``src`` vacío. Cambiamos la clave a
     # ``cover_image`` para que sea coherente con el modelo y el filtro
     # ``blog_thumbnail``.
-    new_fm["cover_image"] = image_filename
+    # Guardamos la ruta completa de la portada para que las plantillas puedan
+    # servirla directamente desde ``/static/blogs/<folder>/<filename>``.
+    # ``folder_name`` contiene el nombre del directorio del artículo (con prefijo de fecha
+    # si es nuevo o el nombre existente en caso de edición).
+    if image_filename:
+        new_fm["cover_image"] = f"/static/blogs/{folder_name}/{image_filename}"
+    else:
+        new_fm["cover_image"] = ""
     new_fm["category"] = category
     new_fm["tags"] = tags
     new_fm["meta_title"] = meta_title

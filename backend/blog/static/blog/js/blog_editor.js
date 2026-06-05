@@ -4,6 +4,7 @@
 // ======================================================
 
 const uploadedFiles = [];
+let isSaved = false; // controla si el artículo ya se guardó para evitar la alerta de salida
 const DRAFT_KEY = 'blog_editor_draft';
 let userOverride = false;
 
@@ -159,6 +160,12 @@ function setAsCover(filename) {
         info.className = 'alert alert-info mt-2 p-2';
         info.innerHTML = `<i class="fas fa-star text-warning"></i> <strong>${filename}</strong> marcada como portada del artículo.`;
         status.appendChild(info);
+    }
+
+    // Actualizar el campo oculto del formulario para que el backend reciba la portada
+    const coverInput = document.getElementById('cover_image');
+    if (coverInput) {
+        coverInput.value = filename;
     }
 }
 
@@ -412,7 +419,7 @@ window.addEventListener('load', () => {
 // ======================================================
 // 6. Botón "Guardar"
 // ======================================================
-document.getElementById('btn-save').addEventListener('click', async () => {
+    document.getElementById('btn-save').addEventListener('click', async () => {
     const data = collectFormData();
     if (!data.title.trim()) {
         document.getElementById('status-message').innerHTML = '<div class="alert alert-danger">El título es obligatorio</div>';
@@ -438,6 +445,8 @@ document.getElementById('btn-save').addEventListener('click', async () => {
         });
         const result = await response.json();
         if (response.ok) {
+            // Guardado exitoso → marcamos como guardado para que no aparezca la alerta de salida
+            isSaved = true;
             localStorage.removeItem(DRAFT_KEY);
             if (result.published) {
                 document.getElementById('status-message').innerHTML = `<div class="alert alert-success">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-link">Ver artículo</a></div>`;
@@ -469,7 +478,8 @@ function getCookie(name) {
 
 window.addEventListener('beforeunload', (e) => {
     const data = collectFormData();
-    if (data.content_md && data.content_md.length > 10) {
+    // Sólo advertir si hay cambios sin haber guardado ya
+    if (!isSaved && data.content_md && data.content_md.length > 10) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
         e.preventDefault();
         e.returnValue = 'Tienes cambios sin guardar.';
@@ -480,6 +490,8 @@ window.addEventListener('beforeunload', (e) => {
 // 7. Modo Edición: cargar artículo existente
 // ======================================================
 (async function loadExistingArticle() {
+    // Reiniciar el estado de archivos para evitar duplicados al cargar un artículo
+    uploadedFiles.length = 0;
     const pathParts = window.location.pathname.split('/').filter(Boolean);
     let editSlug = '';
     if (pathParts.length >= 3 && pathParts[0] === 'blog' && pathParts[1] === 'editor') {
@@ -504,13 +516,23 @@ window.addEventListener('beforeunload', (e) => {
         document.getElementById('keywords').value = fm.keywords || '';
         document.getElementById('tiempo_lectura').value = fm.tiempo_lectura || 1;
         easyMDE.value(data.content_md || '');
+        // Si el backend envía archivos existentes, marcamos cuál es la portada
+        // según el frontmatter. Compatibilidad con la clave antigua ``image``.
         if (data.existing_files && data.existing_files.length > 0) {
-            const coverFromFrontmatter = fm.image || '';
+            const coverFromFrontmatter = fm.cover_image || fm.image || '';
             data.existing_files.forEach(file => {
                 const isCover = (file.filename === coverFromFrontmatter);
                 file.is_cover = isCover;
+                // Añadir al arreglo global para que setAsCover funcione
+                uploadedFiles.push(file);
                 renderUploadedFile(file);
             });
+        }
+        // Sincronizar el campo de portada con la imagen marcada
+        const coverInput = document.getElementById('cover_image');
+        if (coverInput) {
+            const currentCover = getCoverFilename();
+            coverInput.value = currentCover;
         }
         document.title = `Editando: ${fm.title || editSlug} | Editor Blog`;
         document.getElementById('status-message').innerHTML = '<div class="alert alert-success">Artículo cargado. Cambios se guardan en la misma carpeta.</div>';

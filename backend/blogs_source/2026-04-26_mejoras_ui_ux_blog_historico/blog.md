@@ -1,19 +1,22 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: 2026-04-26
+date: "2026-06-05"
 draft: false
-author: "jdsolutions817@gmail.com"
-author_email: "jdsolutions817@gmail.com"
+image: "image-1.png"
 category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
 meta_title: "Mejoras UI/UX +40% tiempo lectura blog"
-image: "./image-1.png"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
-twitter_card: "summary_large_image"
-tiempo_lectura: 817
+tiempo_lectura: 4
+author: "Jaime Diaz"
+author_email: "jdsolutions817@gmail.com"
+author_provider: "github"
 ---
+
+
+
 
 ## Mi Introduccion
 

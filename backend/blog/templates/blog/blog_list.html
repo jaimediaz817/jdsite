@@ -131,7 +131,14 @@
                                         <i class="fas fa-pen-fancy me-1"></i>
                                         <span class="d-none d-md-inline">Escribir artículo</span>
                                     </a>
-                                    {% endif %}                                  
+                                    {% endif %}
+                                    {# Mostrar botón de moderación solo a administradores (staff o superuser) #}
+                                    {% if user.is_superuser %}
+                                    <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn ms-2" title="Ir al panel de moderación">
+                                        <i class="fas fa-gavel me-1"></i>
+                                        <span class="d-none d-md-inline">Moderación</span>
+                                    </a>
+                                    {% endif %}
                             </form>
                             {% if search_query %}
                             <div class="blog-search-hint">
@@ -187,7 +194,15 @@
                                     </div>
                                     {% endif %}
                                     
-                                    {% if user.is_authenticated and post.author == user %}
+                                    {% if user.is_authenticated and user.is_superuser %}
+                                    {# Superusers pueden editar cualquier artículo #}
+                                    <div class="mt-2 edit-btn-wrapper">
+                                        <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                    </div>
+                                    {% elif user.is_authenticated and post.author == user %}
+                                    {# Autores pueden editar sus propios artículos #}
                                     <div class="mt-2 edit-btn-wrapper">
                                         <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
                                             <i class="fas fa-edit me-1"></i> Editar

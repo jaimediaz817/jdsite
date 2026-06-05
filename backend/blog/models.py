@@ -81,6 +81,32 @@ class BlogPost(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     is_published = models.BooleanField(default=True)
+    # ---------------------------------------------------------------------
+    # 🟡 Moderación de borradores
+    # ---------------------------------------------------------------------
+    MODERATION_CHOICES = [
+        ("pending", "Pendiente"),
+        ("approved", "Aprobado"),
+        ("rejected", "Rechazado"),
+    ]
+    moderation_status = models.CharField(
+        max_length=20,
+        choices=MODERATION_CHOICES,
+        default="pending",
+        help_text="Estado de moderación del artículo",
+    )
+    # Token para aprobación vía URL
+    approval_token = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
+        help_text="Token único para aprobar el artículo vía URL",
+    )
+    approval_token_created = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp de creación del token de aprobación",
+    )
     source_hash = models.CharField(
         max_length=64,
         db_index=True,
@@ -147,6 +173,12 @@ class BlogPost(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+        # Generar token de aprobación cuando el post es borrador y aún no tiene token
+        if not self.is_published and not self.approval_token:
+            import uuid
+
+            self.approval_token = uuid.uuid4().hex
+            self.approval_token_created = timezone.now()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -254,3 +286,45 @@ class BlogComment(models.Model):
     @property
     def avatar_initials(self) -> str:
         return get_avatar_initials(self.name)
+
+
+class BlogModeration(models.Model):
+    ACTION_CHOICES = [
+        ("pending", "Pendiente"),
+        ("approved", "Aprobado"),
+        ("rejected", "Rechazado"),
+    ]
+
+    blog_post = models.ForeignKey(
+        BlogPost, on_delete=models.CASCADE, related_name="moderations"
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="authored_moderations",
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_moderations",
+    )
+    action = models.CharField(
+        max_length=20, choices=ACTION_CHOICES, default="pending"
+    )
+    comment = models.TextField(
+        blank=True, null=True, help_text="Comentario del revisor"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Moderacion de blog"
+        verbose_name_plural = "Moderaciones de blog"
+
+    def __str__(self):
+        return f"{self.blog_post.title} - {self.get_action_display()}"

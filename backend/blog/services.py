@@ -144,12 +144,14 @@ def get_comment_count(blog_slug):
 # del frontmatter que NO esté en esta lista se preserva tal cual
 # (merge inteligente).
 # ======================================================
+# Los campos que el editor gestiona directamente. "cover_image" reemplaza al antiguo
+# campo "image" para ser coherente con el modelo ``BlogPost``.
 EDITOR_MANAGED_FIELDS = {
     "title",
     "description",
     "date",
     "draft",
-    "image",
+    "cover_image",
     "category",
     "tags",
     "meta_title",
@@ -343,7 +345,12 @@ def save_blog_to_source(data, user):
 
     # 4.2. En edición, si no hay cover nuevo, preservar el del .md original
     if is_edit and not image_filename:
-        image_filename = existing_fm.get("image", "")
+        # Intentamos recuperar la portada guardada previamente. El frontmatter
+        # ahora usa la clave ``cover_image``; mantenemos compatibilidad leyendo
+        # también ``image`` por si existen artículos antiguos.
+        image_filename = existing_fm.get("cover_image", "") or existing_fm.get(
+            "image", ""
+        )
         if not image_filename:
             # Fallback: primera imagen de la carpeta
             for f in target_dir.iterdir():
@@ -385,7 +392,13 @@ def save_blog_to_source(data, user):
     new_fm["description"] = description
     new_fm["date"] = today
     new_fm["draft"] = is_published  # bool — se serializa a 'true'/'false'
-    new_fm["image"] = image_filename
+    # NOTE: El campo de portada en el modelo se llama ``cover_image``.
+    # Anteriormente se guardaba bajo la clave ``image`` en el frontmatter,
+    # lo que provocaba que la plantilla ``blog_list.html`` no encontrara
+    # la ruta y mostrara un ``src`` vacío. Cambiamos la clave a
+    # ``cover_image`` para que sea coherente con el modelo y el filtro
+    # ``blog_thumbnail``.
+    new_fm["cover_image"] = image_filename
     new_fm["category"] = category
     new_fm["tags"] = tags
     new_fm["meta_title"] = meta_title
@@ -397,16 +410,51 @@ def save_blog_to_source(data, user):
     new_fm["author_email"] = author_email
     new_fm["author_provider"] = author_provider
 
-    # Construir el archivo final
-    frontmatter_str = _build_frontmatter(new_fm)
-    blog_content = frontmatter_str + content_md
-    (target_dir / "blog.md").write_text(blog_content, encoding="utf-8")
+    # Construir el archivo final y guardarlo
+    blog_path = target_dir / "blog.md"
+    blog_path.write_text(
+        _build_frontmatter(new_fm) + content_md, encoding="utf-8"
+    )
 
-    # 7. Ejecutar import_blogs
+    # 7. Ejecutar import_blogs para actualizar la base de datos y generar token si es borrador
     call_command("import_blogs")
 
+    # 8. Notificar al administrador si el artículo quedó como borrador (draft)
+    if not is_published:
+        # Obtener el objeto BlogPost recién creado/actualizado para obtener el token de aprobación
+        try:
+            post_obj = BlogPost.objects.get(slug=slug)
+            token = post_obj.approval_token
+            approve_url = (
+                f"{settings.SITE_URL}{reverse('blog:approve_blog', args=[token])}"
+                if token
+                else ""
+            )
+        except Exception:
+            approve_url = ""
+
+        admin_subject = f"[JD Blog] Borrador guardado: {title}"
+        admin_message = (
+            f"Se ha guardado un borrador del artículo '{title}'.\n"
+            f"Autor: {author_name} ({author_email})\n"
+            f"Slug: {slug}\n"
+            f"Puedes revisarlo en el panel de moderación.\n"
+        )
+        if approve_url:
+            admin_message += f"Aprobar directamente: {approve_url}\n"
+        send_mail(
+            subject=admin_subject,
+            message=admin_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.OWNER_EMAIL],
+            fail_silently=True,
+        )
+
+    # Nota: ``import_blogs`` almacena ``slugify(folder_name)`` como slug
+    # en la BD, por lo que el enlace del editor debe usar ``folder_name``
+    # para que coincida con el slug real de la tabla ``blog_blogpost``.
     return {
-        "slug": slug,
+        "slug": folder_name,
         "folder": folder_name,
         "published": is_published,
         "status": "published" if is_published else "draft",

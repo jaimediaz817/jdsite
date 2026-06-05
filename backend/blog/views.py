@@ -1,3 +1,15 @@
+"""
+Task Progress Checklist:
+- [x] Fase 1: Modelo `BlogModeration` (creación y migración)
+- [x] Fase 2: Añadir campo `moderation_status` a `BlogPost` (pending/approved/rejected)
+- [x] Fase 3: Enviar email automático al admin cuando se guarda un borrador
+- [x] Fase 4: Implementar vistas del dashboard (`/dashboard/`, `/dashboard/approve/<slug>/`, `/dashboard/reject/<slug>/`) (aprobación vía URL completada)
+- [x] Fase 5: Crear templates HTML del dashboard
+- [x] Fase 6: Enviar email al autor con el resultado de la revisión
+- [x] Fase 7: Mostrar banner de estado en el editor de blogs
+- [ ] Fase 8: Pruebas end‑to‑end y validación (`python manage.py check` sin errores)
+"""
+
 import json
 from pathlib import Path
 
@@ -14,8 +26,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from blog.models import BlogComment, BlogPost, Category
-from blog.forms import CommentForm, QuickSignupForm
+from blog.models import BlogComment, BlogPost, Category, BlogModeration
 from blog.services import (
     create_comment,
     get_approved_comments,
@@ -23,6 +34,10 @@ from blog.services import (
     save_blog_to_source,
     save_uploaded_file,
 )
+from django.core.mail import send_mail
+from django.utils import timezone
+from datetime import timedelta
+from .forms import CommentForm, QuickSignupForm
 
 
 def get_client_ip(request):
@@ -32,6 +47,140 @@ def get_client_ip(request):
     else:
         ip = request.META.get("REMOTE_ADDR")
     return ip.strip()
+
+
+# ---------------------------------------------------------------------
+# Vista de aprobación vía URL única
+# ---------------------------------------------------------------------
+def approve_blog_view(request, token):
+    """Aprobar un borrador mediante token enviado por email.
+
+    El token está asociado a un ``BlogPost`` que tiene ``is_published=False``.
+    La vista verifica que el token exista, que no haya expirado (48 h) y que
+    el usuario que accede sea staff o superuser. Si todo es correcto, publica
+    el artículo, crea/actualiza el registro de ``BlogModeration`` y notifica al
+    autor.
+    """
+    # Buscar el post por token
+    try:
+        post = BlogPost.objects.get(approval_token=token)
+    except BlogPost.DoesNotExist:
+        return HttpResponse(
+            "Enlace de aprobación inválido o ya usado.", status=400
+        )
+
+    # Verificar expiración del token (48 h)
+    if not post.approval_token_created or (
+        timezone.now() - post.approval_token_created > timedelta(hours=48)
+    ):
+        return HttpResponse("Enlace de aprobación expirado.", status=400)
+
+    # Sólo staff/superuser puede aprobar vía esta ruta
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return HttpResponse("Permiso denegado.", status=403)
+
+    # Aprobar el post
+    post.is_published = True
+    post.moderation_status = "approved"
+    # Invalida token para uso futuro
+    post.approval_token = None
+    post.approval_token_created = None
+    post.save()
+
+    # Registrar moderación
+    BlogModeration.objects.create(
+        blog_post=post,
+        author=post.author,
+        reviewer=request.user,
+        action="approved",
+        comment="Aprobado vía enlace de email",
+    )
+
+    # Notificar al autor por email
+    if post.author and post.author.email:
+        subject = f"[JD Blog] Tu artículo '{post.title}' ha sido publicado"
+        message = (
+            f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+            f"Tu artículo '{post.title}' ha sido aprobado y publicado por el administrador.\n"
+            f"Puedes verlo en: {settings.SITE_URL}{post.get_absolute_url()}\n\n"
+            "Gracias por contribuir."
+        )
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[post.author.email],
+            fail_silently=True,
+        )
+
+    # Redirigir al detalle del post o mostrar mensaje de éxito
+    return redirect(post.get_absolute_url())
+
+
+def reject_blog_view(request, token):
+    """Rechazar un borrador mediante token enviado por email.
+
+    Cambia el estado a ``rejected`` y elimina el token para que no pueda usarse.
+    """
+    try:
+        post = BlogPost.objects.get(approval_token=token)
+    except BlogPost.DoesNotExist:
+        return HttpResponse("Enlace de rechazo inválido o ya usado.", status=400)
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return HttpResponse("Permiso denegado.", status=403)
+
+    post.moderation_status = "rejected"
+    post.approval_token = None
+    post.approval_token_created = None
+    post.save()
+
+    BlogModeration.objects.create(
+        blog_post=post,
+        author=post.author,
+        reviewer=request.user,
+        action="rejected",
+        comment="Rechazado vía enlace de email",
+    )
+
+    # Notificar al autor del rechazo
+    if post.author and post.author.email:
+        subject = f"[JD Blog] Tu artículo '{post.title}' ha sido rechazado"
+        message = (
+            f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+            f"Tu artículo '{post.title}' ha sido revisado y rechazado por el administrador."
+        )
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[post.author.email],
+            fail_silently=True,
+        )
+
+    return redirect("blog:dashboard")
+
+
+# ---------------------------------------------------------------------
+# Dashboard de moderación (lista borradores pendientes)
+# ---------------------------------------------------------------------
+@login_required
+def dashboard_view(request):
+    """Muestra una tabla con los artículos en estado borrador (pending).
+
+    Sólo usuarios con privilegios de staff **o** superusuario pueden acceder.
+    Los demás verán una lista vacía para no revelar información sensible.
+    """
+    # Permitir tanto staff como superuser
+    if not (request.user.is_staff or request.user.is_superuser):
+        drafts = BlogPost.objects.none()
+    else:
+        # Mostrar los posts que aún no han sido aprobados o rechazados,
+        # independientemente del valor de ``is_published``. Esto permite
+        # visualizar borradores que fueron creados con la marca de
+        # publicación previa al sistema de moderación.
+        drafts = BlogPost.objects.filter(moderation_status="pending")
+    return render(request, "blog/dashboard.html", {"posts": drafts})
 
 
 class BlogListView(ListView):
@@ -103,7 +252,33 @@ class BlogDetailView(DetailView):
     template_name = "blog/blog_detail.html"
     context_object_name = "post"
     slug_field = "slug"
-    queryset = BlogPost.objects.filter(is_published=True).prefetch_related("tags")
+    # No establecemos ``queryset`` a nivel de clase para poder
+    # ajustarlo dinámicamente en ``get_queryset`` y permitir que
+    # el autor y los superusuarios vean borradores propios.
+    queryset = BlogPost.objects.prefetch_related("tags")
+
+    def get_queryset(self):
+        """Permitir que el autor y superusuarios/staff vean borradores.
+
+        Para usuarios anónimos o que no son el autor, solo se muestran
+        posts publicados.  Si el usuario autenticado es el autor del
+        artículo **o** es superuser/staff, también puede ver borradores
+        (``is_published=False``) para poder previsualizarlos.
+        """
+        qs = super().get_queryset()
+        user = self.request.user
+
+        if user.is_authenticated:
+            # El autor siempre puede ver su propio artículo
+            # (incluso si está en borrador)
+            return qs.filter(
+                Q(is_published=True)
+                | Q(author=user)
+                | Q(author__isnull=True, is_published=True)
+            )
+        else:
+            # Usuarios anónimos solo ven artículos publicados
+            return qs.filter(is_published=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -361,18 +536,22 @@ def check_comment_status(request, slug, comment_id):
 def blog_editor_view(request, slug=None):
     """Vista del editor de blogs (GET).
 
-    Si se proporciona un slug, se carga el artículo existente para edición.
+    Si se proporciona un slug, se carga el artículo existente para edición y se muestra
+    un banner con el estado de moderación del borrador.
     """
-    from blog.models import Category
+    from blog.models import Category, BlogPost
 
-    return render(
-        request,
-        "blog/blog_editor.html",
-        {
-            "categories": Category.objects.filter(is_active=True),
-            "edit_slug": slug,
-        },
-    )
+    context = {
+        "categories": Category.objects.filter(is_active=True),
+        "edit_slug": slug,
+    }
+    if slug:
+        try:
+            post = BlogPost.objects.get(slug=slug)
+            context["post_status"] = post.moderation_status
+        except BlogPost.DoesNotExist:
+            context["post_status"] = None
+    return render(request, "blog/blog_editor.html", context)
 
 
 @require_http_methods(["GET"])

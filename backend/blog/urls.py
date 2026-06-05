@@ -11,6 +11,9 @@ from blog.views import (
     save_blog_api,
     upload_file_api,
     get_blog_for_edit,
+    dashboard_view,
+    approve_blog_view,
+    reject_blog_view,
 )
 
 app_name = "blog"
@@ -25,6 +28,12 @@ urlpatterns = [
     path("api/save-blog/", save_blog_api, name="api_save_blog"),
     path("api/upload-file/", upload_file_api, name="api_upload_file"),
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
+    # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
+    path("dashboard/", dashboard_view, name="dashboard"),
+    path(
+        "dashboard/approve/<slug:token>/", approve_blog_view, name="approve_blog"
+    ),
+    path("dashboard/reject/<slug:token>/", reject_blog_view, name="reject_blog"),
     path("<slug:slug>/", BlogDetailView.as_view(), name="blog_detail"),
     path("<slug:slug>/comment/", post_comment, name="post_comment"),
     path(

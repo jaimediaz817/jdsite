@@ -102,9 +102,9 @@ class BlogProcessor:
             self.stdout.write("✅ Imagenes verificadas y copiadas correctamente")
             return slug
 
-        # Extract and remove the first image as cover
+        # Extract and remove the first image as cover (with frontmatter fallback)
         cover_image_path, content_sin_portada = self.extract_cover_image(
-            content_md, blog_dir, blog_static_dir, slug
+            content_md, blog_dir, blog_static_dir, slug, frontmatter
         )
 
         # Pre‑process special markdown blocks before conversion
@@ -610,15 +610,26 @@ class BlogProcessor:
     def associate_tags_to_blog(self, blog_obj, tags):
         self.command.associate_tags_to_blog(blog_obj, tags)
 
-    # The original command also defined ``extract_cover_image`` – we keep it here.
     def extract_cover_image(
-        self, content_md: str, blog_dir: Path, blog_static_dir: Path, slug: str
+        self,
+        content_md: str,
+        blog_dir: Path,
+        blog_static_dir: Path,
+        slug: str,
+        frontmatter: dict | None = None,
     ):
-        """Extract the first image as cover, skipping video files."""
+        """Extract the first image as cover, skipping video files.
+
+        If no image is found in the markdown content, falls back to the
+        ``image`` field from the frontmatter (if provided), constructing
+        the full path ``/static/blogs/{slug}/{filename}``.
+        """
         VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
         lines = content_md.split("\n")
         cover_path = None
         new_content = []
+
+        # FASE 1: Buscar la primera imagen en el contenido markdown
         for line in lines:
             img_match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
             if img_match and not cover_path:
@@ -636,4 +647,15 @@ class BlogProcessor:
                 cover_path = img_src
                 continue
             new_content.append(line)
+
+        # FASE 2: Si no se encontró imagen en el contenido, usar el frontmatter
+        if not cover_path and frontmatter and frontmatter.get("image"):
+            fm_image = frontmatter["image"].strip()
+            if fm_image:
+                static_file = blog_static_dir / fm_image
+                source_file = blog_dir / fm_image
+                if source_file.exists():
+                    shutil.copy2(source_file, static_file)
+                cover_path = f"/static/blogs/{slug}/{fm_image}"
+
         return cover_path, "\n".join(new_content)

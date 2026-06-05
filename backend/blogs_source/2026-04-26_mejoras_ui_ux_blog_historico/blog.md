@@ -2,8 +2,9 @@
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
 date: 2026-04-26
-draft: falseimage: "/static/blogs/2026-04-26_mejoras_ui_ux_blog_historico/image-2.png"
-author: "Jaime Díaz"
+draft: false
+author: "jdsolutions817@gmail.com"
+author_email: "jdsolutions817@gmail.com"
 category: "UI/UX"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
 meta_title: "Mejoras UI/UX +40% tiempo lectura blog"
@@ -18,6 +19,9 @@ tiempo_lectura: 817
 
 [vl]: highlight
 Esta es la primera línea de mi párrafo.
+Esta es la segunda línea del mismo párrafo.
+Esta es la segunda línea del mismo párrafo.
+Esta es la segunda línea del mismo párrafo 2 .
 Esta es la segunda línea del mismo párrafo.
 Y esta es la tercera línea.
 Todo esto sigue siendo un solo párrafo.
@@ -214,5 +218,7 @@ Esto es solo el principio. Ahora que tenemos la base solida, vamos a implementar
 <!-- force reimport -->
 
 #
+
+
 
 

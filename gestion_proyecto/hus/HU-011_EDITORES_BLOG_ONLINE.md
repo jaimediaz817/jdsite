@@ -124,7 +124,7 @@ title: "..."                    # INPUT usuario
 description: "..."              # INPUT usuario
 date: 2026-06-03                # AUTO (hoy)
 draft: false                    # AUTO (true si no-admin)
-author: "Jaime Díaz"            # AUTO (request.user)
+author: "jdsolutions817@gmail.com"            # AUTO (request.user)
 author_email: "..."             # AUTO (request.user.email)
 author_provider: "google"       # AUTO (OAuth)
 category: "Tecnología"          # INPUT usuario

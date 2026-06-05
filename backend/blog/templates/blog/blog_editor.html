@@ -31,6 +31,9 @@
                 <aside class="col-md-3 editor-sidebar">
                     <h4 class="sidebar-title">📝 Cabecera del artículo</h4>
                     <form id="frontmatter-form">
+                        <!-- Campo oculto para identificar edición vs creación -->
+                        <input type="hidden" id="edit-slug" name="slug" value="">
+                        
                         <div class="mb-3">
                             <label class="form-label">Título *</label>
                             <input type="text" id="title" class="form-control" required maxlength="60" placeholder="Título del artículo">

@@ -45,6 +45,15 @@
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     overflow: hidden;
+    position: relative;
+}
+
+.blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.4s ease, filter 0.4s ease;
 }
 
 .title-article-content {
@@ -265,6 +274,17 @@
     color: #3498db;
     /* azul más vivo al pasar el cursor */
     transform: scale(1.15);
+}
+
+/* --- Botón Editar --- */
+.edit-btn-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+.edit-btn {
+    position: relative;
+    z-index: 10;
 }
 
 /* --- Tags/Badges --- */

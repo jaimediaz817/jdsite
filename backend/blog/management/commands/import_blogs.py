@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.text import slugify
 from django.db import connection
+from django.contrib.auth.models import User
 from blog.models import BlogPost, Category, Tag
 import markdown
 from bs4 import BeautifulSoup
@@ -1131,6 +1132,19 @@ class Command(BaseCommand):
                 f"⚠️  Meta Description truncado: '{meta_description_raw[:50]}...'"
             )
 
+        # Buscar usuario por email para asignar autor
+        author_email = frontmatter.get("author_email", "")
+        author = None
+        if author_email:
+            try:
+                author = User.objects.get(email__iexact=author_email)
+            except User.DoesNotExist:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"⚠️  Usuario con email '{author_email}' no encontrado. Autor no asignado."
+                    )
+                )
+
         defaults = {
             "source_hash": file_hash,
             "title": title,
@@ -1141,6 +1155,7 @@ class Command(BaseCommand):
             "meta_title": meta_title,
             "meta_description": meta_description,
             "cover_image": cover_image_path or frontmatter.get("image", None),
+            "author": author,
         }
 
         if "date" in frontmatter:

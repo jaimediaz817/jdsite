@@ -138,8 +138,83 @@ def get_comment_count(blog_slug):
 
 
 # ======================================================
-# HU-011: Editor Online - Servicio de Guardado de Blogs
+# HU-011.4: Consistencia Markdown ↔ Editor Online
 # ======================================================
+# Constantes de campos gestionados por el editor. Cualquier campo
+# del frontmatter que NO esté en esta lista se preserva tal cual
+# (merge inteligente).
+# ======================================================
+EDITOR_MANAGED_FIELDS = {
+    "title",
+    "description",
+    "date",
+    "draft",
+    "image",
+    "category",
+    "tags",
+    "meta_title",
+    "meta_description",
+    "keywords",
+    "tiempo_lectura",
+    "palabra_clave_principal",
+    "author",
+    "author_email",
+    "author_provider",
+    # HU-014: tiempo_lectura alias
+    "reading_time",
+}
+
+
+def _parse_frontmatter(text):
+    """
+    Parsea el frontmatter YAML de un .md. Retorna (dict, body_str).
+    Si no hay frontmatter, retorna ({}, text).
+    """
+    import yaml
+
+    if not text.startswith("---"):
+        return {}, text
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return {}, text
+    try:
+        fm = yaml.safe_load(parts[1]) or {}
+        if not isinstance(fm, dict):
+            fm = {}
+        return fm, parts[2]
+    except Exception:
+        return {}, text
+
+
+def _build_frontmatter(fm_dict):
+    """
+    Construye el string del frontmatter YAML desde un dict.
+    Mantiene el orden de las claves que ya existían y añade las
+    nuevas al final. Esto preserva el formato legible.
+    """
+    lines = ["---"]
+    for key, value in fm_dict.items():
+        # Saltar valores None o vacíos que no aportan
+        if value is None or value == "":
+            # Solo saltar si NO es draft (que puede ser false)
+            if key != "draft":
+                continue
+        if isinstance(value, list):
+            # tags: ["a", "b", "c"]
+            value_str = json.dumps(value, ensure_ascii=False)
+            lines.append(f"{key}: {value_str}")
+        elif isinstance(value, bool):
+            lines.append(f"{key}: {'true' if value else 'false'}")
+        elif isinstance(value, int):
+            lines.append(f"{key}: {value}")
+        else:
+            # String normal — escapar comillas dobles internas
+            escaped = str(value).replace('"', '\\"')
+            lines.append(f'{key}: "{escaped}"')
+    lines.append("---")
+    lines.append("")  # línea en blanco después del cierre
+    return "\n".join(lines) + "\n"
+
 
 import json
 import shutil
@@ -155,18 +230,22 @@ from allauth.socialaccount.models import SocialAccount
 
 def save_blog_to_source(data, user):
     """
-    Guarda un artículo en blogs_source/ y ejecuta import_blogs.
+    HU-011.4: Guarda o actualiza un artículo en blogs_source/ y ejecuta
+    import_blogs. Hace MERGE inteligente del frontmatter:
+    - Campos gestionados por el editor: se sobreescriben.
+    - Campos custom del .md original: se PRESERVAN intactos.
 
     Recibe:
         data (dict): title, description, content_md, category, tags,
                      tiempo_lectura, meta_title, meta_description,
-                     keywords, palabra_clave_principal, files[]
+                     keywords, palabra_clave_principal, files[],
+                     cover_filename (opcional), slug (opcional)
         user (User): usuario autenticado
 
     Retorna:
-        dict: {slug, folder, published}
+        dict: {slug, folder, published, status}
     """
-    # 1. Extraer datos
+    # 1. Extraer datos del payload
     title = data.get("title", "").strip()
     description = data.get("description", "").strip()
     content_md = data.get("content_md", "")
@@ -178,24 +257,70 @@ def save_blog_to_source(data, user):
     keywords = data.get("keywords", "")
     palabra_clave_principal = data.get("palabra_clave_principal", "")
     files_list = data.get("files", [])
+    cover_filename = data.get("cover_filename", "").strip()
     is_admin = user.is_superuser
 
-    # 2. Generar slug único
-    base_slug = slugify(title)[:60] or f"articulo-{uuid.uuid4().hex[:8]}"
-    slug = base_slug
-    counter = 1
+    # Detectar si es edición o creación
+    existing_slug = data.get("slug", "").strip()
+    is_edit = bool(existing_slug)
+
+    # 2. Determinar carpeta y leer frontmatter previo si es edición
     source_dir = Path(settings.BASE_DIR) / "blogs_source"
-    while list(source_dir.glob(f"*_{slug}")):
-        slug = f"{base_slug}-{counter}"
-        counter += 1
+    target_dir = None
+    is_published = is_admin
+    existing_fm = {}  # frontmatter del .md original (vacío si es nuevo)
 
-    # 3. Crear carpeta YYYY-MM-DD_slug/
+    if is_edit:
+        for folder in source_dir.iterdir():
+            if folder.is_dir():
+                if (
+                    folder.name == existing_slug
+                    or folder.name.endswith(f"_{existing_slug}")
+                    or (
+                        "_" in folder.name
+                        and "_".join(folder.name.split("_")[1:]) == existing_slug
+                    )
+                ):
+                    target_dir = folder
+                    break
+
+        if not target_dir:
+            raise ValueError(
+                f"No se encontró la carpeta del artículo con slug: {existing_slug}"
+            )
+
+        # Leer frontmatter existente para hacer merge
+        blog_file = target_dir / "blog.md"
+        if blog_file.exists():
+            try:
+                raw = blog_file.read_text(encoding="utf-8")
+                existing_fm, _ = _parse_frontmatter(raw)
+            except Exception:
+                pass
+
+            # Preservar estado draft si existe
+            draft_val = existing_fm.get("draft")
+            if draft_val is not None:
+                is_published = str(draft_val).lower() != "true"
+
+    # 3. Generar slug
     today = datetime.now().strftime("%Y-%m-%d")
-    folder_name = f"{today}_{slug}"
-    target_dir = source_dir / folder_name
-    target_dir.mkdir(parents=True, exist_ok=True)
 
-    # 4. Mover archivos de /media/blog_editor_temp/<user_id>/ a target_dir
+    if is_edit:
+        slug = existing_slug
+        folder_name = target_dir.name
+    else:
+        base_slug = slugify(title)[:60] or f"articulo-{uuid.uuid4().hex[:8]}"
+        slug = base_slug
+        counter = 1
+        while list(source_dir.glob(f"*_{slug}")):
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        folder_name = f"{today}_{slug}"
+        target_dir = source_dir / folder_name
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+    # 4. Mover archivos subidos de /media/blog_editor_temp/<user_id>/ a target_dir
     temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(user.id)
     image_filename = ""
     for f in files_list:
@@ -207,47 +332,84 @@ def save_blog_to_source(data, user):
             if filetype == "image" and not image_filename:
                 image_filename = filename
 
-    # 5. Obtener proveedor OAuth del usuario
-    try:
-        provider = user.socialaccount_set.first().provider
-    except Exception:
-        provider = "local"
+    # 4.1. HU-011.4 Fase 4: cover_filename del editor tiene PRIORIDAD
+    if cover_filename:
+        # Verificar que el cover_filename realmente esté en la carpeta destino
+        if (target_dir / cover_filename).exists():
+            image_filename = cover_filename
+        else:
+            # Si pidió un cover que no existe, intentar con la primera imagen
+            pass
 
-    # 6. Generar frontmatter
-    author_name = user.get_full_name() or user.username
-    frontmatter = f"""---
-title: "{title}"
-description: "{description}"
-date: {today}
-draft: {'false' if is_admin else 'true'}
-image: "{image_filename}"
-author: "{author_name}"
-author_email: "{user.email}"
-author_provider: "{provider}"
-category: "{category}"
-tags: {json.dumps(tags, ensure_ascii=False)}
-meta_title: "{meta_title}"
-meta_description: "{meta_description}"
-keywords: "{keywords}"
-tiempo_lectura: {tiempo_lectura}
-palabra_clave_principal: "{palabra_clave_principal}"
----
+    # 4.2. En edición, si no hay cover nuevo, preservar el del .md original
+    if is_edit and not image_filename:
+        image_filename = existing_fm.get("image", "")
+        if not image_filename:
+            # Fallback: primera imagen de la carpeta
+            for f in target_dir.iterdir():
+                if f.is_file() and f.suffix.lower() in (
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                    ".gif",
+                    ".webp",
+                ):
+                    image_filename = f.name
+                    break
 
+    # 5. HU-011.4 Fase 2: Preservar author_email y author originales
+    # Si el .md ya tiene un autor, lo respetamos (no se sobreescribe con
+    # el usuario que está editando). Solo en artículos NUEVOS se asigna
+    # el autor actual.
+    if is_edit and existing_fm.get("author_email"):
+        author_name = existing_fm.get(
+            "author", user.get_full_name() or user.username
+        )
+        author_email = existing_fm.get("author_email")
+        author_provider = existing_fm.get("author_provider", "local")
+    else:
+        author_name = user.get_full_name() or user.username
+        author_email = user.email
+        try:
+            author_provider = user.socialaccount_set.first().provider
+        except Exception:
+            author_provider = "local"
 
-"""
+    # 6. HU-011.4 Fase 1: MERGE inteligente del frontmatter
+    # Empezamos con existing_fm (preserva TODO lo desconocido) y
+    # sobreescribimos solo los campos gestionados por el editor.
+    new_fm = dict(existing_fm)  # copia
 
-    # 7. Guardar blog.md
-    blog_content = frontmatter + content_md
+    # Campos gestionados por el editor
+    new_fm["title"] = title
+    new_fm["description"] = description
+    new_fm["date"] = today
+    new_fm["draft"] = is_published  # bool — se serializa a 'true'/'false'
+    new_fm["image"] = image_filename
+    new_fm["category"] = category
+    new_fm["tags"] = tags
+    new_fm["meta_title"] = meta_title
+    new_fm["meta_description"] = meta_description
+    new_fm["keywords"] = keywords
+    new_fm["tiempo_lectura"] = tiempo_lectura
+    new_fm["palabra_clave_principal"] = palabra_clave_principal
+    new_fm["author"] = author_name
+    new_fm["author_email"] = author_email
+    new_fm["author_provider"] = author_provider
+
+    # Construir el archivo final
+    frontmatter_str = _build_frontmatter(new_fm)
+    blog_content = frontmatter_str + content_md
     (target_dir / "blog.md").write_text(blog_content, encoding="utf-8")
 
-    # 8. Ejecutar import_blogs (el comando registra el artículo en BD)
+    # 7. Ejecutar import_blogs
     call_command("import_blogs")
 
     return {
         "slug": slug,
         "folder": folder_name,
-        "published": is_admin,
-        "status": "published" if is_admin else "draft",
+        "published": is_published,
+        "status": "published" if is_published else "draft",
     }
 
 
@@ -300,8 +462,7 @@ def save_uploaded_file(uploaded_file, user):
     video_exts = (".mp4", ".webm", ".mov", ".avi")
     ftype = "video" if ext in video_exts else "image"
 
-    # Construir URL accesible para el frontend. Usamos MEDIA_URL que normalmente apunta a '/media/'
-    # y la ruta donde guardamos los archivos temporales: blog_editor_temp/<user_id>/
+    # Construir URL accesible para el frontend.
     media_url = getattr(settings, "MEDIA_URL", "/media/")
     url_path = f"{media_url.rstrip('/')}/blog_editor_temp/{user.id}/{safe_name}"
     return {

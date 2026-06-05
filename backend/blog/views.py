@@ -358,8 +358,11 @@ def check_comment_status(request, slug, comment_id):
 
 
 @login_required
-def blog_editor_view(request):
-    """Vista del editor de blogs (GET)."""
+def blog_editor_view(request, slug=None):
+    """Vista del editor de blogs (GET).
+
+    Si se proporciona un slug, se carga el artículo existente para edición.
+    """
     from blog.models import Category
 
     return render(
@@ -367,7 +370,129 @@ def blog_editor_view(request):
         "blog/blog_editor.html",
         {
             "categories": Category.objects.filter(is_active=True),
+            "edit_slug": slug,
         },
+    )
+
+
+@require_http_methods(["GET"])
+def get_blog_for_edit(request, slug):
+    """
+    Devuelve los datos de un artículo existente para su edición.
+    Extrae el frontmatter y el contenido markdown.
+    Copia los recursos multimedia al directorio temporal del usuario.
+
+    SEGURIDAD (HU-011.3): Solo el autor del blog o un superusuario
+    puede abrir un artículo en el editor. Esto garantiza que cada
+    usuario solo pueda editar sus propios blogs.
+    """
+    from blog.utils.yaml_simple import parse_frontmatter
+    import shutil
+    from pathlib import Path
+
+    # ── 0. Verificar autoría ANTES de hacer cualquier trabajo ──
+    try:
+        blog_post = BlogPost.objects.get(slug=slug)
+    except BlogPost.DoesNotExist:
+        return JsonResponse(
+            {"error": f"Artículo con slug '{slug}' no encontrado en BD."},
+            status=404,
+        )
+
+    is_owner = blog_post.author_id == request.user.id or (
+        blog_post.author and blog_post.author.email == request.user.email
+    )
+    if not (request.user.is_superuser or is_owner):
+        return JsonResponse(
+            {
+                "error": (
+                    "No tienes permisos para editar este artículo. "
+                    "Solo el autor del blog puede abrirlo en el editor."
+                )
+            },
+            status=403,
+        )
+
+    # Buscar la carpeta del artículo
+    source_dir = Path(settings.BASE_DIR) / "blogs_source"
+    target_dir = None
+
+    # El slug puede ser el nombre completo de la carpeta o una parte
+    # Buscar carpetas que contengan el slug al final
+    for folder in source_dir.iterdir():
+        if folder.is_dir():
+            # Intentar coincidencia exacta primero
+            if folder.name == slug:
+                target_dir = folder
+                break
+            # Intentar con endswith _slug (formato YYYY-MM-DD_slug)
+            if folder.name.endswith(f"_{slug}"):
+                target_dir = folder
+                break
+            # Intentar extrayendo slug después del primer _
+            if "_" in folder.name:
+                folder_slug = "_".join(folder.name.split("_")[1:])
+                if folder_slug == slug:
+                    target_dir = folder
+                    break
+
+    if not target_dir:
+        return JsonResponse(
+            {"error": f"No se encontró carpeta para slug: {slug}"},
+            status=404,
+        )
+
+    blog_file = target_dir / "blog.md"
+    if not blog_file.exists():
+        return JsonResponse(
+            {"error": "Archivo blog.md no encontrado"}, status=404
+        )
+
+    # Leer el contenido
+    content = blog_file.read_text(encoding="utf-8")
+
+    # Extraer frontmatter
+    frontmatter = {}
+    markdown_content = content
+
+    if content.startswith("---"):
+        parts = content.split("---", 2)
+        if len(parts) >= 3:
+            try:
+                frontmatter, markdown_content = parse_frontmatter(content)
+                # body ya viene de parse_frontmatter
+            except Exception as e:
+                return JsonResponse(
+                    {"error": f"Error parsing frontmatter: {str(e)}"}, status=500
+                )
+
+    # No copiar archivos a media/ - usar directamente desde static/blogs/
+    existing_files = []
+    IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif", ".webp")
+    VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi")
+
+    for f in target_dir.iterdir():
+        if f.is_file():
+            if f.suffix.lower() in IMAGE_EXTENSIONS + VIDEO_EXTENSIONS:
+                ftype = (
+                    "video" if f.suffix.lower() in VIDEO_EXTENSIONS else "image"
+                )
+                existing_files.append(
+                    {
+                        "filename": f.name,
+                        "type": ftype,
+                        "url": f"/static/blogs/{slug}/{f.name}",
+                    }
+                )
+
+    return JsonResponse(
+        {
+            "slug": slug,
+            "frontmatter": frontmatter,
+            "content_md": markdown_content,
+            "existing_files": existing_files,
+            "folder": target_dir.name,
+        }
     )
 
 

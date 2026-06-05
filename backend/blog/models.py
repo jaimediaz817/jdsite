@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+from django.conf import settings
 
 # Import avatar helper functions from the sibling ``utils.py`` module.
 # Using ``.utils.utils`` avoids the circular import caused by importing the
@@ -107,6 +108,33 @@ class BlogPost(models.Model):
             "'tiempo_lectura' o 'reading_time'."
         ),
     )
+
+    # Autoría (para HU-011.3: edición de artículos propios)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="blog_posts",
+        help_text="Usuario autor del artículo",
+    )
+
+    # ---------------------------------------------------------------------
+    # 📌 Propiedad auxiliar para compatibilidad con plantillas
+    # ---------------------------------------------------------------------
+    @property
+    def author_email(self):
+        """Devuelve el email del autor del artículo.
+
+        La plantilla ``blog_list.html`` verifica ``post.author_email`` para
+        decidir si muestra el botón de edición. En versiones anteriores el
+        modelo tenía un campo ``author_email`` en el front‑matter, pero se
+        migró a una relación FK con ``User``. Esta propiedad mantiene la
+        compatibilidad sin introducir un nuevo campo en la base de datos.
+        """
+        if self.author:
+            return getattr(self.author, "email", "")
+        return ""
 
     class Meta:
         ordering = ["-publish_date"]

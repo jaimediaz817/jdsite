@@ -186,6 +186,14 @@
                                         </a>
                                     </div>
                                     {% endif %}
+                                    
+                                    {% if user.is_authenticated and post.author == user %}
+                                    <div class="mt-2 edit-btn-wrapper">
+                                        <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                    </div>
+                                    {% endif %}
                                     <div class="blog-card-meta small text-muted d-flex align-items-center gap-3 mt-auto pt-2 border-top">
                                         <span><i class="far fa-calendar-alt mr-1"></i> {{ post.publish_date|date:"d M Y" }}</span>
                                         <span><i class="far fa-clock mr-1"></i> {{ post.reading_time|default:"5" }} min</span>

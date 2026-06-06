@@ -444,6 +444,7 @@ window.addEventListener('load', () => {
             body: JSON.stringify(data),
         });
         const result = await response.json();
+        console.log('🐛 [DEBUG] save response =', result);
         if (response.ok) {
             // Guardado exitoso → marcamos como guardado para que no aparezca la alerta de salida
             isSaved = true;
@@ -516,17 +517,43 @@ window.addEventListener('beforeunload', (e) => {
         document.getElementById('keywords').value = fm.keywords || '';
         document.getElementById('tiempo_lectura').value = fm.tiempo_lectura || 1;
         easyMDE.value(data.content_md || '');
+        // 🐛 DEBUG temporal: mostrar lo que llega del backend
+        console.log('🐛 [DEBUG] data.frontmatter =', data.frontmatter);
+        console.log('🐛 [DEBUG] fm.cover_image =', fm.cover_image);
+        console.log('🐛 [DEBUG] fm.image =', fm.image);
+        console.log('🐛 [DEBUG] data.existing_files =', data.existing_files);
         // Si el backend envía archivos existentes, marcamos cuál es la portada
         // según el frontmatter. Compatibilidad con la clave antigua ``image``.
         if (data.existing_files && data.existing_files.length > 0) {
-            const coverFromFrontmatter = fm.cover_image || fm.image || '';
+            // El frontmatter puede traer la portada como:
+            //   - ruta completa: "/static/blogs/<slug>/<filename>"
+            //   - solo el nombre: "<filename>"
+            //   - ruta Markdown: "./<filename>"
+            // Extraemos solo el nombre del archivo para comparar de forma
+            // robusta.
+            const coverRaw = fm.cover_image || fm.image || '';
+            const coverName = coverRaw ? coverRaw.split('/').pop() : '';
+            console.log('🐛 [DEBUG] coverRaw =', coverRaw);
+            console.log('🐛 [DEBUG] coverName =', coverName);
+            let resolvedCoverName = '';
             data.existing_files.forEach(file => {
-                const isCover = (file.filename === coverFromFrontmatter);
+                const isCover = (file.filename === coverName);
                 file.is_cover = isCover;
+                if (isCover) resolvedCoverName = file.filename;
+                console.log('🐛 [DEBUG] file =', file.filename, 'isCover =', isCover);
                 // Añadir al arreglo global para que setAsCover funcione
                 uploadedFiles.push(file);
                 renderUploadedFile(file);
             });
+            // ✅ Garantizar que la estrella aparezca rellena aunque haya
+            // edge cases (mayúsculas, espacios, etc.). Llamamos a
+            // setAsCover que es la función canónica que aplica todas
+            // las clases CSS y actualiza el campo oculto.
+            if (resolvedCoverName && typeof setAsCover === 'function') {
+                setAsCover(resolvedCoverName);
+            }
+        } else {
+            console.warn('🐛 [DEBUG] data.existing_files está vacío o es null');
         }
         // Sincronizar el campo de portada con la imagen marcada
         const coverInput = document.getElementById('cover_image');

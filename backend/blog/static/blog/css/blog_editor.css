@@ -289,55 +289,55 @@
     color: #fff;
 }
 
-/* Contenedor flex para múltiples items */
-#uploaded-files {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 0;
-    padding: 8px 0;
+/* ✅ HU: estado de portada — estrella rellena siempre visible */
+.uploaded-item.is-cover {
+    box-shadow: 0 0 0 3px #ffc107, 0 4px 12px rgba(255, 193, 7, 0.4);
+    border: 2px solid #ffc107;
 }
 
-/* Botones de acción */
-.editor-actions {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #e0e0e0;
+.uploaded-item.is-cover .uploaded-image,
+.uploaded-item.is-cover .uploaded-video {
+    outline: 2px solid #ffc107;
+    outline-offset: -2px;
 }
 
-.editor-actions .btn-lg {
-    padding: 12px 30px;
-    font-weight: 600;
+.uploaded-controls .btn-cover {
+    color: #6c757d;
 }
 
-/* Indicador de auto-save */
-.autosave-indicator {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 999;
+.uploaded-controls .btn-cover.is-active {
+    background: #ffc107;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3), 0 2px 8px rgba(255, 193, 7, 0.5);
+    transform: scale(1.05);
 }
 
-.autosave-indicator.show {
+.uploaded-controls .btn-cover.is-active:hover {
+    background: #e0a800;
+}
+
+/* ✅ Badge de portada */
+.uploaded-item .cover-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ✅ Mostrar controles cuando es portada (sin necesidad de hover) */
+.uploaded-item.is-cover .uploaded-controls {
     opacity: 1;
 }
 
-/* Toast de auto-save */
-#autosave-toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-    display: none;
-}
 
 #autosave-toast.show {
     display: block;

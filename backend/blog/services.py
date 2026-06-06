@@ -162,6 +162,7 @@ EDITOR_MANAGED_FIELDS = {
     "author",
     "author_email",
     "author_provider",
+    "author_id",
     # HU-014: tiempo_lectura alias
     "reading_time",
 }
@@ -325,6 +326,8 @@ def save_blog_to_source(data, user):
     # 4. Mover archivos subidos de /media/blog_editor_temp/<user_id>/ a target_dir
     temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(user.id)
     image_filename = ""
+
+    # Primero mover todos los archivos
     for f in files_list:
         filename = f.get("filename", "")
         filetype = f.get("type", "image")
@@ -334,23 +337,43 @@ def save_blog_to_source(data, user):
             if filetype == "image" and not image_filename:
                 image_filename = filename
 
-    # 4.1. HU-011.4 Fase 4: cover_filename del editor tiene PRIORIDAD
+    # 4.1. HU-011.4 Fase 4: cover_filename del editor tiene PRIORIDAD ABSOLUTA
+    # Después de mover todos los archivos, si el usuario especificó una portada,
+    # esa es la que usamos, independientemente de si es la primera imagen o no.
     if cover_filename:
         # Verificar que el cover_filename realmente esté en la carpeta destino
+        # (ya debería estar después del bucle de movimiento O ya existir en target_dir)
         if (target_dir / cover_filename).exists():
             image_filename = cover_filename
         else:
-            # Si pidió un cover que no existe, intentar con la primera imagen
-            pass
+            # Si pidió un cover que no existe, intentar buscar en target_dir
+            # (puede que la imagen ya esté en la carpeta pero con nombre diferente)
+            for f in target_dir.iterdir():
+                if f.is_file() and f.name.lower() == cover_filename.lower():
+                    image_filename = f.name
+                    break
+            # Si aún no se encuentra, mantener la primera imagen del bucle anterior
+    # Si no hay cover_filename especificado, mantenemos la primera imagen del bucle
 
     # 4.2. En edición, si no hay cover nuevo, preservar el del .md original
     if is_edit and not image_filename:
-        # Intentamos recuperar la portada guardada previamente. El frontmatter
-        # ahora usa la clave ``cover_image``; mantenemos compatibilidad leyendo
-        # también ``image`` por si existen artículos antiguos.
-        image_filename = existing_fm.get("cover_image", "") or existing_fm.get(
+        # Recuperamos la portada guardada previamente. El frontmatter usa
+        # la clave ``cover_image`` (también aceptamos ``image`` por
+        # compatibilidad con artículos antiguos). El valor puede venir
+        # como:
+        #   - ruta completa: "/static/blogs/<slug>/<filename>"
+        #   - solo el nombre: "<filename>"
+        #   - ruta relativa Markdown: "./<filename>" o "<filename>"
+        # Lo normalizamos a **solo el nombre del archivo** para que la
+        # lógica de abajo construya la ruta correcta
+        # ``/static/blogs/<folder_name>/<filename>``.
+        raw_cover = existing_fm.get("cover_image", "") or existing_fm.get(
             "image", ""
         )
+        if raw_cover:
+            # ``Path(...).name`` extrae solo el nombre del archivo,
+            # descartando cualquier prefijo de ruta.
+            image_filename = Path(str(raw_cover).strip()).name
         if not image_filename:
             # Fallback: primera imagen de la carpeta
             for f in target_dir.iterdir():
@@ -394,18 +417,20 @@ def save_blog_to_source(data, user):
     new_fm["draft"] = is_published  # bool — se serializa a 'true'/'false'
     # NOTE: El campo de portada en el modelo se llama ``cover_image``.
     # Anteriormente se guardaba bajo la clave ``image`` en el frontmatter,
-    # lo que provocaba que la plantilla ``blog_list.html`` no encontrara
-    # la ruta y mostrara un ``src`` vacío. Cambiamos la clave a
-    # ``cover_image`` para que sea coherente con el modelo y el filtro
-    # ``blog_thumbnail``.
-    # Guardamos la ruta completa de la portada para que las plantillas puedan
-    # servirla directamente desde ``/static/blogs/<folder>/<filename>``.
+    # lo que provocaba que la plantilla ``blog_list.html`` no encontrara la ruta.
+    # ``cover_image`` es coherente con el modelo y el filtro ``blog_thumbnail``.
+    # Guardamos la ruta completa de la portada para que las plantillas puedan servirla
+    # directamente desde ``/static/blogs/<folder>/<filename>``.
     # ``folder_name`` contiene el nombre del directorio del artículo (con prefijo de fecha
     # si es nuevo o el nombre existente en caso de edición).
+    # Si se subió una nueva imagen, usamos su ruta; si no, conservamos la portada
+    # existente (útil al editar un artículo sin cambiar la imagen). ``existing_fm``
+    # contiene el front‑matter previo, por lo que podemos reutilizar su valor.
     if image_filename:
         new_fm["cover_image"] = f"/static/blogs/{folder_name}/{image_filename}"
     else:
-        new_fm["cover_image"] = ""
+        # Mantener la portada anterior cuando no se proporciona una nueva.
+        new_fm["cover_image"] = existing_fm.get("cover_image", "")
     new_fm["category"] = category
     new_fm["tags"] = tags
     new_fm["meta_title"] = meta_title
@@ -416,6 +441,7 @@ def save_blog_to_source(data, user):
     new_fm["author"] = author_name
     new_fm["author_email"] = author_email
     new_fm["author_provider"] = author_provider
+    new_fm["author_id"] = user.id
 
     # Construir el archivo final y guardarlo
     blog_path = target_dir / "blog.md"

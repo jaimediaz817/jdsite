@@ -414,7 +414,10 @@ def save_blog_to_source(data, user):
     new_fm["title"] = title
     new_fm["description"] = description
     new_fm["date"] = today
-    new_fm["draft"] = is_published  # bool — se serializa a 'true'/'false'
+    # 🟡 CORREGIDO: draft = True significa "es borrador" (NO publicado).
+    # Antes guardaba is_published (False para usuarios normales), lo que
+    # provocaba que import_blogs interpretara draft: false → is_published=True.
+    new_fm["draft"] = not is_published  # True = borrador, False = publicado
     # NOTE: El campo de portada en el modelo se llama ``cover_image``.
     # Anteriormente se guardaba bajo la clave ``image`` en el frontmatter,
     # lo que provocaba que la plantilla ``blog_list.html`` no encontrara la ruta.

@@ -17,7 +17,7 @@ from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from allauth.socialaccount.models import SocialAccount
@@ -177,10 +177,11 @@ def dashboard_view(request):
             request,
             "blog/dashboard.html",
             {
-                "posts": BlogPost.objects.none(),
+                "page_obj": Paginator(BlogPost.objects.none(), 20).page(1),
                 "is_published_filter": "",
                 "moderation_filter": "",
                 "search_query": "",
+                "query_string": "",
             },
         )
 
@@ -208,6 +209,22 @@ def dashboard_view(request):
 
     posts = posts.order_by("-publish_date")
 
+    # Paginación: 20 artículos por página
+    paginator = Paginator(posts, 20)
+    page = request.GET.get("page", 1)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # Query string para paginación (sin page)
+    query = request.GET.copy()
+    if "page" in query:
+        query.pop("page")
+    query_string = query.urlencode()
+
     # Estadísticas para los badges
     stats = {
         "total": BlogPost.objects.count(),
@@ -222,11 +239,12 @@ def dashboard_view(request):
         request,
         "blog/dashboard.html",
         {
-            "posts": posts,
+            "page_obj": page_obj,
             "stats": stats,
             "is_published_filter": is_published_filter,
             "moderation_filter": moderation_filter,
             "search_query": search_query,
+            "query_string": query_string,
         },
     )
 
@@ -328,24 +346,36 @@ class BlogListView(ListView):
     context_object_name = "posts"
     # Según la HU‑005.7 la paginación debe ser de 12 posts por página.
     paginate_by = 12
-    # Base queryset sin filtro de categoría; el método ``get_queryset`` aplicará
-    # opcionalmente el filtro por slug de categoría recibido vía querystring.
-    queryset = BlogPost.objects.filter(is_published=True).order_by(
-        "-publish_date"
-    )
 
     def get_queryset(self):
-        """Aplica filtro de categoría y/o búsqueda por texto.
+        """Devuelve artículos visibles según el usuario.
 
-        - ``?category=slug`` → filtra por categoría
-        - ``?q=termino`` → busca en title, content_html, description,
-          slug, category__name, tags__name (icontains)
-        - Ambos pueden combinarse: ``?category=slug&q=termino``
+        Reglas de visibilidad:
+        - Artículos aprobados (moderation_status="approved"): visibles para todos.
+        - Artículos pendientes (moderation_status="pending"): solo visibles para
+          el autor o superadmin/staff.
+        - Artículos rechazados: no se muestran en la lista pública.
 
-        La paginación se aplica DESPUÉS sobre el queryset ya filtrado,
-        así que la búsqueda barre todos los posts, no solo la página actual.
+        También aplica filtros de categoría y búsqueda por texto.
         """
-        qs = super().get_queryset()
+        user = self.request.user
+
+        # 🔒 SUPERADMIN/STAFF: ven TODO excepto rechazados
+        if user.is_superuser or (user.is_authenticated and user.is_staff):
+            qs = BlogPost.objects.exclude(moderation_status="rejected")
+        else:
+            # 🔒 USUARIOS NORMALES Y ANÓNIMOS:
+            # Solo ven artículos aprobados (is_published=True + approved)
+            qs = BlogPost.objects.filter(moderation_status="approved")
+            # 🔒 USUARIOS AUTENTICADOS: también ven sus PROPIOS pending
+            if user.is_authenticated:
+                qs = BlogPost.objects.filter(
+                    Q(moderation_status="approved")
+                    | Q(author=user, moderation_status="pending")
+                )
+
+        qs = qs.order_by("-publish_date")
+
         category_slug = self.request.GET.get("category")
         search_query = self.request.GET.get("q", "").strip()
 
@@ -365,24 +395,26 @@ class BlogListView(ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        """Añade al contexto la lista de categorías y el ``query_string``.
-
-        ``query_string`` contiene todos los parámetros de la query‑string actual
-        excepto ``page``; esto permite que los enlaces de paginación mantengan
-        cualquier filtro activo (por ejemplo ``?category=slug``).
-
-        También pasa ``search_query`` para mantener el valor del input de búsqueda
-        y mostrar un hint de resultados.
-        """
+        """Añade al contexto la lista de categorías, query_string y artículos pendientes del usuario."""
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
-        # Pasar el término de búsqueda actual al template
         context["search_query"] = self.request.GET.get("q", "")
-        # Construir query_string sin el parámetro ``page``
         query = self.request.GET.copy()
         if "page" in query:
             query.pop("page")
         context["query_string"] = query.urlencode()
+
+        # IDs de artículos pending del usuario actual (para marcar con article_pending)
+        if self.request.user.is_authenticated:
+            pending_ids = set(
+                BlogPost.objects.filter(
+                    author=self.request.user, moderation_status="pending"
+                ).values_list("id", flat=True)
+            )
+            context["pending_post_ids"] = pending_ids
+        else:
+            context["pending_post_ids"] = set()
+
         return context
 
 

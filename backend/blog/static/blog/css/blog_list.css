@@ -580,19 +580,24 @@ body.home-p {
 .blog-write-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
+    gap: 5px;
+    padding: 5px 14px;
     background: linear-gradient(135deg, #ff7e5f, #feb47b);
     color: #fff;
     border: none;
     border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    margin-left: 0.75rem;
+    margin-left: 0.5rem;
     text-decoration: none;
+    white-space: nowrap;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.blog-write-btn i {
+    font-size: 0.8rem;
 }
 
 .blog-write-btn:hover {
@@ -602,6 +607,41 @@ body.home-p {
 }
 
 .blog-write-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.blog-moderation-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 6px rgba(111, 66, 193, 0.2);
+}
+
+.blog-moderation-btn i {
+    font-size: 0.8rem;
+}
+
+.blog-moderation-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #5a33a0, #4a1a8e);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.blog-moderation-btn:active {
     transform: scale(0.97);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -744,5 +784,115 @@ body.home-p {
         width: 2.4rem;
         height: 2.4rem;
         font-size: 1rem;
+    }
+}
+
+/* ============================================
+   🟡 Fecha/tiempo flotante en la imagen
+   ============================================ */
+.blog-card-floating-meta {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.float-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.2s ease;
+}
+
+.blog-card:hover .float-meta-item {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Categoría inline (misma línea que autor) */
+.category-inline-link {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.category-inline-link:hover {
+    color: #4a1a8e;
+    text-decoration: underline;
+}
+
+/* ============================================
+   🟡 Artículos pendientes (article_pending)
+   ============================================ */
+.article_pending {
+    position: relative;
+    border: 2px dashed #ffc107 !important;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.15), 0 4px 12px rgba(255, 193, 7, 0.1);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.article_pending:hover {
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25), 0 6px 20px rgba(255, 193, 7, 0.15);
+    border-color: #e0a800 !important;
+}
+
+.article_pending::before {
+    content: "⏳ Pendiente";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px 0 12px 0;
+    z-index: 10;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
+}
+
+.pending-badge-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+.pending-badge-overlay .badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
     }
 }

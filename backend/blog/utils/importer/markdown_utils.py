@@ -39,6 +39,7 @@ def _normalize_lines(text: str) -> str:
             or re.match(r"^\|", stripped)
             or stripped.startswith(":::")
             or stripped.startswith("__SPECIAL_BLOCK_")
+            or re.match(r"^!\[.*?\]\(.*?\)", stripped)
         )
 
         prev_line = lines[i - 1].strip() if i > 0 else ""
@@ -50,6 +51,7 @@ def _normalize_lines(text: str) -> str:
             or re.match(r"^\|", prev_line)
             or prev_line.startswith(":::")
             or prev_line.startswith("__SPECIAL_BLOCK_")
+            or re.match(r"^!\[.*?\]\(.*?\)", prev_line)
         )
 
         if is_structural or prev_is_structural:
@@ -61,6 +63,42 @@ def _normalize_lines(text: str) -> str:
     joined = re.sub(r" §JOIN§\n", " ", joined)
     joined = re.sub(r" §JOIN§$", "", joined)
     return joined
+
+
+def _parse_frontmatter_manual(text: str) -> tuple[dict, str]:
+    """Extrae el frontmatter YAML manual y el cuerpo del markdown.
+
+    Retorna (frontmatter_dict, body_str).
+    El frontmatter se extrae ANTES de normalizar para no romper
+    el separador ``---`` de cierre.
+    """
+    frontmatter: dict = {}
+    body = text
+
+    if text.startswith("---"):
+        all_lines = text.split("\n")
+        close_idx = None
+        for i in range(1, len(all_lines)):
+            if all_lines[i].strip() == "---":
+                close_idx = i
+                break
+
+        if close_idx is not None:
+            for line in all_lines[1:close_idx]:
+                if ":" not in line:
+                    continue
+                k, v = line.split(":", 1)
+                k = k.strip()
+                v = v.strip()
+                # Quitar comillas externas
+                if (v.startswith('"') and v.endswith('"')) or (
+                    v.startswith("'") and v.endswith("'")
+                ):
+                    v = v[1:-1].strip()
+                frontmatter[k] = v
+            body = "\n".join(all_lines[close_idx + 1 :]).strip()
+
+    return frontmatter, body
 
 
 def read_markdown_file(md_path: Path):
@@ -76,7 +114,11 @@ def read_markdown_file(md_path: Path):
     cleaned_lines = [re.sub(r"\\+$", "", line) for line in lines]
     md_content = "\n".join(cleaned_lines)
 
-    # 3) Proteger bloques ::: antes de normalizar
+    # 3) Extraer frontmatter ANTES de normalizar, porque _normalize_lines
+    #    une líneas consecutivas y rompe el segundo ``---`` de cierre.
+    frontmatter, body = _parse_frontmatter_manual(md_content)
+
+    # 4) Proteger bloques ::: antes de normalizar (solo en el body)
     placeholders = {}
     counter = [0]
 
@@ -86,51 +128,19 @@ def read_markdown_file(md_path: Path):
         placeholders[key] = match.group(0)
         return key
 
-    md_content = re.sub(
+    body = re.sub(
         r":::[a-zA-Z0-9:_\-]+\s*\n.*?:::",
         _protect,
-        md_content,
+        body,
         flags=re.DOTALL,
     )
 
-    # 4) Normalizar lineas
-    md_content = _normalize_lines(md_content)
+    # 5) Normalizar lineas solo del body
+    content_md = _normalize_lines(body)
 
-    # 5) Restaurar bloques
+    # 6) Restaurar bloques
     for key, original in placeholders.items():
-        md_content = md_content.replace(key, original)
-
-    # 6) Parsear frontmatter MANUAL pero ROBUSTO
-    # Estrategia: la primera linea debe ser exactamente ---
-    # luego vienen lineas de frontmatter hasta encontrar OTRA linea --- exacta
-    frontmatter: dict = {}
-    content_md = md_content
-
-    if md_content.startswith("---"):
-        all_lines = md_content.split("\n")
-        # Buscar el segundo --- en su propia linea
-        close_idx = None
-        for i in range(1, len(all_lines)):
-            if all_lines[i].strip() == "---":
-                close_idx = i
-                break
-
-        if close_idx is not None:
-            # lineas [1:close_idx] son el frontmatter
-            for line in all_lines[1:close_idx]:
-                if ":" not in line:
-                    continue
-                k, v = line.split(":", 1)
-                k = k.strip()
-                v = v.strip()
-                # Quitar comillas externas
-                if (v.startswith('"') and v.endswith('"')) or (
-                    v.startswith("'") and v.endswith("'")
-                ):
-                    v = v[1:-1].strip()
-                frontmatter[k] = v
-            # Todo despues del segundo --- es contenido
-            content_md = "\n".join(all_lines[close_idx + 1 :]).strip()
+        content_md = content_md.replace(key, original)
 
     # 7) Quitar comentarios HTML
     content_md = re.sub(r"<!--.*?-->", "", content_md, flags=re.DOTALL).strip()

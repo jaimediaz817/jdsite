@@ -162,25 +162,164 @@ def reject_blog_view(request, token):
 
 
 # ---------------------------------------------------------------------
-# Dashboard de moderación (lista borradores pendientes)
+# Dashboard de moderación (panel completo)
 # ---------------------------------------------------------------------
 @login_required
 def dashboard_view(request):
-    """Muestra una tabla con los artículos en estado borrador (pending).
+    """Panel de administración del blog con filtros y acciones.
 
-    Sólo usuarios con privilegios de staff **o** superusuario pueden acceder.
-    Los demás verán una lista vacía para no revelar información sensible.
+    Muestra TODOS los artículos (publicados y borradores) con capacidad
+    de filtrar por estado de publicación y moderación, y de cambiar
+    ambos estados directamente desde la dashboard.
     """
-    # Permitir tanto staff como superuser
     if not (request.user.is_staff or request.user.is_superuser):
-        drafts = BlogPost.objects.none()
-    else:
-        # Mostrar los posts que aún no han sido aprobados o rechazados,
-        # independientemente del valor de ``is_published``. Esto permite
-        # visualizar borradores que fueron creados con la marca de
-        # publicación previa al sistema de moderación.
-        drafts = BlogPost.objects.filter(moderation_status="pending")
-    return render(request, "blog/dashboard.html", {"posts": drafts})
+        return render(
+            request,
+            "blog/dashboard.html",
+            {
+                "posts": BlogPost.objects.none(),
+                "is_published_filter": "",
+                "moderation_filter": "",
+                "search_query": "",
+            },
+        )
+
+    posts = BlogPost.objects.select_related("category", "author").all()
+
+    # Filtros
+    is_published_filter = request.GET.get("is_published", "")
+    moderation_filter = request.GET.get("moderation", "")
+    search_query = request.GET.get("q", "").strip()
+
+    if is_published_filter == "1":
+        posts = posts.filter(is_published=True)
+    elif is_published_filter == "0":
+        posts = posts.filter(is_published=False)
+
+    if moderation_filter in ("pending", "approved", "rejected"):
+        posts = posts.filter(moderation_status=moderation_filter)
+
+    if search_query:
+        posts = posts.filter(
+            Q(title__icontains=search_query)
+            | Q(slug__icontains=search_query)
+            | Q(author__username__icontains=search_query)
+        )
+
+    posts = posts.order_by("-publish_date")
+
+    # Estadísticas para los badges
+    stats = {
+        "total": BlogPost.objects.count(),
+        "published": BlogPost.objects.filter(is_published=True).count(),
+        "drafts": BlogPost.objects.filter(is_published=False).count(),
+        "pending": BlogPost.objects.filter(moderation_status="pending").count(),
+        "approved": BlogPost.objects.filter(moderation_status="approved").count(),
+        "rejected": BlogPost.objects.filter(moderation_status="rejected").count(),
+    }
+
+    return render(
+        request,
+        "blog/dashboard.html",
+        {
+            "posts": posts,
+            "stats": stats,
+            "is_published_filter": is_published_filter,
+            "moderation_filter": moderation_filter,
+            "search_query": search_query,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def toggle_post_published(request, slug):
+    """Alterna el estado is_published de un artículo (AJAX)."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    try:
+        post = BlogPost.objects.get(slug=slug)
+    except BlogPost.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Artículo no encontrado."}, status=404
+        )
+
+    post.is_published = not post.is_published
+    if post.is_published:
+        post.moderation_status = "approved"
+        post.approval_token = None
+        post.approval_token_created = None
+    post.save()
+
+    # Registrar moderación
+    BlogModeration.objects.create(
+        blog_post=post,
+        author=post.author,
+        reviewer=request.user,
+        action="approved" if post.is_published else "pending",
+        comment=f"{'Publicado' if post.is_published else 'Despublicado'} desde dashboard",
+    )
+
+    return JsonResponse(
+        {
+            "success": True,
+            "is_published": post.is_published,
+            "moderation_status": post.moderation_status,
+        }
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def change_moderation_status(request, slug):
+    """Cambia el moderation_status de un artículo (AJAX)."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    try:
+        post = BlogPost.objects.get(slug=slug)
+    except BlogPost.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Artículo no encontrado."}, status=404
+        )
+
+    new_status = request.POST.get("status", "")
+    if new_status not in ("pending", "approved", "rejected"):
+        return JsonResponse(
+            {"success": False, "error": "Estado inválido."}, status=400
+        )
+
+    post.moderation_status = new_status
+    if new_status == "approved":
+        post.is_published = True
+        post.approval_token = None
+        post.approval_token_created = None
+    elif new_status == "rejected":
+        post.is_published = False
+    post.save()
+
+    BlogModeration.objects.create(
+        blog_post=post,
+        author=post.author,
+        reviewer=request.user,
+        action=new_status,
+        comment=f"Moderación cambiada a '{new_status}' desde dashboard",
+    )
+
+    return JsonResponse(
+        {
+            "success": True,
+            "is_published": post.is_published,
+            "moderation_status": post.moderation_status,
+        }
+    )
 
 
 class BlogListView(ListView):

@@ -14,6 +14,8 @@ from blog.views import (
     dashboard_view,
     approve_blog_view,
     reject_blog_view,
+    toggle_post_published,
+    change_moderation_status,
 )
 
 app_name = "blog"
@@ -34,6 +36,16 @@ urlpatterns = [
         "dashboard/approve/<slug:token>/", approve_blog_view, name="approve_blog"
     ),
     path("dashboard/reject/<slug:token>/", reject_blog_view, name="reject_blog"),
+    path(
+        "dashboard/toggle/<slug:slug>/",
+        toggle_post_published,
+        name="toggle_published",
+    ),
+    path(
+        "dashboard/moderate/<slug:slug>/",
+        change_moderation_status,
+        name="change_moderation",
+    ),
     path("<slug:slug>/", BlogDetailView.as_view(), name="blog_detail"),
     path("<slug:slug>/comment/", post_comment, name="post_comment"),
     path(

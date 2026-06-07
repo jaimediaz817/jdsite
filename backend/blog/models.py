@@ -80,7 +80,10 @@ class BlogPost(models.Model):
     publish_date = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
-    is_published = models.BooleanField(default=True)
+    is_published = models.BooleanField(
+        default=False,
+        help_text="Los artículos se crean como borradores. El administrador los publica desde la dashboard.",
+    )
     # ---------------------------------------------------------------------
     # 🟡 Moderación de borradores
     # ---------------------------------------------------------------------

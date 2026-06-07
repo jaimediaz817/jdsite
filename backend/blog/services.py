@@ -454,7 +454,8 @@ def save_blog_to_source(data, user):
 
     # 8. Notificar al administrador si el artículo quedó como borrador (draft)
     if not is_published:
-        # Obtener el objeto BlogPost recién creado/actualizado para obtener el token de aprobación
+        # Obtener el objeto BlogPost recién creado/actualizado para obtener el token
+        dashboard_url = f"{settings.SITE_URL}/blog/dashboard/"
         try:
             post_obj = BlogPost.objects.get(slug=slug)
             token = post_obj.approval_token
@@ -466,15 +467,29 @@ def save_blog_to_source(data, user):
         except Exception:
             approve_url = ""
 
-        admin_subject = f"[JD Blog] Borrador guardado: {title}"
+        admin_subject = f"[JD Blog] Nuevo borrador pendiente: {title}"
         admin_message = (
-            f"Se ha guardado un borrador del artículo '{title}'.\n"
+            f"📝 Se ha guardado un borrador del artículo:\n\n"
+            f"Título: {title}\n"
             f"Autor: {author_name} ({author_email})\n"
             f"Slug: {slug}\n"
-            f"Puedes revisarlo en el panel de moderación.\n"
+            f"Estado: Borrador (pendiente de revisión)\n\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"📊 PANEL DE MODERACIÓN:\n"
+            f"   {dashboard_url}\n\n"
         )
         if approve_url:
-            admin_message += f"Aprobar directamente: {approve_url}\n"
+            admin_message += (
+                f"⚡ APROBACIÓN RÁPIDA (1 clic):\n" f"   {approve_url}\n\n"
+            )
+        admin_message += (
+            f"Desde el panel puedes:\n"
+            f"  • Ver todos los artículos (publicados y borradores)\n"
+            f"  • Activar/desactivar la publicación\n"
+            f"  • Cambiar el estado de moderación\n"
+            f"  • Buscar y filtrar artículos\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        )
         send_mail(
             subject=admin_subject,
             message=admin_message,

@@ -1,4 +1,4 @@
-"""Utility class to encapsulate the per‑blog processing logic.
+﻿"""Utility class to encapsulate the per-blog processing logic.
 
 The original ``import_blogs`` management command contained a large ``process_single_blog``
 method with many helper functions.  To improve modularity and testability we move that
@@ -34,7 +34,7 @@ class BlogProcessor:
     Parameters
     ----------
     command : BaseCommand
-        The management command instance – used for ``stdout`` output.
+        The management command instance - used for ``stdout`` output.
     static_target : Path
         Directory where static assets for the blog are copied.
     """
@@ -52,7 +52,7 @@ class BlogProcessor:
         md_file = blog_dir / "blog.md"
 
         if not md_file.exists():
-            self.stdout.write(f"⚠️  Saltando {blog_dir.name}: no hay blog.md")
+            self.stdout.write(f"[!] Saltando {blog_dir.name}: no hay blog.md")
             return slugify(blog_dir.name)
 
         # Generate a permanent slug
@@ -64,7 +64,7 @@ class BlogProcessor:
         # Read markdown content and front-matter
         md_content, frontmatter = read_markdown_file(md_file)
 
-        # ✅ HU-014: Re-leer el .md DIRECTAMENTE y extraer tiempo_lectura
+        # [OK] HU-014: Re-leer el .md DIRECTAMENTE y extraer tiempo_lectura
         # Bypassea cualquier bug del parser de markdown_utils
         try:
             raw_md = md_file.read_text(encoding="utf-8")
@@ -99,7 +99,9 @@ class BlogProcessor:
         self.copy_blog_images(blog_dir, blog_static_dir)
 
         if not necesita_actualizar:
-            self.stdout.write("✅ Imagenes verificadas y copiadas correctamente")
+            self.stdout.write(
+                "[OK] Imagenes verificadas y copiadas correctamente"
+            )
             return slug
 
         # Extract and remove the first image as cover (with frontmatter fallback)
@@ -107,12 +109,12 @@ class BlogProcessor:
             content_md, blog_dir, blog_static_dir, slug, frontmatter
         )
 
-        # Pre‑process special markdown blocks before conversion
+        # Pre-process special markdown blocks before conversion
         markdown_with_specials = self.replace_special_blocks_md(
             content_sin_portada, blog_dir, blog_static_dir, slug
         )
 
-        # Convert markdown → HTML
+        # Convert markdown -> HTML
         html_content = self.convert_markdown_to_html(markdown_with_specials)
 
         # Process legacy special blocks (gallery, carousel)
@@ -125,12 +127,12 @@ class BlogProcessor:
             processed_html, blog_dir, blog_static_dir, slug
         )
 
-        # Process videos (convert img→video, rewrite <video> tags)
+        # Process videos (convert img->video, rewrite <video> tags)
         processed_html = self.process_videos(
             processed_html, blog_dir, blog_static_dir, slug
         )
 
-        # Auto‑create carousels for consecutive images
+        # Auto-create carousels for consecutive images
         processed_html = self.auto_create_carousels(processed_html)
 
         # Apply final custom formatting (steps, emojis, etc.)
@@ -156,9 +158,9 @@ class BlogProcessor:
         # Associate tags
         self.associate_tags_to_blog(obj, tags_objects)
 
-        self.stdout.write(f"✅ GUARDADO EN BD EXITOSAMENTE ID={obj.id}")
+        self.stdout.write(f"[OK] GUARDADO EN BD EXITOSAMENTE ID={obj.id}")
         self.command.count_imported += 1
-        self.stdout.write(f"✅ Importado: {title}")
+        self.stdout.write(f"[OK] Importado: {title}")
 
         return slug
 
@@ -185,13 +187,15 @@ class BlogProcessor:
             if existing_by_slug.source_hash == file_hash:
                 self.command.count_skipped += 1
                 self.stdout.write(
-                    f"⏭️  Sin cambios en contenido: {existing_by_slug.title}"
+                    f"[SKIP] Sin cambios en contenido: {existing_by_slug.title}"
                 )
                 necesita_actualizar = False
             else:
-                self.stdout.write(f"🔄 Detectados cambios, actualizando: {title}")
+                self.stdout.write(
+                    f"[SYNC] Detectados cambios, actualizando: {title}"
+                )
         else:
-            self.stdout.write(f"🆕 Nuevo blog encontrado: {title}")
+            self.stdout.write(f"[NEW] Nuevo blog encontrado: {title}")
         return existing_by_slug, necesita_actualizar
 
     def copy_blog_images(self, blog_dir: Path, blog_static_dir: Path):
@@ -258,72 +262,10 @@ class BlogProcessor:
             markdown_content, blog_dir, blog_static_dir, slug
         )
 
-        def _replace_slides(match):
-            content = match.group(1).strip()
-            images_data: List[Tuple[str, str, str]] = []
-            for line in content.split("\n"):
-                line = line.strip()
-                img_match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
-                if not img_match:
-                    continue
-                alt_text = img_match.group(1)
-                img_src = img_match.group(2).strip()
-                title, desc = (
-                    alt_text.split("|", 1) if "|" in alt_text else (alt_text, "")
-                )
-                if not img_src.startswith(("http://", "https://", "/")):
-                    source_img = blog_dir / img_src
-                    if source_img.exists():
-                        shutil.copy2(
-                            source_img, blog_static_dir / source_img.name
-                        )
-                        img_src = f"/static/blogs/{slug}/{source_img.name}"
-                images_data.append((img_src, title.strip(), desc.strip()))
-            if not images_data:
-                return ""
-            if len(images_data) == 1:
-                src, title, desc = images_data[0]
-                caption = ""
-                if title or desc:
-                    desc_html = f"<span>{desc}</span>" if desc else ""
-                    caption = f'<figcaption class="slide-caption"><strong>{title}</strong>{desc_html}</figcaption>'
-                return (
-                    f'<figure class="single-image-container mb-5"><img src="{src}" alt="{title}" '
-                    f'class="img-fluid rounded shadow-sm" loading="lazy"/>{caption}</figure>'
-                )
-            # Multiple images → slider
-            slides_items = ""
-            dots = ""
-            for i, (src, title, desc) in enumerate(images_data):
-                active = " active" if i == 0 else ""
-                caption_html = ""
-                if title or desc:
-                    desc_html = f"<span>{desc}</span>" if desc else ""
-                    caption_html = f'<div class="slide-caption"><strong>{title}</strong>{desc_html}</div>'
-                slides_items += f'<div class="slide{active}"><img src="{src}" alt="{title}" loading="lazy"/>{caption_html}</div>'
-                dots += f'<button class="slide-dot{active}" onclick="goToSlide(this,{i})"></button>'
-            return (
-                f'<div class="slides-container mb-5" data-current="0">{slides_items}'
-                f'<div class="slides-nav"><button class="slide-prev" onclick="prevSlide(this)"><i class="fas fa-chevron-left"></i></button>'
-                f'<div class="slides-dots">{dots}</div>'
-                f'<button class="slide-next" onclick="nextSlide(this)"><i class="fas fa-chevron-right"></i></button></div>'
-                f'<span class="slides-counter">1 / {len(images_data)}</span></div>'
-            )
-
-        markdown_content = re.sub(
-            r":::slides\s*\n(.*?):::",
-            _replace_slides,
-            markdown_content,
-            flags=re.DOTALL,
-        )
-        # Additional block types (callout, pullquote, codefile, etc.) are omitted for brevity
-        # because they are not required for the current test suite. They can be added later.
-        return markdown_content
-
     def replace_popup_gallery(
         self, match, blog_dir: Path, blog_static_dir: Path, slug: str
     ) -> str:
-        # Simplified version – retains core behaviour.
+        # Simplified version - retains core behaviour.
         content = match.group(1).strip()
         final_images = []
         for line in content.split("\n"):
@@ -360,7 +302,7 @@ class BlogProcessor:
                 f'<figure class="single-image-container mb-5"><img src="{src}" alt="{title}" '
                 f'class="img-fluid rounded shadow-sm" loading="lazy"/>{caption_html}</figure>'
             )
-        # Multiple images → popup gallery (simplified markup)
+        # Multiple images -> popup gallery (simplified markup)
         first_src, first_title, _ = final_images[0]
         images_value = "|||".join(
             [f"{src}||{title}||{desc}" for src, title, desc in final_images]
@@ -368,7 +310,7 @@ class BlogProcessor:
         return (
             f'<div class="popup-gallery-container mb-5"><div class="gallery-preview" onclick="openGalleryPopup(this)">'
             f'<img src="{first_src}" alt="{first_title}" class="img-fluid rounded shadow-sm" loading="lazy">'
-            f'<div class="gallery-badge"><i class="fas fa-images"></i> {len(final_images)} imágenes</div>'
+            f'<div class="gallery-badge"><i class="fas fa-images"></i> {len(final_images)} imagenes</div>'
             f'<input type="hidden" class="gallery-images" value="{images_value}"></div></div>'
         )
 
@@ -408,7 +350,7 @@ class BlogProcessor:
                         )
                         img["alt"] = nombre_limpio
                         self.stdout.write(
-                            f"✅ Atributo alt generado automaticamente: {nombre_limpio}"
+                            f"[OK] Atributo alt generado automaticamente: {nombre_limpio}"
                         )
         return str(soup)
 
@@ -452,7 +394,7 @@ class BlogProcessor:
                 new_tag = BeautifulSoup(video_html, "html.parser")
                 img.replace_with(new_tag)
 
-            self.stdout.write(f"🎬 Video convertido: {video_src}")
+            self.stdout.write(f"[VIDEO] Video convertido: {video_src}")
             modified = True
 
         # Case 2: Rewrite existing <video> tags
@@ -489,7 +431,9 @@ class BlogProcessor:
             new_video_html = self._build_video_html(resolved_src, video_title)
             new_tag = BeautifulSoup(new_video_html, "html.parser")
             video.replace_with(new_tag)
-            self.stdout.write(f"🎬 Video (html tag) reescrito: {resolved_src}")
+            self.stdout.write(
+                f"[VIDEO] Video (html tag) reescrito: {resolved_src}"
+            )
             modified = True
 
         return str(soup) if modified else html_content
@@ -517,7 +461,7 @@ class BlogProcessor:
             f'<div class="blog-video-wrapper">'
             f'<video controls preload="metadata" playsinline class="blog-video-player">'
             f'<source src="{video_src}" type="{mime_type}">'
-            f"Tu navegador no soporta la reproducción de video."
+            f"Tu navegador no soporta la reproduccion de video."
             f"</video>"
             f"{caption_html}"
             f"</div>"
@@ -538,7 +482,7 @@ class BlogProcessor:
         return mime_map.get(ext, "video/mp4")
 
     def auto_create_carousels(self, html_content: str) -> str:
-        # Re‑use the original implementation (trimmed for brevity)
+        # Re-use the original implementation (trimmed for brevity)
         soup = BeautifulSoup(html_content, "html.parser")
         html_parts = []
         carousel_images = []
@@ -581,7 +525,7 @@ class BlogProcessor:
         return self.command.apply_custom_formatting(html)
 
     def get_or_create_category(self, frontmatter: dict):
-        # Simplified – reuse the original logic via the command instance.
+        # Simplified - reuse the original logic via the command instance.
         return self.command.get_or_create_category(frontmatter)
 
     def get_tags_from_frontmatter(self, frontmatter: dict):
@@ -629,12 +573,24 @@ class BlogProcessor:
         cover_path = None
         new_content = []
 
-        # FASE 1: Buscar la primera imagen en el contenido markdown
+        # FASE 1: Si hay cover_image en frontmatter, USARLO DIRECTAMENTE
+        # como portada. NO buscamos en el contenido para no romper bloques
+        # :::slides, :::callout, etc. La portada se define en frontmatter.
+        if frontmatter and frontmatter.get("cover_image"):
+            fm_cover = str(frontmatter["cover_image"]).strip()
+            if fm_cover:
+                if fm_cover.startswith(("/static/", "http://", "https://")):
+                    cover_path = fm_cover
+                else:
+                    cover_path = f"/static/blogs/{slug}/{fm_cover}"
+            return cover_path, "\n".join(lines)
+
+        # FASE 2 (fallback): Si no hay cover_image en frontmatter,
+        # buscar PRIMERA imagen FUERA de bloques ::: en el contenido
         for line in lines:
             img_match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
             if img_match and not cover_path:
                 img_src = img_match.group(2).strip()
-                # Skip video files - don't use as cover
                 if any(img_src.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
                     new_content.append(line)
                     continue
@@ -645,17 +601,32 @@ class BlogProcessor:
                         shutil.copy2(source_img, target_img)
                         img_src = f"/static/blogs/{slug}/{source_img.name}"
                 cover_path = img_src
+                new_content.append(line)
                 continue
             new_content.append(line)
 
-        # FASE 2: Si no se encontró imagen en el contenido, usar el frontmatter
-        if not cover_path and frontmatter and frontmatter.get("image"):
-            fm_image = frontmatter["image"].strip()
-            if fm_image:
-                static_file = blog_static_dir / fm_image
-                source_file = blog_dir / fm_image
-                if source_file.exists():
-                    shutil.copy2(source_file, static_file)
-                cover_path = f"/static/blogs/{slug}/{fm_image}"
+        # FASE 2: Si no se encontro imagen en el contenido, usar el frontmatter
+        # Primero usamos ``cover_image`` (clave actual, escrita por el editor
+        # y por HU-011.4). Como fallback conservamos ``image`` para articulos
+        # antiguos que aun usen la clave deprecada.
+        if not cover_path and frontmatter:
+            fm_image_raw = frontmatter.get("cover_image") or frontmatter.get(
+                "image"
+            )
+            if fm_image_raw:
+                fm_image = str(fm_image_raw).strip()
+                if fm_image:
+                    # Si el frontmatter ya trae la ruta completa
+                    # (``/static/blogs/<slug>/<filename>``) la respetamos.
+                    if fm_image.startswith(("/static/", "http://", "https://")):
+                        cover_path = fm_image
+                    else:
+                        # Si solo trae el nombre del archivo, intentamos
+                        # copiarlo a ``static/blogs/<slug>/`` si existe.
+                        static_file = blog_static_dir / fm_image
+                        source_file = blog_dir / fm_image
+                        if source_file.exists():
+                            shutil.copy2(source_file, static_file)
+                        cover_path = f"/static/blogs/{slug}/{fm_image}"
 
         return cover_path, "\n".join(new_content)

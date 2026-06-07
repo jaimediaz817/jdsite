@@ -1101,7 +1101,27 @@ class Command(BaseCommand):
         inside_special_block = False
         VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
 
-        # 🔍 FASE 1: Buscar la primera imagen en el contenido markdown
+        # 🔍 FASE 1: Si hay cover_image en frontmatter, USARLO DIRECTAMENTE
+        # como portada. NO buscamos en el contenido para no romper bloques
+        # :::slides, :::callout, etc. La portada se define en frontmatter.
+        if frontmatter and frontmatter.get("cover_image"):
+            fm_cover = frontmatter["cover_image"].strip()
+            if fm_cover:
+                # Si ya trae ruta completa (/static/...), la respetamos
+                if fm_cover.startswith(("/static/", "http://", "https://")):
+                    cover_image_path = fm_cover
+                else:
+                    # Si solo trae nombre de archivo, construimos la ruta completa
+                    cover_image_path = f"/static/blogs/{slug}/{fm_cover}"
+                self.stdout.write(
+                    f"✅ Imagen de portada desde frontmatter 'cover_image': {fm_cover}"
+                )
+            # Si hay cover_image, NO seguimos buscando en el contenido
+            # Devolvemos directamente para preservar todas las imágenes en slides/gallery
+            return cover_image_path, "\n".join(lines)
+
+        # 🔍 FASE 2 (fallback): Si no hay cover_image en frontmatter,
+        # buscar PRIMERA imagen FUERA de bloques ::: en el contenido
         for i, line in enumerate(lines):
             stripped = line.strip()
 
@@ -1132,15 +1152,16 @@ class Command(BaseCommand):
                         cover_image_path = (
                             f"/static/blogs/{slug}/{source_img.name}"
                         )
-                        del lines[i]
+                        # ❌ ANTES: del lines[i]  # eliminaba la imagen del contenido
+                        # ✅ AHORA: NO eliminamos la imagen del cuerpo del artículo.
+                        # Si el usuario la puso en el markdown, debe seguir visible.
                         self.stdout.write(
-                            "✅ Imagen de portada detectada automaticamente en el contenido"
+                            "✅ Imagen de portada detectada automaticamente (preservada en contenido)"
                         )
                         break
                     # Si la imagen referenciada no existe físicamente,
                     # marcarla como portada de todas formas con la ruta que tenía
                     cover_image_path = f"/static/blogs/{slug}/{img_src}"
-                    del lines[i]
                     self.stdout.write(
                         "✅ Imagen de portada del contenido (sin archivo físico)"
                     )
@@ -1210,32 +1231,68 @@ class Command(BaseCommand):
                 f"⚠️  Meta Description truncado: '{meta_description_raw[:50]}...'"
             )
 
-        # Buscar usuario por email para asignar autor.
-        # Si el email no se encuentra, preservar el autor existente
-        # (evita sobreescribir author=None al re-importar un post).
+        # Buscar usuario por email o author_id para asignar autor.
+        # Orden de resolución:
+        # 1. Por author_email (campo estándar del frontmatter)
+        # 2. Por author_id (respaldado por el editor online)
+        # 3. Preservar el autor existente si ya estaba asignado
         author_email = frontmatter.get("author_email", "")
+        author_id = frontmatter.get("author_id", None)
         existing_post = BlogPost.objects.filter(slug=slug).first()
         author = existing_post.author if existing_post else None
 
         if author_email:
             try:
                 author = User.objects.get(email__iexact=author_email)
+                self.stdout.write(
+                    f"✅ Autor asignado por email: {author.username}"
+                )
             except User.DoesNotExist:
-                # Si ya hay un autor existente, lo preservamos
-                if existing_post and existing_post.author:
+                # Intentar por author_id si no se encontró por email
+                if author_id is not None:
+                    try:
+                        author = User.objects.get(id=author_id)
+                        self.stdout.write(
+                            f"✅ Autor asignado por author_id ({author_id}): {author.username}"
+                        )
+                    except User.DoesNotExist:
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"⚠️  Usuario con id '{author_id}' no encontrado. "
+                            )
+                        )
+                        author = None
+                # Si aún no hay autor, preservar el existente
+                if not author and existing_post and existing_post.author:
                     author = existing_post.author
                     self.stdout.write(
                         self.style.WARNING(
-                            f"⚠️  Email '{author_email}' no encontrado. "
+                            f"⚠️  Email '{author_email}' y author_id '{author_id}' no encontrados. "
                             f"Se preserva autor existente: {author.username}"
                         )
                     )
-                else:
+                elif not author:
                     self.stdout.write(
                         self.style.WARNING(
                             f"⚠️  Usuario con email '{author_email}' no encontrado. Autor no asignado."
                         )
                     )
+        elif author_id is not None:
+            # Caso: no hay author_email pero sí author_id (ej: markdown manual)
+            try:
+                author = User.objects.get(id=author_id)
+                self.stdout.write(
+                    f"✅ Autor asignado por author_id ({author_id}): {author.username}"
+                )
+            except User.DoesNotExist:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"⚠️  Usuario con id '{author_id}' no encontrado. "
+                        f"Se preserva autor existente si lo hay."
+                    )
+                )
+                if existing_post and existing_post.author:
+                    author = existing_post.author
 
         defaults = {
             "source_hash": file_hash,

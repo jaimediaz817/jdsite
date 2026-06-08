@@ -92,7 +92,12 @@ class BlogPost(models.Model):
     # un artículo mediante el editor o la importación, tome la fecha del
     # front‑matter (``publish_date``) cuando esté disponible. Si no hay una
     # fecha, se usa la hora actual.
-    created_at = models.DateTimeField(null=True, blank=True)
+    # Fecha de creación del registro en la base de datos.
+    # Se establece automáticamente en el primer INSERT mediante ``auto_now_add``.
+    # Mantener ``null=True`` y ``blank=True`` permite que la migración retro‑
+    # rellene valores para registros legacy sin romper la compatibilidad.
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    # Fecha de la última modificación del registro.
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     is_published = models.BooleanField(
@@ -205,9 +210,14 @@ class BlogPost(models.Model):
             self.approval_token = uuid.uuid4().hex
             self.approval_token_created = timezone.now()
 
-        # Si ``created_at`` está vacío, usar ``publish_date`` (más fiable) o la hora actual
+        # Si ``created_at`` está vacío, asignar la hora actual.
+        # Anteriormente se usaba ``publish_date`` como fallback, lo que provocaba que
+        # los artículos creados recientemente mostraran una diferencia de tiempo
+        # basada en la fecha del front‑matter (que puede ser mucho más antigua).
+        # Para que la plantilla refleje correctamente "hace X minutos" al crear
+        # un artículo desde el editor, asignamos ``timezone.now()`` directamente.
         if not self.created_at:
-            self.created_at = self.publish_date or timezone.now()
+            self.created_at = timezone.now()
 
         super().save(*args, **kwargs)
 

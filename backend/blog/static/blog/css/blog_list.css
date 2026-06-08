@@ -433,6 +433,15 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+
+
+
+.articles-list__container {
+    /* border: 1px solid red; */
+    background-color: white;
+    border-radius: 5px;
+}
+
 /* --- Extracto del contenido (resumen) --- */
 /* --- Extracto del contenido (resumen) con borde y fondo mejorados --- */
 .blog-card .card-body p.text-muted.mb-2.small {

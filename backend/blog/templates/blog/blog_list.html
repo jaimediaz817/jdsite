@@ -88,7 +88,7 @@
                     {% include 'blog/partials/_sidebar.html' %}
                 </aside>
                 <!-- Main content area (flexible, full width) -->
-                <div class="blog-main container">
+                <div class="blog-main container px-0">
                     <div class="row mb-4">
                         <div class="col-12 text-center">
                             <!-- Slogan del sitio, antes del título del artículo -->
@@ -153,7 +153,7 @@
                         </div>
                     </div>
 
-                    <div class="blog-grid pt-md-5">
+                    <div class="articles-list__container blog-grid px-0 px-md-3 pt-md-3">
                             {% for post in posts %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
                                 <div class="blog-card-image position-relative" style="aspect-ratio: 16/9; overflow: hidden; background: #f8f9fa;">
@@ -175,7 +175,7 @@
                                          El filtro ``timesince_safe`` se encarga de normalizar el
                                          datetime a aware y devolver un fallback legible. -->
                                     <div class="blog-card-floating-meta">
-                                        <span class="float-meta-item"><i class="far fa-calendar-alt mr-1"></i> {% trans "hace" %} {% if post.created_at %}{{ post.created_at|timesince }}{% else %}{{ post.publish_date|timesince }}{% endif %}</span>
+                                        <span class="float-meta-item"><i class="far fa-calendar-alt mr-1"></i> {% trans "hace" %} {{ post.created_at|timesince }}</span>
                                         <span class="float-meta-item"><i class="far fa-clock mr-1"></i> {{ post.reading_time|default:"5" }} min</span>
                                     </div>
 

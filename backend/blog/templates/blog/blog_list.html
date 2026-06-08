@@ -102,9 +102,9 @@
                         <div class="col-12">
                             <form method="get" action="{% url 'blog:blog_list' %}" class="blog-search-form" role="search">
                                 <div class="input-group blog-search-group">
-                                    <span class="input-group-text blog-search-icon">
-                                        <i class="fas fa-search"></i>
-                                    </span>
+                                            <span class="input-group-text blog-search-icon">
+                                                <i class="fas fa-search"></i>
+                                            </span>
                                     <input type="text"
                                         name="q"
                                         id="blog-search-input"
@@ -132,8 +132,8 @@
                                         <span class="d-none d-md-inline">Escribir artículo</span>
                                     </a>
                                     {% endif %}
-                                    {# Mostrar botón de moderación solo a administradores (staff o superuser) #}
-                                    {% if user.is_superuser %}
+                                    {# Mostrar botón de moderación a cualquier usuario autenticado #}
+                                    {% if user.is_authenticated %}
                                     <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn ms-2" title="Ir al panel de moderación">
                                         <i class="fas fa-gavel me-1"></i>
                                         <span class="d-none d-md-inline">Moderación</span>
@@ -231,12 +231,18 @@
                                     </div>
                                     {% endif %}
 
-                                    {% if user.is_authenticated and user.is_superuser or user.is_authenticated and post.author == user %}
-                                    <div class="edit-btn-wrapper">
-                                        <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
-                                            <i class="fas fa-edit me-1"></i> Editar
-                                        </a>
-                                    </div>
+                                    {% if user.is_authenticated %}
+                                        {% if user.is_superuser or post.author == user %}
+                                            <div class="edit-btn-wrapper d-flex gap-2">
+                                                <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
+                                                    <i class="fas fa-edit me-1"></i> Editar
+                                                </a>
+                                                <!-- Botón de moderación de comentarios para el autor o staff -->
+                                            <a href="{% url 'blog:dashboard_post_comments' post.slug %}" class="btn btn-sm btn-warning moderate-btn" title="Moderar comentarios" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:dashboard_post_comments' post.slug %}';">
+                                                <i class="fas fa-comments me-1"></i> Moderar
+                                            </a>
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 <a href="{{ post.get_absolute_url }}" class="stretched-link" aria-label="Leer artículo {{ post.title }}"></a>

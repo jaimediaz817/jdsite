@@ -12,6 +12,8 @@ from blog.views import (
     upload_file_api,
     get_blog_for_edit,
     dashboard_view,
+    dashboard_post_comments,
+    moderate_comment,
     approve_blog_view,
     reject_blog_view,
     toggle_post_published,
@@ -32,6 +34,16 @@ urlpatterns = [
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
     # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
     path("dashboard/", dashboard_view, name="dashboard"),
+    path(
+        "dashboard/comments/<slug:slug>/",
+        dashboard_post_comments,
+        name="dashboard_post_comments",
+    ),
+    path(
+        "dashboard/comments/<slug:slug>/moderate/<int:comment_id>/",
+        moderate_comment,
+        name="moderate_comment",
+    ),
     path(
         "dashboard/approve/<slug:token>/", approve_blog_view, name="approve_blog"
     ),

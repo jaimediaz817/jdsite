@@ -187,6 +187,25 @@
     color: #3498db;
 }
 
+/* -------------------------------------------------
+   UI/UX Mejoras para los botones de acción en la lista de blogs
+   ------------------------------------------------- */
+.edit-btn-wrapper .btn {
+    /* Espaciado uniforme entre los botones (fallback para navegadores sin soporte de gap) */
+    margin-right: 0.5rem;
+}
+
+.edit-btn-wrapper .btn:last-child {
+    margin-right: 0;
+}
+
+/* Botón de moderación: fondo amarillo con texto blanco para mejor contraste */
+.moderate-btn {
+    background-color: #f0ad4e !important;
+    border-color: #eea236 !important;
+    color: #fff !important;
+}
+
 /* --- Extracto del contenido (resumen) --- */
 /* --- Extracto del contenido (resumen) con borde y fondo mejorados --- */
 .blog-card .card-body p.text-muted.mb-2.small {

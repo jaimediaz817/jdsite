@@ -22,7 +22,8 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from allauth.socialaccount.models import SocialAccount
 from django.template.loader import render_to_string
-from django.db.models import Q
+from django.db import models
+from django.db.models import Q, Count
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -168,24 +169,20 @@ def reject_blog_view(request, token):
 def dashboard_view(request):
     """Panel de administración del blog con filtros y acciones.
 
-    Muestra TODOS los artículos (publicados y borradores) con capacidad
-    de filtrar por estado de publicación y moderación, y de cambiar
-    ambos estados directamente desde la dashboard.
-    """
-    if not (request.user.is_staff or request.user.is_superuser):
-        return render(
-            request,
-            "blog/dashboard.html",
-            {
-                "page_obj": Paginator(BlogPost.objects.none(), 20).page(1),
-                "is_published_filter": "",
-                "moderation_filter": "",
-                "search_query": "",
-                "query_string": "",
-            },
-        )
+    - SUPERADMIN/STAFF: ve TODOS los artículos
+    - USUARIOS NORMALES: ve SOLO sus propios artículos
 
-    posts = BlogPost.objects.select_related("category", "author").all()
+    Muestra los artículos con capacidad de filtrar por estado de
+    publicación y moderación, y de cambiar ambos estados directamente
+    desde la dashboard.
+    """
+    is_super = request.user.is_staff or request.user.is_superuser
+
+    posts = BlogPost.objects.select_related("category", "author")
+    if is_super:
+        posts = posts.all()
+    else:
+        posts = posts.filter(author=request.user)
 
     # Filtros
     is_published_filter = request.GET.get("is_published", "")
@@ -225,6 +222,20 @@ def dashboard_view(request):
         query.pop("page")
     query_string = query.urlencode()
 
+    # Contar comentarios por slug de post y pegarlos a cada objeto
+    slugs = [p.slug for p in page_obj]
+    comment_counts = {}
+    if slugs:
+        counts_qs = (
+            BlogComment.objects.filter(blog_slug__in=slugs)
+            .values("blog_slug")
+            .annotate(total=Count("id"))
+        )
+        comment_counts = {c["blog_slug"]: c["total"] for c in counts_qs}
+    # Poner el contador como atributo en cada post para acceso directo en template
+    for post in page_obj:
+        post.comment_total = comment_counts.get(post.slug, 0)
+
     # Estadísticas para los badges
     stats = {
         "total": BlogPost.objects.count(),
@@ -245,7 +256,105 @@ def dashboard_view(request):
             "moderation_filter": moderation_filter,
             "search_query": search_query,
             "query_string": query_string,
+            "comment_counts": comment_counts,
         },
+    )
+
+
+# ---------------------------------------------------------------------
+# Dashboard: Comentarios por artículo (moderación para el autor)
+# ---------------------------------------------------------------------
+@login_required
+def dashboard_post_comments(request, slug):
+    """Ver y moderar comentarios de un artículo propio.
+
+    - SUPERADMIN/STAFF: ve TODOS los comentarios de cualquier artículo
+    - USUARIOS NORMALES: ve SOLO los comentarios de SUS PROPIOS artículos
+    """
+    post = get_object_or_404(BlogPost, slug=slug)
+
+    # Seguridad: el usuario debe ser el autor o superadmin/staff
+    is_owner = post.author == request.user
+    if not (request.user.is_staff or request.user.is_superuser or is_owner):
+        return redirect("blog:blog_list")
+
+    comments = (
+        BlogComment.objects.filter(blog_slug=slug)
+        .select_related("parent")
+        .prefetch_related(
+            models.Prefetch(
+                "replies",
+                queryset=BlogComment.objects.filter(blog_slug=slug).order_by(
+                    "created_at"
+                ),
+            )
+        )
+        .order_by("-created_at")
+    )
+
+    # Paginación
+    paginator = Paginator(comments, 20)
+    page = request.GET.get("page", 1)
+    try:
+        page_obj = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
+
+    comments_count = comments.count()
+
+    # Adjuntar replies a cada comentario padre (para el template)
+    # Los replies ya se cargan via prefetch_related
+    for comment in page_obj:
+        if comment.parent_id:
+            # Es un reply, se mostrará dentro de su padre
+            pass
+
+    return render(
+        request,
+        "blog/dashboard_post_comments.html",
+        {
+            "post": post,
+            "comments": page_obj,
+            "comments_count": comments_count,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def moderate_comment(request, slug, comment_id):
+    """Aprobar o rechazar un comentario vía AJAX.
+
+    - SUPERADMIN/STAFF: puede moderar cualquier comentario
+    - USUARIOS NORMALES: puede moderar SOLO comentarios de SUS artículos
+    """
+    post = get_object_or_404(BlogPost, slug=slug)
+    comment = get_object_or_404(BlogComment, id=comment_id, blog_slug=slug)
+
+    # Seguridad: el usuario debe ser el autor del post o superadmin/staff
+    is_owner = post.author == request.user
+    if not (request.user.is_staff or request.user.is_superuser or is_owner):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    action = request.POST.get("action", "")
+    if action not in ("approve", "reject"):
+        return JsonResponse(
+            {"success": False, "error": "Acción inválida."}, status=400
+        )
+
+    new_status = "approved" if action == "approve" else "rejected"
+    comment.status = new_status
+    comment.save()
+
+    return JsonResponse(
+        {
+            "success": True,
+            "status": comment.status,
+            "comment_id": comment.id,
+        }
     )
 
 

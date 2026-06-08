@@ -24,19 +24,49 @@ function renderUploadedFile(file) {
     if (!file || !file.filename) return;
     const container = document.getElementById('uploaded-files');
     if (!container) return;
-    const fileUrl = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+    // Intentamos cargar la imagen/video desde la ruta temporal (media) y, si falla, desde la ruta definitiva en static/blogs/<slug>/
+    const tempUrl = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
     let element;
     if (file.type && file.type.startsWith('video')) {
         element = document.createElement('video');
-        element.setAttribute('src', fileUrl);
+        element.setAttribute('src', tempUrl);
         element.setAttribute('controls', '');
         element.className = 'uploaded-video';
     } else {
         element = document.createElement('img');
-        element.setAttribute('src', fileUrl);
+        element.setAttribute('src', tempUrl);
         element.setAttribute('alt', file.filename);
         element.className = 'uploaded-image';
     }
+    // Fallback: si la carga falla (por ejemplo, el archivo ya fue movido a la carpeta definitiva), intentamos la ruta estática basada en el slug del artículo.
+    element.onerror = function () {
+        // Evitamos bucles infinitos marcando que ya intentamos el fallback.
+        if (this.dataset.tried) return;
+        this.dataset.tried = '1';
+        // 1️⃣ Intentar ruta genérica bajo /static/blogs/ (por si el archivo está allí sin slug)
+        const genericFallback = `/static/blogs/${file.filename}`;
+        this.setAttribute('src', genericFallback);
+        // 2️⃣ Si falla, intentar con slug bajo /static/blogs/
+        this.onerror = function () {
+            if (this.dataset.triedSlug) return;
+            this.dataset.triedSlug = '1';
+            const slug = document.getElementById('edit-slug').value || '';
+            if (slug) {
+                const slugFallback = `/static/blogs/${slug}/${file.filename}`;
+                this.setAttribute('src', slugFallback);
+            }
+        };
+        // 3️⃣ Si aún falla, intentar la ruta de media donde se guardan los blogs fuente
+        this.onerror = function () {
+            if (this.dataset.triedMedia) return;
+            this.dataset.triedMedia = '1';
+            const slug = document.getElementById('edit-slug').value || '';
+            if (slug) {
+                const mediaFallback = `/static/blogs_source/${slug}/${file.filename}`;
+                this.setAttribute('src', mediaFallback);
+            }
+        };
+    };
     const wrapper = document.createElement('div');
     wrapper.className = 'uploaded-item';
     if (file.hidden) wrapper.classList.add('is-hidden');
@@ -385,7 +415,7 @@ setInterval(() => {
     } catch (e) {}
 }, 30000);
 
-window.addEventListener('load', () => {
+    window.addEventListener('load', () => {
     const draft = localStorage.getItem(DRAFT_KEY);
     if (!draft) return;
     const data = JSON.parse(draft);
@@ -394,6 +424,10 @@ window.addEventListener('load', () => {
     if (!((hasContent || hasTitle) && confirm('¿Recuperar borrador guardado?'))) {
         localStorage.removeItem(DRAFT_KEY);
         return;
+    }
+    // Si el borrador incluye slug (artículo ya creado previamente), lo asignamos para que el fallback de imágenes funcione.
+    if (data.slug) {
+        document.getElementById('edit-slug').value = data.slug;
     }
     document.getElementById('title').value = data.title || '';
     document.getElementById('description').value = data.description || '';
@@ -450,15 +484,16 @@ window.addEventListener('load', () => {
             isSaved = true;
             localStorage.removeItem(DRAFT_KEY);
             if (result.published) {
-                document.getElementById('status-message').innerHTML = `<div class="alert alert-success">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-link">Ver artículo</a></div>`;
+                document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-success">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a></div>`;
             } else {
-                document.getElementById('status-message').innerHTML = '<div class="alert alert-warning">Borrador guardado. Pendiente de aprobación.</div>';
+                // Añadimos un enlace estilizado a la lista de artículos para que el autor pueda continuar navegando
+                document.getElementById('status-message').innerHTML = '<div class="alert alert-process-editor__container alert-warning">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a></div>';
             }
         } else {
-            document.getElementById('status-message').innerHTML = `<div class="alert alert-danger">Error: ${result.error || 'Error desconocido'}</div>`;
+            document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger">Error: ${result.error || 'Error desconocido'}</div>`;
         }
     } catch (err) {
-        document.getElementById('status-message').innerHTML = `<div class="alert alert-danger">Error de conexión: ${err.message}</div>`;
+        document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger">Error de conexión: ${err.message}</div>`;
     } finally {
         btn.disabled = false;
         btn.innerHTML = document.querySelector('#btn-save').dataset.originalText || 'Guardar';

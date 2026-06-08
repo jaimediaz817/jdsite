@@ -112,6 +112,24 @@
 
     border-radius: 5px;
     padding: 0.25rem 0.25rem;
+    /* Layout flex para alinear icono + texto + chevron en una sola línea */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Icono FontAwesome del título del grupo (sustituye a los emojis) */
+.sidebar-title__icon {
+    color: #5d25d5;
+    /* tono morado de la paleta del blog */
+    font-size: 1rem;
+    width: 1.1rem;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.sidebar-title:hover .sidebar-title__icon {
+    color: #2575fc;
 }
 
 .category-list {
@@ -170,4 +188,122 @@
 .category-link:hover {
     background-color: #e9ecef;
     color: #212529;
+}
+
+/* Icono FontAwesome dentro de cada enlace de categoría */
+.category-link__icon {
+    color: #6c757d;
+    width: 1rem;
+    text-align: center;
+    margin-right: 0.4rem;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.category-item.active .category-link__icon,
+.category-link:hover .category-link__icon {
+    color: #5d25d5;
+}
+
+/* Aseguramos que el flex layout del sidebar-title permita que el chevron
+   siga alineado a la derecha incluso cuando hay icono + texto a la izquierda. */
+.blog-sidebar .sidebar-title {
+    flex-wrap: nowrap;
+}
+
+.blog-sidebar .sidebar-title .arrow {
+    margin-left: auto;
+    /* empuja el chevron al extremo derecho */
+}
+
+/* ==========================================================
+   ORDENAR POR – estilos del bloque "Ordenar por" del sidebar
+   ========================================================== */
+.order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
+    margin-bottom: 0.25rem;
+}
+
+.order-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.35rem;
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.18s ease, color 0.18s ease,
+        box-shadow 0.18s ease, transform 0.18s ease;
+    border: 1px solid transparent;
+}
+
+.order-link:hover {
+    background-color: #eef0f4;
+    color: #212529;
+    transform: translateX(2px);
+}
+
+.order-link-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.order-icon {
+    width: 1rem;
+    text-align: center;
+    color: #6c757d;
+    transition: color 0.18s ease;
+}
+
+.order-link:hover .order-icon {
+    color: #5d25d5;
+}
+
+.order-check {
+    color: #b06a17;
+    /* tono ámbar oscuro para máximo contraste sobre fondo amarillo tenue */
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease;
+}
+
+/* Estado activo: marca siempre visible y fondo destacado.
+   Usamos la paleta cálida del blog (degradado del botón "Escribir artículo"
+   que va de #ff7e5f a #feb47b), aplicada en versión tenue para no saturar. */
+.order-item.active .order-link {
+    background: linear-gradient(90deg, #fff4e6 0%, #ffe8d4 100%);
+    color: #8a4a18;
+    font-weight: 600;
+    border-color: #f5c794;
+    box-shadow: 0 1px 2px rgba(255, 126, 95, 0.18);
+}
+
+.order-item.active .order-icon {
+    color: #d97706;
+    /* naranja-ámbar que coincide con la paleta */
+}
+
+.order-item.active .order-check {
+    opacity: 1;
+    transform: scale(1);
+    color: #d97706;
+}
+
+.order-item.active .order-link:hover {
+    background: linear-gradient(90deg, #ffe9d1 0%, #ffd9b8 100%);
+    border-color: #ed9c4f;
+    box-shadow: 0 2px 6px rgba(255, 126, 95, 0.22);
+}
+
+.order-item.active .order-link:hover .order-check {
+    color: #b45309;
 }

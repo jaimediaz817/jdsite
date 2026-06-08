@@ -14,25 +14,25 @@ Shared between blog_list.html and blog_detail.html{% endcomment %}
   <div class="jd-af-list">
     {% if request.GET.category %}
     <span class="jd-af-badge">
-      📁 {{ request.GET.category }}
+      <i class="fas fa-folder-open" aria-hidden="true"></i> {{ request.GET.category }}
       <a href="?{% remove_param request 'category' %}" class="jd-af-remove" title="Quitar filtro de categoría">✕</a>
     </span>
     {% endif %}
     {% if request.GET.tag %}
     <span class="jd-af-badge">
-      🏷 {{ request.GET.tag }}
+      <i class="fas fa-tag" aria-hidden="true"></i> {{ request.GET.tag }}
       <a href="?{% remove_param request 'tag' %}" class="jd-af-remove" title="Quitar filtro de tag">✕</a>
     </span>
     {% endif %}
     {% if request.GET.month %}
     <span class="jd-af-badge">
-      📅 {{ request.GET.month }}
+      <i class="far fa-calendar-alt" aria-hidden="true"></i> {{ request.GET.month }}
       <a href="?{% remove_param request 'month' %}" class="jd-af-remove" title="Quitar filtro de fecha">✕</a>
     </span>
     {% endif %}
     {% if request.GET.q %}
     <span class="jd-af-badge">
-      🔍 "{{ request.GET.q|truncatechars:20 }}"
+      <i class="fas fa-search" aria-hidden="true"></i> "{{ request.GET.q|truncatechars:20 }}"
       <a href="?{% remove_param request 'q' %}" class="jd-af-remove" title="Quitar búsqueda">✕</a>
     </span>
     {% endif %}
@@ -41,19 +41,71 @@ Shared between blog_list.html and blog_detail.html{% endcomment %}
 </div>
 {% endif %}
 
+<!-- 📅 ORDENAR POR (colapsable) -->
+<div x-data="{ open: true }" class="sidebar-menu mt-3">
+  <h2 class="sidebar-title" @click="open = !open" role="button" tabindex="0">
+    <i class="fas fa-sort-amount-down sidebar-title__icon" aria-hidden="true"></i>
+    Ordenar por
+    <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open}" style="float: right;"></i>
+  </h2>
+  <ul class="order-list list-unstyled" x-show="open" x-collapse x-transition>
+    {# ``base_query`` y ``current_order`` son provistos por la vista (BlogListView). #}
+    {# ``base_query`` ya excluye el parámetro ``order``. #}
+
+    {# Opción: Más recientes (default) #}
+    <li class="order-item {% if current_order == 'desc' or not current_order %}active{% endif %}">
+      {% if base_query %}
+      <a href="?{{ base_query }}&order=desc" class="order-link">
+      {% else %}
+      <a href="?order=desc" class="order-link">
+      {% endif %}
+        <span class="order-link-content">
+          <i class="fas fa-arrow-down-wide-short order-icon"></i>
+          <span class="order-label">Más recientes</span>
+        </span>
+        {% if current_order == 'desc' or not current_order %}
+        <i class="fas fa-check order-check" aria-label="Seleccionado" title="Filtro activo"></i>
+        {% endif %}
+      </a>
+    </li>
+
+    {# Opción: Más antiguos #}
+    <li class="order-item {% if current_order == 'asc' %}active{% endif %}">
+      {% if base_query %}
+      <a href="?{{ base_query }}&order=asc" class="order-link">
+      {% else %}
+      <a href="?order=asc" class="order-link">
+      {% endif %}
+        <span class="order-link-content">
+          <i class="fas fa-arrow-up-wide-short order-icon"></i>
+          <span class="order-label">Más antiguos</span>
+        </span>
+        {% if current_order == 'asc' %}
+        <i class="fas fa-check order-check" aria-label="Seleccionado" title="Filtro activo"></i>
+        {% endif %}
+      </a>
+    </li>
+  </ul>
+</div>
+
 <!-- 📁 CATEGORÍAS -->
 <div x-data="{ open: true }" class="sidebar-menu">
   <h2 class="sidebar-title" @click="open = !open" role="button" tabindex="0">
-    📁 Categorías
+    <i class="fas fa-folder-tree sidebar-title__icon" aria-hidden="true"></i>
+    Categorías
     <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open}" style="float: right;"></i>
   </h2>
   <ul class="category-list" x-show="open" x-collapse x-transition>
     <li class="category-item {% if not request.GET.category %}active{% endif %}">
-      <a href="?" class="category-link">Todas las categorías</a>
+      <a href="?" class="category-link">
+        <i class="fas fa-list-ul category-link__icon" aria-hidden="true"></i>
+        Todas las categorías
+      </a>
     </li>
     {% for cat in categories %}
     <li class="category-item {% if request.GET.category == cat.slug %}active{% endif %}">
       <a href="?category={{ cat.slug }}" class="category-link">
+        <i class="fas fa-folder category-link__icon" aria-hidden="true"></i>
         {{ cat.name }}
         <span class="category-count">({{ cat.posts_count }})</span>
       </a>

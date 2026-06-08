@@ -8,6 +8,106 @@
     gap: 4px;
 }
 
+/* ==========================================================
+   🖼️ PLACEHOLDER DE IMAGEN
+   ----------------------------------------------------------
+   Cuando un artículo no tiene ``cover_image`` (por ejemplo,
+   cuando se publica desde el editor online sin subir portada),
+   en lugar de intentar cargar una imagen inexistente (que se
+   muestra como icono de "imagen rota"), mostramos un placeholder
+   con icono de periódico + texto "Sin imagen de portada".
+   ========================================================== */
+.blog-card-image__placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+    background: linear-gradient(135deg, #eef0f4 0%, #d8dce5 100%);
+    color: #6c757d;
+    gap: 0.4rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.blog-card-image__placeholder-icon {
+    font-size: 2.5rem;
+    color: #8a93a3;
+    opacity: 0.7;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.blog-card-image__placeholder-text {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: #6c757d;
+    letter-spacing: 0.2px;
+    user-select: none;
+}
+
+.blog-card:hover .blog-card-image__placeholder-icon {
+    transform: scale(1.08);
+    opacity: 0.9;
+    color: #5d25d5;
+}
+
+/* Cuando el <img> falla por URL inválida, ocultamos la imagen rota
+   y dejamos que el background del contenedor sea visible. */
+.blog-card-image--no-img {
+    background: linear-gradient(135deg, #eef0f4 0%, #d8dce5 100%);
+}
+
+.blog-card-image--no-img::before {
+    content: "\f1ea" " Sin imagen";
+    /* fa-newspaper + texto como fallback si la URL falla */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: #8a93a3;
+    font-size: 0.85rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* 🟡 Estado vacío del contenedor de tags: se muestra cuando un artículo
+   no tiene tags asignados. Mantiene el mismo padding del contenedor
+   original y simula la altura de ~2 tags para que las cards no cambien
+   de tamaño al pasar de tener tags a no tenerlos. */
+.blog-tags-list.blog-tags-container.blog-tags-empty {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 5px;
+    /* min-height que respeta padding (0.25rem arriba/abajo) y la altura
+       de una línea de badge (≈ 1.25rem) + un pequeño gap para simular 2 tags. */
+    min-height: 2.4rem;
+    line-height: 1.2;
+    color: #9aa0a6;
+    font-size: 0.72rem;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.blog-tags-list.blog-tags-container.blog-tags-empty:hover {
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #6c757d;
+}
+
+.blog-tags-empty__icon {
+    color: #c4c9cf;
+    font-size: 0.7rem;
+    transition: color 0.2s ease;
+}
+
+.blog-tags-list.blog-tags-container.blog-tags-empty:hover .blog-tags-empty__icon {
+    color: #9aa0a6;
+}
+
+.blog-tags-empty__text {
+    font-style: italic;
+    letter-spacing: 0.1px;
+    user-select: none;
+}
+
 /* --- Contenedor de la Card --- */
 /* --- Contenedor de la Card --- */
 /* --- Contenedor de la Card --- */
@@ -89,6 +189,21 @@
     color: #2c3e50;
     transition: color 0.2s ease;
 }
+
+.author-category__container {
+    justify-content: space-between;
+}
+
+.blog-tags-list.blog-tags-container {
+    padding: 0.25rem 0.4rem;
+    border: 1px solid #e5e5e5;
+    background: white;
+    border-radius: 5px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 1px;
+}
+
 
 /* --- Badges unificados (comentarios + reacciones) --- */
 .comment-info,
@@ -296,8 +411,7 @@
     border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.8rem;
-    font-weight: 600;
-    margin-left: 0.5rem;
+    font-weight: 200;
     text-decoration: none;
     white-space: nowrap;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -429,6 +543,8 @@
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border: 1px solid #e2e8f0;
     border-radius: 20px;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 .blog-tags-list .blog-tag:hover {

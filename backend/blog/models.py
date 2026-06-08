@@ -80,6 +80,21 @@ class BlogPost(models.Model):
     publish_date = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
+    # ---------------------------------------------------------------------
+    # 🟡 Auditoría: fecha de creación y última modificación en BD.
+    # ``created_at`` se establece en el primer INSERT (no se vuelve a tocar).
+    # ``updated_at`` se actualiza en cada ``save()``.
+    # Son útiles para mostrar al usuario "hace cuánto se creó este post
+    # en la base de datos" sin depender de ``publish_date`` (que refleja
+    # la fecha del frontmatter y puede ser muy anterior).
+    # ---------------------------------------------------------------------
+    # ``created_at`` se asigna manualmente en ``save()`` para que, al crear
+    # un artículo mediante el editor o la importación, tome la fecha del
+    # front‑matter (``publish_date``) cuando esté disponible. Si no hay una
+    # fecha, se usa la hora actual.
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     is_published = models.BooleanField(
         default=False,
         help_text="Los artículos se crean como borradores. El administrador los publica desde la dashboard.",
@@ -174,14 +189,26 @@ class BlogPost(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        """Guarda el modelo asegurando coherencia de auditoría.
+
+        - Genera ``slug`` si falta.
+        - Genera token de aprobación para borradores.
+        - Asigna ``created_at`` cuando el registro se crea por primera vez.
+        """
         if not self.slug:
             self.slug = slugify(self.title)
+
         # Generar token de aprobación cuando el post es borrador y aún no tiene token
         if not self.is_published and not self.approval_token:
             import uuid
 
             self.approval_token = uuid.uuid4().hex
             self.approval_token_created = timezone.now()
+
+        # Si ``created_at`` está vacío, usar ``publish_date`` (más fiable) o la hora actual
+        if not self.created_at:
+            self.created_at = self.publish_date or timezone.now()
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

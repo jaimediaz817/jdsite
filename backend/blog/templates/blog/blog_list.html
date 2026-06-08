@@ -1,5 +1,6 @@
 {% load static %}
 {% load blog_filters %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es" class="html-jd">
 <head>
@@ -156,11 +157,25 @@
                             {% for post in posts %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
                                 <div class="blog-card-image position-relative" style="aspect-ratio: 16/9; overflow: hidden; background: #f8f9fa;">
-                                    <img src="{{ post|blog_thumbnail }}" alt="{{ post.title }}" class="w-100 h-100 object-fit-cover">
+                                    {% with post|blog_thumbnail as thumb_url %}
+                                    {% if thumb_url %}
+                                    <img src="{{ thumb_url }}" alt="{{ post.title }}" class="w-100 h-100 object-fit-cover" onerror="this.parentElement.classList.add('blog-card-image--no-img'); this.style.display='none';">
+                                    {% else %}
+                                    <div class="blog-card-image__placeholder d-flex flex-column align-items-center justify-content-center" role="img" aria-label="Este artículo no tiene imagen de portada">
+                                        <i class="far fa-newspaper blog-card-image__placeholder-icon" aria-hidden="true"></i>
+                                        <span class="blog-card-image__placeholder-text">Sin imagen de portada</span>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
                                     
-                                    <!-- 🟡 Fecha + tiempo de lectura → flotantes en esquina superior izq -->
+                                    <!-- 🟡 Fecha + tiempo de lectura → flotantes en esquina superior izq
+                                         Priorizamos ``created_at`` (auto_now_add) que refleja cuándo
+                                         se creó el registro en BD. Si por alguna razón es ``NULL``
+                                         (posts legacy), caemos a ``publish_date``.
+                                         El filtro ``timesince_safe`` se encarga de normalizar el
+                                         datetime a aware y devolver un fallback legible. -->
                                     <div class="blog-card-floating-meta">
-                                        <span class="float-meta-item"><i class="far fa-calendar-alt mr-1"></i> {{ post.publish_date|date:"d M Y" }}</span>
+                                        <span class="float-meta-item"><i class="far fa-calendar-alt mr-1"></i> {% trans "hace" %} {% if post.created_at %}{{ post.created_at|timesince }}{% else %}{{ post.publish_date|timesince }}{% endif %}</span>
                                         <span class="float-meta-item"><i class="far fa-clock mr-1"></i> {{ post.reading_time|default:"5" }} min</span>
                                     </div>
 
@@ -192,17 +207,19 @@
                                             {{ post.title|truncatechars:55 }}
                                         </a>
                                     </h3>
-                                    {% if post.content_html %}
+                                    {% with post|blog_excerpt:140 as excerpt %}
+                                    {% if excerpt %}
                                     <p class="blog-post-content_container text-muted mb-1 small" style="flex-grow: 0; -webkit-line-clamp: 2;">
-                                        {{ post.content_html|striptags|truncatechars:80 }}
+                                        {{ excerpt }}
                                     </p>
                                     {% endif %}
+                                    {% endwith %}
                                     
                                     <!-- Línea divisoria tenue -->
                                     <hr class="my-1" style="border-top: 1px solid rgba(0,0,0,0.06); opacity: 1;">
                                     
                                     <!-- 🟡 Autor + Categoría → misma línea compacta -->
-                                    <div class="d-flex align-items-center gap-2 mb-1 small text-muted">
+                                    <div class="author-category__container d-flex align-items-center gap-2 mb-1 small text-muted">
                                         <span><i class="far fa-user mr-1"></i> {% if post.author %}{{ post.author.get_full_name|default:post.author.username }}{% else %}Anónimo{% endif %}</span>
                                         {% if post.category %}
                                         <span class="text-muted">·</span>
@@ -213,13 +230,13 @@
                                     </div>
                                     
                                     {% if post.tags.all %}
-                                    <div class="blog-tags-list blog-tags-container d-flex flex-wrap mb-1" style="gap: 2px;">
+                                    <div class="blog-tags-list blog-tags-container d-flex flex-wrap" style="gap: 2px;">
                                         {% for tag in post.tags.all|slice:":4" %}
-                                        <span class="badge rounded-pill fw-normal blog-tag" 
-                                            style="font-size: 0.65rem; padding: 2px 8px; background-color: {{ tag.name|tag_bg_color }}; 
+                                        <span class="badge rounded-pill fw-normal blog-tag"
+                                            style="font-size: 0.65rem; padding: 2px 8px; background-color: {{ tag.name|tag_bg_color }};
                                                     color: {{ tag.name|tag_text_color }};
                                                     border: 1px solid {{ tag.name|tag_color }};">
-                                            <i class="fas fa-tag mr-1" style="color: {{ tag.name|tag_color }}; font-size: 0.55rem;"></i> 
+                                            <i class="fas fa-tag mr-1" style="color: {{ tag.name|tag_color }}; font-size: 0.55rem;"></i>
                                             {{ tag.name }}
                                         </span>
                                         {% endfor %}
@@ -228,6 +245,11 @@
                                             +{{ post.tags.all|length|add:"-4" }}
                                         </span>
                                         {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="blog-tags-list blog-tags-container blog-tags-empty d-flex align-items-center" role="note" aria-label="Este artículo no tiene tags asignados">
+                                        <i class="fas fa-tag mr-1 blog-tags-empty__icon" aria-hidden="true"></i>
+                                        <span class="blog-tags-empty__text">Sin tags asignados…</span>
                                     </div>
                                     {% endif %}
 

@@ -483,7 +483,12 @@ class BlogListView(ListView):
                     | Q(author=user, moderation_status="pending")
                 )
 
-        qs = qs.order_by("-publish_date")
+        # Aplicar orden según parámetro GET
+        order_param = self.request.GET.get("order", "desc")
+        if order_param == "asc":
+            qs = qs.order_by("publish_date")  # más antiguos primero
+        else:
+            qs = qs.order_by("-publish_date")  # más recientes primero (default)
 
         category_slug = self.request.GET.get("category")
         search_query = self.request.GET.get("q", "").strip()
@@ -509,9 +514,17 @@ class BlogListView(ListView):
         context["categories"] = Category.objects.all()
         context["search_query"] = self.request.GET.get("q", "")
         query = self.request.GET.copy()
-        if "page" in query:
-            query.pop("page")
+        # Excluir parámetros internos de paginación y orden para que los enlaces
+        # de paginación y los enlaces de orden los conserven correctamente.
+        for param in ("page", "order"):
+            if param in query:
+                query.pop(param)
         context["query_string"] = query.urlencode()
+        # Cadena auxiliar sin el parámetro "order", útil para que el sidebar
+        # construya enlaces de ordenamiento que preserven el resto de filtros.
+        context["base_query"] = context["query_string"]
+        # Orden actual seleccionado (default: desc = más recientes primero).
+        context["current_order"] = self.request.GET.get("order", "desc")
 
         # IDs de artículos pending del usuario actual (para marcar con article_pending)
         if self.request.user.is_authenticated:

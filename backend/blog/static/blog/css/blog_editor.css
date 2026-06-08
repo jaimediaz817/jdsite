@@ -495,3 +495,12 @@ fieldset[disabled] input {
 .modern-select {
     height: calc(2.25rem + 2px);
 }
+
+.alert-process-editor__container {}
+
+.alert-process-editor {
+    border: 1px solid rgba(1, 1, 1, 0.3);
+    border-radius: 5px;
+    padding: 5px 15px;
+    margin-left: 1.5rem;
+}

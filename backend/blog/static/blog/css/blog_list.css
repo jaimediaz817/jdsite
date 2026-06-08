@@ -199,11 +199,124 @@
     margin-right: 0;
 }
 
-/* Botón de moderación: fondo amarillo con texto blanco para mejor contraste */
-.moderate-btn {
-    background-color: #f0ad4e !important;
-    border-color: #eea236 !important;
+/* -----------------------------------------------------------------
+   Botón Editar (en la lista de artículos)
+   -----------------------------------------------------------------
+   Ahora comparte el mismo degradado que el botón de búsqueda y
+   muestra texto en blanco para lograr consistencia visual.
+   ----------------------------------------------------------------- */
+.edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc) !important;
     color: #fff !important;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 6px rgba(106, 17, 203, 0.2);
+}
+
+.edit-btn i {
+    font-size: 0.8rem;
+}
+
+.edit-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #5a0fb0, #1e5edc);
+    box-shadow: 0 4px 12px rgba(106, 17, 203, 0.3);
+}
+
+.edit-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* -----------------------------------------------------------------
+   Toast de notificaciones (usado en dashboard y comentarios)
+   -----------------------------------------------------------------
+   Se posiciona en la esquina superior derecha y se le da estilo
+   consistente al botón de cierre para que sea visible y usable.
+   ----------------------------------------------------------------- */
+#toastContainer {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Estilos base para la alerta dentro del toast */
+#toastContainer .alert {
+    min-width: 280px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: #fff;
+    padding-right: 2.5rem;
+    /* espacio para el botón cerrar */
+    position: relative;
+}
+
+/* Botón cerrar dentro de la alerta – se asegura que sea blanco y visible */
+#toastContainer .alert .btn-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #fff;
+    opacity: 1;
+    font-size: 1.2rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* Hover del botón cerrar */
+#toastContainer .alert .btn-close:hover {
+    opacity: 0.8;
+}
+
+/* Botón de moderación: ahora con degradado similar al botón “Escribir artículo” */
+.moderate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b) !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 124, 95, 0.2);
+}
+
+.moderate-btn i {
+    font-size: 0.8rem;
+}
+
+.moderate-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #feb47b, #ff7e5f);
+    box-shadow: 0 4px 12px rgba(255, 124, 95, 0.3);
+}
+
+.moderate-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* --- Extracto del contenido (resumen) --- */
@@ -834,6 +947,11 @@ body.home-p {
     font-weight: 500;
     letter-spacing: 0.02em;
     transition: background 0.2s ease;
+    align-self: flex-start;
+
+    &:nth-child(1) {
+        align-self: flex-start;
+    }
 }
 
 .blog-card:hover .float-meta-item {

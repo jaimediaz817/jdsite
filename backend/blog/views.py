@@ -964,6 +964,8 @@ def get_blog_for_edit(request, slug):
             "content_md": markdown_content,
             "existing_files": existing_files,
             "folder": target_dir.name,
+            "is_published": blog_post.is_published,
+            "moderation_status": blog_post.moderation_status,
         }
     )
 

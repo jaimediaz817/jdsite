@@ -1,12 +1,14 @@
 // ======================================================
-// HU-011: Blog Editor JavaScript
-// EasyMDE + FilePond + auto-save + tiempo de lectura
+// HU-011 + HU-017: Blog Editor JavaScript
+// EasyMDE + FilePond + auto-save + mejoras borradores
 // ======================================================
 
 const uploadedFiles = [];
 let isSaved = false; // controla si el artículo ya se guardó para evitar la alerta de salida
 const DRAFT_KEY = 'blog_editor_draft';
 let userOverride = false;
+let lastAutoSaveTime = null;
+let autoSaveTimer = null;
 
 // Iconos SVG inline (mejor calidad visual y accesibilidad)
 const ICON_EYE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3c-3.5 0-6.5 2.3-7.5 5.5C1.5 11.7 4.5 14 8 14s6.5-2.3 7.5-5.5C14.5 5.3 11.5 3 8 3zm0 9c-1.9 0-3.5-1.6-3.5-3.5S6.1 5 8 5s3.5 1.6 3.5 3.5S9.9 12 8 12zm0-5.5C7.2 6.5 6.5 7.2 6.5 8s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5z"/></svg>';
@@ -14,6 +16,95 @@ const ICON_EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16
 const ICON_TRASH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>';
 const ICON_STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/></svg>';
 const ICON_STAR_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>';
+
+// ======================================================
+// Funciones helper: Toast manual (compatible Bootstrap 4)
+// ======================================================
+function showAutoSaveToast(title, detail) {
+    const toastEl = document.getElementById('autosave-toast');
+    if (!toastEl) return;
+    const titleEl = toastEl.querySelector('.autosave-toast-title');
+    const detailEl = document.getElementById('autosave-toast-detail');
+    const timeEl = toastEl.querySelector('.autosave-toast-time');
+    if (titleEl) titleEl.innerHTML = title;
+    if (detailEl) detailEl.textContent = detail || '—';
+    if (timeEl) {
+        const now = new Date();
+        timeEl.textContent = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    }
+    // Mostrar toast manualmente con clase 'show' (compatible BS4)
+    toastEl.classList.add('show');
+    toastEl.style.display = 'block';
+    // Auto-ocultar a los 5 segundos
+    clearTimeout(toastEl._hideTimer);
+    toastEl._hideTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastEl.style.display = 'none';
+    }, 5000);
+}
+
+function formatTimeAgo(date) {
+    if (!date) return 'hace unos momentos';
+    const diff = Math.floor((Date.now() - date) / 1000);
+    if (diff < 60) return 'hace menos de un minuto';
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} minutos`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+}
+
+// ======================================================
+// Funciones helper: Draft indicator
+// ======================================================
+function updateDraftIndicator(show) {
+    const indicator = document.getElementById('draft-indicator');
+    if (!indicator) return;
+    if (show) {
+        indicator.classList.remove('d-none');
+    } else {
+        indicator.classList.add('d-none');
+    }
+}
+
+function updateStatusBadge(state) {
+    const badge = document.getElementById('status-badge');
+    if (!badge) return;
+    // states: 'new', 'draft_local', 'pending', 'published'
+    const config = {
+        'new': { text: '🔵 Nuevo artículo', class: 'Artikel-badge-new' },
+        'draft_local': { text: '🔵 Borrador local', class: 'Artikel-badge-local' },
+        'pending': { text: '🟡 Pendiente de aprobación', class: 'Artikel-badge-pending' },
+        'published': { text: '🟢 Publicado', class: 'Artikel-badge-published' },
+    };
+    const c = config[state] || config['new'];
+    badge.textContent = c.text;
+    badge.className = 'badge ' + c.class;
+}
+
+function getWordCount(text) {
+    const cleanText = text
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/`[^`]+`/g, '')
+        .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+        .replace(/\[[^\]]*\]\([^)]+\)/g, (m) => m.split(']')[0].slice(1))
+        .replace(/[#*_~>`-]/g, '')
+        .replace(/:::.*?:::/gs, '');
+    return cleanText.trim().split(/\s+/).filter(w => w).length;
+}
+
+function getDraftAge() {
+    try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        return data._timestamp || null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// ======================================================
+// F Unctions de archivos (render, cover, toggle, remove)
+// ======================================================
 
 /**
  * Renderiza una vista previa de un archivo subido (imagen o video).
@@ -400,31 +491,82 @@ function collectFormData() {
         content_md: easyMDE.value(),
         files: uploadedFiles,
         cover_filename: getCoverFilename(),
+        _timestamp: Date.now(), // Para calcular antigüedad del draft
     };
 }
 
-setInterval(() => {
+function performAutoSave() {
     try {
         const data = collectFormData();
         localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-        const toast = document.getElementById('autosave-toast');
-        if (toast) {
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-    } catch (e) {}
-}, 30000);
+        lastAutoSaveTime = Date.now();
 
-    window.addEventListener('load', () => {
-    const draft = localStorage.getItem(DRAFT_KEY);
-    if (!draft) return;
-    const data = JSON.parse(draft);
-    const hasContent = data.content_md && data.content_md.length > 10;
-    const hasTitle = data.title && data.title.length > 3;
-    if (!((hasContent || hasTitle) && confirm('¿Recuperar borrador guardado?'))) {
-        localStorage.removeItem(DRAFT_KEY);
-        return;
+        // Mostrar toast mejorado
+        const words = getWordCount(data.content_md || '');
+        const detail = data.title
+            ? `"${data.title.substring(0, 40)}${data.title.length > 40 ? '...' : ''}" — ${words} palabras`
+            : `${words} palabras — sin título aún`;
+        showAutoSaveToast('💾 Borrador guardado', detail);
+
+        // Actualizar indicador de borrador local
+        const hasContent = data.content_md && data.content_md.length > 10;
+        const hasTitle = data.title && data.title.length > 3;
+        if (hasContent || hasTitle) {
+            updateDraftIndicator(true);
+            updateStatusBadge('draft_local');
+        }
+    } catch (e) {
+        console.warn('Error en auto-save:', e);
     }
+}
+
+// Auto-save cada 15 segundos (HU-017 Fase 4)
+autoSaveTimer = setInterval(performAutoSave, 15000);
+
+// ======================================================
+// 5b. Modal de recuperación de borrador (reemplaza confirm())
+// ======================================================
+function showDraftRecoveryModal(draftData) {
+    const modalEl = document.getElementById('draftRecoveryModal');
+    if (!modalEl) return;
+
+    // Calcular antigüedad
+    const age = draftData._timestamp || null;
+    document.getElementById('draft-age').textContent = formatTimeAgo(age);
+
+    // Mostrar resumen
+    const words = getWordCount(draftData.content_md || '');
+    document.getElementById('draft-title-display').textContent = draftData.title || '—';
+    document.getElementById('draft-words-display').textContent = words;
+    document.getElementById('draft-category-display').textContent = draftData.category || '—';
+
+    // Configurar botones
+    const recoverBtn = document.getElementById('modal-recover-draft');
+    const discardBtn = document.getElementById('modal-discard-draft');
+
+    // Limpiar listeners previos clonando y reemplazando
+    const newRecoverBtn = recoverBtn.cloneNode(true);
+    recoverBtn.parentNode.replaceChild(newRecoverBtn, recoverBtn);
+    const newDiscardBtn = discardBtn.cloneNode(true);
+    discardBtn.parentNode.replaceChild(newDiscardBtn, discardBtn);
+
+    newRecoverBtn.addEventListener('click', () => {
+        restoreDraft(draftData);
+        // BS4: cerrar modal vía jQuery
+        $('#draftRecoveryModal').modal('hide');
+    });
+
+    newDiscardBtn.addEventListener('click', () => {
+        discardDraft();
+        // BS4: cerrar modal vía jQuery
+        $('#draftRecoveryModal').modal('hide');
+    });
+
+    // Mostrar modal BS4 con backdrop static
+    $('#draftRecoveryModal').modal({ backdrop: 'static', keyboard: false });
+}
+
+function restoreDraft(data) {
     // Si el borrador incluye slug (artículo ya creado previamente), lo asignamos para que el fallback de imágenes funcione.
     if (data.slug) {
         document.getElementById('edit-slug').value = data.slug;
@@ -447,13 +589,60 @@ setInterval(() => {
         });
     }
     document.getElementById('status-message').innerHTML =
-        '<div class="alert alert-info">Borrador recuperado de localStorage</div>';
+        '<div class="alert alert-info">📝 Borrador recuperado de localStorage</div>';
+    updateDraftIndicator(true);
+    updateStatusBadge('draft_local');
+}
+
+function discardDraft() {
+    localStorage.removeItem(DRAFT_KEY);
+    updateDraftIndicator(false);
+    // Si no hay artículo cargado, volver a estado 'new'
+    const slug = document.getElementById('edit-slug').value;
+    if (!slug) {
+        updateStatusBadge('new');
+    }
+    document.getElementById('status-message').innerHTML =
+        '<div class="alert alert-secondary">🗑️ Borrador local descartado</div>';
+}
+
+// ======================================================
+// 5c. Al cargar la página: detectar draft y mostrar modal
+// ======================================================
+window.addEventListener('load', () => {
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (!draft) {
+        // Verificar si hay artículo cargado para actualizar badge
+        const slug = document.getElementById('edit-slug').value;
+        if (!slug) {
+            updateDraftIndicator(false);
+            updateStatusBadge('new');
+        }
+        return;
+    }
+    let data;
+    try {
+        data = JSON.parse(draft);
+    } catch (e) {
+        localStorage.removeItem(DRAFT_KEY);
+        return;
+    }
+    const hasContent = data.content_md && data.content_md.length > 10;
+    const hasTitle = data.title && data.title.length > 3;
+    if (!hasContent && !hasTitle) {
+        localStorage.removeItem(DRAFT_KEY);
+        updateDraftIndicator(false);
+        return;
+    }
+
+    // Mostrar modal de recuperación
+    showDraftRecoveryModal(data);
 });
 
 // ======================================================
 // 6. Botón "Guardar"
 // ======================================================
-    document.getElementById('btn-save').addEventListener('click', async () => {
+document.getElementById('btn-save').addEventListener('click', async () => {
     const data = collectFormData();
     if (!data.title.trim()) {
         document.getElementById('status-message').innerHTML = '<div class="alert alert-danger">El título es obligatorio</div>';
@@ -483,11 +672,13 @@ setInterval(() => {
             // Guardado exitoso → marcamos como guardado para que no aparezca la alerta de salida
             isSaved = true;
             localStorage.removeItem(DRAFT_KEY);
+            updateDraftIndicator(false);
             if (result.published) {
                 document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-success">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a></div>`;
+                updateStatusBadge('published');
             } else {
-                // Añadimos un enlace estilizado a la lista de artículos para que el autor pueda continuar navegando
                 document.getElementById('status-message').innerHTML = '<div class="alert alert-process-editor__container alert-warning">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a></div>';
+                updateStatusBadge('pending');
             }
         } else {
             document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger">Error: ${result.error || 'Error desconocido'}</div>`;
@@ -512,14 +703,54 @@ function getCookie(name) {
     return '';
 }
 
+// ======================================================
+// beforeunload: guardar en localStorage, sin diálogo nativo
+// ======================================================
 window.addEventListener('beforeunload', (e) => {
     const data = collectFormData();
-    // Sólo advertir si hay cambios sin haber guardado ya
     if (!isSaved && data.content_md && data.content_md.length > 10) {
+        // Siempre guardar en localStorage antes de salir
         localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-        e.preventDefault();
-        e.returnValue = 'Tienes cambios sin guardar.';
+        // No llamamos a e.preventDefault() ni e.returnValue
+        // para evitar el diálogo nativo del navegador
     }
+});
+
+// ======================================================
+// Eventos adicionales de auto-save (HU-017 Fase 4)
+// ======================================================
+
+// Al perder visibilidad de la pestaña
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        performAutoSave();
+    }
+});
+
+// Al hacer clic en Cancelar (forzar auto-save antes de salir)
+document.querySelector('.editor-btn-cancel')?.addEventListener('click', (e) => {
+    performAutoSave();
+    // La navegación la maneja el onclick del HTML
+});
+
+// ======================================================
+// Botón "Descartar borrador" en el indicador y toast
+// ======================================================
+
+// Botón en el indicador del sidebar
+document.getElementById('btn-discard-draft')?.addEventListener('click', () => {
+    $('#confirmDiscardModal').modal('show');
+});
+
+// Botón en el toast
+document.getElementById('toast-discard-draft')?.addEventListener('click', () => {
+    $('#confirmDiscardModal').modal('show');
+});
+
+// Confirmación de descarte
+document.getElementById('confirm-discard-btn')?.addEventListener('click', () => {
+    discardDraft();
+    $('#confirmDiscardModal').modal('hide');
 });
 
 // ======================================================
@@ -535,6 +766,7 @@ window.addEventListener('beforeunload', (e) => {
     }
     if (!editSlug) return;
     localStorage.removeItem(DRAFT_KEY);
+    updateDraftIndicator(false);
     document.getElementById('edit-slug').value = editSlug;
     try {
         const response = await fetch(`/blog/api/get-blog/${editSlug}/`);
@@ -557,6 +789,16 @@ window.addEventListener('beforeunload', (e) => {
         console.log('🐛 [DEBUG] fm.cover_image =', fm.cover_image);
         console.log('🐛 [DEBUG] fm.image =', fm.image);
         console.log('🐛 [DEBUG] data.existing_files =', data.existing_files);
+
+        // Actualizar badge según estado del artículo
+        if (data.is_published) {
+            updateStatusBadge('published');
+        } else if (data.moderation_status === 'pending') {
+            updateStatusBadge('pending');
+        } else {
+            updateStatusBadge('new');
+        }
+
         // Si el backend envía archivos existentes, marcamos cuál es la portada
         // según el frontmatter. Compatibilidad con la clave antigua ``image``.
         if (data.existing_files && data.existing_files.length > 0) {
@@ -603,3 +845,188 @@ window.addEventListener('beforeunload', (e) => {
         document.getElementById('status-message').innerHTML = `<div class="alert alert-danger">Error al cargar artículo: ${err.message}</div>`;
     }
 })();
+
+// ======================================================
+// HU-011.7: Barra de herramientas MTP (Mark to Post)
+// Motor de inserción de templates en el editor
+// ======================================================
+
+/**
+ * Templates MTP para inserción en el editor.
+ * Cada template usa {{placeholder}} para marcar dónde queda el cursor.
+ */
+const MTP_TEMPLATES = {
+    'cover-image': 'image: "nombre-de-imagen.png"\n',
+    'image': '![Texto alternativo](ruta-de-la-imagen.png)\n',
+    'video': '<video src="nombre-del-video.mp4" controls></video>\n',
+    'slides':
+`:::slides
+![Título de imagen 1|Descripción](imagen-1.png)
+![Título de imagen 2|Descripción](imagen-2.png)
+:::
+
+`,
+    'callout-info':
+`:::callout:info
+**Info**: Texto informativo aquí.
+:::
+
+`,
+    'callout-warning':
+`:::callout:warning
+**Advertencia**: Texto de advertencia aquí.
+:::
+
+`,
+    'callout-tip':
+`:::callout:tip
+**Consejo**: Texto del consejo aquí.
+:::
+
+`,
+    'pullquote':
+`:::pullquote
+"Texto de la cita destacada aquí."
+:::
+
+`,
+    'codefile':
+`:::codefile:archivo.py
+def ejemplo():
+    print("Hola MTP")
+:::
+
+`,
+    'popup-gallery':
+`:::popup:gallery
+![Título imagen 1|Descripción](imagen-1.png)
+![Título imagen 2|Descripción](imagen-2.png)
+:::
+
+`,
+    'vl-highlight':
+`[vl]: highlight Texto destacado aquí.
+
+`,
+    'separator': '\n---\n\n',
+};
+
+/**
+ * Inserta un template MTP en la posición actual del cursor de EasyMDE.
+ * @param {string} action - Clave del template en MTP_TEMPLATES
+ */
+function insertMtpTemplate(action) {
+    if (!easyMDE) return;
+
+    if (action === 'minimize') {
+        // En mobile la barra siempre se ve: no minimizar
+        if (window.innerWidth <= 992) return;
+        // Alternar minimizar la barra
+        const toolbar = document.getElementById('mtpToolbar');
+        const toggleBtn = document.getElementById('mtpToggleBtn');
+        if (!toolbar) return;
+        const isMinimized = toolbar.classList.toggle('minimized');
+        if (toggleBtn) {
+            toggleBtn.style.display = isMinimized ? 'flex' : 'none';
+        }
+        // Guardar preferencia en localStorage
+        try {
+            localStorage.setItem('mtp_toolbar_minimized', isMinimized ? 'true' : 'false');
+        } catch (e) { /* ignore */ }
+        return;
+    }
+
+    const template = MTP_TEMPLATES[action];
+    if (!template) {
+        console.warn(`[MTP] Template desconocido: ${action}`);
+        return;
+    }
+
+    // Insertar en la posición del cursor
+    const cm = easyMDE.codemirror;
+    const doc = cm.getDoc();
+    const cursor = doc.getCursor();
+
+    doc.replaceRange(template, cursor);
+
+    // Mover el cursor al inicio del template insertado
+    // (para que el usuario empiece a escribir inmediatamente)
+    const newCursor = {
+        line: cursor.line,
+        ch: cursor.ch,
+    };
+    doc.setCursor(newCursor);
+
+    // Focus en el editor
+    cm.focus();
+
+    // Feedback visual sutil: destello en el botón
+    const btn = document.querySelector(`.mtp-btn[data-mtp="${action}"]`);
+    if (btn) {
+        btn.style.transition = 'background 0s';
+        btn.style.background = 'rgba(13, 110, 253, 0.20)';
+        setTimeout(() => {
+            btn.style.background = '';
+            btn.style.transition = '';
+        }, 200);
+    }
+}
+
+/**
+ * Inicializa los event listeners de la barra MTP.
+ */
+function initMtpToolbar() {
+    const toolbar = document.getElementById('mtpToolbar');
+    if (!toolbar) return;
+
+    // Delegación de eventos: un solo listener para todos los botones
+    toolbar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.mtp-btn');
+        if (!btn) return;
+        const action = btn.dataset.mtp;
+        if (action) {
+            e.preventDefault();
+            insertMtpTemplate(action);
+        }
+    });
+
+    // Botón toggle para restaurar la barra minimizada
+    const toggleBtn = document.getElementById('mtpToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const toolbarEl = document.getElementById('mtpToolbar');
+            if (toolbarEl) {
+                toolbarEl.classList.remove('minimized');
+                toggleBtn.style.display = 'none';
+                localStorage.setItem('mtp_toolbar_minimized', 'false');
+            }
+        });
+    }
+
+    // En mobile la barra siempre se ve: si estaba minimizada, restaurar
+    if (window.innerWidth <= 992) {
+        const toolbarEl = document.getElementById('mtpToolbar');
+        const toggleBtnEl = document.getElementById('mtpToggleBtn');
+        if (toolbarEl) toolbarEl.classList.remove('minimized');
+        if (toggleBtnEl) toggleBtnEl.style.display = 'none';
+        localStorage.setItem('mtp_toolbar_minimized', 'false');
+    } else {
+        // Desktop: restaurar estado minimizado desde localStorage
+        try {
+            const minimized = localStorage.getItem('mtp_toolbar_minimized');
+            if (minimized === 'true') {
+                const toolbarEl = document.getElementById('mtpToolbar');
+                const toggleBtnEl = document.getElementById('mtpToggleBtn');
+                if (toolbarEl) toolbarEl.classList.add('minimized');
+                if (toggleBtnEl) toggleBtnEl.style.display = 'flex';
+            }
+        } catch (e) { /* ignore */ }
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMtpToolbar);
+} else {
+    initMtpToolbar();
+}

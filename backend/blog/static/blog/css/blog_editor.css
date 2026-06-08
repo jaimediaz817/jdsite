@@ -144,13 +144,32 @@
     background: rgba(0, 0, 0, 0.4);
 }
 
-/* FilePond */
+/* FilePond - área de drop mejorada UI/UX */
 .filepond-container {
     margin: 15px 0;
 }
 
 .filepond--root {
     font-family: inherit;
+}
+
+.filepond--drop-label {
+    min-height: 140px !important;
+    border: 2px dashed rgba(13, 110, 253, 0.25);
+    border-radius: 12px;
+    background: rgba(13, 110, 253, 0.03);
+    transition: border-color 0.3s ease, background 0.3s ease, min-height 0.3s ease;
+}
+
+.filepond--drop-label:hover,
+.filepond--drop-label.filepond--drop-label-drag {
+    border-color: rgba(13, 110, 253, 0.55);
+    background: rgba(13, 110, 253, 0.06);
+}
+
+.filepond--label-action {
+    text-decoration: none !important;
+    font-weight: 500;
 }
 
 /* Uploaded files preview */
@@ -361,7 +380,7 @@
     .editor-sidebar {
         border-right: none;
         border-bottom: 1px solid #e0e0e0;
-        padding-right: 0;
+        /* padding-right: 0; */
         padding-bottom: 20px;
         margin-bottom: 20px;
         max-height: none;
@@ -369,7 +388,7 @@
     }
 
     .editor-main {
-        padding-left: 0;
+        /* padding-left: 0; */
     }
 
     .editor-container .CodeMirror {
@@ -379,10 +398,17 @@
     .editor-actions .d-flex {
         flex-direction: column;
         gap: 10px;
+        align-items: stretch;
     }
 
     .editor-actions .btn-lg {
         width: 100%;
+        min-height: 48px;
+        justify-content: center;
+    }
+
+    .filepond--drop-label {
+        min-height: 100px !important;
     }
 }
 
@@ -503,4 +529,519 @@ fieldset[disabled] input {
     border-radius: 5px;
     padding: 5px 15px;
     margin-left: 1.5rem;
+}
+
+/* ======================================================
+   HU-017: Badge de estado del artículo
+   ====================================================== */
+.Artikel-badge-new {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+.Artikel-badge-local {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+.Artikel-badge-pending {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.Artikel-badge-published {
+    background: linear-gradient(135deg, #198754, #146c43);
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+}
+
+/* ======================================================
+   HU-017: Indicador de borrador local (sidebar)
+   ====================================================== */
+.draft-indicator {
+    margin-top: 1rem;
+    padding: 12px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.draft-indicator .badge {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.draft-indicator .btn-outline-danger {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* ======================================================
+   HU-017: Toast de auto-save mejorado
+   ====================================================== */
+.autosave-toast {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    min-width: 320px !important;
+    max-width: 420px !important;
+    background: #212529 !important;
+    color: #f8f9fa !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    display: none;
+}
+
+.autosave-toast.show {
+    display: block !important;
+    animation: toastSlideIn 0.35s ease-out !important;
+}
+
+.autosave-toast-header {
+    background: #2a2e33 !important;
+    color: #f8f9fa !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.autosave-toast-title {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #75b798 !important;
+}
+
+.autosave-toast-time {
+    font-size: 0.75rem !important;
+    color: #adb5bd !important;
+    margin-right: 10px !important;
+}
+
+.autosave-toast-body {
+    padding: 12px 16px 16px !important;
+    font-size: 0.85rem !important;
+    color: #e9ecef !important;
+    background: #212529 !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+.autosave-toast-body .btn-outline-danger {
+    font-size: 0.75rem !important;
+    padding: 4px 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid #dc3545 !important;
+    color: #dc3545 !important;
+    background: transparent !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    line-height: 1.4 !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+
+.autosave-toast-body .btn-outline-danger:hover {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+/* Animación de entrada del toast */
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ======================================================
+   HU-017: Modal de recuperación de borrador
+   ====================================================== */
+#draftRecoveryModal .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+}
+
+#draftRecoveryModal .modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 20px;
+}
+
+#draftRecoveryModal .modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+#draftRecoveryModal .modal-body {
+    padding: 20px;
+}
+
+#draftRecoveryModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 12px 20px;
+}
+
+.draft-summary {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+}
+
+.draft-summary strong {
+    color: #495057;
+}
+
+#draft-title-display {
+    color: #0d6efd;
+    font-weight: 500;
+}
+
+/* ======================================================
+   HU-017: Modal de confirmación descartar
+   ====================================================== */
+#confirmDiscardModal .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+}
+
+#confirmDiscardModal .modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 14px 18px;
+}
+
+#confirmDiscardModal .modal-body {
+    padding: 18px;
+    font-size: 0.95rem;
+}
+
+#confirmDiscardModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 12px 18px;
+}
+
+/* ======================================================
+   HU-017: Botones con degradado en modales de borrador
+   ====================================================== */
+.btn-cancel-grad {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+}
+
+.btn-cancel-grad:hover {
+    background: linear-gradient(135deg, #5a6268, #4e555b);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.btn-cancel-grad:active {
+    transform: translateY(0);
+}
+
+.btn-discard-grad {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.btn-discard-grad:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.btn-discard-grad:active {
+    transform: translateY(0);
+}
+
+.btn-recover-grad {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+}
+
+.btn-recover-grad:hover {
+    background: linear-gradient(135deg, #0a58ca, #084298);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+}
+
+.btn-recover-grad:active {
+    transform: translateY(0);
+}
+
+/* ======================================================
+   HU-011.7: Barra de herramientas MTP (Mark to Post)
+   ====================================================== */
+
+.mtp-toolbar {
+    position: fixed;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 8px 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.mtp-toolbar:hover {
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* Botones individuales estilo MS Word — icono + tooltip */
+.mtp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #495057;
+    font-size: 1.15rem;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.mtp-btn:hover {
+    background: rgba(13, 110, 253, 0.10);
+    color: #0d6efd;
+    transform: scale(1.08);
+}
+
+.mtp-btn:active {
+    transform: scale(0.95);
+    background: rgba(13, 110, 253, 0.18);
+}
+
+.mtp-btn .fa,
+.mtp-btn .fas,
+.mtp-btn .far {
+    pointer-events: none;
+}
+
+/* Tooltip a la izquierda del botón (barra está a la derecha) */
+.mtp-btn::after {
+    content: attr(data-tip);
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(33, 37, 41, 0.92);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1060;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.20);
+}
+
+.mtp-btn:hover::after {
+    opacity: 1;
+}
+
+/* Separador visual entre grupos de botones */
+.mtp-divider {
+    width: 28px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 3px auto;
+}
+
+/* Botón toggle para mostrar/ocultar la barra */
+.mtp-toggle-btn {
+    position: fixed;
+    right: 14px;
+    top: 3%;
+    transform: translateY(-50%);
+    z-index: 1050;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #495057;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none;
+    /* oculto por defecto, visible cuando la barra está minimizada */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.5s ease;
+}
+
+.mtp-toggle-btn:hover {
+    background: rgba(13, 110, 253, 0.12);
+    color: #0d6efd;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Estado minimizado */
+.mtp-toolbar.minimized {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.9);
+    pointer-events: none;
+}
+
+.mtp-toolbar.minimized+.mtp-toggle-btn {
+    display: flex;
+}
+
+/* ======================================================
+   HU-011.8: Responsive — en mobile la barra va abajo, ancha, fija
+   ====================================================== */
+@media (max-width: 992px) {
+
+    /* En tablet/mobile la barra se pega abajo y ocupa todo el ancho */
+    .mtp-toolbar {
+        position: fixed;
+        right: 0;
+        left: 0;
+        top: auto;
+        bottom: 0;
+        transform: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 100vw;
+        padding: 8px 12px;
+        border-radius: 14px 14px 0 0;
+        gap: 2px;
+        box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .mtp-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .mtp-btn::after {
+        left: 50%;
+        top: auto;
+        bottom: calc(100% + 6px);
+        transform: translateX(-50%);
+    }
+
+    .mtp-btn:hover::after {
+        transform: translateX(-50%);
+    }
+
+    .mtp-divider {
+        width: 1px;
+        height: 24px;
+        margin: 0 4px;
+    }
+
+    /* En mobile el toggle no tiene sentido: la barra siempre se ve */
+    .mtp-toggle-btn {
+        display: none !important;
+    }
+
+    /* La barra minimizada se restaura en mobile */
+    .mtp-toolbar.minimized {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .mtp-toolbar {
+        padding: 6px 8px;
+        gap: 1px;
+        bottom: 0;
+    }
+
+    .mtp-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+
+    .mtp-btn::after {
+        display: none;
+    }
 }

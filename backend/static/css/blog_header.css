@@ -276,6 +276,12 @@ html body #navigation-menu {
     opacity: 1;
 }
 
+.editor-actions {
+    .btn {
+        align-self: stretch;
+    }
+}
+
 /* ✅ BOTÓN PRIMARY CON GRADIENTE DE MARCA */
 .btn-primary {
     background: linear-gradient(135deg, #0891b2 0%, #6f42c1 100%) !important;

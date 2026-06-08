@@ -3,7 +3,7 @@ title: "test"
 description: "tes desc test"
 date: "2026-06-05"
 draft: false
-image: "IMG_20250511_145428.jpg"
+cover_image: "IMG_20250511_145428.jpg"
 category: "UI/UX"
 tags: ["tag"]
 meta_title: "guia rapida de integracion de sections"
@@ -14,9 +14,7 @@ palabra_clave_principal: "maquetacion"
 author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
+author_id: 15
 ---
-
-
-
 
 ![IMG_20250511_145428.jpg](./IMG_20250511_145428.jpg)sddfgsd fgsdgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsfgsdfg![IMG_20260425_163910.jpg](./IMG_20260425_163910.jpg)![IMG_20260425_163910.jpg](./IMG_20260425_163910.jpg)

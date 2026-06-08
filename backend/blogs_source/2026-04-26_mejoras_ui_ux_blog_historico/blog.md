@@ -13,14 +13,13 @@ tiempo_lectura: 4
 author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
+author_id: 15
 ---
-
-
-
 
 ## Mi Introduccion
 
 [vl]: highlight
+asdf asdas dasdasdasdasdasdasdsdasdasd
 Esta es la primera línea de mi párrafo.
 Esta es la segunda línea del mismo párrafo.
 Esta es la segunda línea del mismo párrafo.
@@ -221,7 +220,3 @@ Esto es solo el principio. Ahora que tenemos la base solida, vamos a implementar
 <!-- force reimport -->
 
 #
-
-
-
-

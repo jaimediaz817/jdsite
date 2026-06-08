@@ -3,7 +3,7 @@ title: "Test Format 817"
 description: "Test format blog post to verify MD formatting rules"
 date: "2026-06-05"
 draft: false
-image: "image.png"
+cover_image: "/static/blogs/test_format/image.png"
 category: "Tecnologia"
 tags: []
 meta_title: "Test Format | Jaime Díaz"
@@ -13,7 +13,10 @@ tiempo_lectura: 1
 author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
+author_id: 15
 ---
+
+dfdfsdf sdfsdfsdfsdf
 
 
 

@@ -76,7 +76,7 @@ Para **poder escanear rapidamente el contenido y encontrar el articulo que me in
 - ✅ Tasa de clic en articulos: +40%
 - ✅ Tasa de abandono pagina listado: < 35%
 - ✅ Cumplimiento WCAG Nivel AA 100%
-
+mple
 ---
 
 ### ⚠️ RESTRICCIONES TECNICAS

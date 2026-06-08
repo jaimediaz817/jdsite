@@ -1,9 +1,9 @@
 ---
 title: "Por qué las integraciones de Zoho SIEMPRE fallan en el 6to mes"
 description: "Aprende las 5 causas mas comunes por las que tus integraciones Zoho fallan y como solucionarlas definitivamente."
-date: "2026-06-05"
-draft: true
-cover_image: "image-1.png"
+date: "2026-06-07"
+draft: false
+cover_image: "/static/blogs/2026-04-24_por-que-las-integraciones-zoho-fallan/image.png"
 category: "Tecnologia"
 tags: ["Zoho", "Integraciones", "CRM", "Desarrollo", "API"]
 meta_title: "Integraciones Zoho fallan 6to mes limite oculto"
@@ -11,14 +11,11 @@ meta_description: "Aprende las 5 causas mas comunes por las que tus integracione
 keywords: "integraciones zoho, zoho crm, fallos integracion, api zoho"
 tiempo_lectura: 1
 palabra_clave_principal: "integraciones zoho fallan"
-author: "admin"
-author_email: "admin@localhost.com"
-author_provider: "local"
+author: "Jaime Diaz"
+author_email: "jdsolutions817@gmail.com"
+author_provider: "github"
+author_id: 15
 ---
-
-
-
-
 
 
 
@@ -33,4 +30,3 @@ Llevo 13 años haciendo esto. Y veo exactamente el mismo patrón repetirse una y
 
 
 # reimport 2026-06-01 — HU-014 forzar actualizacion de reading_time
-  

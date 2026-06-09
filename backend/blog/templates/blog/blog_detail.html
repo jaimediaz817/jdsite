@@ -145,7 +145,7 @@
 
     <!-- ✨ BARRA FLOTANTE DERECHA NAVEGACION -->
     <div class="floating-right-nav d-flex flex-column" style="right: 2rem; z-index: 99999; position: fixed; top: 50%; transform: translateY(-50%); gap: 8px;">
-        <button type="button" class="float-nav-btn reading-mode-float-btn" @click="toggle" :title='\'Modo lectura: \'+ getLabel()'" aria-label="Alternar modo lectura">
+        <button type="button" class="float-nav-btn reading-mode-float-btn" @click="toggle" :title="'Modo lectura: ' + getLabel()" aria-label="Alternar modo lectura">
           <span class="reading-mode-icon" x-html="getIcon()"></span>
         <span class="d-none d-lg-block ml-2" style="font-size:0.75rem;font-weight:500;" x-text="getLabel()"></span>
       </button>

@@ -8,6 +8,28 @@ from django.db.models import Prefetch
 from .models import BlogComment
 
 
+def are_admin_notifications_enabled():
+    """Verifica si las notificaciones al admin están habilitadas (HU-011.85).
+
+    Consulta la tabla singleton ``BlogEmailConfig`` para decidir si se
+    deben enviar notificaciones por correo al administrador.
+    """
+    from .models import BlogEmailConfig
+
+    return BlogEmailConfig.get_config().admin_notifications_enabled
+
+
+def are_author_notifications_enabled():
+    """Verifica si las notificaciones al autor están habilitadas (HU-011.85).
+
+    Consulta la tabla singleton ``BlogEmailConfig`` para decidir si se
+    deben enviar notificaciones por correo al autor.
+    """
+    from .models import BlogEmailConfig
+
+    return BlogEmailConfig.get_config().author_notifications_enabled
+
+
 def create_comment(
     blog_slug,
     name,
@@ -73,12 +95,16 @@ def create_comment(
         editable_until=editable_until,
     )
 
-    # ✅ FASE 9: Notificacion por email al administrador
-    admin_url = reverse("admin:blog_blogcomment_change", args=[comment.id])
-    full_admin_link = f"{settings.SITE_URL}{admin_url}"
+    # ✅ FASE 9: Notificacion por email al administrador (HU-011.85)
+    if are_admin_notifications_enabled():
+        admin_url = reverse("admin:blog_blogcomment_change", args=[comment.id])
+        full_admin_link = f"{settings.SITE_URL}{admin_url}"
+        dashboard_link = (
+            f"{settings.SITE_URL}/blog/dashboard/comments/{blog_slug}/"
+        )
 
-    email_subject = f"[JD Blog] Nuevo comentario pendiente de moderacion"
-    email_body = f"""
+        email_subject = f"[JD Blog] Nuevo comentario pendiente de moderacion"
+        email_body = f"""
 Nuevo comentario recibido en el blog:
 
 📝 Blog: {blog_slug}
@@ -90,18 +116,19 @@ Nuevo comentario recibido en el blog:
 💬 Contenido:
 {content}
 
-🔗 Moderar comentario: {full_admin_link}
+🔗 Moderar desde Dashboard: {dashboard_link}
+🔗 Moderar desde Admin Django: {full_admin_link}
 
 Este comentario esta actualmente PENDIENTE y no es visible publicamente hasta que lo apruebes.
-    """
+        """
 
-    send_mail(
-        subject=email_subject,
-        message=email_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.OWNER_EMAIL],
-        fail_silently=True,
-    )
+        send_mail(
+            subject=email_subject,
+            message=email_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.OWNER_EMAIL],
+            fail_silently=True,
+        )
 
     return comment
 
@@ -460,6 +487,7 @@ def save_blog_to_source(data, user):
         # Obtener el objeto BlogPost recién creado/actualizado para obtener el token
         dashboard_url = f"{settings.SITE_URL}/blog/dashboard/"
         try:
+            # TODO: ¿? - evaluar/verificarcorregir
             post_obj = BlogPost.objects.get(slug=slug)
             token = post_obj.approval_token
             approve_url = (
@@ -493,13 +521,15 @@ def save_blog_to_source(data, user):
             f"  • Buscar y filtrar artículos\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         )
-        send_mail(
-            subject=admin_subject,
-            message=admin_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.OWNER_EMAIL],
-            fail_silently=True,
-        )
+        # HU-011.85: Solo enviar si las notificaciones admin están habilitadas
+        if are_admin_notifications_enabled():
+            send_mail(
+                subject=admin_subject,
+                message=admin_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.OWNER_EMAIL],
+                fail_silently=True,
+            )
 
     # Nota: ``import_blogs`` almacena ``slugify(folder_name)`` como slug
     # en la BD, por lo que el enlace del editor debe usar ``folder_name``
@@ -510,6 +540,90 @@ def save_blog_to_source(data, user):
         "published": is_published,
         "status": "published" if is_published else "draft",
     }
+
+
+def delete_post_permanently(post):
+    """Elimina un artículo permanentemente: BD + archivos físicos (HU-011.9).
+
+    1. Elimina registros de BlogModeration asociados.
+    2. Elimina la carpeta física del artículo en ``blogs_source/<folder>/``.
+    3. Elimina el ``BlogPost`` de la base de datos.
+
+    Retorna un dict con el resultado de la operación.
+    """
+    import shutil
+    import logging
+    from pathlib import Path
+
+    from django.conf import settings
+
+    logger = logging.getLogger(__name__)
+
+    slug = post.slug
+    title = post.title
+    result = {"success": False, "title": title, "slug": slug}
+
+    try:
+        # 1. Eliminar registros de moderación asociados
+        from .models import BlogModeration
+
+        moderation_count = BlogModeration.objects.filter(blog_post=post).delete()[
+            0
+        ]
+
+        # 2. Eliminar comentarios asociados al artículo
+        from .models import BlogComment
+
+        comment_count = BlogComment.objects.filter(blog_slug=slug).delete()[0]
+
+        # 3. Eliminar carpeta física del artículo en blogs_source/
+        blogs_source = Path(settings.BASE_DIR) / "blogs_source"
+        # El slug puede tener prefijo de fecha (e.g. "2026-06-08_titulo")
+        # Buscamos la carpeta que coincida
+        folder_path = blogs_source / slug
+        files_deleted = 0
+        if folder_path.exists() and folder_path.is_dir():
+            shutil.rmtree(folder_path)
+            files_deleted = 1
+            logger.info(f"Carpeta eliminada: {folder_path}")
+        else:
+            # Buscar por prefijo parcial
+            for d in blogs_source.iterdir():
+                if d.is_dir() and slug in d.name:
+                    shutil.rmtree(d)
+                    files_deleted = 1
+                    logger.info(f"Carpeta eliminada (match parcial): {d}")
+                    break
+
+        # 4. Eliminar carpeta estática copiada por import_blogs
+        #    (static/blogs/<slug>/)
+        static_blogs = Path(settings.BASE_DIR) / "static" / "blogs" / slug
+        static_deleted = 0
+        if static_blogs.exists() and static_blogs.is_dir():
+            shutil.rmtree(static_blogs)
+            static_deleted = 1
+            logger.info(f"Carpeta estática eliminada: {static_blogs}")
+
+        # 5. Eliminar el BlogPost de la base de datos
+        post.delete()
+
+        result["success"] = True
+        result["moderation_deleted"] = moderation_count
+        result["comments_deleted"] = comment_count
+        result["files_deleted"] = files_deleted
+        result["static_deleted"] = static_deleted
+
+        logger.info(
+            f"Artículo eliminado permanentemente: '{title}' (slug={slug}) "
+            f"moderación={moderation_count}, comentarios={comment_count}, "
+            f"archivos_source={files_deleted}, archivos_static={static_deleted}"
+        )
+
+    except Exception as e:
+        logger.error(f"Error al eliminar artículo '{title}': {e}")
+        result["error"] = str(e)
+
+    return result
 
 
 def save_uploaded_file(uploaded_file, user):
@@ -568,4 +682,113 @@ def save_uploaded_file(uploaded_file, user):
         "filename": safe_name,
         "url": url_path,
         "type": ftype,
+    }
+
+
+# ---------------------------------------------------------------------
+# 🟡 HU-011.10: Gestión de archivos/recursos asociados a artículos
+# ---------------------------------------------------------------------
+def _format_size(size_bytes):
+    """Formatea bytes a una cadena legible (KB, MB, GB)."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    elif size_bytes < 1024 * 1024 * 1024:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+    else:
+        return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
+
+
+def get_post_files_info(post_slug):
+    """Retorna información sobre los archivos estáticos de un artículo.
+
+    Escanea la carpeta ``blogs_source/<slug>/`` y cuenta todos los archivos
+    que no sean ``blog.md``, clasificándolos por tipo (imágenes, videos, otros).
+
+    Retorna:
+        dict con claves:
+        - ``file_count`` (int): cantidad total de archivos (excluyendo blog.md)
+        - ``total_size_bytes`` (int): tamaño total en bytes
+        - ``total_size_human`` (str): tamaño formateado legiblemente
+        - ``files_by_type`` (dict): desglose ``{ 'images': N, 'videos': N, 'others': N }``
+        - ``size_by_type`` (dict): desglose de tamaño ``{ 'images': '1.2 MB', ... }``
+    """
+    from django.conf import settings
+
+    empty = {
+        "file_count": 0,
+        "total_size_bytes": 0,
+        "total_size_human": "0 B",
+        "files_by_type": {"images": 0, "videos": 0, "others": 0},
+        "size_by_type": {"images": "0 B", "videos": "0 B", "others": "0 B"},
+    }
+
+    blogs_source = Path(settings.BASE_DIR) / "blogs_source"
+    if not blogs_source.exists():
+        return empty
+
+    # Buscar carpeta que coincida con el slug
+    target_dir = blogs_source / post_slug
+    if not target_dir.exists() or not target_dir.is_dir():
+        # Buscar por prefijo parcial (patrón común: "2026-06-08_titulo")
+        for d in blogs_source.iterdir():
+            if d.is_dir() and post_slug in d.name:
+                target_dir = d
+                break
+        else:
+            return empty
+
+    image_exts = {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".webp",
+        ".svg",
+        ".bmp",
+        ".ico",
+    }
+    video_exts = {".mp4", ".webm", ".mov", ".avi", ".mkv"}
+
+    file_count = 0
+    total_size = 0
+    images_count = 0
+    videos_count = 0
+    others_count = 0
+    images_size = 0
+    videos_size = 0
+    others_size = 0
+
+    for entry in target_dir.iterdir():
+        if entry.is_file() and entry.name.lower() != "blog.md":
+            size = entry.stat().st_size
+            ext = Path(entry.name).suffix.lower()
+            file_count += 1
+            total_size += size
+
+            if ext in image_exts:
+                images_count += 1
+                images_size += size
+            elif ext in video_exts:
+                videos_count += 1
+                videos_size += size
+            else:
+                others_count += 1
+                others_size += size
+
+    return {
+        "file_count": file_count,
+        "total_size_bytes": total_size,
+        "total_size_human": _format_size(total_size),
+        "files_by_type": {
+            "images": images_count,
+            "videos": videos_count,
+            "others": others_count,
+        },
+        "size_by_type": {
+            "images": _format_size(images_size),
+            "videos": _format_size(videos_size),
+            "others": _format_size(others_size),
+        },
     }

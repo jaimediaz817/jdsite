@@ -254,14 +254,34 @@ def dashboard_view(request):
             post.files_info = get_post_files_info(post.slug)
 
     # Estadísticas para los badges
-    stats = {
-        "total": BlogPost.objects.count(),
-        "published": BlogPost.objects.filter(is_published=True).count(),
-        "drafts": BlogPost.objects.filter(is_published=False).count(),
-        "pending": BlogPost.objects.filter(moderation_status="pending").count(),
-        "approved": BlogPost.objects.filter(moderation_status="approved").count(),
-        "rejected": BlogPost.objects.filter(moderation_status="rejected").count(),
-    }
+    # Si el usuario es superadmin/staff, mostramos los totales globales.
+    # Para un autor normal, filtramos los contadores por su propio autor.
+    if is_super:
+        stats = {
+            "total": BlogPost.objects.count(),
+            "published": BlogPost.objects.filter(is_published=True).count(),
+            "drafts": BlogPost.objects.filter(is_published=False).count(),
+            "pending": BlogPost.objects.filter(
+                moderation_status="pending"
+            ).count(),
+            "approved": BlogPost.objects.filter(
+                moderation_status="approved"
+            ).count(),
+            "rejected": BlogPost.objects.filter(
+                moderation_status="rejected"
+            ).count(),
+        }
+    else:
+        # Filtrar por el autor actual
+        author_qs = BlogPost.objects.filter(author=request.user)
+        stats = {
+            "total": author_qs.count(),
+            "published": author_qs.filter(is_published=True).count(),
+            "drafts": author_qs.filter(is_published=False).count(),
+            "pending": author_qs.filter(moderation_status="pending").count(),
+            "approved": author_qs.filter(moderation_status="approved").count(),
+            "rejected": author_qs.filter(moderation_status="rejected").count(),
+        }
 
     # HU-011.85: Estado del envío de emails para el indicador visual
     email_config = BlogEmailConfig.get_config()

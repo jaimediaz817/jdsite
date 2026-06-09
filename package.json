@@ -15,6 +15,7 @@
     "sass": "^1.94.2"
   },
   "dependencies": {
-    "intro.js": "^8.3.2"
+    "intro.js": "^8.3.2",
+    "jsdom": "^29.1.1"
   }
 }

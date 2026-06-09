@@ -23,6 +23,7 @@
     position: sticky;
     top: 0;
     flex: 0 0 auto;
+    border: 1px solid rgba(1, 1, 1, 0.075);
     /* fixed width */
     /* Allow height to shrink/expand with content; remove fixed overflow */
     overflow: visible;

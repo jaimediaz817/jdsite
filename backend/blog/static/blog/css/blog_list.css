@@ -199,7 +199,6 @@
     border: 1px solid #e5e5e5;
     background: white;
     border-radius: 5px;
-    margin-top: 4px;
     margin-bottom: 4px;
     margin-left: 1px;
 }
@@ -228,6 +227,28 @@
     min-height: 28px;
 }
 
+.reactions-info {
+    left: 12px;
+
+    .reactions-icon {
+        &.like-reaction {
+            color: #fff;
+        }
+
+        &.love-reaction {
+            color: #e84a5f;
+        }
+
+        &.idea-reaction {
+            color: #f59e0b;
+        }
+
+        &.fire-reaction {
+            color: #f97316;
+        }
+    }
+}
+
 .header-slogan {
     color: #8543af;
     font-family: 'Montserrat', sans-serif;
@@ -235,12 +256,15 @@
     font-size: 1.1rem;
 }
 
-.comment-info {
-    right: 12px;
+.blog-post-content_container {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 5px;
+    padding: 0.25rem;
+    background: #fffefa;
 }
 
-.reactions-info {
-    left: 12px;
+.comment-info {
+    right: 12px;
 }
 
 .blog-card:hover .comment-info {
@@ -472,7 +496,7 @@
 
 .section-sub-title {
     background-color: white;
-    width: 50%;
+    width: 100%;
     text-align: center;
     margin: auto;
     border-radius: 10px;
@@ -637,10 +661,33 @@ body.home-p {
 }
 
 /* --- CSS Grid para las cards --- */
+/* Grid layout for article cards */
 .blog-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* 4 columnas en pantallas anchas por defecto */
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem 1.5rem;
+}
+
+/* 3 columnas en pantallas medianas (hasta 1199px) */
+@media (max-width: 1199px) {
+    .blog-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 2 columnas en tablets (hasta 991px) */
+@media (max-width: 991px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 1 columna en móviles (hasta 767px) */
+@media (max-width: 767px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 
@@ -675,38 +722,16 @@ body.home-p {
 }
 
 
-@media (min-width: 1200px) {
-    .blog-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 991px) {
-    .blog-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .section-sub-title {
-        background-color: white;
-        width: 100%;
-        text-align: center;
-        margin: auto;
-        border-radius: 10px;
-    }
-}
-
-@media (max-width: 767px) {
-    .blog-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* The previous explicit media queries for column counts are no longer needed because the
+   auto‑fit/minmax approach above automatically adapts the number of columns based on
+   available width. They are therefore removed to avoid conflicts. */
 
 /* =========================================
    🔍 Buscador de artículos
    ========================================= */
 
 .blog-search-form {
-    max-width: 700px;
+    /* max-width: 700px; */
     margin: 0 auto;
     display: flex;
     align-items: stretch;

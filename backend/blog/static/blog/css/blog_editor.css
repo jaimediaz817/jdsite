@@ -197,6 +197,7 @@
     max-height: 150px;
     width: auto;
     height: auto;
+
     object-fit: cover;
     border-radius: 8px;
 }
@@ -661,7 +662,7 @@ fieldset[disabled] input {
     border-radius: 6px !important;
     border: 1px solid #dc3545 !important;
     color: #dc3545 !important;
-    background: transparent !important;
+    background: white !important;
     font-weight: 500 !important;
     cursor: pointer !important;
     line-height: 1.4 !important;
@@ -960,6 +961,50 @@ fieldset[disabled] input {
     opacity: 0;
     transform: translateY(-50%) scale(0.9);
     pointer-events: none;
+}
+
+
+/* ---------------------------------------------------
+   Icon styling – give Font Awesome icons the primary color
+   and a subtle hover effect for better UI/UX.
+   --------------------------------------------------- */
+/* Primary color for icons (matches project primary) */
+:root {
+    --icon-primary: #6f42c1;
+    /* purple primary */
+}
+
+/* General icon styling for headings, buttons, badges, etc. */
+h2 i,
+.sidebar-title i,
+.editor-actions button i,
+.draft-indicator .badge i,
+#autosave-indicator i,
+#draft-indicator i,
+.modal-title i,
+.toast-header i,
+.badge i {
+    color: var(--icon-primary);
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* Toolbar (MTP) icons */
+.mtp-toolbar .mtp-btn i {
+    color: var(--icon-primary);
+    font-size: 1.1rem;
+}
+
+/* Hover effect for toolbar buttons */
+.mtp-toolbar .mtp-btn:hover {
+    background: rgba(111, 66, 193, 0.08);
+    border-radius: 4px;
+}
+
+/* Ensure icons have pointer cursor where appropriate */
+button i,
+.mtp-btn i {
+    cursor: pointer;
 }
 
 .mtp-toolbar.minimized+.mtp-toggle-btn {

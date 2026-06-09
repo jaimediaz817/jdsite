@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BLOG DETAIL - Estilos Específicos para Galerías, Carruseles y Slides
+   BLOG DETAIL - Estilos EspecÃ­ficos para GalerÃ­as, Carruseles y Slides
    ========================================================================== */
 
 /* ---- Smooth scroll for the whole page (ensures back-to-top works smoothly) */
@@ -25,13 +25,13 @@ html {
 }
 
 /* ==========================================================================
-   1. SLIDES (bloques :::slides) – CARRUSEL DE IMÁGENES CON TÍTULO Y DESCRIPCIÓN
+   1. SLIDES (bloques :::slides) â€“ CARRUSEL DE IMÃGENES CON TÃTULO Y DESCRIPCIÃ“N
    ========================================================================== 
-   Diseño responsive que se adapta al contenido:
-   - Mobile (≤767px): Imagen arriba, caption abajo, apilados verticalmente
-   - Desktop (≥768px): Caption izquierda (35%), imagen derecha (65%) lado a lado
-   - El contenedor se expande según el slide activo (sin altura fija)
-   - El caption siempre visible, con tipografía clara y sin cortes
+   DiseÃ±o responsive que se adapta al contenido:
+   - Mobile (â‰¤767px): Imagen arriba, caption abajo, apilados verticalmente
+   - Desktop (â‰¥768px): Caption izquierda (35%), imagen derecha (65%) lado a lado
+   - El contenedor se expande segÃºn el slide activo (sin altura fija)
+   - El caption siempre visible, con tipografÃ­a clara y sin cortes
    ========================================================================== */
 .slides-container {
     position: relative;
@@ -43,11 +43,11 @@ html {
     background: #fff;
     height: auto;
     transition: min-height 0.4s ease;
-    /* Padding inferior para dar espacio a la navegación en todos los tamaños */
+    /* Padding inferior para dar espacio a la navegaciÃ³n en todos los tamaÃ±os */
     padding-bottom: 4.5rem;
 }
 
-/* ── Slide base (inactivo: oculto pero con position absolute) ── */
+/* -- Slide base (inactivo: oculto pero con position absolute) -- */
 .slides-container .slide {
     position: absolute;
     top: 0;
@@ -66,7 +66,7 @@ html {
     pointer-events: none;
 }
 
-/* ── Slide activo (ocupa espacio real, expande el contenedor) ── */
+/* â”€â”€ Slide activo (ocupa espacio real, expande el contenedor) â”€â”€ */
 .slides-container .slide.active {
     opacity: 1;
     visibility: visible;
@@ -79,7 +79,7 @@ html {
     justify-content: flex-start;
 }
 
-/* ── Imagen dentro del slide ── */
+/* â”€â”€ Imagen dentro del slide â”€â”€ */
 .slides-container .slide img {
     width: 100%;
     max-width: 100%;
@@ -91,7 +91,7 @@ html {
     object-position: top;
 }
 
-/* ── Caption (título + descripción) ── */
+/* â”€â”€ Caption (tÃ­tulo + descripciÃ³n) â”€â”€ */
 .slide-caption {
     width: 100%;
     max-width: 100%;
@@ -123,7 +123,7 @@ html {
     display: block;
 }
 
-/* ── DESKTOP (≥768px): lado a lado ── */
+/* â”€â”€ DESKTOP (â‰¥768px): lado a lado â”€â”€ */
 @media (min-width: 768px) {
     .slides-container .slide.active {
         flex-direction: row;
@@ -169,14 +169,14 @@ html {
         color: #4b5563;
     }
 
-    /* En desktop, la navegación está sobre un fondo más grande */
+    /* En desktop, la navegaciÃ³n estÃ¡ sobre un fondo mÃ¡s grande */
     .slides-container {
         padding-bottom: 4rem;
     }
 }
 
 
-/* ── PANTALLAS MUY GRANDES (≥1200px) ── */
+/* â”€â”€ PANTALLAS MUY GRANDES (â‰¥1200px) â”€â”€ */
 @media (min-width: 1200px) {
     .slides-container .slide img {
         flex: 0 0 65%;
@@ -240,7 +240,7 @@ html {
     }
 }
 
-/* Navegación del slider */
+/* NavegaciÃ³n del slider */
 .slides-nav {
     position: absolute;
     bottom: 1rem;
@@ -322,7 +322,7 @@ html {
 }
 
 /* ==========================================================================
-   2. GALERÍA POPUP
+   2. GALERÃA POPUP
    ========================================================================== */
 
 @media (max-width: 767px) {
@@ -487,7 +487,7 @@ html {
     border-radius: 0;
 }
 
-/* ── Info panel: título + descripción con fondo oscuro ── */
+/* â”€â”€ Info panel: tÃ­tulo + descripciÃ³n con fondo oscuro â”€â”€ */
 #gallery-modal-info {
     width: 100%;
     box-sizing: border-box;
@@ -517,7 +517,7 @@ html {
     margin-top: 0.15rem;
 }
 
-/* En pantallas grandes, más espacio para la info */
+/* En pantallas grandes, mÃ¡s espacio para la info */
 @media (min-width: 768px) {
     #gallery-modal-info {
         padding: 1.25rem 2rem 1.5rem;
@@ -552,10 +552,10 @@ html {
 }
 
 /* ==========================================================================
-   3. ESTILOS DE COMENTARIOS - Botón de colapso/expansión de respuestas
+   3. ESTILOS DE COMENTARIOS - BotÃ³n de colapso/expansiÃ³n de respuestas
    ========================================================================== */
 
-/* Estilo para el botón que muestra/oculta respuestas - clase jd-toggle-replies-btn */
+/* Estilo para el botÃ³n que muestra/oculta respuestas - clase jd-toggle-replies-btn */
 .jd-toggle-replies-btn {
     background: #f3f4f6;
     border: 1px solid #e5e7eb;
@@ -588,12 +588,12 @@ html {
 }
 
 /* Skeleton animado para comentario pendiente (efecto shimmer) */
-/* Skeleton simple para comentario pendiente (más compacto) */
+/* Skeleton simple para comentario pendiente (mÃ¡s compacto) */
 .sk-comment {
     display: flex;
     gap: 14px;
     padding: 0.6rem 0;
-    /* reducción del espacio vertical */
+    /* reducciÃ³n del espacio vertical */
     border-bottom: 1px solid #f3f4f6;
     animation: fadeIn 400ms ease;
     position: relative;
@@ -617,7 +617,7 @@ html {
     padding-top: 4px;
 }
 
-/* Líneas del skeleton simple */
+/* LÃ­neas del skeleton simple */
 .sk-line {
     height: 10px;
     border-radius: 5px;
@@ -742,7 +742,7 @@ html {
    SKELETON PROFESIONAL - VIBRANTE
    =========================================== */
 
-/* ── Shimmer principal - barrido diagonal brillante ── */
+/* â”€â”€ Shimmer principal - barrido diagonal brillante â”€â”€ */
 @keyframes skeleton-shimmer {
     0% {
         background-position: -200% 0;
@@ -753,7 +753,7 @@ html {
     }
 }
 
-/* ── Pulso suave en el badge ── */
+/* â”€â”€ Pulso suave en el badge â”€â”€ */
 @keyframes skeleton-pulse {
 
     0%,
@@ -768,7 +768,7 @@ html {
     }
 }
 
-/* ── Entrada con bounce sutil ── */
+/* â”€â”€ Entrada con bounce sutil â”€â”€ */
 @keyframes skeleton-enter {
     0% {
         opacity: 0;
@@ -786,20 +786,20 @@ html {
     }
 }
 
-/* ═══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CARD SKELETON (ajustado para comentarios)
-   ═══════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 /*
    Se redujo el padding y el margen para que el skeleton no ocupe tanto
-   espacio vertical cuando sólo representa una línea de texto. Además,
-   se mantiene la animación shimmer y el borde institucional.
+   espacio vertical cuando sÃ³lo representa una lÃ­nea de texto. AdemÃ¡s,
+   se mantiene la animaciÃ³n shimmer y el borde institucional.
 */
 .comment-skeleton {
     position: relative;
     overflow: hidden;
     animation: skeleton-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     margin-bottom: 0.75rem;
-    /* reducción del espacio inferior */
+    /* reducciÃ³n del espacio inferior */
     padding: 0;
     border-radius: 12px;
     /* ligeramente menos redondeado */
@@ -813,7 +813,7 @@ html {
     transition: box-shadow 0.3s ease;
 }
 
-/* ── Overlay shimmer amplificado ── */
+/* â”€â”€ Overlay shimmer amplificado â”€â”€ */
 .comment-skeleton::before {
     content: '';
     position: absolute;
@@ -831,7 +831,7 @@ html {
     border-radius: 14px;
 }
 
-/* ── Gradiente base de las líneas + badge ── */
+/* â”€â”€ Gradiente base de las lÃ­neas + badge â”€â”€ */
 .comment-skeleton::after {
     content: '';
     position: absolute;
@@ -845,10 +845,10 @@ html {
     border-radius: 14px;
 }
 
-/* ═══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HEADER - Badge vibrante
-   ═══════════════════════════════════════ */
-/* Header del skeleton: se reduce el padding para que sea más compacto */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Header del skeleton: se reduce el padding para que sea mÃ¡s compacto */
 .comment-skeleton-header {
     display: flex;
     align-items: center;
@@ -886,9 +886,9 @@ html {
     filter: drop-shadow(0 1px 2px rgba(111, 66, 193, 0.3));
 }
 
-/* ═══════════════════════════════════════
-   BODY - Líneas shimmer con gradiente
-   ═══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   BODY - LÃ­neas shimmer con gradiente
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 /* Body del skeleton: padding reducido */
 .comment-skeleton-body {
     padding: 0.2rem 0.75rem 0.4rem;
@@ -896,7 +896,7 @@ html {
     z-index: 2;
 }
 
-/* Líneas del skeleton: altura ligeramente menor y margen compacto */
+/* LÃ­neas del skeleton: altura ligeramente menor y margen compacto */
 .comment-skeleton-line {
     height: 10px;
     border-radius: 6px;
@@ -908,7 +908,7 @@ html {
     overflow: hidden;
 }
 
-/* ── Mini brillo interno en cada línea ── */
+/* â”€â”€ Mini brillo interno en cada lÃ­nea â”€â”€ */
 .comment-skeleton-line::after {
     content: '';
     position: absolute;
@@ -934,9 +934,9 @@ html {
     width: 78%;
 }
 
-/* ═══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    FOOTER
-   ═══════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .comment-skeleton-footer {
     padding: 0.15rem 1.25rem 1rem;
     position: relative;
@@ -968,7 +968,7 @@ html {
     }
 }
 
-/* Loader para el botón de submit del formulario de comentarios */
+/* Loader para el botÃ³n de submit del formulario de comentarios */
 .jd-btn-submit.loading {
     pointer-events: none;
     opacity: 0.7;
@@ -990,7 +990,9 @@ html {
     display: inline;
 }
 
-/* Transiciones Alpine para el contenedor de respuestas */
+/* COMENTADO 09/06/2026 - HU-011.12: Clases Alpine sin uso tras refactor a classList.toggle
+   No se eliminan para mantener trazabilidad historica (regla de oro: no borrar codigo existente).
+   Si en el futuro se quiere volver a transiciones con Alpine, basta con descomentar.
 .jd-replies {
     overflow: hidden;
 }
@@ -1008,9 +1010,10 @@ html {
     opacity: 1;
     transform: translateY(0) scale(1);
 }
+*/
 
 /* ==========================================================================
-   3. ZOOM DE IMÁGENES (excluye imágenes dentro de slides)
+   3. ZOOM DE IMÃGENES (excluye imÃ¡genes dentro de slides)
    ========================================================================== */
 .blog-content img:not(.slides-container img) {
     cursor: zoom-in !important;
@@ -1024,7 +1027,7 @@ html {
     transform: scale(1.01);
 }
 
-/* Las imágenes dentro de slides NO deben tener zoom ni lupa */
+/* Las imÃ¡genes dentro de slides NO deben tener zoom ni lupa */
 .slides-container .slide img {
     cursor: default !important;
     pointer-events: auto !important;
@@ -1087,7 +1090,7 @@ html {
 }
 
 /* ==========================================================================
-   5. BARRA FLOTANTE DERECHA (Navegación)
+   5. BARRA FLOTANTE DERECHA (NavegaciÃ³n)
    ========================================================================== */
 .floating-right-nav {
     z-index: 99999;
@@ -1149,7 +1152,7 @@ html {
 }
 
 /* ==========================================================================
-   7. RESPONSIVE - OCULTAR BARRAS EN MÓVIL
+   7. RESPONSIVE - OCULTAR BARRAS EN MÃ“VIL
    ========================================================================== */
 @media (max-width: 1024px) {
     .floating-reaction-bar {
@@ -1183,7 +1186,7 @@ html {
 }
 
 /* ==========================================================================
-   8. HEADER DEL ARTÍCULO
+   8. HEADER DEL ARTÃCULO
    ========================================================================== */
 .jd-back-link {
     display: inline-flex;
@@ -1483,7 +1486,7 @@ html {
 }
 
 /* ==========================================================================
-   11. FOOTER DEL ARTÍCULO
+   11. FOOTER DEL ARTÃCULO
    ========================================================================== */
 .jd-article-footer {
     padding: 1.5rem 0;
@@ -1516,7 +1519,7 @@ html {
 }
 
 /* ==========================================================================
-   12. SECCIÓN COMENTARIOS
+   12. SECCIÃ“N COMENTARIOS
    ========================================================================== */
 .jd-comments-section {
     margin-top: 3rem;
@@ -1708,7 +1711,7 @@ html {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* --- INVITACIÓN LOGIN --- */
+/* --- INVITACIÃ“N LOGIN --- */
 .jd-login-invite {
     text-align: center;
     padding: 2.5rem 1.5rem;
@@ -1866,7 +1869,7 @@ html[data-reading-mode="dark"] .jd-login-divider-text {
     color: #6b7280;
 }
 
-/* --- BOTÓN LOGIN TRADICIONAL --- */
+/* --- BOTÃ“N LOGIN TRADICIONAL --- */
 .jd-btn-traditional {
     background: #374151;
     color: #fff;
@@ -1888,7 +1891,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     background: #6b7280;
 }
 
-/* --- SIN MARGEN EN FOOTER CUANDO HAY BOTÓN TRADICIONAL --- */
+/* --- SIN MARGEN EN FOOTER CUANDO HAY BOTÃ“N TRADICIONAL --- */
 .jd-login-footer {
     display: flex;
     align-items: center;
@@ -2179,6 +2182,14 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     gap: 0.75rem;
 }
 
+/* HU-011.12 - Estado abierto del toggle de respuestas
+   (sobrescribe el style='display:none' inline del HTML cuando JS anade la clase .is-open)
+   Mantiene el display:flex para preservar el flex-direction: column del contenedor padre. */
+.jd-replies.is-open {
+    display: flex;
+}
+
+
 .jd-reply {
     display: flex;
     gap: 10px;
@@ -2236,7 +2247,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     margin: 0;
 }
 
-/* --- Estado vacío --- */
+/* --- Estado vacÃ­o --- */
 .jd-comments-empty {
     text-align: center;
     padding: 3rem 1.5rem;
@@ -2301,7 +2312,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
 /* PATCH NOTE: Updated task progress */
 
 /* ==========================================================================
-   13. RESPONSIVE MÓVIL
+   13. RESPONSIVE MÃ“VIL
    ========================================================================== */
 @media (max-width: 767px) {
     .blog-content p img {
@@ -2353,7 +2364,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
 }
 
 /* ==========================================================================
-   13.1. BOTÓN ELIMINAR COMENTARIO (solo superuser)
+   13.1. BOTÃ“N ELIMINAR COMENTARIO (solo superuser)
    ========================================================================== */
 .jd-del-comment-btn {
     background: transparent;
@@ -2374,10 +2385,10 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
 }
 
 /* ==========================================================================
-   14. VISUAL LAYOUT - Líneas verticales decorativas (bloques [vl])
+   14. VISUAL LAYOUT - LÃ­neas verticales decorativas (bloques [vl])
    ========================================================================== */
 
-/* Línea vertical completa - sutil */
+/* LÃ­nea vertical completa - sutil */
 .vl-full {
     position: relative;
     margin: 1.5rem 0;
@@ -2395,7 +2406,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     border-radius: 1px;
 }
 
-/* Línea vertical limitada - altura fija */
+/* LÃ­nea vertical limitada - altura fija */
 .vl-limited {
     position: relative;
     padding-left: 12px;
@@ -2423,7 +2434,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     padding: 0.5rem 1rem;
 }
 
-/* Punto decorativo al inicio del párrafo */
+/* Punto decorativo al inicio del pÃ¡rrafo */
 .vl-bullet {
     display: inline-block;
     margin-left: 12px;
@@ -2486,7 +2497,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     transform: scale(1.05);
 }
 
-/* Overlay de reproducción */
+/* Overlay de reproducciÃ³n */
 .youtube-mosaic .play-overlay {
     position: absolute;
     top: 0;
@@ -2506,7 +2517,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     opacity: 1;
 }
 
-/* Icono de reproducción */
+/* Icono de reproducciÃ³n */
 .youtube-mosaic .play-icon {
     font-size: 3rem;
     color: #ff0000;
@@ -2529,7 +2540,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     backdrop-filter: blur(4px);
 }
 
-/* Animación de pulso para el icono */
+/* AnimaciÃ³n de pulso para el icono */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -2544,7 +2555,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     }
 }
 
-/* Versión compacta para uso inline */
+/* VersiÃ³n compacta para uso inline */
 .youtube-mosaic.compact {
     max-width: 320px;
     aspect-ratio: 16 / 9;
@@ -2554,7 +2565,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
     font-size: 2.5rem;
 }
 
-/* Versión pequeña para grids */
+/* VersiÃ³n pequeÃ±a para grids */
 .youtube-mosaic.small {
     max-width: 240px;
     aspect-ratio: 16 / 9;
@@ -2721,7 +2732,7 @@ html[data-reading-mode="dark"] .jd-btn-traditional:hover {
 
 
 /* =========================================
-   🎨 MODOS DE LECTURA
+   ðŸŽ¨ MODOS DE LECTURA
    ========================================= */
 
 /* --- MODO SEPIA (Lectura claro) --- */
@@ -2829,7 +2840,7 @@ html[data-reading-mode="dark"] .jd-article-header h1 {
     color: #f1f5f9;
 }
 
-/* Texto de metadatos más claro en modo oscuro */
+/* Texto de metadatos mÃ¡s claro en modo oscuro */
 html[data-reading-mode="dark"] .jd-article-meta {
     opacity: 0.9;
     /* casi blanco */
@@ -3026,7 +3037,7 @@ html[data-reading-mode="dark"] .vl-highlight {
    Los videos se muestran con un caption debajo y hover sutil.
    ========================================================================== */
 
-/* ── Contenedor principal del video ── */
+/* â”€â”€ Contenedor principal del video â”€â”€ */
 .blog-video-container {
     position: relative;
     margin: 1.5rem 0;
@@ -3047,13 +3058,13 @@ html[data-reading-mode="dark"] .vl-highlight {
     transform: translateY(-2px);
 }
 
-/* ── Wrapper interno ── */
+/* â”€â”€ Wrapper interno â”€â”€ */
 .blog-video-wrapper {
     position: relative;
     width: 100%;
 }
 
-/* ── Reproductor de video - responsive y aspect ratio 16:9 ── */
+/* â”€â”€ Reproductor de video - responsive y aspect ratio 16:9 â”€â”€ */
 .blog-video-player {
     display: block;
     width: 100%;
@@ -3065,7 +3076,7 @@ html[data-reading-mode="dark"] .vl-highlight {
     border-radius: 16px 16px 0 0;
 }
 
-/* ── Controles del video - personalización sutil ── */
+/* â”€â”€ Controles del video - personalizaciÃ³n sutil â”€â”€ */
 .blog-video-player::-webkit-media-controls-panel {
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
 }
@@ -3079,7 +3090,7 @@ html[data-reading-mode="dark"] .vl-highlight {
     border-radius: 4px;
 }
 
-/* ── Caption / Título del video ── */
+/* â”€â”€ Caption / TÃ­tulo del video â”€â”€ */
 .blog-video-caption {
     padding: 0.75rem 1.25rem;
     background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
@@ -3090,7 +3101,7 @@ html[data-reading-mode="dark"] .vl-highlight {
 }
 
 .blog-video-caption::before {
-    content: '🎬';
+    content: 'ðŸŽ¬';
     font-size: 1rem;
     flex-shrink: 0;
 }
@@ -3104,7 +3115,7 @@ html[data-reading-mode="dark"] .vl-highlight {
     line-height: 1.4;
 }
 
-/* ── Focus visible para accesibilidad ── */
+/* â”€â”€ Focus visible para accesibilidad â”€â”€ */
 .blog-video-player:focus-visible {
     outline: 3px solid #6f42c1;
     outline-offset: 2px;
@@ -3133,7 +3144,7 @@ html[data-reading-mode="dark"] .vl-highlight {
 
 
 
-/* ── RESPONSIVE: Mobile ── */
+/* â”€â”€ RESPONSIVE: Mobile â”€â”€ */
 @media (max-width: 767px) {
     .blog-video-container {
         border-radius: 12px;
@@ -3165,7 +3176,7 @@ html[data-reading-mode="dark"] .vl-highlight {
     }
 }
 
-/* ── RESPONSIVE: Desktop grande ── */
+/* â”€â”€ RESPONSIVE: Desktop grande â”€â”€ */
 @media (min-width: 1200px) {
     .blog-video-container {
         max-width: 900px;
@@ -3177,7 +3188,7 @@ html[data-reading-mode="dark"] .vl-highlight {
     }
 }
 
-/* ── Modo lectura oscuro ── */
+/* â”€â”€ Modo lectura oscuro â”€â”€ */
 html[data-reading-mode="dark"] .blog-video-container {
     background: #0f172a;
     border-color: #334155;
@@ -3221,10 +3232,10 @@ html[data-reading-mode="dark"] .blog-video-title {
 
 
 /* ==========================================================================
-   HU-013 FASE 2 – UTILIDADES DE MAQUETACIÓN PARA CONTENIDO BLOG
+   HU-013 FASE 2 â€“ UTILIDADES DE MAQUETACIÃ“N PARA CONTENIDO BLOG
    ========================================================================== */
 
-/* ── 1. CALLOUT DANGER + SUCCESS ── */
+/* â”€â”€ 1. CALLOUT DANGER + SUCCESS â”€â”€ */
 .callout-danger {
     background: #fef2f2;
     border-left-color: #dc2626;
@@ -3263,7 +3274,7 @@ html[data-reading-mode="sepia"] .callout-success {
     border-left-color: #16a34a;
 }
 
-/* ── 2. GRID UTILITIES (2, 3, 4 columnas) ── */
+/* â”€â”€ 2. GRID UTILITIES (2, 3, 4 columnas) â”€â”€ */
 .blog-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -3324,7 +3335,7 @@ html[data-reading-mode="sepia"] .blog-grid-card {
     border-color: #e8dcc8;
 }
 
-/* ── 3. HIGHLIGHT BOXES (theme-aware) ── */
+/* â”€â”€ 3. HIGHLIGHT BOXES (theme-aware) â”€â”€ */
 .highlight-box {
     background: #f0f4ff;
     border: 1px solid #bfdbfe;
@@ -3335,7 +3346,7 @@ html[data-reading-mode="sepia"] .blog-grid-card {
 }
 
 .highlight-box::before {
-    content: "💡";
+    content: "ðŸ’¡";
     position: absolute;
     top: -10px;
     right: 12px;
@@ -3348,7 +3359,7 @@ html[data-reading-mode="sepia"] .blog-grid-card {
 }
 
 .highlight-box-info::before {
-    content: "ℹ️";
+    content: "â„¹ï¸";
 }
 
 .highlight-box-warning {
@@ -3357,7 +3368,7 @@ html[data-reading-mode="sepia"] .blog-grid-card {
 }
 
 .highlight-box-warning::before {
-    content: "⚠️";
+    content: "âš ï¸";
 }
 
 .highlight-box-success {
@@ -3366,7 +3377,7 @@ html[data-reading-mode="sepia"] .blog-grid-card {
 }
 
 .highlight-box-success::before {
-    content: "✅";
+    content: "âœ…";
 }
 
 html[data-reading-mode="dark"] .highlight-box {
@@ -3394,7 +3405,7 @@ html[data-reading-mode="sepia"] .highlight-box {
     border-color: #d4a574;
 }
 
-/* ── 4. BADGES INLINE ── */
+/* â”€â”€ 4. BADGES INLINE â”€â”€ */
 .badge-tech {
     display: inline-block;
     background: #e0e7ff;
@@ -3461,7 +3472,7 @@ html[data-reading-mode="dark"] .badge-danger {
     color: #fca5a5;
 }
 
-/* ── 5. FLEX UTILITIES ── */
+/* â”€â”€ 5. FLEX UTILITIES â”€â”€ */
 .flex-row {
     display: flex;
     flex-direction: row;
@@ -3524,7 +3535,7 @@ html[data-reading-mode="dark"] .badge-danger {
     }
 }
 
-/* ── 6. CODE BLOCK CON HEADER Y BOTÓN COPIAR ── */
+/* â”€â”€ 6. CODE BLOCK CON HEADER Y BOTÃ“N COPIAR â”€â”€ */
 .blog-content pre {
     position: relative;
     border-radius: 12px !important;
@@ -3561,4 +3572,118 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 .blog-content pre .copy-btn:hover {
     background: #334155;
     color: #e2e8f0;
+}
+
+/* complementarios refactorizados desde el HTML: */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modal confirmación eliminar */
+#jd-confirm-delete-modal {
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+    animation: modalIn 250ms ease;
+}
+
+#jd-confirm-delete-modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.jd-confirm-content {
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.jd-confirm-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.jd-confirm-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.jd-confirm-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.jd-confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.jd-confirm-cancel {
+    padding: 10px 24px;
+    border-radius: 100px;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.jd-confirm-cancel:hover {
+    background: #f3f4f6;
+}
+
+.jd-confirm-delete {
+    padding: 10px 24px;
+    border-radius: 100px;
+    border: none;
+    background: #dc2626;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.jd-confirm-delete:hover {
+    background: #b91c1c;
 }

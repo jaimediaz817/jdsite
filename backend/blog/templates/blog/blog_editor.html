@@ -2,7 +2,8 @@
 {% load static %}
 <html lang="es" class="html-jd">
 <head>
-    <title>✍️ Editor de Artículo | Jaime Díaz</title>
+    <!-- Replaced ASCII icon with Font Awesome pen icon for a professional look -->
+    <title><i class="fas fa-pen"></i> Editor de Artículo | Jaime Díaz</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
@@ -29,12 +30,14 @@
             <div class="row">
                 <!-- SIDEBAR: Frontmatter -->
                 <aside class="col-md-3 editor-sidebar">
-                    <h4 class="sidebar-title">📝 Cabecera del artículo</h4>
+                <!-- Sidebar title icon updated -->
+                <h4 class="sidebar-title"><i class="fas fa-file-alt"></i> Cabecera del artículo</h4>
 
                     <!-- Badge de estado del artículo -->
                     <div id="article-status-badge" class="mb-3">
+                        <!-- Badge icon updated -->
                         <span class="badge Artikel-badge Artikel-badge-new" id="status-badge">
-                            🔵 Nuevo artículo
+                            <i class="fas fa-circle text-primary"></i> Nuevo artículo
                         </span>
                     </div>
 
@@ -145,7 +148,8 @@
                 
                 <!-- CENTRO: Editor -->
                 <main class="col-md-9 editor-main">
-                    <h2>✍️ Editor Markdown</h2>
+                    <!-- Header icon updated -->
+                    <h2><i class="fas fa-code"></i> Editor Markdown</h2>
                     <p class="text-muted small">Escribe en markdown o HTML directo. Pega imágenes/videos con <kbd>Ctrl+V</kbd> o arrástralos aquí.</p>
                     
                     <div class="editor-container mb-3">
@@ -174,7 +178,8 @@
                     </div>
                     
                     <!-- Indicador de auto-save -->
-                    <div id="autosave-indicator" class="autosave-indicator">💾 Auto-guardado</div>
+                    <!-- Autosave indicator icon updated -->
+                    <div id="autosave-indicator" class="autosave-indicator"><i class="fas fa-save"></i> Auto-guardado</div>
                 </main>
             </div>
         </div>
@@ -185,7 +190,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="draftRecoveryModalLabel">📝 Borrador local encontrado</h5>
+                <h5 class="modal-title" id="draftRecoveryModalLabel"><i class="fas fa-file-alt"></i> Borrador local encontrado</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -213,7 +218,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDiscardModalLabel">🗑️ Descartar borrador</h5>
+                <h5 class="modal-title" id="confirmDiscardModalLabel"><i class="fas fa-trash-alt"></i> Descartar borrador</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -232,7 +237,7 @@
     <!-- Toast de auto-save mejorado -->
     <div id="autosave-toast" class="toast autosave-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
         <div class="toast-header autosave-toast-header">
-            <strong class="me-auto autosave-toast-title">💾 Borrador guardado</strong>
+                <strong class="me-auto autosave-toast-title"><i class="fas fa-save"></i> Borrador guardado</strong>
             <small class="text-muted autosave-toast-time">ahora</small>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
         </div>

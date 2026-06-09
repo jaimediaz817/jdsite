@@ -1,8 +1,10 @@
 /***
+ * DEBUG: Verify script load
  * Comments Handler - Centralized logic for comments
  * Includes: scroll infinite, comment submission, reply forms, char counter
  * Uses Alpine.js for reply forms
  */
+console.log('comments_handler.js loaded');
 
 // ===== CHAR COUNTER =====
 function initCharCounter() {
@@ -14,18 +16,18 @@ function initCharCounter() {
         });
     }
 
-    // Inicializar contadores de replies estáticos (los del HTML inline original)
+    // Inicializar contadores de replies estÃ¡ticos (los del HTML inline original)
     document.querySelectorAll('.jd-reply-textarea').forEach(function(ta) {
         initSingleReplyCounter(ta);
     });
 
-    // Inicializar contadores de replies dinámicos (los de getReplyFormHtml en blog_detail.js)
+    // Inicializar contadores de replies dinÃ¡micos (los de getReplyFormHtml en blog_detail.js)
     document.querySelectorAll('.jd-reply-textarea-dynamic').forEach(function(ta) {
         initDynamicReplyCounter(ta);
     });
 }
 
-// Para replies estáticas (estructura .jd-inline-reply-inner > textarea + .jd-inline-reply-actions > .jd-reply-char-num)
+// Para replies estÃ¡ticas (estructura .jd-inline-reply-inner > textarea + .jd-inline-reply-actions > .jd-reply-char-num)
 function initSingleReplyCounter(textarea) {
     if (textarea._replyCounterInit) return;
     textarea._replyCounterInit = true;
@@ -42,7 +44,7 @@ function initSingleReplyCounter(textarea) {
     });
 }
 
-// Para replies dinámicas (estructura .form-group > textarea + small.jd-reply-dynamic-count)
+// Para replies dinÃ¡micas (estructura .form-group > textarea + small.jd-reply-dynamic-count)
 function initDynamicReplyCounter(textarea) {
     if (textarea._replyCounterInit) return;
     textarea._replyCounterInit = true;
@@ -161,7 +163,7 @@ window.submitMainCommentForm = async function(form) {
         if (!response.ok) {
             if (response.status === 403) throw new Error('Error de seguridad CSRF. Por favor recarga la pagina.');
             if (response.status === 500) throw new Error('Error interno en el servidor.');
-            // Intentar extraer errores de validación del body (ej: content mínimo 10 caracteres)
+            // Intentar extraer errores de validaciÃ³n del body (ej: content mÃ­nimo 10 caracteres)
             try {
                 var errorData = await response.json();
                 if (errorData && errorData.errors) {
@@ -262,17 +264,17 @@ function initReplyToggle() {
 
         if (!isOpen) {
             if (typeof window.getReplyFormHtml === 'function') {
-                // Usa el template JS de blog_detail.js (formulario dinámico con Bootstrap)
+                // Usa el template JS de blog_detail.js (formulario dinÃ¡mico con Bootstrap)
                 inlineReply.innerHTML = window.getReplyFormHtml(id);
                 inlineReply.style.display = 'block';
-                // Inicializar contador del textarea dinámico
+                // Inicializar contador del textarea dinÃ¡mico
                 var ta = inlineReply.querySelector('.jd-reply-textarea-dynamic');
                 if (ta) {
                     initDynamicReplyCounter(ta);
                     ta.focus();
                 }
             } else {
-                // Usa el HTML inline estático (estructura .jd-inline-reply-inner)
+                // Usa el HTML inline estÃ¡tico (estructura .jd-inline-reply-inner)
                 inlineReply.style.display = 'block';
                 var textarea = inlineReply.querySelector('textarea');
                 if (textarea) {
@@ -303,24 +305,57 @@ function initReplyToggle() {
 }
 
 // ===== TOGGLE REPLIES =====
+// HU-011.12 â€” Fix: idempotencia + classList.toggle (preserva display:flex del CSS)
 function initToggleReplies() {
-    document.querySelectorAll('.jd-toggle-replies-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var commentEl = this.closest('.jd-comment');
-            if (!commentEl) return;
-            var repliesEl = commentEl.querySelector('.jd-replies');
-            if (!repliesEl) return;
-            var icon = this.querySelector('i');
-            var span = this.querySelector('span');
-            var isOpen = repliesEl.style.display === 'block';
-            repliesEl.style.display = isOpen ? 'none' : 'block';
-            if (icon) {
-                icon.className = 'fas ' + (isOpen ? 'fa-chevron-down' : 'fa-chevron-up');
+    // âœ… Idempotente: solo aÃ±ade el listener una vez al document
+    // (Esto evita el bug de duplicaciÃ³n al hacer scroll infinito: antes se aÃ±adÃ­a
+    //  un nuevo listener en cada llamada a initToggleReplies() y los isOpen alternaban)
+    if (document._jdToggleRepliesInit) return;
+    document._jdToggleRepliesInit = true;
+
+    // Event delegation: un solo listener en document maneja cualquier botÃ³n
+    // .jd-toggle-replies-btn actual o creado dinÃ¡micamente (scroll infinito)
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.jd-toggle-replies-btn');
+        if (!btn) return;
+
+        var commentEl = btn.closest('.jd-comment');
+        if (!commentEl) return;
+        var repliesEl = commentEl.querySelector('.jd-replies');
+        if (!repliesEl) return;
+
+        // âœ… Usar clase CSS en vez de style.display (preserva el display:flex del CSS)
+        // Estado cerrado: style="display:none" inline del HTML
+        // Estado abierto: regla CSS .jd-replies.is-open { display: flex; }
+        var isOpen = repliesEl.classList.contains('is-open');
+        repliesEl.classList.toggle('is-open', !isOpen);
+        if (!isOpen) {
+            repliesEl.style.display = 'flex';
+        } else {
+            repliesEl.style.display = 'none';
+        }
+
+        // Update icon direction (preserve other classes like 'fas')
+        var icon = btn.querySelector('i');
+        if (icon) {
+            if (isOpen) {
+                // was open, now closing
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                // was closed, now opening
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
             }
-            if (span) {
-                span.textContent = isOpen ? 'Ver' : 'Ocultar';
-            }
-        });
+        }
+
+        // Update label text (the first span inside the button)
+        var labelSpan = btn.querySelector('span');
+        if (labelSpan) {
+            labelSpan.textContent = isOpen ? 'Ver' : 'Ocultar';
+        }
+        // Prevent any default button behavior
+        e.preventDefault();
     });
 }
 
@@ -451,7 +486,7 @@ function initToggleReplies() {
 window.deleteComment = function(commentId, slug) {
     if (!commentId || !slug) return;
 
-    if (!confirm('¿Estás seguro de eliminar este comentario? Esta acción no se puede deshacer.')) {
+    if (!confirm('Â¿EstÃ¡s seguro de eliminar este comentario? Esta acciÃ³n no se puede deshacer.')) {
         return;
     }
 

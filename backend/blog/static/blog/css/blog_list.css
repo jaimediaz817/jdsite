@@ -583,33 +583,45 @@
     color: #1a202c;
 }
 
-/* --- Paginación profesional con colores del blog --- */
+/* --- Paginación profesional estilo dashboard --- */
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
+    gap: 2px;
+    margin-top: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .pagination .page-link {
-    border-radius: 8px;
-    padding: 0.4rem 0.8rem;
-    border: 1px solid transparent;
-    color: #6f42c1;
-    background-color: #f5f5ff;
-    transition: all 0.2s ease;
+    border: none;
+    border-radius: 10px;
+    margin: 0 2px;
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.45rem 0.85rem;
+    background: #fff;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .pagination .page-link:hover {
-    background-color: #e0e0ff;
-    border-color: #6f42c1;
-    color: #4a1a8e;
+    background: #f3f0ff;
+    color: #6f42c1;
+    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.15);
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #6f42c1;
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
     color: #fff;
-    border-color: #6f42c1;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #f9fafb;
+    color: #d1d5db;
+    cursor: default;
+    box-shadow: none;
 }
 
 /* --- Footer pegado al fondo (CSS Grid - no afecta nav ni section) --- */

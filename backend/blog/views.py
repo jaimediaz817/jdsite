@@ -15,7 +15,8 @@ from pathlib import Path
 
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse
+from django.urls import reverse
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic import ListView, DetailView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.http import require_http_methods
@@ -27,17 +28,28 @@ from django.db.models import Q, Count
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from blog.models import BlogComment, BlogPost, Category, BlogModeration
+from blog.models import (
+    BlogComment,
+    BlogPost,
+    Category,
+    BlogModeration,
+    BlogEmailConfig,
+)
 from blog.services import (
     create_comment,
     get_approved_comments,
     get_comment_count,
     save_blog_to_source,
     save_uploaded_file,
+    are_admin_notifications_enabled,
+    are_author_notifications_enabled,
+    delete_post_permanently,
+    get_post_files_info,
 )
 from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib import messages
 from .forms import CommentForm, QuickSignupForm
 
 
@@ -97,8 +109,8 @@ def approve_blog_view(request, token):
         comment="Aprobado vía enlace de email",
     )
 
-    # Notificar al autor por email
-    if post.author and post.author.email:
+    # HU-011.85: Notificar al autor por email (solo si habilitado)
+    if post.author and post.author.email and are_author_notifications_enabled():
         subject = f"[JD Blog] Tu artículo '{post.title}' ha sido publicado"
         message = (
             f"Hola {post.author.get_full_name() or post.author.username},\n\n"
@@ -144,8 +156,8 @@ def reject_blog_view(request, token):
         comment="Rechazado vía enlace de email",
     )
 
-    # Notificar al autor del rechazo
-    if post.author and post.author.email:
+    # HU-011.85: Notificar al autor del rechazo (solo si habilitado)
+    if post.author and post.author.email and are_author_notifications_enabled():
         subject = f"[JD Blog] Tu artículo '{post.title}' ha sido rechazado"
         message = (
             f"Hola {post.author.get_full_name() or post.author.username},\n\n"
@@ -236,6 +248,11 @@ def dashboard_view(request):
     for post in page_obj:
         post.comment_total = comment_counts.get(post.slug, 0)
 
+    # HU-011.10: Información de archivos asociados (solo superadmin)
+    if is_super:
+        for post in page_obj:
+            post.files_info = get_post_files_info(post.slug)
+
     # Estadísticas para los badges
     stats = {
         "total": BlogPost.objects.count(),
@@ -245,6 +262,9 @@ def dashboard_view(request):
         "approved": BlogPost.objects.filter(moderation_status="approved").count(),
         "rejected": BlogPost.objects.filter(moderation_status="rejected").count(),
     }
+
+    # HU-011.85: Estado del envío de emails para el indicador visual
+    email_config = BlogEmailConfig.get_config()
 
     return render(
         request,
@@ -257,7 +277,54 @@ def dashboard_view(request):
             "search_query": search_query,
             "query_string": query_string,
             "comment_counts": comment_counts,
+            "email_config": email_config,
         },
+    )
+
+
+# ---------------------------------------------------------------------
+# HU-011.85: Configuración de envío de emails
+# ---------------------------------------------------------------------
+@login_required
+def blog_email_config_view(request):
+    """Página de configuración del interruptor maestro de envío de emails.
+
+    Solo accesible por superadmin. Permite activar/desactivar el envío
+    de correos electrónicos del blog de forma global.
+
+    HU-011.85 — Protección reforzada:
+    - No autenticados → redirigir a login (@login_required)
+    - Autenticados sin is_superuser → 403 Forbidden (no redirect silencioso)
+    - POST sin permiso → 403 también (protege contra CSRF cruzado)
+    """
+    # 🔒 Doble verificación: autenticado + superadmin
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(
+            "<h1>403 — Acceso denegado</h1>"
+            "<p>No tienes permisos para acceder a la configuración de emails.</p>"
+            f'<p><a href="{reverse("blog:dashboard")}">← Volver al dashboard</a></p>'
+        )
+
+    email_config = BlogEmailConfig.get_config()
+
+    if request.method == "POST":
+        # HU-011.85: Leer ambos toggles independientes
+        admin_enabled = request.POST.get("admin_notifications") == "on"
+        author_enabled = request.POST.get("author_notifications") == "on"
+        email_config.admin_notifications_enabled = admin_enabled
+        email_config.author_notifications_enabled = author_enabled
+        email_config.updated_by = request.user
+        email_config.save()
+        messages.success(
+            request,
+            "📧 Configuración de emails actualizada correctamente.",
+        )
+        return redirect("blog:blog_email_config")
+
+    return render(
+        request,
+        "blog/blog_email_config.html",
+        {"email_config": email_config},
     )
 
 
@@ -391,6 +458,38 @@ def toggle_post_published(request, slug):
         comment=f"{'Publicado' if post.is_published else 'Despublicado'} desde dashboard",
     )
 
+    # HU-011.85: Notificar al autor por email desde dashboard
+    if post.is_published and post.author and post.author.email:
+        if are_author_notifications_enabled():
+            subject = f"[JD Blog] Tu artículo '{post.title}' ha sido publicado"
+            message = (
+                f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+                f"Tu artículo '{post.title}' ha sido aprobado y publicado por el administrador.\n"
+                f"Puedes verlo en: {settings.SITE_URL}{post.get_absolute_url()}\n\n"
+                "Gracias por contribuir."
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[post.author.email],
+                fail_silently=True,
+            )
+    elif not post.is_published and post.author and post.author.email:
+        if are_author_notifications_enabled():
+            subject = f"[JD Blog] Tu artículo '{post.title}' ha sido despublicado"
+            message = (
+                f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+                f"Tu artículo '{post.title}' ha sido despublicado por el administrador."
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[post.author.email],
+                fail_silently=True,
+            )
+
     return JsonResponse(
         {
             "success": True,
@@ -439,6 +538,37 @@ def change_moderation_status(request, slug):
         action=new_status,
         comment=f"Moderación cambiada a '{new_status}' desde dashboard",
     )
+
+    # HU-011.85: Notificar al autor por email desde dropdown del dashboard
+    if post.author and post.author.email and are_author_notifications_enabled():
+        if new_status == "approved":
+            subject = f"[JD Blog] Tu artículo '{post.title}' ha sido aprobado"
+            message = (
+                f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+                f"Tu artículo '{post.title}' ha sido aprobado por el administrador.\n"
+                f"Puedes verlo en: {settings.SITE_URL}{post.get_absolute_url()}\n\n"
+                "Gracias por contribuir."
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[post.author.email],
+                fail_silently=True,
+            )
+        elif new_status == "rejected":
+            subject = f"[JD Blog] Tu artículo '{post.title}' ha sido rechazado"
+            message = (
+                f"Hola {post.author.get_full_name() or post.author.username},\n\n"
+                f"Tu artículo '{post.title}' ha sido rechazado por el administrador."
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[post.author.email],
+                fail_silently=True,
+            )
 
     return JsonResponse(
         {
@@ -818,6 +948,63 @@ def check_comment_status(request, slug, comment_id):
         )
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+# ---------------------------------------------------------------------
+# HU-011.9: Eliminación permanente de artículos (superadmin)
+# ---------------------------------------------------------------------
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def delete_blog_view(request, post_id):
+    """Elimina un artículo permanentemente (HU-011.9).
+
+    Solo accesible para superadmin. Elimina el registro de la base de datos,
+    los registros de BlogModeration asociados, y la carpeta física del
+    artículo en ``blogs_source/<slug>/``.
+
+    Retorna JSON con el resultado de la operación.
+    """
+    # Solo superadmin puede eliminar
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."},
+            status=403,
+        )
+
+    try:
+        post = BlogPost.objects.get(id=post_id)
+    except BlogPost.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Artículo no encontrado."},
+            status=404,
+        )
+
+    result = delete_post_permanently(post)
+
+    if result["success"]:
+        messages.success(
+            request,
+            f"🗑️ Artículo '{result['title']}' eliminado permanentemente.",
+        )
+        return JsonResponse(
+            {
+                "success": True,
+                "message": f"Artículo '{result['title']}' eliminado permanentemente.",
+            }
+        )
+    else:
+        messages.error(
+            request,
+            f"❌ Error al eliminar '{result['title']}': {result.get('error', 'Error desconocido')}",
+        )
+        return JsonResponse(
+            {
+                "success": False,
+                "error": result.get("error", "Error desconocido al eliminar."),
+            },
+            status=500,
+        )
 
 
 # ======================================================

@@ -282,13 +282,11 @@
                             <div class="col-12 col-lg-8">
                                 <nav aria-label="Navegación de páginas">
                                     <ul class="pagination justify-content-center">
-                                        {% if page_obj.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">
+                                        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                            <a class="page-link" href="{% if page_obj.has_previous %}?{{ query_string }}&page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" {% if not page_obj.has_previous %}tabindex="-1" aria-disabled="true"{% endif %}>
                                                 <i class="fas fa-chevron-left"></i>
                                             </a>
                                         </li>
-                                        {% endif %}
                                         {% for num in page_obj.paginator.page_range %}
                                             {% if page_obj.number == num %}
                                                 <li class="page-item active"><span class="page-link">{{ num }}</span></li>
@@ -296,13 +294,11 @@
                                                 <li class="page-item"><a class="page-link" href="?{{ query_string }}&page={{ num }}">{{ num }}</a></li>
                                             {% endif %}
                                         {% endfor %}
-                                        {% if page_obj.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?{{ query_string }}&page={{ page_obj.next_page_number }}">
+                                        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                            <a class="page-link" href="{% if page_obj.has_next %}?{{ query_string }}&page={{ page_obj.next_page_number }}{% else %}#{% endif %}" {% if not page_obj.has_next %}tabindex="-1" aria-disabled="true"{% endif %}>
                                                 <i class="fas fa-chevron-right"></i>
                                             </a>
                                         </li>
-                                        {% endif %}
                                     </ul>
                                 </nav>
                             </div>

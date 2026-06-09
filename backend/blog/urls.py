@@ -18,6 +18,8 @@ from blog.views import (
     reject_blog_view,
     toggle_post_published,
     change_moderation_status,
+    blog_email_config_view,
+    delete_blog_view,
 )
 
 app_name = "blog"
@@ -34,6 +36,8 @@ urlpatterns = [
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
     # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
     path("dashboard/", dashboard_view, name="dashboard"),
+    # HU-011.85: Configuración de envío de emails (ANTES de <slug>)
+    path("email-config/", blog_email_config_view, name="blog_email_config"),
     path(
         "dashboard/comments/<slug:slug>/",
         dashboard_post_comments,
@@ -48,6 +52,12 @@ urlpatterns = [
         "dashboard/approve/<slug:token>/", approve_blog_view, name="approve_blog"
     ),
     path("dashboard/reject/<slug:token>/", reject_blog_view, name="reject_blog"),
+    # HU-011.9: Eliminación permanente de artículos (ANTES de <slug>)
+    path(
+        "dashboard/delete/<int:post_id>/",
+        delete_blog_view,
+        name="delete_blog",
+    ),
     path(
         "dashboard/toggle/<slug:slug>/",
         toggle_post_published,

@@ -328,6 +328,58 @@ class BlogComment(models.Model):
         return get_avatar_initials(self.name)
 
 
+# ---------------------------------------------------------------------
+# 🟡 HU-011.85: Configuración centralizada de envío de emails
+# ---------------------------------------------------------------------
+class BlogEmailConfig(models.Model):
+    """
+    Tabla paramétrica singleton que actúa como interruptor maestro
+    para el envío de emails del blog (HU-011.85).
+
+    Controla dos grupos funcionales independientes:
+    - admin_notifications_enabled: emails al admin (comentarios + borradores)
+    - author_notifications_enabled: emails al autor (aprobado/rechazado)
+
+    Solo el superadmin puede modificarla desde la dashboard.
+    """
+
+    admin_notifications_enabled = models.BooleanField(
+        default=True,
+        help_text=(
+            "Notificaciones al administrador: "
+            "comentarios nuevos y borradores pendientes"
+        ),
+    )
+    author_notifications_enabled = models.BooleanField(
+        default=True,
+        help_text=("Notificaciones al autor: " "artículo aprobado o rechazado"),
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Último usuario que modificó la configuración",
+    )
+
+    class Meta:
+        verbose_name = "Configuración de emails del blog"
+        verbose_name_plural = "Configuración de emails del blog"
+
+    def __str__(self):
+        return (
+            f"Admin: {'ON' if self.admin_notifications_enabled else 'OFF'} | "
+            f"Autor: {'ON' if self.author_notifications_enabled else 'OFF'}"
+        )
+
+    @classmethod
+    def get_config(cls):
+        """Retorna la configuración singleton, creándola si no existe."""
+        config, _ = cls.objects.get_or_create(pk=1)
+        return config
+
+
 class BlogModeration(models.Model):
     ACTION_CHOICES = [
         ("pending", "Pendiente"),

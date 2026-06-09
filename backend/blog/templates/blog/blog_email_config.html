@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Configuración de Emails | JD Blog</title>
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+        /* Toggle switch reutilizando estilo del dashboard */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 32px;
+            margin: 0;
+        }
+        .toggle-wrap input { display: none; }
+        .toggle-track {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: #d1d5db;
+            border-radius: 28px;
+            cursor: pointer;
+            transition: all .3s cubic-bezier(.4,0,.2,1);
+            box-shadow: inset 0 1px 4px rgba(0,0,0,.12);
+            flex-shrink: 0;
+        }
+        .toggle-track:hover {
+            box-shadow: inset 0 1px 4px rgba(0,0,0,.12), 0 0 0 4px rgba(111,66,193,.1);
+        }
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all .3s cubic-bezier(.4,0,.2,1);
+            box-shadow: 0 1px 4px rgba(0,0,0,.15);
+        }
+        .toggle-wrap input:checked + .toggle-track {
+            background: #16a34a;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,.15), 0 0 12px rgba(22,163,74,.35);
+        }
+        .toggle-wrap input:checked + .toggle-track::after {
+            left: calc(100% - 26px);
+            box-shadow: 0 1px 4px rgba(0,0,0,.2);
+        }
+        .toggle-track:active { transform: scale(.92); }
+
+        .config-card {
+            border: none;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 4px 24px rgba(0,0,0,.06);
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        .group-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .group-title {
+            font-weight: 700;
+            font-size: .92rem;
+            color: #1f2937;
+            margin-bottom: .5rem;
+        }
+        .group-desc {
+            font-size: .82rem;
+            color: #6b7280;
+            margin-bottom: .75rem;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 .75rem;
+        }
+        .feature-list li {
+            padding: 3px 0;
+            font-size: .82rem;
+            color: #4b5563;
+        }
+        .feature-list li::before {
+            content: '•';
+            color: #6f42c1;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="home-p">
+    {% include "partials/_navigation_menu.html" %}
+
+    <div class="container mt-4 mb-5">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0" style="font-size: 1.4rem; font-weight: 700;">⚙️ Configuración de Emails</h1>
+            <a href="{% url 'blog:dashboard' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3" style="font-size:.82rem;">← Volver al dashboard</a>
+        </div>
+
+        <!-- Mensajes de Django -->
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert" style="font-size:.88rem;">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Tarjeta principal -->
+        <div class="config-card p-4">
+            <h5 class="mb-3" style="font-weight:700;">📧 Grupos de notificación</h5>
+
+            <!-- Formulario con 2 toggles -->
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Grupo 1: Notificaciones al admin -->
+                <div class="group-section">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="group-title">
+                                <i class="fas fa-user-shield me-1" style="color:#6f42c1;"></i>
+                                Notificaciones al administrador
+                            </div>
+                            <div class="group-desc">
+                                Emails que recibe el admin cuando hay actividad en el blog.
+                            </div>
+                            <ul class="feature-list">
+                                <li>Nuevo comentario pendiente de moderación</li>
+                                <li>Nuevo artículo en borrador para revisar</li>
+                            </ul>
+                        </div>
+                        <label class="toggle-wrap">
+                            <input type="checkbox" name="admin_notifications" {% if email_config.admin_notifications_enabled %}checked{% endif %}>
+                            <div class="toggle-track"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Grupo 2: Notificaciones al autor -->
+                <div class="group-section">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="group-title">
+                                <i class="fas fa-user-pen me-1" style="color:#16a34a;"></i>
+                                Notificaciones al autor
+                            </div>
+                            <div class="group-desc">
+                                Emails que recibe el autor cuando su artículo es moderado.
+                            </div>
+                            <ul class="feature-list">
+                                <li>Artículo aprobado y publicado</li>
+                                <li>Artículo rechazado</li>
+                            </ul>
+                        </div>
+                        <label class="toggle-wrap">
+                            <input type="checkbox" name="author_notifications" {% if email_config.author_notifications_enabled %}checked{% endif %}>
+                            <div class="toggle-track"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Footer con auditoría y botón -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div style="font-size:.78rem; color:#9ca3af;">
+                        {% if email_config.updated_by %}
+                        Último cambio: {{ email_config.updated_at|date:"d/m/Y H:i" }} por {{ email_config.updated_by.username }}
+                        {% else %}
+                        Sin cambios registrados
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-sm rounded-pill px-4" style="background:linear-gradient(135deg,#6f42c1,#5a33a0); color:#fff; font-weight:600; font-size:.82rem;">
+                        <i class="fas fa-save me-1"></i> Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/bs/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

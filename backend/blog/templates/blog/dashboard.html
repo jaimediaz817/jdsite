@@ -11,6 +11,16 @@
 
     <!-- Estilos específicos del dashboard  -->
     <link rel="stylesheet" href="{% static 'blog/css/dashboard.css' %}">
+    {% if user.is_superuser %}
+    <!-- NOTE: Distintivo visual para superadmin — barra top y acentos morados sutiles -->
+    <style>
+        .sa-badge { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg,#6f42c1,#5a33a0); color:#fff; font-size:.65rem; font-weight:600; padding:2px 10px; border-radius:20px; letter-spacing:.3px; vertical-align:middle; }
+        .sa-top-border { border-top:3px double #6f42c1; padding-top:8px; }
+        .sa-stat-border .stat-card { border-left:3px solid transparent; transition:border-left-color .2s ease; }
+        .sa-stat-border .stat-card:hover { border-left-color:#6f42c1; }
+        .sa-footer { font-size:.68rem; color:#a1a1aa; text-align:center; margin-top:1.5rem; padding-top:.8rem; border-top:1px dashed #e4e4e7; }
+    </style>
+    {% endif %}
 </head>
 <body class="home-p">
     {% include "partials/_navigation_menu.html" %}
@@ -18,7 +28,9 @@
 
     <div class="container mt-4 mb-5">
         <div class="d-flex justify-content-between align-items-strech mb-4">
-            <h1 class="mb-0" style="font-size: 1.4rem; font-weight: 700;">📊 Dashboard de Moderación</h1>
+            <h1 class="mb-0" style="font-size: 1.4rem; font-weight: 700;">📊 Dashboard de Moderación
+                {% if user.is_superuser %}<span class="sa-badge ms-2">🔐 Admin</span>{% endif %}
+            </h1>
             <div class="d-flex align-items-center gap-2">
                 {# HU-011.85: Indicador animado de envío de emails (2 grupos) #}
                 {% if user.is_superuser %}
@@ -42,7 +54,7 @@
         </div>
 
         {% if stats %}
-        <div class="row g-2 mb-4">
+        <div class="row g-2 mb-4{% if user.is_superuser %} sa-top-border sa-stat-border{% endif %}">
             <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
             <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-success">{{ stats.published }}</div><div class="stat-label">Publicados</div></div></div>
             <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-warning">{{ stats.drafts }}</div><div class="stat-label">Borradores</div></div></div>
@@ -124,17 +136,39 @@
                                     </td>
                                     <td><small>{{ post.publish_date|date:"d/m/y" }}</small></td>
                                     <td class="text-center">
+                                        {% if user.is_superuser %}
                                         <div class="toggle-wrap">
                                             <input type="checkbox" class="toggle-switch" id="pub-{{ post.slug }}" data-slug="{{ post.slug }}" {% if post.is_published %}checked{% endif %}>
                                             <label class="toggle-track" for="pub-{{ post.slug }}"></label>
                                         </div>
+                                        {% else %}
+                                        <span class="locked-indicator" title="Solo el administrador puede cambiar la publicación">
+                                            <i class="fas fa-lock locked-icon"></i>
+                                            {% if post.is_published %}
+                                            <span class="locked-label locked-label-yes">✅ Publicado</span>
+                                            {% else %}
+                                            <span class="locked-label locked-label-no">📝 Borrador</span>
+                                            {% endif %}
+                                        </span>
+                                        {% endif %}
                                     </td>
                                     <td>
+                                        {% if user.is_superuser %}
                                         <select class="moderation-select" data-slug="{{ post.slug }}">
                                             <option value="pending" {% if post.moderation_status == "pending" %}selected{% endif %}>⏳ Pendiente</option>
                                             <option value="approved" {% if post.moderation_status == "approved" %}selected{% endif %}>✅ Aprobado</option>
                                             <option value="rejected" {% if post.moderation_status == "rejected" %}selected{% endif %}>❌ Rechazado</option>
                                         </select>
+                                        {% else %}
+                                        <span class="locked-indicator" title="Solo el administrador puede cambiar la moderación">
+                                            <i class="fas fa-lock locked-icon"></i>
+                                            <span class="locked-label">
+                                                {% if post.moderation_status == "approved" %}✅ Aprobado
+                                                {% elif post.moderation_status == "rejected" %}❌ Rechazado
+                                                {% else %}⏳ Pendiente{% endif %}
+                                            </span>
+                                        </span>
+                                        {% endif %}
                                     </td>
                                     {% if user.is_superuser %}
                                     <td class="text-center">
@@ -210,13 +244,12 @@
                 <p class="text-muted small">Intenta cambiar los filtros de búsqueda.</p>
             </div>
         {% endif %}
-    </div>
-
+    {% if user.is_superuser %}<div class="sa-footer">🔐 Panel de administración — tienes control total sobre todos los artículos del blog</div>{% endif %}
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
 
     <!-- Script para el dashboard -->
-    <script src="{% static 'blog/js/dashboard.js' %}"></script>
+    <script src="{% static 'blog/js/dashboard.js' %}?v={{ STATIC_VERSION|default:'1' }}"></script>
 
     <!-- Modal de confirmación HU-011.9 -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -226,7 +259,7 @@
                     <h5 class="modal-title fw-bold" id="deleteModalLabel">
                         <i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirmar eliminación
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <p class="mb-2">¿Eliminar permanentemente este artículo?</p>

@@ -63,6 +63,9 @@
     <link rel="stylesheet" href="{% static 'blog/css/blog_list.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/blog_sidebar.css' %}">
 
+    <!-- ✅ Flatpickr - Date picker profesional -->
+    <link rel="stylesheet" href="{% static 'blog/vendor/flatpickr/flatpickr.min.css' %}">
+
     <!-- ✅ FAVICON -->
     <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'blog/images/favicon/favicon-16.png' %}">
@@ -91,62 +94,125 @@
                 <div class="blog-main container px-0">
                     <div class="row mb-4">
                         <div class="col-12 text-center">
-                            <!-- Slogan del sitio, antes del título del artículo -->
-                            <span class="header-slogan">¡tu blog en minutos! escribe en markdown, pega imágenes y publica</span>
                             <h1 class="display-4 font-weight-bold section-title">Blog</h1>
-                            <p class="section-sub-title lead text-muted mt-3">Artículos técnicos, experiencias y buenas prácticas</p>
+                            <!-- Slogan del sitio, antes del título del artículo -->
+                            <span class="header-slogan">¡tu blog en minutos! escribe en markdown, pega imágenes y publica</span>                            
+                            <p class="section-sub-title lead text-muted mt-2">Artículos técnicos, experiencias y buenas prácticas</p>
                         </div>
                     </div>
 
-                    <!-- 🔍 Buscador de artículos -->
+                    <!-- 🔍 Buscador de artículos profesional -->
                     {% comment %} <div class="mb-4"></div> {% endcomment %}
                     <div class="row mb-5">
                         <div class="col-12">
                             <form method="get" action="{% url 'blog:blog_list' %}" class="blog-search-form" role="search">
-                                <div class="input-group blog-search-group">
-                                    <span class="input-group-text blog-search-icon">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                    <input type="text"
-                                        name="q"
-                                        id="blog-search-input"
-                                        class="form-control blog-search-input"
-                                        placeholder="Buscar artículos por título, contenido, categoría..."
-                                        value="{{ search_query }}"
-                                        aria-label="Buscar artículos">
-                                    <button type="submit" class="btn blog-search-btn">
-                                        <i class="fas fa-search d-md-none"></i>
-                                        <span class="d-none d-md-inline">Buscar</span>
-                                    </button>
-                                </div>
-                                
-                                {% if search_query or request.GET.category %}
-                                <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar filtros">
-                                    <i class="fas fa-times-circle"></i>
-                                    <span>Limpiar filtros</span>
-                                </a>
-                                {% endif %}
+                                <fieldset class="search-filters">
+                                        <legend class="main-title-filters">Filtros de búsqueda</legend>
+                                    <!-- 🟡 FILA 1: Filtros + acciones en una sola línea -->
+                                    <div class="blog-toolbar-row">
+                                        <fieldset class="filtro-fecha-creacion">
+                                            <legend class="fecha-creacion-title-filters">Fecha de creación del artículo</legend>
+                                            <div class="blog-date-range-container">
+                                                <div class="blog-date-field">
+                                                    <label class="blog-date-label" for="date-from">
+                                                        <i class="far fa-calendar-alt"></i>
+                                                        <span>Desde</span>
+                                                    </label>
+                                                    <input type="text"
+                                                        name="date_from"
+                                                        id="date-from"
+                                                        class="blog-date-input"
+                                                        placeholder="Fecha inicio"
+                                                        value="{{ date_from }}"
+                                                        autocomplete="off">
+                                                </div>
+                                                <div class="blog-date-separator">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </div>
+                                                <div class="blog-date-field">
+                                                    <label class="blog-date-label" for="date-to">
+                                                        <i class="far fa-calendar-alt"></i>
+                                                        <span>Hasta</span>
+                                                    </label>
+                                                    <input type="text"
+                                                        name="date_to"
+                                                        id="date-to"
+                                                        class="blog-date-input"
+                                                        placeholder="Fecha fin"
+                                                        value="{{ date_to }}"
+                                                        autocomplete="off">
+                                                </div>
+                                                <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtro de fechas">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                {% if date_from or date_to %}
+                                                <a href="?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                                                class="btn blog-date-clear-btn" title="Limpiar fechas">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </fieldset>
+                                        <div class="blog-toolbar-actions">
+                                            {% if user.is_authenticated %}
+                                            <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn" title="Escribir un nuevo artículo">
+                                                <i class="fas fa-pen-fancy me-1"></i>
+                                                <span>Escribir artículo</span>
+                                            </a>
+                                            {% endif %}
+                                            {% if user.is_authenticated %}
+                                            <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn" title="Ir al panel de moderación">
+                                                <i class="fas fa-gavel me-1"></i>
+                                                <span>Moderación</span>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
 
-                                {% if user.is_authenticated %}
-                                <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn" title="Escribir un nuevo artículo">
-                                    <i class="fas fa-pen-fancy me-1"></i>
-                                    <span class="d-none d-md-inline">Escribir artículo</span>
-                                </a>
-                                {% endif %}
-                                {# Mostrar botón de moderación a cualquier usuario autenticado #}
-                                {% if user.is_authenticated %}
-                                <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn ms-2" title="Ir al panel de moderación">
-                                    <i class="fas fa-gavel me-1"></i>
-                                    <span class="d-none d-md-inline">Moderación</span>
-                                </a>
-                                {% endif %}
+                                    <!-- 🟡 FILA 2: Buscador -->
+                                    <div class="blog-search-second-row">
+                                        <div class="input-group blog-search-group">
+                                            <span class="input-group-text blog-search-icon">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                            <input type="text"
+                                                name="q"
+                                                id="blog-search-input"
+                                                class="form-control blog-search-input"
+                                                placeholder="Buscar artículos por título, contenido, categoría..."
+                                                value="{{ search_query }}"
+                                                aria-label="Buscar artículos">
+                                            <button type="submit" class="btn blog-search-btn">
+                                                <i class="fas fa-search d-md-none"></i>
+                                                <span class="d-none d-md-inline">Buscar</span>
+                                            </button>                                    
+                                        </div>
+                                        {% if search_query or request.GET.category or date_from or date_to %}
+                                        <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar todos los filtros">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>Limpiar filtros</span>
+                                        </a>
+                                        {% endif %}                                        
+                                    </div>
+                                </fieldset>
                             </form>
-                            {% if search_query %}
+                            {% if search_query or date_from or date_to %}
                             <div class="blog-search-hint">
                                 <i class="fas fa-filter mr-1"></i>
+                                {% if search_query %}
                                 Mostrando resultados para: <strong>"{{ search_query }}"</strong>
+                                {% endif %}
                                 {% if request.GET.category %}
-                                    · Categoría: <strong>{{ request.GET.category }}</strong>
+                                    {% if search_query %} · {% endif %}
+                                    Categoría: <strong>{{ request.GET.category }}</strong>
+                                {% endif %}
+                                {% if date_from %}
+                                    {% if search_query or request.GET.category %} · {% endif %}
+                                    Desde: <strong>{{ date_from }}</strong>
+                                {% endif %}
+                                {% if date_to %}
+                                    {% if search_query or request.GET.category or date_from %} · {% endif %}
+                                    Hasta: <strong>{{ date_to }}</strong>
                                 {% endif %}
                             </div>
                             {% endif %}
@@ -205,9 +271,17 @@
 
                                     <!-- 🟡 Autor + Categoría → misma línea compacta -->
                                     <div class="author-category__container d-flex align-items-center gap-2 mb-1 small text-muted">
-                                        <span><i class="far fa-user mr-1"></i> {% if post.author %}{{ post.author.get_full_name|default:post.author.username }}{% else %}Anónimo{% endif %}</span>
+                                        <span class="author-name d-flex align-items-center" title="Autor del artículo">
+                                            <i class="far fa-user mr-1"></i> 
+                                            {% if post.author %}
+                                                {{ post.author.get_full_name|default:post.author.username }}
+                                            {% else %}
+                                                Anónimo
+                                            {% endif %}
+                                        </span>
+
                                         {% if post.category %}
-                                        <span class="text-muted">·</span>
+                                        <span class="text-muted"></span>
                                         <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="category-inline-link" title="Ver más de {{ post.category.name }}">
                                             <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
                                         </a>
@@ -316,9 +390,57 @@
     <!-- ✅ blog_list.js - Definir componentes Alpine ANTES de que Alpine cargue -->
     <script src="{% static 'blog/js/blog_list.js' %}"></script>
 
-    <!-- ALPINE.JS CDN (jsdelivr) -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
+    <!-- ALPINE.JS CDN (jsdelivr) - El plugin collapse DEBE cargar ANTES que el core -->
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
+
+    <!-- ✅ Flatpickr JS + locale ES -->
+    <script src="{% static 'blog/vendor/flatpickr/flatpickr.min.js' %}"></script>
+    <script src="{% static 'blog/vendor/flatpickr/es.js' %}"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var dateFrom = document.getElementById('date-from');
+        var dateTo = document.getElementById('date-to');
+        if (!dateFrom || !dateTo) return;
+
+        var fpFrom = flatpickr(dateFrom, {
+            locale: 'es',
+            dateFormat: 'Y-m-d',
+            altFormat: 'j \\d\\e F \\d\\e Y',
+            altInput: true,
+            placeholder: 'Fecha inicio',
+            maxDate: new Date(),
+            allowInput: true,
+            onChange: function (selectedDates, dateStr) {
+                // Actualizar minDate del "Hasta" para que no sea anterior a "Desde"
+                fpTo.set('minDate', dateStr || null);
+            }
+        });
+
+        var fpTo = flatpickr(dateTo, {
+            locale: 'es',
+            dateFormat: 'Y-m-d',
+            altFormat: 'j \\d\\e F \\d\\e Y',
+            altInput: true,
+            placeholder: 'Fecha fin',
+            maxDate: new Date(),
+            allowInput: true,
+            onChange: function (selectedDates, dateStr) {
+                // Actualizar maxDate del "Desde" para que no sea posterior a "Hasta"
+                fpFrom.set('maxDate', dateStr || new Date());
+            }
+        });
+
+        // Si ya hay valores preseleccionados, sincronizar límites
+        if (dateFrom.value) {
+            fpTo.set('minDate', dateFrom.value);
+        }
+        if (dateTo.value) {
+            fpFrom.set('maxDate', dateTo.value);
+        }
+    });
+    </script>
 
     <!-- Botón flotante "Ir arriba" -->
     <a href="#" class="back-to-top" title="Volver arriba" aria-label="Volver arriba">

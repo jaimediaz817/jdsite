@@ -672,7 +672,8 @@
     <!-- ✨ COMMENTS HANDLER (AJAX submit, scroll infinito, skeletons, char counter, toggles) -->
     <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
-    <!-- ALPINE.JS CDN (updated to jsdelivr for reliability) -->
+    <!-- ALPINE.JS CDN - El plugin collapse DEBE cargar ANTES que el core -->
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
 
     <!-- ✨ MODAL DE CONFIRMACIÓN PARA ELIMINAR COMENTARIOS -->

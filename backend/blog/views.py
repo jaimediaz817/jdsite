@@ -643,6 +643,10 @@ class BlogListView(ListView):
         category_slug = self.request.GET.get("category")
         search_query = self.request.GET.get("q", "").strip()
 
+        # 🟡 Filtro por rango de fechas (publicación)
+        date_from = self.request.GET.get("date_from", "").strip()
+        date_to = self.request.GET.get("date_to", "").strip()
+
         if category_slug:
             qs = qs.filter(category__slug=category_slug)
 
@@ -656,6 +660,25 @@ class BlogListView(ListView):
                 | Q(tags__name__icontains=search_query)
             ).distinct()
 
+        # Aplicar filtro de rango de fechas sobre created_at
+        # (created_at = fecha real de creación en BD, NO publish_date del frontmatter)
+        if date_from:
+            try:
+                qs = qs.filter(created_at__date__gte=date_from)
+            except (ValueError, TypeError):
+                pass  # ignorar fechas inválidas silenciosamente
+        if date_to:
+            try:
+                # Incluir todo el día "date_to" sumando 1 día
+                from datetime import datetime, timedelta
+
+                date_to_end = datetime.strptime(date_to, "%Y-%m-%d") + timedelta(
+                    days=1
+                )
+                qs = qs.filter(created_at__lt=date_to_end)
+            except (ValueError, TypeError):
+                pass
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -663,6 +686,8 @@ class BlogListView(ListView):
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
         context["search_query"] = self.request.GET.get("q", "")
+        context["date_from"] = self.request.GET.get("date_from", "")
+        context["date_to"] = self.request.GET.get("date_to", "")
         query = self.request.GET.copy()
         # Excluir parámetros internos de paginación y orden para que los enlaces
         # de paginación y los enlaces de orden los conserven correctamente.
@@ -1007,10 +1032,44 @@ def delete_blog_view(request, post_id):
             request,
             f"🗑️ Artículo '{result['title']}' eliminado permanentemente.",
         )
+        # NOTE: Calculamos los stats actualizados después de la eliminación para refrescar el frontend
+        # Se reutiliza la misma lógica que dashboard_view para obtener contadores actualizados
+        is_super = request.user.is_staff or request.user.is_superuser
+        if is_super:
+            updated_stats = {
+                "total": BlogPost.objects.count(),
+                "published": BlogPost.objects.filter(is_published=True).count(),
+                "drafts": BlogPost.objects.filter(is_published=False).count(),
+                "pending": BlogPost.objects.filter(
+                    moderation_status="pending"
+                ).count(),
+                "approved": BlogPost.objects.filter(
+                    moderation_status="approved"
+                ).count(),
+                "rejected": BlogPost.objects.filter(
+                    moderation_status="rejected"
+                ).count(),
+            }
+        else:
+            author_qs = BlogPost.objects.filter(author=request.user)
+            updated_stats = {
+                "total": author_qs.count(),
+                "published": author_qs.filter(is_published=True).count(),
+                "drafts": author_qs.filter(is_published=False).count(),
+                "pending": author_qs.filter(moderation_status="pending").count(),
+                "approved": author_qs.filter(
+                    moderation_status="approved"
+                ).count(),
+                "rejected": author_qs.filter(
+                    moderation_status="rejected"
+                ).count(),
+            }
         return JsonResponse(
             {
                 "success": True,
                 "message": f"Artículo '{result['title']}' eliminado permanentemente.",
+                # NOTE: Se incluyen los stats actualizados para que el frontend actualice los contadores
+                "stats": updated_stats,
             }
         )
     else:

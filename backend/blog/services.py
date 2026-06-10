@@ -603,6 +603,18 @@ def delete_post_permanently(post):
             shutil.rmtree(static_blogs)
             static_deleted = 1
             logger.info(f"Carpeta estática eliminada: {static_blogs}")
+        else:
+            # Buscar por prefijo parcial (mismo fallback que blogs_source)
+            static_base = Path(settings.BASE_DIR) / "static" / "blogs"
+            if static_base.exists():
+                for d in static_base.iterdir():
+                    if d.is_dir() and slug in d.name:
+                        shutil.rmtree(d)
+                        static_deleted = 1
+                        logger.info(
+                            f"Carpeta estática eliminada (match parcial): {d}"
+                        )
+                        break
 
         # 5. Eliminar el BlogPost de la base de datos
         post.delete()

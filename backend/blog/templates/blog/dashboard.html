@@ -64,36 +64,165 @@
         </div>
         {% endif %}
 
-        <!-- Filtros -->
+        <!-- ============================================= -->
+        <!-- HU-17.18: Filtros colapsables por defecto     -->
+        <!-- ============================================= -->
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body p-3">
-                <form method="GET" class="row g-2 align-items-end">
-                    <div class="col-6 col-md-3">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Publicación</label>
-                        <select name="is_published" class="form-select">
-                            <option value="">Todos</option>
-                            <option value="1" {% if is_published_filter == "1" %}selected{% endif %}>✅ Publicados</option>
-                            <option value="0" {% if is_published_filter == "0" %}selected{% endif %}>📝 Borradores</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Moderación</label>
-                        <select name="moderation" class="form-select">
-                            <option value="">Todas</option>
-                            <option value="pending" {% if moderation_filter == "pending" %}selected{% endif %}>⏳ Pendiente</option>
-                            <option value="approved" {% if moderation_filter == "approved" %}selected{% endif %}>✅ Aprobado</option>
-                            <option value="rejected" {% if moderation_filter == "rejected" %}selected{% endif %}>❌ Rechazado</option>
-                        </select>
-                    </div>
-                    <div class="col-8 col-md-4">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Buscar</label>
-                        <input type="text" name="q" class="form-control" placeholder="Título, slug o autor..." value="{{ search_query }}">
-                    </div>
-                    <div class="col-4 col-md-2 d-flex gap-1">
-                        <button type="submit" class="btn btn-sm btn-primary rounded-pill flex-fill" style="font-size:.78rem; background: linear-gradient(135deg,#6f42c1,#5a33a0); border: none;"><i class="fas fa-search me-1"></i>Filtrar</button>
-                        <a href="{% url 'blog:dashboard' %}" class="btn btn-sm btn-outline-secondary rounded-pill" style="font-size:.78rem;"><i class="fas fa-times"></i></a>
-                    </div>
+                <form method="GET" action="{% url 'blog:dashboard' %}" class="blog-search-form" role="search">
+                    <fieldset class="search-filters">
+                        <legend class="main-title-filters">Filtros de búsqueda</legend>
+
+                        <!-- ════════ FILA 1: BUSCADOR PRINCIPAL + TOGGLE ════════ -->
+                        <!-- Siempre visible + sticky -->
+                        <div class="blog-search-second-row" id="filters-sticky-row">
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <div class="input-group blog-search-group flex-grow-1" style="min-width:200px;">
+                                    <span class="input-group-text blog-search-icon">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text"
+                                        name="q"
+                                        id="blog-search-input"
+                                        class="form-control blog-search-input"
+                                        placeholder="Buscar por título, slug o autor..."
+                                        value="{{ search_query }}"
+                                        aria-label="Buscar artículos">
+                                    <button type="submit" class="btn blog-search-btn">
+                                        <span>Buscar</span>
+                                    </button>
+                                </div>
+
+                                <!-- Botón toggle para filtros avanzados -->
+                                <!-- NOTA: No usa data-bs-toggle, el JS maneja el collapse manualmente -->
+                                <button type="button"
+                                    id="toggle-advanced-filters"
+                                    class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    style="font-size:.82rem; white-space:nowrap;"
+                                    aria-expanded="false"
+                                    aria-controls="advanced-filters-collapse"
+                                    title="Mostrar/ocultar filtros avanzados">
+                                    <i class="fas fa-cog me-1"></i>
+                                    <span id="toggle-advanced-text">Filtros avanzados</span>
+                                </button>
+                            </div>
+
+                            <!-- Contador de resultados -->
+                            {% if search_query or has_active_filters %}
+                            <div class="mt-1" style="font-size:.78rem; color:#6b7280;">
+                                <i class="fas fa-info-circle me-1"></i>
+                                {{ page_obj.paginator.count }} artículo{{ page_obj.paginator.count|pluralize:'s' }} encontrado{{ page_obj.paginator.count|pluralize:'s' }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- ════════ FILA 2: FILTROS AVANZADOS (COLAPSABLE) ════════ -->
+                        <div class="collapse{% if has_active_filters %} show{% endif %}" id="advanced-filters-collapse">
+                            <div class="blog-toolbar-row mt-2 pt-2" style="border-top:1px solid #f3f4f6;">
+                                <div class="d-flex gap-2 flex-wrap align-items-end">
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Publicación</label>
+                                        <select name="is_published" class="form-select">
+                                            <option value="">Todos</option>
+                                            <option value="1" {% if is_published_filter == "1" %}selected{% endif %}>✅ Publicados</option>
+                                            <option value="0" {% if is_published_filter == "0" %}selected{% endif %}>📝 Borradores</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Moderación</label>
+                                        <select name="moderation" class="form-select">
+                                            <option value="">Todas</option>
+                                            <option value="pending" {% if moderation_filter == "pending" %}selected{% endif %}>⏳ Pendiente</option>
+                                            <option value="approved" {% if moderation_filter == "approved" %}selected{% endif %}>✅ Aprobado</option>
+                                            <option value="rejected" {% if moderation_filter == "rejected" %}selected{% endif %}>❌ Rechazado</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Filtro de autor con autocomplete (AJAX) -->
+                                    <div class="author-autocomplete-wrapper position-relative" style="min-width:140px;">
+                                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Autor</label>
+                                        <input type="text"
+                                               name="author"
+                                               id="author-autocomplete-input"
+                                               class="form-control"
+                                               placeholder="Escribe un nombre..."
+                                               value="{{ author_filter }}"
+                                               autocomplete="off">
+                                        <div id="author-suggestions" class="author-suggestions-dropdown d-none"></div>
+                                    </div>
+
+                                    <!-- Filtro de ordenar por -->
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label mb-1 fw-semibold" style="font-size:.78rem;">Ordenar por</label>
+                                        <select name="sort" class="form-select">
+                                            <option value="date" {% if sort_filter == "date" %}selected{% endif %}>📅 Más recientes</option>
+                                            <option value="weight_desc" {% if sort_filter == "weight_desc" %}selected{% endif %}>📦 Mayor peso</option>
+                                            <option value="weight_asc" {% if sort_filter == "weight_asc" %}selected{% endif %}>📦 Menor peso</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="blog-toolbar-actions d-flex gap-1 pb-1">
+                                        <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtros">
+                                            <i class="fas fa-search"></i> Filtrar
+                                        </button>
+                                        <a href="{% url 'blog:dashboard' %}" class="btn blog-date-clear-btn" title="Limpiar todos los filtros">
+                                            <i class="fas fa-times-circle"></i> Limpiar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
                 </form>
+
+                <!-- ════════ FILA 3: ACTIVE FILTER CHIPS ════════ -->
+                {% if search_query or is_published_filter or moderation_filter or author_filter or sort_filter != "date" %}
+                <div class="active-filter-chips" id="filter-chips-row">
+                    {% if search_query %}
+                    <span class="chip badge rounded-pill">
+                        🔍 "{{ search_query }}"
+                        <a href="?{% if is_published_filter %}&is_published={{ is_published_filter }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}{% if sort_filter != 'date' %}&sort={{ sort_filter }}{% endif %}" class="chip-remove" title="Eliminar búsqueda">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if is_published_filter == "1" %}
+                    <span class="chip badge rounded-pill">
+                        ✅ Publicados
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}{% if sort_filter != 'date' %}&sort={{ sort_filter }}{% endif %}" class="chip-remove" title="Eliminar filtro publicación">✕</a>
+                    </span>
+                    {% elif is_published_filter == "0" %}
+                    <span class="chip badge rounded-pill">
+                        📝 Borradores
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}{% if sort_filter != 'date' %}&sort={{ sort_filter }}{% endif %}" class="chip-remove" title="Eliminar filtro publicación">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if moderation_filter %}
+                    <span class="chip badge rounded-pill">
+                        {% if moderation_filter == "pending" %}⏳ Pendiente{% elif moderation_filter == "approved" %}✅ Aprobado{% elif moderation_filter == "rejected" %}❌ Rechazado{% endif %}
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if is_published_filter %}&is_published={{ is_published_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}{% if sort_filter != 'date' %}&sort={{ sort_filter }}{% endif %}" class="chip-remove" title="Eliminar filtro moderación">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if author_filter %}
+                    <span class="chip badge rounded-pill">
+                        👤 {{ author_filter }}
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if is_published_filter %}&is_published={{ is_published_filter }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if sort_filter != 'date' %}&sort={{ sort_filter }}{% endif %}" class="chip-remove" title="Eliminar filtro autor">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if sort_filter == "weight_desc" %}
+                    <span class="chip badge rounded-pill">
+                        📦 Mayor peso
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if is_published_filter %}&is_published={{ is_published_filter }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}" class="chip-remove" title="Eliminar orden">✕</a>
+                    </span>
+                    {% elif sort_filter == "weight_asc" %}
+                    <span class="chip badge rounded-pill">
+                        📦 Menor peso
+                        <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if is_published_filter %}&is_published={{ is_published_filter }}{% endif %}{% if moderation_filter %}&moderation={{ moderation_filter }}{% endif %}{% if author_filter %}&author={{ author_filter }}{% endif %}" class="chip-remove" title="Eliminar orden">✕</a>
+                    </span>
+                    {% endif %}
+                    <a href="{% url 'blog:dashboard' %}" class="chip chip-clear-all badge rounded-pill">
+                        🧹 Limpiar todo
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -238,11 +367,39 @@
             </nav>
             {% endif %}
         {% else %}
+            {% if has_active_filters or search_query %}
+            <!-- Empty state con filtros activos: sugerencias -->
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3" style="opacity:.4;"></i>
+                <h5 class="text-muted">No se encontraron artículos con estos filtros</h5>
+                <p class="text-muted small mb-1">
+                    {% if search_query %}
+                        No hay resultados para "<strong>{{ search_query }}</strong>".
+                    {% endif %}
+                    {% if author_filter %}
+                        El autor "{{ author_filter }}" no tiene artículos que coincidan.
+                    {% endif %}
+                    {% if is_published_filter or moderation_filter or sort_filter != "date" %}
+                        Los filtros aplicados no produjeron resultados.
+                    {% endif %}
+                </p>
+                <div class="mt-3 d-flex gap-2 justify-content-center flex-wrap">
+                    <a href="{% url 'blog:dashboard' %}" class="btn btn-sm rounded-pill px-3" style="background:linear-gradient(135deg,#6f42c1,#5a33a0); color:#fff; border:none; font-size:.82rem;">
+                        <i class="fas fa-times-circle me-1"></i>Limpiar filtros
+                    </a>
+                    <span class="text-muted small" style="font-size:.75rem; align-self:center;">
+                        Sugerencias: prueba con otro título, autor diferente, o cambia los filtros de publicación/moderación.
+                    </span>
+                </div>
+            </div>
+            {% else %}
+            <!-- Empty state sin filtros: no hay artículos en el sistema -->
             <div class="text-center py-5">
                 <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No se encontraron artículos</h5>
-                <p class="text-muted small">Intenta cambiar los filtros de búsqueda.</p>
+                <h5 class="text-muted">No hay artículos publicados todavía</h5>
+                <p class="text-muted small">Los artículos que se publiquen aparecerán aquí.</p>
             </div>
+            {% endif %}
         {% endif %}
     {% if user.is_superuser %}<div class="sa-footer">🔐 Panel de administración — tienes control total sobre todos los artículos del blog</div>{% endif %}
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>

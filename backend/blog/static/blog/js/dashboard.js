@@ -175,3 +175,154 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// =============================================
+// HU-17.18: Autocomplete AJAX de autores
+// =============================================
+(function() {
+    var input = document.getElementById('author-autocomplete-input');
+    var suggestionsDiv = document.getElementById('author-suggestions');
+    if (!input || !suggestionsDiv) return;
+
+    var debounceTimer;
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var q = this.value.trim();
+
+        if (q.length < 2) {
+            suggestionsDiv.classList.add('d-none');
+            return;
+        }
+
+        debounceTimer = setTimeout(function() {
+            fetch('/blog/api/authors/autocomplete/?q=' + encodeURIComponent(q))
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.authors.length === 0) {
+                        suggestionsDiv.classList.add('d-none');
+                        return;
+                    }
+
+                    suggestionsDiv.innerHTML = data.authors.map(function(a) {
+                        return '<div class="author-suggestion-item" data-username="' + a.username + '" data-display="' + a.display + '">' + a.display + '</div>';
+                    }).join('');
+                    suggestionsDiv.classList.remove('d-none');
+
+                    Array.from(suggestionsDiv.querySelectorAll('.author-suggestion-item')).forEach(function(item) {
+                        item.addEventListener('click', function() {
+                            input.value = this.dataset.username;
+                            suggestionsDiv.classList.add('d-none');
+                            input.closest('form').submit();
+                        });
+                    });
+                })
+                .catch(function() {
+                    suggestionsDiv.classList.add('d-none');
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+            suggestionsDiv.classList.add('d-none');
+        }
+    });
+})();
+
+// =============================================
+// HU-17.18: Toggle collapse filtros avanzados
+// =============================================
+// Manejo manual del collapse (sin data-bs-toggle de Bootstrap)
+(function() {
+    var toggleBtn = document.getElementById('toggle-advanced-filters');
+    var collapseEl = document.getElementById('advanced-filters-collapse');
+    if (!toggleBtn || !collapseEl) return;
+
+    function updateToggleText(isExpanded) {
+        if (isExpanded) {
+            toggleBtn.innerHTML = '<i class="fas fa-times me-1"></i><span id="toggle-advanced-text">Cerrar filtros</span>';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+            toggleBtn.innerHTML = '<i class="fas fa-cog me-1"></i><span id="toggle-advanced-text">Filtros avanzados</span>';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    // Click en el botón: toggle manual de la clase 'show'
+    toggleBtn.addEventListener('click', function() {
+        var isExpanded = collapseEl.classList.contains('show');
+        if (isExpanded) {
+            collapseEl.classList.remove('show');
+            updateToggleText(false);
+        } else {
+            collapseEl.classList.add('show');
+            updateToggleText(true);
+        }
+    });
+
+    // Estado inicial
+    if (collapseEl.classList.contains('show')) {
+        updateToggleText(true);
+    }
+})();
+
+// =============================================
+// HU-17.18: Mejoras al buscador #blog-search-input
+// =============================================
+(function() {
+    var searchInput = document.getElementById('blog-search-input');
+    if (!searchInput) return;
+
+    var form = searchInput.closest('form');
+    var debounceTimer;
+
+    // 1. Botón X para limpiar — crear dinámicamente
+    var clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.className = 'btn-clear-search';
+    clearBtn.innerHTML = '<i class="fas fa-times-circle"></i>';
+    clearBtn.title = 'Limpiar búsqueda';
+    clearBtn.setAttribute('aria-label', 'Limpiar búsqueda');
+
+    var inputGroup = searchInput.closest('.input-group');
+    if (inputGroup) {
+        inputGroup.appendChild(clearBtn);
+    }
+
+    function toggleClearBtn() {
+        clearBtn.style.display = searchInput.value.trim() ? 'block' : 'none';
+    }
+    toggleClearBtn();
+    searchInput.addEventListener('input', toggleClearBtn);
+
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        toggleClearBtn();
+        searchInput.focus();
+        var url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    });
+
+    // 2. Búsqueda en vivo con debounce (500ms)
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var val = this.value.trim();
+        debounceTimer = setTimeout(function() {
+            if (val.length >= 2 || val.length === 0) {
+                form.submit();
+            }
+        }, 500);
+    });
+
+    // 3. Atajo Escape → limpiar + cerrar foco
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            toggleClearBtn();
+            searchInput.blur();
+        }
+    });
+})();

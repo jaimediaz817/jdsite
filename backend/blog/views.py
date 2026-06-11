@@ -216,7 +216,36 @@ def dashboard_view(request):
             | Q(author__username__icontains=search_query)
         )
 
-    posts = posts.order_by("-publish_date")
+    # HU-17.18: Filtro específico de autor
+    author_filter = request.GET.get("author", "").strip()
+    if author_filter:
+        posts = posts.filter(author__username__icontains=author_filter)
+
+    # HU-17.18: Orden por peso o por fecha
+    sort = request.GET.get("sort", "date")
+    if sort in ("weight_desc", "weight_asc"):
+        # Calcular peso para TODOS los posts filtrados
+        post_list = list(posts)
+        for post in post_list:
+            info = get_post_files_info(post.slug)
+            post._total_size_bytes = info["total_size_bytes"]
+
+        reverse_order = sort == "weight_desc"
+        post_list.sort(key=lambda p: p._total_size_bytes, reverse=reverse_order)
+        post_ids = [p.id for p in post_list]
+
+        from django.db.models import Case, When
+
+        preserved = Case(
+            *[When(id=pid, then=pos) for pos, pid in enumerate(post_ids)]
+        )
+        posts = (
+            BlogPost.objects.filter(id__in=post_ids)
+            .annotate(sort_order=preserved)
+            .order_by("sort_order")
+        )
+    else:
+        posts = posts.order_by("-publish_date")
 
     # Paginación: 20 artículos por página
     paginator = Paginator(posts, 20)
@@ -286,6 +315,14 @@ def dashboard_view(request):
     # HU-011.85: Estado del envío de emails para el indicador visual
     email_config = BlogEmailConfig.get_config()
 
+    # HU-17.18: Variables para el template
+    has_active_filters = bool(
+        author_filter
+        or sort != "date"
+        or is_published_filter
+        or moderation_filter
+    )
+
     return render(
         request,
         "blog/dashboard.html",
@@ -295,6 +332,9 @@ def dashboard_view(request):
             "is_published_filter": is_published_filter,
             "moderation_filter": moderation_filter,
             "search_query": search_query,
+            "author_filter": author_filter,
+            "sort_filter": sort,
+            "has_active_filters": has_active_filters,
             "query_string": query_string,
             "comment_counts": comment_counts,
             "email_config": email_config,
@@ -1084,6 +1124,51 @@ def delete_blog_view(request, post_id):
             },
             status=500,
         )
+
+
+# ======================================================
+# HU-17.18: Autocomplete AJAX de autores para dashboard
+# ======================================================
+@require_http_methods(["GET"])
+def api_authors_autocomplete(request):
+    """Endpoint AJAX para autocompletar autores en el dashboard.
+
+    Busca en User (first_name, last_name, username) con icontains.
+    - Superadmin/staff: ve todos los usuarios (máx 8)
+    - Usuario normal: solo ve su propio nombre
+
+    Retorna:
+        JsonResponse({"authors": [
+            {"id": 1, "username": "jaime", "display": "Jaime Díaz"},
+            ...
+        ]})
+    """
+    q = request.GET.get("q", "").strip()
+    if len(q) < 2:
+        return JsonResponse({"authors": []})
+
+    if request.user.is_superuser or request.user.is_staff:
+        users = User.objects.filter(
+            Q(first_name__icontains=q)
+            | Q(last_name__icontains=q)
+            | Q(username__icontains=q)
+        ).distinct()[:8]
+    else:
+        # Usuario normal solo ve su propio nombre
+        users = User.objects.filter(id=request.user.id)
+
+    authors = []
+    for u in users:
+        display = u.get_full_name() or u.username
+        authors.append(
+            {
+                "id": u.id,
+                "username": u.username,
+                "display": display,
+            }
+        )
+
+    return JsonResponse({"authors": authors})
 
 
 # ======================================================

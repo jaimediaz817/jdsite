@@ -63,7 +63,7 @@ Cada Historia de Usuario tiene:
 
 ---
 
-> ✅ Última actualización: 24/04/2026
+> ✅ Última actualización: 11/06/2026
 
 ---
 
@@ -90,3 +90,52 @@ deactivate
 ✅ **SIEMPRE seguir este orden para NO TENER ERRORES de dependencias, rutas o módulos no encontrados.**
 
 ---
+
+## 🟡 BOOTSTRAP 5 — REGLAS PARA EVITAR PROBLEMAS
+
+El proyecto usa Bootstrap 5 (CSS + JS) pero con **jQuery 3.2.1 antiguo**, lo que causa conflictos con los data attributes de Bootstrap (`data-bs-toggle`, `data-bs-target`, `data-bs-dismiss`).
+
+### ⚠️ LECCIÓN APRENDIDA (HU-17.18)
+`data-bs-toggle="collapse"` **NO funciona de forma confiable** en este proyecto. jQuery 3.2.1 interfiere con el sistema de eventos de Bootstrap 5.
+
+### ✅ REGLAS OBLIGATORIAS PARA BOOTSTRAP:
+
+1.  **NUNCA usar `data-bs-toggle` para collapses.**
+    - ❌ `data-bs-toggle="collapse" data-bs-target="#id"`
+    - ✅ Controlar collapses manualmente con vanilla JS: `classList.add('show')` / `classList.remove('show')`
+
+2.  **NUNCA usar `data-bs-dismiss` para modales.**
+    - ❌ `data-bs-dismiss="modal"` (no funciona consistentemente)
+    - ✅ Usar la instancia del modal: `bootstrap.Modal.hide()` (como ya se hace en `dashboard.js`)
+
+3.  **NUNCA usar `data-bs-` para ningún componente interactivo.**
+    - ✅ Siempre instanciar Bootstrap via JS: `new bootstrap.Modal(el)`, `new bootstrap.Collapse(el)`
+    - ✅ Si se usa Collapse, el JS debe manejar la clase `show` manualmente (ver ejemplo en `dashboard.js` bloque de toggle)
+
+4.  **Bootstrap CSS es seguro usarlo.**
+    - Las clases CSS de Bootstrap (`.collapse`, `.show`, `.modal`, `.modal-dialog`, `.btn`, etc.) funcionan correctamente.
+    - El conflicto es solo con el **JS de Bootstrap** interactuando con jQuery antiguo.
+
+5.  **Patrón correcto para modales:**
+    ```javascript
+    var modalEl = document.getElementById('miModal');
+    var modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.show();   // abrir
+    modalInstance.hide();   // cerrar
+    ```
+
+6.  **Patrón correcto para collapses (toggle manual):**
+    ```javascript
+    var collapseEl = document.getElementById('miCollapse');
+    // Abrir:
+    collapseEl.classList.add('show');
+    // Cerrar:
+    collapseEl.classList.remove('show');
+    // Toggle:
+    collapseEl.classList.toggle('show');
+    ```
+
+---
+
+## 🟡 CONCLUSIÓN
+Siempre que necesites un componente interactivo de Bootstrap (collapse, modal, dropdown, tooltip), **instáncialo vía JS y controlalo manualmente**. No confíes en `data-bs-*` attributes.

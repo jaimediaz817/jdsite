@@ -20,6 +20,7 @@ from blog.views import (
     change_moderation_status,
     blog_email_config_view,
     delete_blog_view,
+    api_authors_autocomplete,
 )
 
 app_name = "blog"
@@ -36,6 +37,12 @@ urlpatterns = [
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
     # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
     path("dashboard/", dashboard_view, name="dashboard"),
+    # HU-17.18: Endpoint AJAX autocomplete de autores (ANTES de <slug>)
+    path(
+        "api/authors/autocomplete/",
+        api_authors_autocomplete,
+        name="api_authors_autocomplete",
+    ),
     # HU-011.85: Configuración de envío de emails (ANTES de <slug>)
     path("email-config/", blog_email_config_view, name="blog_email_config"),
     path(

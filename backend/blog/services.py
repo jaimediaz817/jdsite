@@ -5,7 +5,9 @@ from django.urls import reverse
 from datetime import timedelta
 from django.db.models import Prefetch
 
-from .models import BlogComment
+import yaml
+
+from .models import BlogComment, BlogPost
 
 
 def are_admin_notifications_enabled():
@@ -200,8 +202,6 @@ def _parse_frontmatter(text):
     Parsea el frontmatter YAML de un .md. Retorna (dict, body_str).
     Si no hay frontmatter, retorna ({}, text).
     """
-    import yaml
-
     if not text.startswith("---"):
         return {}, text
     parts = text.split("---", 2)

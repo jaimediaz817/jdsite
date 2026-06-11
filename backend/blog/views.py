@@ -673,12 +673,39 @@ class BlogListView(ListView):
                     | Q(author=user, moderation_status="pending")
                 )
 
-        # Aplicar orden según parámetro GET
-        order_param = self.request.GET.get("order", "desc")
-        if order_param == "asc":
-            qs = qs.order_by("publish_date")  # más antiguos primero
+        # 🟡 Parámetro de ordenamiento (soporta date/weight)
+        sort = self.request.GET.get("sort", "date")
+
+        if sort in ("weight_desc", "weight_asc"):
+            # Calcular peso para TODOS los posts filtrados (mismo patrón que dashboard)
+            post_list = list(qs)
+            for post in post_list:
+                info = get_post_files_info(post.slug)
+                post._total_size_bytes = info["total_size_bytes"]
+
+            reverse_order = sort == "weight_desc"
+            post_list.sort(
+                key=lambda p: p._total_size_bytes, reverse=reverse_order
+            )
+            post_ids = [p.id for p in post_list]
+
+            from django.db.models import Case, When
+
+            preserved = Case(
+                *[When(id=pid, then=pos) for pos, pid in enumerate(post_ids)]
+            )
+            qs = (
+                BlogPost.objects.filter(id__in=post_ids)
+                .annotate(sort_order=preserved)
+                .order_by("sort_order")
+            )
         else:
-            qs = qs.order_by("-publish_date")  # más recientes primero (default)
+            # Orden por fecha (default)
+            order_param = self.request.GET.get("order", "desc")
+            if order_param == "asc":
+                qs = qs.order_by("publish_date")
+            else:
+                qs = qs.order_by("-publish_date")
 
         category_slug = self.request.GET.get("category")
         search_query = self.request.GET.get("q", "").strip()
@@ -740,6 +767,17 @@ class BlogListView(ListView):
         context["base_query"] = context["query_string"]
         # Orden actual seleccionado (default: desc = más recientes primero).
         context["current_order"] = self.request.GET.get("order", "desc")
+
+        # HU-17.19: Detectar si hay filtros avanzados activos (fechas, categoría o sort)
+        date_from = self.request.GET.get("date_from", "").strip()
+        date_to = self.request.GET.get("date_to", "").strip()
+        category = self.request.GET.get("category", "").strip()
+        current_sort = self.request.GET.get("sort", "date")
+
+        context["current_sort"] = current_sort
+        context["has_active_filters"] = bool(
+            date_from or date_to or category or current_sort != "date"
+        )
 
         # IDs de artículos pending del usuario actual (para marcar con article_pending)
         if self.request.user.is_authenticated:

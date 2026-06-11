@@ -130,6 +130,7 @@ El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automati
 ![Barra inferior|Reacciones al final del artículo](image-4.png)
 ![Barra inferior|Reacciones al final del artículo](image-2.png)
 :::
+
  
 Esta fue la mejora con mayor impacto.
 
@@ -145,10 +146,11 @@ Nunca mas el usuario tiene que subir 3 pantallas para darle un me gusta. Nunca m
 
 ### 4. Nada de bordes por defecto
 
+
 Eliminamos absolutamente todos los estilos por defecto del navegador.
 
 Ningun hr gris. Ningun punto negro en las listas. Ningun azul subrayado en los links.
-
+yhkgyjikfgukg
 Todo tiene una razon de ser. Todo cumple una funcion.
 
 ---

@@ -1046,9 +1046,9 @@ class Command(BaseCommand):
 
         if not category_obj:
             category_obj, _ = Category.objects.get_or_create(
-                slug="sin-categoria-asignada",
+                slug="sin-categoria",
                 defaults={
-                    "name": "Sin Categoria Asignada",
+                    "name": "Sin Categoria",
                     "is_active": True,
                 },
             )

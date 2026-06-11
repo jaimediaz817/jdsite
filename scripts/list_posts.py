@@ -21,7 +21,7 @@ from blog.models import BlogPost
 
 def main():
     for post in BlogPost.objects.all():
-        cat = post.category.name if post.category else "Sin categoria asignada"
+        cat = post.category.name if post.category else "Sin categoria"
         print(f"{post.title} | slug={post.slug} | category={cat}")
 
 

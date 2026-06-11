@@ -102,75 +102,111 @@
                     </div>
 
                     <!-- 🔍 Buscador de artículos profesional -->
-                    {% comment %} <div class="mb-4"></div> {% endcomment %}
                     <div class="row mb-5">
                         <div class="col-12">
                             <form method="get" action="{% url 'blog:blog_list' %}" class="blog-search-form" role="search">
                                 <fieldset class="search-filters">
-                                        <legend class="main-title-filters">Filtros de búsqueda</legend>
-                                    <!-- 🟡 FILA 1: Filtros + acciones en una sola línea -->
-                                    <div class="blog-toolbar-row">
-                                        <fieldset class="filtro-fecha-creacion">
-                                            <legend class="fecha-creacion-title-filters">Fecha de creación del artículo</legend>
-                                            <div class="blog-date-range-container">
-                                                <div class="blog-date-field">
-                                                    <label class="blog-date-label" for="date-from">
-                                                        <i class="far fa-calendar-alt"></i>
-                                                        <span>Desde</span>
-                                                    </label>
-                                                    <input type="text"
-                                                        name="date_from"
-                                                        id="date-from"
-                                                        class="blog-date-input"
-                                                        placeholder="Fecha inicio"
-                                                        value="{{ date_from }}"
-                                                        autocomplete="off">
+                                    <legend class="main-title-filters">Filtros de búsqueda</legend>
+
+                                    <!-- 🟡 COLLAPSE: Filtros avanzados (fechas + acciones) -->
+                                    <div class="collapse{% if has_active_filters %} show{% endif %}" id="advanced-filters-collapse">
+                                        <div class="blog-toolbar-row">
+                                            <fieldset class="filtro-fecha-creacion">
+                                                <legend class="fecha-creacion-title-filters">Fecha de creación del artículo</legend>
+                                                <div class="blog-date-range-container">
+                                                    <div class="blog-date-field">
+                                                        <label class="blog-date-label" for="date-from">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                            <span>Desde</span>
+                                                        </label>
+                                                        <input type="text"
+                                                            name="date_from"
+                                                            id="date-from"
+                                                            class="blog-date-input"
+                                                            placeholder="Fecha inicio"
+                                                            value="{{ date_from }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                    <div class="blog-date-separator">
+                                                        <i class="fas fa-arrow-right"></i>
+                                                    </div>
+                                                    <div class="blog-date-field">
+                                                        <label class="blog-date-label" for="date-to">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                            <span>Hasta</span>
+                                                        </label>
+                                                        <input type="text"
+                                                            name="date_to"
+                                                            id="date-to"
+                                                            class="blog-date-input"
+                                                            placeholder="Fecha fin"
+                                                            value="{{ date_to }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                    <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtro de fechas">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    {% if date_from or date_to %}
+                                                    <a href="?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                                                    class="btn blog-date-clear-btn" title="Limpiar fechas">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                    {% endif %}
                                                 </div>
-                                                <div class="blog-date-separator">
-                                                    <i class="fas fa-arrow-right"></i>
+                                            </fieldset>
+                                            <div class="blog-toolbar-actions">
+                                                <!-- Selector de ordenamiento -->
+                                                <div class="sort-dropdown-wrapper">
+                                                    <button type="button"
+                                                        id="toggle-sort-menu"
+                                                        class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                                        style="font-size:.82rem; white-space:nowrap;"
+                                                        aria-expanded="false"
+                                                        title="Ordenar artículos">
+                                                        <i class="fas fa-sort-amount-down me-1"></i>
+                                                        <span id="toggle-sort-text">
+                                                            {% if current_sort == "weight_desc" %}Peso ↓
+                                                            {% elif current_sort == "weight_asc" %}Peso ↑
+                                                            {% else %}Fecha{% endif %}
+                                                        </span>
+                                                    </button>
+                                                    <!-- Menú de ordenamiento (oculto por defecto) -->
+                                                    <div class="sort-menu" id="sort-menu" style="display:none;">
+                                                        <div class="sort-menu-inner">
+                                                            <a href="?sort=date&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                class="sort-option {% if current_sort == 'date' %}active{% endif %}">
+                                                                <i class="fas fa-clock me-1"></i> Por fecha (más reciente)
+                                                            </a>
+                                                            <a href="?sort=weight_desc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                class="sort-option {% if current_sort == 'weight_desc' %}active{% endif %}">
+                                                                <i class="fas fa-weight-hanging me-1"></i> Mayor peso (más recursos)
+                                                            </a>
+                                                            <a href="?sort=weight_asc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                class="sort-option {% if current_sort == 'weight_asc' %}active{% endif %}">
+                                                                <i class="fas fa-weight-hanging me-1"></i> Menor peso (menos recursos)
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="blog-date-field">
-                                                    <label class="blog-date-label" for="date-to">
-                                                        <i class="far fa-calendar-alt"></i>
-                                                        <span>Hasta</span>
-                                                    </label>
-                                                    <input type="text"
-                                                        name="date_to"
-                                                        id="date-to"
-                                                        class="blog-date-input"
-                                                        placeholder="Fecha fin"
-                                                        value="{{ date_to }}"
-                                                        autocomplete="off">
-                                                </div>
-                                                <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtro de fechas">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                                {% if date_from or date_to %}
-                                                <a href="?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
-                                                class="btn blog-date-clear-btn" title="Limpiar fechas">
-                                                    <i class="fas fa-times"></i>
+
+                                                {% if user.is_authenticated %}
+                                                <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn" title="Escribir un nuevo artículo">
+                                                    <i class="fas fa-pen-fancy me-1"></i>
+                                                    <span>Escribir artículo</span>
+                                                </a>
+                                                {% endif %}
+                                                {% if user.is_authenticated %}
+                                                <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn" title="Ir al panel de moderación">
+                                                    <i class="fas fa-gavel me-1"></i>
+                                                    <span>Moderación</span>
                                                 </a>
                                                 {% endif %}
                                             </div>
-                                        </fieldset>
-                                        <div class="blog-toolbar-actions">
-                                            {% if user.is_authenticated %}
-                                            <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn" title="Escribir un nuevo artículo">
-                                                <i class="fas fa-pen-fancy me-1"></i>
-                                                <span>Escribir artículo</span>
-                                            </a>
-                                            {% endif %}
-                                            {% if user.is_authenticated %}
-                                            <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn" title="Ir al panel de moderación">
-                                                <i class="fas fa-gavel me-1"></i>
-                                                <span>Moderación</span>
-                                            </a>
-                                            {% endif %}
                                         </div>
                                     </div>
 
-                                    <!-- 🟡 FILA 2: Buscador -->
-                                    <div class="blog-search-second-row">
+                                    <!-- 🟡 FILA STICKY: Buscador + toggle + contador -->
+                                    <div class="blog-search-second-row" id="filters-sticky-row">
                                         <div class="input-group blog-search-group">
                                             <span class="input-group-text blog-search-icon">
                                                 <i class="fas fa-search"></i>
@@ -185,35 +221,69 @@
                                             <button type="submit" class="btn blog-search-btn">
                                                 <i class="fas fa-search d-md-none"></i>
                                                 <span class="d-none d-md-inline">Buscar</span>
-                                            </button>                                    
+                                            </button>
+
                                         </div>
                                         {% if search_query or request.GET.category or date_from or date_to %}
                                         <a href="{% url 'blog:blog_list' %}" class="btn blog-clear-btn" title="Limpiar todos los filtros">
                                             <i class="fas fa-times-circle"></i>
                                             <span>Limpiar filtros</span>
                                         </a>
-                                        {% endif %}                                        
+                                        {% endif %}
+
+                                        <!-- Contador de resultados -->
+                                        {% if search_query or date_from or date_to or request.GET.category %}
+                                        <div class="mt-1 blog-result-count">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            {{ page_obj.paginator.count }} artículo{{ page_obj.paginator.count|pluralize:'s' }} encontrado{{ page_obj.paginator.count|pluralize:'s' }}
+                                        </div>
+                                        {% endif %}
+
+                                            <!-- Botón toggle para filtros avanzados -->
+                                            <button type="button"
+                                                id="toggle-advanced-filters"
+                                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 flex-shrink-0"
+                                                style="font-size:.82rem; white-space:nowrap;"
+                                                aria-expanded="false"
+                                                aria-controls="advanced-filters-collapse"
+                                                title="Mostrar/ocultar filtros avanzados">
+                                                <i class="fas fa-cog me-1"></i>
+                                                <span id="toggle-advanced-text">Filtros avanzados</span>
+                                            </button>                                        
                                     </div>
                                 </fieldset>
                             </form>
-                            {% if search_query or date_from or date_to %}
-                            <div class="blog-search-hint">
-                                <i class="fas fa-filter mr-1"></i>
+
+                            <!-- 🟡 FILA DE CHIPS: Active filter chips (reemplaza blog-search-hint) -->
+                            {% if search_query or request.GET.category or date_from or date_to %}
+                            <div class="active-filter-chips" id="filter-chips-row">
                                 {% if search_query %}
-                                Mostrando resultados para: <strong>"{{ search_query }}"</strong>
+                                <span class="chip badge rounded-pill">
+                                    🔍 "{{ search_query }}"
+                                    <a href="?{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="chip-remove" title="Eliminar búsqueda">✕</a>
+                                </span>
                                 {% endif %}
                                 {% if request.GET.category %}
-                                    {% if search_query %} · {% endif %}
-                                    Categoría: <strong>{{ request.GET.category }}</strong>
+                                <span class="chip badge rounded-pill">
+                                    📁 {{ request.GET.category }}
+                                    <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="chip-remove" title="Eliminar categoría">✕</a>
+                                </span>
                                 {% endif %}
                                 {% if date_from %}
-                                    {% if search_query or request.GET.category %} · {% endif %}
-                                    Desde: <strong>{{ date_from }}</strong>
+                                <span class="chip badge rounded-pill">
+                                    📅 Desde: {{ date_from }}
+                                    <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="chip-remove" title="Eliminar fecha desde">✕</a>
+                                </span>
                                 {% endif %}
                                 {% if date_to %}
-                                    {% if search_query or request.GET.category or date_from %} · {% endif %}
-                                    Hasta: <strong>{{ date_to }}</strong>
+                                <span class="chip badge rounded-pill">
+                                    📅 Hasta: {{ date_to }}
+                                    <a href="?{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}" class="chip-remove" title="Eliminar fecha hasta">✕</a>
+                                </span>
                                 {% endif %}
+                                <a href="{% url 'blog:blog_list' %}" class="chip chip-clear-all badge rounded-pill">
+                                    🧹 Limpiar todo
+                                </a>
                             </div>
                             {% endif %}
                         </div>

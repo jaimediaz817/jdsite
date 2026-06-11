@@ -19,9 +19,7 @@ from blog.models import BlogPost
 
 def main():
     for post in BlogPost.objects.all():
-        cat_name = (
-            post.category.name if post.category else "Sin categoria asignada"
-        )
+        cat_name = post.category.name if post.category else "Sin categoria"
         print(f"{post.title} -> {cat_name}")
 
 

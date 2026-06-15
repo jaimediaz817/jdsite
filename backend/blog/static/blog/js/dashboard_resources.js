@@ -92,6 +92,32 @@
     });
   }
 
+  // -----------------------------------------------------------------
+  // Acción del botón "Ir arriba" (scroll suave)
+  // -----------------------------------------------------------------
+  var goTopBtn = document.getElementById('go-top-btn');
+  if (goTopBtn) {
+  goTopBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Scroll suave al top usando la API de scroll del window
+    if ('scrollTo' in window) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Fallback para navegadores que no soporten scrollTo con options
+    document.body.scrollTop = 0; // Safari
+    document.documentElement.scrollTop = 0; // Chrome, Firefox, IE
+    // Asegurarse de que el elemento raíz también haga scroll suave
+    if (document.documentElement && typeof document.documentElement.scrollIntoView === 'function') {
+      document.documentElement.scrollIntoView({ behavior: 'smooth' });
+    }
+    // Opcional: ocultar el botón tras un breve retardo
+    setTimeout(function() {
+      goTopBtn.classList.remove('show');
+      goTopBtn.classList.add('hide');
+    }, 800);
+  });
+  }
+
   // Toggle orphan section visibility (expand/contract)
   var toggleOrphansBtn = document.getElementById('toggle-orphans');
   var orphansContent = document.getElementById('orphans-content');

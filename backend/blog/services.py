@@ -789,6 +789,28 @@ def get_post_files_info(post_slug):
                 others_count += 1
                 others_size += size
 
+    # Construir lista detallada de archivos para el popup
+    detailed_files = []
+    for entry in target_dir.iterdir():
+        if entry.is_file() and entry.name.lower() != "blog.md":
+            ext = Path(entry.name).suffix.lower()
+            ftype = (
+                "image"
+                if ext in image_exts
+                else ("video" if ext in video_exts else "other")
+            )
+            # Construir URL estática que coincide con la ruta usada por import_blogs
+            # import_blogs copia los archivos a static/blogs/<folder>/, por lo que la URL es
+            # /static/blogs/<folder_name>/<filename>
+            url = f"/static/blogs/{target_dir.name}/{entry.name}"
+            detailed_files.append(
+                {
+                    "filename": entry.name,
+                    "url": url,
+                    "type": ftype,
+                }
+            )
+
     return {
         "file_count": file_count,
         "total_size_bytes": total_size,
@@ -803,4 +825,51 @@ def get_post_files_info(post_slug):
             "videos": _format_size(videos_size),
             "others": _format_size(others_size),
         },
+        "files": detailed_files,
     }
+
+
+def delete_resource_file(folder, filename):
+    """Elimina un archivo individual de static/blogs/<folder>/<filename>.
+
+    Args:
+        folder: nombre de la carpeta (slug del artículo)
+        filename: nombre del archivo a eliminar
+
+    Returns:
+        dict con claves:
+        - ``success`` (bool): True si se eliminó correctamente
+        - ``message`` (str): mensaje descriptivo
+    """
+    from django.conf import settings
+    from pathlib import Path
+
+    static_blogs = Path(settings.BASE_DIR) / "static" / "blogs"
+    # Seguridad: evitar path traversal
+    safe_folder = Path(folder).name
+    safe_filename = Path(filename).name
+    file_path = static_blogs / safe_folder / safe_filename
+
+    if not file_path.exists():
+        return {
+            "success": False,
+            "message": f"Archivo {safe_filename} no encontrado en {safe_folder}/",
+        }
+
+    if not file_path.is_file():
+        return {
+            "success": False,
+            "message": f"{safe_filename} no es un archivo válido",
+        }
+
+    try:
+        file_path.unlink()
+        return {
+            "success": True,
+            "message": f"Archivo {safe_filename} eliminado correctamente de {safe_folder}/",
+        }
+    except OSError as e:
+        return {
+            "success": False,
+            "message": f"Error al eliminar {safe_filename}: {str(e)}",
+        }

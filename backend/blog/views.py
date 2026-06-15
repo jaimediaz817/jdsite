@@ -45,6 +45,7 @@ from blog.services import (
     are_author_notifications_enabled,
     delete_post_permanently,
     get_post_files_info,
+    delete_resource_file,
 )
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -1071,6 +1072,262 @@ def check_comment_status(request, slug, comment_id):
         )
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+# ---------------------------------------------------------------------
+# HU-011.17: Utilidades y vistas de gestión de recursos
+# ---------------------------------------------------------------------
+def _format_size(size_bytes):
+    """Formatea bytes a cadena legible (KB, MB)."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def delete_orphan_ajax(request):
+    """Elimina carpetas huérfanas de static/blogs/ (AJAX, superadmin)."""
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+    import shutil
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "error": "JSON inválido."}, status=400
+        )
+    folders = data.get("folders", [])
+    if not folders:
+        return JsonResponse(
+            {"success": False, "error": "No se especificaron carpetas."},
+            status=400,
+        )
+    # Ruta correcta: BASE_DIR ya es "backend/"
+    static_blogs = Path(settings.BASE_DIR) / "static" / "blogs"
+    deleted = []
+    errors = []
+    for folder_name in folders:
+        folder_path = static_blogs / folder_name
+        if not folder_path.exists() or not folder_path.is_dir():
+            errors.append(f"{folder_name}: no existe")
+            continue
+        try:
+            shutil.rmtree(folder_path)
+            deleted.append(folder_name)
+        except OSError as e:
+            errors.append(f"{folder_name}: {str(e)}")
+    return JsonResponse(
+        {
+            "success": len(deleted) > 0,
+            "deleted": deleted,
+            "errors": errors,
+            "message": f"Eliminadas {len(deleted)} carpetas. {len(errors)} errores.",
+        }
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def delete_resource_file_ajax(request):
+    """Elimina un archivo individual de static/blogs/<folder>/<filename> (AJAX, superadmin)."""
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "error": "JSON inválido."}, status=400
+        )
+    folder = data.get("folder", "").strip()
+    filename = data.get("filename", "").strip()
+    if not folder or not filename:
+        return JsonResponse(
+            {"success": False, "error": "Se requiere folder y filename."},
+            status=400,
+        )
+    result = delete_resource_file(folder, filename)
+    return JsonResponse(result)
+
+
+@login_required
+def dashboard_resources_view(request):
+    """Página dedicada a gestión de recursos y carpetas huérfanas (solo superadmin)."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect(f"{reverse('blog:dashboard')}?permission_error=resources")
+    # NOTE: En este proyecto los recursos estáticos están bajo "backend/static/blogs"
+    # mientras que ``settings.BASE_DIR`` apunta a la raíz del proyecto. La ruta original
+    # ``BASE_DIR / "static" / "blogs"`` no existía, lo que provocaba que ``static_folders``
+    # quedara vacío y la tabla "Mapa de Compilación" no mostrara datos.
+    # Ajustamos la ruta para que apunte al directorio correcto.
+    # En este proyecto, ``settings.BASE_DIR`` ya apunta al directorio ``backend``.
+    # Las carpetas de recursos estáticos y de fuentes están directamente bajo él:
+    #   backend/static/blogs
+    #   backend/blogs_source
+    # Por lo tanto, construimos las rutas a partir de ``BASE_DIR`` sin subir
+    # niveles adicionales.
+    # settings.BASE_DIR apunta a "backend/" (Path(__file__).resolve().parent.parent
+    # desde backend/jdsite/settings.py). Las carpetas están directamente bajo él.
+    static_blogs_dir = Path(settings.BASE_DIR) / "static" / "blogs"
+    blogs_source_dir = Path(settings.BASE_DIR) / "blogs_source"
+    bd_slugs = set(BlogPost.objects.values_list("slug", flat=True))
+    static_folders = set()
+    static_folder_info = {}
+    if static_blogs_dir.exists():
+        for folder in static_blogs_dir.iterdir():
+            if folder.is_dir():
+                slug = folder.name
+                static_folders.add(slug)
+                img_count = vid_count = total_size = 0
+                files_list = []
+                image_exts = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+                video_exts = {".mp4", ".webm", ".mov", ".avi", ".mkv"}
+                for f in folder.iterdir():
+                    if f.is_file():
+                        ext = f.suffix.lower()
+                        total_size += f.stat().st_size
+                        if ext in image_exts:
+                            img_count += 1
+                        elif ext in video_exts:
+                            vid_count += 1
+                        ftype = (
+                            "image"
+                            if ext in image_exts
+                            else ("video" if ext in video_exts else "other")
+                        )
+                        files_list.append(
+                            {
+                                "filename": f.name,
+                                "url": f"/static/blogs/{slug}/{f.name}",
+                                "type": ftype,
+                            }
+                        )
+                # Guardar la información de la carpeta actual
+                static_folder_info[slug] = {
+                    "images": img_count,
+                    "videos": vid_count,
+                    "total_size": total_size,
+                    # Guardamos la lista de archivos tal cual; la serialización a JSON se hará en la plantilla.
+                    "files": files_list,
+                }
+    source_folders = set()
+    if blogs_source_dir.exists():
+        for folder in blogs_source_dir.iterdir():
+            if folder.is_dir():
+                source_folders.add(folder.name)
+    all_folders = static_folders | source_folders
+    compilation_map = []
+    orphans_list = []
+    total_images = total_videos = total_size_all = 0
+    for slug in sorted(all_folders):
+        in_source = slug in source_folders
+        in_static = slug in static_folders
+        in_bd = slug in bd_slugs
+        info = static_folder_info.get(slug, {})
+        c_img = info.get("images", 0)
+        c_vid = info.get("videos", 0)
+        c_sz = info.get("total_size", 0)
+        if in_static:
+            total_images += c_img
+            total_videos += c_vid
+            total_size_all += c_sz
+        if in_source and in_static and in_bd:
+            status, label, color = "synced", "✅ Sincronizado", "green"
+        elif in_source and not in_static:
+            status, label, color = "uncompiled", "⚠️ Sin compilar", "yellow"
+        elif in_static and not in_bd:
+            status, label, color = "orphan", "❌ Huérfano", "red"
+            orphans_list.append(
+                {
+                    "folder": slug,
+                    "location": "static/blogs/",
+                    "images": c_img,
+                    "videos": c_vid,
+                    "file_count": c_img + c_vid,
+                    "total_size": _format_size(c_sz) if c_sz else "0 B",
+                }
+            )
+        elif in_source and not in_bd:
+            status, label, color = "no_blogpost", "🔵 Sin BlogPost", "blue"
+        else:
+            status, label, color = "unknown", "⚫ Desconocido", "gray"
+        compilation_map.append(
+            {
+                "slug": slug,
+                "source_exists": in_source,
+                "compiled_exists": in_static,
+                "blogpost_exists": in_bd,
+                "images": c_img,
+                "videos": c_vid,
+                "file_count": c_img + c_vid,
+                "total_size": _format_size(c_sz) if c_sz else "0 B",
+                "status": status,
+                "status_label": label,
+                "status_color": color,
+                # Serializamos la lista de archivos a JSON para que el template lo reciba como cadena válida
+                "files": json.dumps(info.get("files", [])),
+            }
+        )
+    # --- Filtro por slug (cuando se accede desde dashboard) ---
+    filter_slug = request.GET.get("slug", "").strip()
+    filtered_map = compilation_map
+    filtered_orphans = orphans_list
+    if filter_slug:
+        filtered_map = [e for e in compilation_map if e["slug"] == filter_slug]
+        filtered_orphans = [o for o in orphans_list if o["folder"] == filter_slug]
+
+    resources_data = {
+        "stats": {
+            "total_folders": len(all_folders),
+            "total_images": total_images,
+            "total_videos": total_videos,
+            "total_size": _format_size(total_size_all),
+            "orphan_count": len(orphans_list),
+            "synced_count": sum(
+                1 for e in compilation_map if e["status"] == "synced"
+            ),
+            "uncompiled_count": sum(
+                1 for e in compilation_map if e["status"] == "uncompiled"
+            ),
+            "orphan_total_files": sum(o["file_count"] for o in orphans_list),
+        },
+        "compilation_map": compilation_map,
+        "orphans": orphans_list,
+    }
+    # --- Paginación del compilation_map (25 por página) ---
+    page_number = request.GET.get("page")
+    paginator = Paginator(filtered_map, 25)
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    params = request.GET.copy()
+    params.pop("page", None)
+    query_string = params.urlencode()
+
+    return render(
+        request,
+        "blog/dashboard_resources.html",
+        {
+            "resources_data": resources_data,
+            "page_obj": page_obj,
+            "query_string": query_string,
+            "filter_slug": filter_slug,
+        },
+    )
 
 
 # ---------------------------------------------------------------------

@@ -1,3 +1,10 @@
+/*
+Task Progress:
+- [x] Analyze requirements
+- [x] Identify modal handling issue
+- [x] Fix bootstrap.Modal.getInstance usage
+- [ ] Ensure image counting works
+*/
 function getCookie(name) {
     let c = null;
     if (document.cookie) {
@@ -174,6 +181,16 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.reload();
         });
     }
+
+    // ── Detectar permission_error en query params y mostrar toast ──
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('permission_error') === 'resources') {
+        showToast('🔒 No tienes permisos para acceder a la gestión de recursos. Solo los administradores pueden visualizar esta sección.', 'error');
+        // Limpiar el param de la URL para que no se repita al refrescar
+        urlParams.delete('permission_error');
+        var cleanUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.history.replaceState({}, '', cleanUrl);
+    }
 });
 
 // =============================================
@@ -326,3 +343,120 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
+
+// ============================================================
+// HU-011.17: Gestión de Recursos — Filtros + Eliminar huérfanos
+// ============================================================
+(function() {
+    var resourcesSection = document.getElementById('resources-section');
+    if (!resourcesSection) return;
+
+    // Filtros del mapa de compilación
+    var filterButtons = document.querySelectorAll('#resource-filters .btn');
+    var resourceRows = document.querySelectorAll('#compilation-table .resource-row');
+
+    filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            filterButtons.forEach(function(b) { b.classList.remove('active-filter'); });
+            this.classList.add('active-filter');
+            var filter = this.dataset.filter;
+            resourceRows.forEach(function(row) {
+                row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+            });
+        });
+    });
+
+    // Checkbox "Seleccionar todo"
+    var selectAll = document.getElementById('select-all-orphans');
+    var orphanCheckboxes = document.querySelectorAll('.orphan-checkbox');
+    var deleteBtn = document.getElementById('btn-delete-orphans');
+
+    function updateDeleteBtn() {
+        if (!deleteBtn) return;
+        var selected = document.querySelectorAll('.orphan-checkbox:checked');
+        deleteBtn.disabled = selected.length === 0;
+        deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Eliminar (' + selected.length + ') seleccionados';
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            orphanCheckboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+            updateDeleteBtn();
+        });
+    }
+
+    orphanCheckboxes.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            updateDeleteBtn();
+            if (selectAll) {
+                var allChecked = true;
+                orphanCheckboxes.forEach(function(c) { if (!c.checked) allChecked = false; });
+                selectAll.checked = allChecked;
+                if (!this.checked) selectAll.checked = false;
+            }
+        });
+    });
+
+    // Eliminar huérfanos vía AJAX
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            var selected = document.querySelectorAll('.orphan-checkbox:checked');
+            if (selected.length === 0) return;
+            if (!confirm('¿Eliminar permanentemente ' + selected.length + ' carpetas huérfanas?\n\nEsta acción no se puede deshacer.')) return;
+
+            var folders = [];
+            selected.forEach(function(cb) { folders.push(cb.dataset.folder); });
+
+            var csrf = getCookie('csrftoken');
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Eliminando...';
+
+            fetch('/blog/dashboard/delete-orphan/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folders: folders })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('✅ ' + data.message, 'success');
+                    setTimeout(function() { location.reload(); }, 1500);
+                } else {
+                    showToast('❌ ' + (data.error || 'Error al eliminar'), 'error');
+                    deleteBtn.disabled = false;
+                    updateDeleteBtn();
+                }
+            })
+            .catch(function(err) {
+                showToast('❌ Error de red: ' + err.message, 'error');
+                deleteBtn.disabled = false;
+                updateDeleteBtn();
+            });
+        });
+    }
+})();
+
+// ============================================================
+// Botón "📂 Recursos" — Verificación de permisos (SOLO superadmin)
+// Si el usuario NO es superadmin, mostrar toast en lugar de redirigir
+// ============================================================
+(function() {
+    var btnRecursos = document.getElementById('btn-recursos');
+    if (!btnRecursos) return;
+
+    btnRecursos.addEventListener('click', function() {
+        var isSuperuser = btnRecursos.getAttribute('data-is-superuser') === 'true';
+        var resourcesUrl = btnRecursos.getAttribute('data-resources-url');
+
+        if (isSuperuser) {
+            // Redirigir al dashboard de recursos
+            window.location.href = resourcesUrl;
+        } else {
+            // Mostrar toast de permisos denegados
+            showToast('🔒 No tienes permisos para acceder a la gestión de recursos. Solo los administradores pueden visualizar esta sección.', 'error');
+        }
+    });
+})();
+
+
+

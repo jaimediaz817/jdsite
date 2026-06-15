@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard – JD Blog{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'blog/css/dashboard.css' %}">
+    <!-- Header styling (navigation menu) -->
+    <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="home-p">
+
+    {% include "partials/_navigation_menu.html" %}
+
+    <div class="container mt-4 mb-5">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

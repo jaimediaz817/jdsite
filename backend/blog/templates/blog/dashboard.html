@@ -38,7 +38,7 @@
                 <a href="{% url 'blog:blog_email_config' %}"
                    class="email-indicator {% if any_on %}email-active{% else %}email-inactive{% endif %}"
                    title="Configuración de emails del blog">
-                    <i class="fas fa-envelope"></i>
+                    <i class="fas fa-envelope"></i>Configuración Emails global
                     {% if not any_on %}
                     <span style="font-size:.72rem; letter-spacing:.5px;">OFF</span>
                     {% endif %}
@@ -49,6 +49,14 @@
                 <button type="button" id="refresh-dashboard" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size:.82rem;">
                     <i class="fas fa-sync-alt me-1"></i>Refrescar
                 </button>
+                
+                <!-- Enlace a la gestión de recursos (verificación JS para usuarios no superadmin) -->
+                <button type="button"
+                        id="btn-recursos"
+                        class="btn-action-dashboard btn-recursos btn btn-sm btn-outline-success rounded-pill px-3"
+                        style="font-size:.82rem;"
+                        data-resources-url="{% url 'blog:dashboard_resources' %}"
+                        data-is-superuser="{% if user.is_superuser %}true{% else %}false{% endif %}">📂 Recursos</button>
                 <a href="{% url 'blog:blog_list' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3" style="font-size:.82rem;">← Volver</a>
             </div>
         </div>
@@ -303,9 +311,11 @@
                                     <td class="text-center">
                                         {% if post.files_info.file_count > 0 %}
                                         <div class="files-tooltip">
+                                            <a href="{% url 'blog:dashboard_resources' %}?slug={{ post.slug }}" class="text-decoration-none" title="Ver recursos de este artículo">
                                             <span class="files-badge {% if post.files_info.file_count > 5 %}files-badge-high{% endif %}">
                                                 📁 {{ post.files_info.file_count }} <span class="d-none d-md-inline">arch.</span> ({{ post.files_info.total_size_human }})
                                             </span>
+                                            </a>
                                             <div class="files-tooltip-content">
                                                 <span>📁 {{ post.files_info.file_count }} archivos ({{ post.files_info.total_size_human }})</span>
                                                 <span style="margin-top:4px;">🖼️ {{ post.files_info.files_by_type.images }} imágenes ({{ post.files_info.size_by_type.images }})</span>
@@ -401,6 +411,104 @@
             </div>
             {% endif %}
         {% endif %}
+    <!-- ============================================= -->
+    <!-- HU-011.17: Gestión de Recursos (superadmin)   -->
+    <!-- ============================================= -->
+    {% if user.is_superuser and resources_data %}
+    <div class="card border-0 shadow-sm rounded-3 mb-4" id="resources-section">
+        <div class="card-body p-3">
+            <h4 class="mb-3" style="font-size:1.1rem; font-weight:700;">📂 Gestión de Recursos</h4>
+
+            <!-- KPIs -->
+            <div class="row g-2 mb-4">
+                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_folders }}</div><div class="stat-label">📂 Carpetas</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_images }}</div><div class="stat-label">🖼️ Imágenes</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_videos }}</div><div class="stat-label">🎬 Videos</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_size }}</div><div class="stat-label">💾 Tamaño total</div></div></div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-3"><div class="card stat-card text-center p-2" style="border-left:3px solid #22c55e;"><div class="stat-number text-success">{{ resources_data.stats.synced_count }}</div><div class="stat-label">✅ Sincronizados</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2" style="border-left:3px solid #eab308;"><div class="stat-number" style="color:#eab308;">{{ resources_data.stats.uncompiled_count }}</div><div class="stat-label">⚠️ Sin compilar</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2" style="border-left:3px solid #ef4444;"><div class="stat-number text-danger">{{ resources_data.stats.orphan_count }}</div><div class="stat-label">❌ Huérfanos</div></div></div>
+                <div class="col-3"><div class="card stat-card text-center p-2" style="border-left:3px solid #6b7280;"><div class="stat-number text-muted">{{ resources_data.stats.orphan_total_files }}</div><div class="stat-label">📄 Archivos huérfanos</div></div></div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="d-flex gap-2 mb-3 flex-wrap" id="resource-filters">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill active-filter" data-filter="all">Todos</button>
+                <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-filter="synced">✅ Sincronizados</button>
+                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill" data-filter="uncompiled">⚠️ Sin compilar</button>
+                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" data-filter="orphan">❌ Huérfanos</button>
+                <button type="button" class="btn btn-sm btn-outline-info rounded-pill" data-filter="no_blogpost">🔵 Sin BlogPost</button>
+            </div>
+
+            <!-- Mapa de Compilación -->
+            <div class="table-responsive">
+                <table class="table table-sm table-hover" id="compilation-table">
+                    <thead>
+                        <tr>
+                            <th>📂 Fuente (blogs_source/)</th>
+                            <th>⚙️ Compilado (static/blogs/)</th>
+                            <th>🔗 Estado</th>
+                            <th>Archivos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for entry in resources_data.compilation_map %}
+                        <tr class="resource-row" data-status="{{ entry.status }}">
+                            <td><small>{% if entry.source_exists %}{{ entry.source_name }}{% else %}<span class="text-muted">—</span>{% endif %}</small></td>
+                            <td><small>{% if entry.compiled_exists %}{{ entry.compiled_name }}{% else %}<span class="text-muted">—</span>{% endif %}</small></td>
+                            <td><span class="badge rounded-pill" style="background:{% if entry.status_color == 'green' %}#22c55e{% elif entry.status_color == 'yellow' %}#eab308{% elif entry.status_color == 'red' %}#ef4444{% elif entry.status_color == 'blue' %}#3b82f6{% else %}#6b7280{% endif %};">{{ entry.status_label }}</span></td>
+                            <td><small>{{ entry.file_count }} archivos · {{ entry.total_size }}</small></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sección Huérfanos (expandible) -->
+            {% if resources_data.orphans %}
+            <div class="mt-3 pt-3" style="border-top:1px dashed #e5e7eb;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0" style="font-size:.95rem; font-weight:600;">
+                        <span class="badge bg-danger rounded-pill me-1">{{ resources_data.stats.orphan_count }}</span>
+                        ⚠️ Carpetas huérfanas detectadas
+                        <small class="text-muted ms-2">({{ resources_data.stats.orphan_total_files }} archivos)</small>
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" id="btn-delete-orphans" disabled>
+                        <i class="fas fa-trash me-1"></i>Eliminar seleccionados
+                    </button>
+                </div>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm" id="orphans-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;"><input type="checkbox" id="select-all-orphans"></th>
+                                <th>Carpeta</th>
+                                <th>Ubicación</th>
+                                <th>Archivos</th>
+                                <th>Tamaño</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for orphan in resources_data.orphans %}
+                            <tr class="orphan-row">
+                                <td><input type="checkbox" class="orphan-checkbox" data-folder="{{ orphan.folder }}"></td>
+                                <td><code>{{ orphan.folder }}</code></td>
+                                <td><small>{{ orphan.location }}</small></td>
+                                <td><small>{{ orphan.file_count }} (🖼️ {{ orphan.images }} · 🎬 {{ orphan.videos }})</small></td>
+                                <td><small>{{ orphan.total_size }}</small></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
     {% if user.is_superuser %}<div class="sa-footer">🔐 Panel de administración — tienes control total sobre todos los artículos del blog</div>{% endif %}
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>

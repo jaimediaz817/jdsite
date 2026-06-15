@@ -1,0 +1,176 @@
+/* HU-011.17: Gestión de Recursos — orphan rows y filtros */
+.btn-recursos {
+    margin-left: 0.5rem;
+}
+
+.orphan-row {
+    background: #fff3cd !important;
+}
+
+.orphan-row:hover {
+    background: #ffe69c !important;
+}
+
+#resource-filters .btn.active-filter {
+    border-width: 2px;
+    font-weight: 600;
+}
+
+#resources-section .stat-card {
+    border-left: 3px solid transparent;
+    cursor: default;
+}
+
+#resources-section .stat-card:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+}
+
+
+.active-filter {
+    font-weight: bold;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+.orphan-row {
+    background-color: #fff5f5;
+}
+
+/* Botón cerrar del modal de archivos — siempre visible */
+.files-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: #f8f9fa;
+    color: #374151;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.files-close-btn:hover {
+    background: #e9ecef;
+    color: #dc3545;
+}
+
+/* Vista previa de archivos en el modal */
+#filePreview {
+    text-align: center;
+}
+
+#filePreview img {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+}
+
+#filePreview video {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+}
+
+/* -----------------------------------------------------------------
+   Botón flotante "Ir arriba" (scroll-to-delete-btn)
+   ----------------------------------------------------------------- */
+#scroll-to-delete-btn {
+    /* Tamaño compacto y consistente */
+    height: 38px !important;
+    line-height: 38px !important;
+    padding: 0 12px !important;
+    border-radius: 4px !important;
+    min-height: 0 !important;
+    min-width: auto !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
+    /* oculto por defecto, sin !important para permitir que JS lo muestre */
+    display: none;
+    vertical-align: middle;
+    /* Posicionamiento y stacking */
+    position: fixed;
+    bottom: 80px;
+    /* place above pagination/footer */
+    right: 20px;
+    z-index: 100000;
+    /* ultra high to stay on top of any element */
+    /* Ensure the button creates its own stacking context */
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    min-width: 150px;
+    /* ensure enough width for longer text like "Eliminar 10 seleccionados" */
+    pointer-events: auto;
+    /* Estilos visuales */
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    /* Ensure the button is above any other element */
+    /* (z-index already set above) */
+}
+
+#scroll-to-delete-btn:hover {
+    opacity: 0.9;
+    /* Mantener mismo tamaño en hover */
+    height: 38px !important;
+    line-height: 38px !important;
+    padding: 0 12px !important;
+    min-height: 0 !important;
+    min-width: auto !important;
+    /* No cambiar display aquí; el control de visibilidad lo hace el JS */
+    background: #c82333;
+    /* color más oscuro al hover */
+}
+
+.btn-expandir-contraer {
+    width: 35%;
+}
+
+/* -----------------------------------------------------------------
+   Botón flotante "Ir arriba"
+   ----------------------------------------------------------------- */
+.go-top-btn {
+    /* Posicionamiento fijo sobre el contenido */
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 100000;
+    /* Tamaño circular */
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    /* Gradiente con colores del blog (azul y verde) */
+    background: linear-gradient(45deg, #007bff, #28a745);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.go-top-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.go-top-btn.hide {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}

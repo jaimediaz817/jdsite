@@ -55,15 +55,26 @@
                             <textarea id="description" class="form-control" required maxlength="155" rows="2" placeholder="Breve descripción (SEO)"></textarea>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-3" id="category-select-wrapper">
                             <label class="form-label" for="category">Categoría *</label>
-                        <select id="category" class="form-select modern-select" required aria-describedby="categoryHelp">
+                        <select id="category" class="form-select modern-select" aria-describedby="categoryHelp">
                                 <option value="">Seleccionar categoría</option>
                                 {% for cat in categories %}
                                 <option value="{{ cat.name }}">{{ cat.name }}</option>
                                 {% endfor %}
                             </select>
                             <div id="categoryHelp" class="form-text">Elige la categoría que mejor describa el tema del artículo.</div>
+                        </div>
+                        <!-- Checkbox para categoría nueva -->
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="category-toggle-new">
+                            <label class="form-check-label" for="category-toggle-new">No encontré la categoría que busco</label>
+                        </div>
+                        <!-- Input para categoría libre, oculto por defecto -->
+                        <div class="mb-3 d-none" id="new-category-wrapper">
+                            <label class="form-label" for="new_category">Nueva categoría</label>
+                            <input type="text" id="new_category" class="form-control" placeholder="Escribe la categoría" aria-describedby="newCategoryHelp">
+                            <div id="newCategoryHelp" class="form-text">Escribe el nombre de la categoría que deseas crear.</div>
                         </div>
                         
                         <div class="mb-3">

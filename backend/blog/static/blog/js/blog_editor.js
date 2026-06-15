@@ -477,11 +477,16 @@ const pond = FilePond.create(document.getElementById('filepond'), {
 // 5. collectFormData + auto-save + restore
 // ======================================================
 function collectFormData() {
+    // Determina la categoría según el estado del checkbox
+    const useNew = document.getElementById('category-toggle-new')?.checked;
+    const category = useNew
+        ? (document.getElementById('new_category')?.value?.trim() || '')
+        : (document.getElementById('category')?.value?.trim() || '');
     return {
         slug: document.getElementById('edit-slug').value,
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
-        category: document.getElementById('category').value,
+        category: category,
         tags: tags,
         meta_title: document.getElementById('meta_title').value,
         meta_description: document.getElementById('meta_description').value,
@@ -573,7 +578,35 @@ function restoreDraft(data) {
     }
     document.getElementById('title').value = data.title || '';
     document.getElementById('description').value = data.description || '';
-    document.getElementById('category').value = data.category || '';
+    // Manejar categoría: si coincide con una opción existente, usar select; de lo contrario, activar checkbox y usar input libre
+    const catSelect = document.getElementById('category');
+    const catInput = document.getElementById('new_category');
+    const catToggle = document.getElementById('category-toggle-new');
+    const existingOption = Array.from(catSelect.options).some(opt => opt.value === data.category);
+    if (existingOption) {
+        catSelect.value = data.category;
+        if (catToggle) catToggle.checked = false;
+        if (catInput) {
+            catInput.value = '';
+            document.getElementById('new-category-wrapper').classList.add('d-none');
+        }
+    } else if (data.category) {
+        // No coincide, usar nuevo campo
+        if (catToggle) catToggle.checked = true;
+        if (catInput) {
+            catInput.value = data.category;
+            document.getElementById('new-category-wrapper').classList.remove('d-none');
+        }
+        catSelect.value = '';
+    } else {
+        // Sin categoría
+        catSelect.value = '';
+        if (catToggle) catToggle.checked = false;
+        if (catInput) {
+            catInput.value = '';
+            document.getElementById('new-category-wrapper').classList.add('d-none');
+        }
+    }
     tags = data.tags || [];
     renderTags();
     document.getElementById('meta_title').value = data.meta_title || '';
@@ -694,6 +727,30 @@ document.getElementById('btn-save').addEventListener('click', async () => {
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('btn-save');
     if (btn) btn.dataset.originalText = btn.innerHTML.trim();
+    // Inicializar comportamiento del toggle de categoría nueva
+    const catToggle = document.getElementById('category-toggle-new');
+    const catSelectWrapper = document.getElementById('category-select-wrapper');
+    const catSelect = document.getElementById('category');
+    const newCatWrapper = document.getElementById('new-category-wrapper');
+    const newCatInput = document.getElementById('new_category');
+    if (catToggle && catSelectWrapper && catSelect && newCatWrapper && newCatInput) {
+        const updateVisibility = () => {
+            if (catToggle.checked) {
+                // Mostrar input libre, ocultar select
+                catSelectWrapper.classList.add('d-none');
+                newCatWrapper.classList.remove('d-none');
+                catSelect.value = '';
+            } else {
+                // Mostrar select, ocultar input
+                catSelectWrapper.classList.remove('d-none');
+                newCatWrapper.classList.add('d-none');
+                newCatInput.value = '';
+            }
+        };
+        // Ejecutar al cargar y al cambiar
+        updateVisibility();
+        catToggle.addEventListener('change', updateVisibility);
+    }
 });
 
 function getCookie(name) {

@@ -57,12 +57,14 @@ ruff check . --fix
 
 
 python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 127.0.0.1:8000
 
 
 python manage.py makemigrations inquiries
 python manage.py migrate
 
 -----------------------
+
 
 al agregar otra app en settings.py, podré ejecutar más migraciones:
 python manage.py migrate

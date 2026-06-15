@@ -91,9 +91,14 @@ deactivate
 
 ---
 
-## 🟡 BOOTSTRAP 5 — REGLAS PARA EVITAR PROBLEMAS
+## 🟡 BOOTSTRAP 4.3.1 — REGLAS PARA EVITAR PROBLEMAS
 
-El proyecto usa Bootstrap 5 (CSS + JS) pero con **jQuery 3.2.1 antiguo**, lo que causa conflictos con los data attributes de Bootstrap (`data-bs-toggle`, `data-bs-target`, `data-bs-dismiss`).
+El proyecto usa **Bootstrap v4.3.1** (NO Bootstrap 5) con **jQuery 3.2.1 antiguo**.
+
+### ⚠️ CLASE `.btn-close` NO EXISTE EN BOOTSTRAP 4
+- `btn-close` es una clase de **Bootstrap 5**. En Bootstrap 4 NO existe.
+- ✅ Usar siempre la clase `.close` con `<span aria-hidden="true">&times;</span>`
+- ❌ `class="btn-close"` → **no tiene estilos**, el botón queda invisible.
 
 ### ⚠️ LECCIÓN APRENDIDA (HU-17.18)
 `data-bs-toggle="collapse"` **NO funciona de forma confiable** en este proyecto. jQuery 3.2.1 interfiere con el sistema de eventos de Bootstrap 5.
@@ -134,6 +139,17 @@ El proyecto usa Bootstrap 5 (CSS + JS) pero con **jQuery 3.2.1 antiguo**, lo que
     // Toggle:
     collapseEl.classList.toggle('show');
     ```
+
+7.  **El botón cerrar de modales usa `.close` (Bootstrap 4), NUNCA `btn-close` (Bootstrap 5).**
+    - ❌ `<button class="btn-close">` → **NO EXISTE** en Bootstrap 4, el botón queda invisible
+    - ❌ `data-bs-dismiss="modal"` → es de Bootstrap 5, no existe aquí
+    - ✅ Patrón correcto para Bootstrap 4:
+    ```html
+    <button type="button" class="close" aria-label="Close" id="miBotonCerrar">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    ```
+    - El cierre del modal se maneja via JS con `bootstrap.Modal.hide()` o manipulación DOM directa.
 
 ---
 

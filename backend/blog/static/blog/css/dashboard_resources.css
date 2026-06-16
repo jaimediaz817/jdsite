@@ -125,3 +125,12 @@
     transform: translateY(20px);
     pointer-events: none;
 }
+
+#filesModal {
+    button.btn.btn-sm.btn-danger {
+        padding: 0.1rem 1.5rem;
+        border-radius: 0.5rem;
+        line-height: 1.5;
+        margin-left: 0.5rem;
+    }
+}

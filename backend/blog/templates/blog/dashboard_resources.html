@@ -73,14 +73,32 @@ Task Progress:
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-center shadow-sm">
-        <div class="card-body">
-          <div class="fs-1 fw-bold text-info">{{ resources_data.stats.total_images }}</div>
-          <div class="text-muted">Imágenes</div>
+      <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <div class="fs-1 fw-bold text-info">{{ resources_data.stats.total_images }}</div>
+            <div class="text-muted">Imágenes</div>
+          </div>
         </div>
       </div>
-    </div>
+      <!-- Vídeos -->
+      <div class="col-md-3 mt-3">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <div class="fs-1 fw-bold text-warning">{{ resources_data.stats.total_videos }}</div>
+            <div class="text-muted">Videos</div>
+          </div>
+        </div>
+      </div>
+      <!-- Otros recursos -->
+      <div class="col-md-3 mt-3">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <div class="fs-1 fw-bold text-secondary">{{ resources_data.stats.total_other }}</div>
+            <div class="text-muted">Otros recursos</div>
+          </div>
+        </div>
+      </div>
   </div>
 
   {# ── Filtros y Acciones ── #}

@@ -35,27 +35,27 @@
   });
 
   function updateDeleteButton() {
-  // Contar cualquier checkbox marcado dentro del dashboard (incluye orphan y select-all)
-  var checked = document.querySelectorAll('input[type="checkbox"]:checked');
-    var btn = document.getElementById('btn-delete-selected');
-    if (btn) {
-      btn.disabled = checked.length === 0;
-      btn.textContent = checked.length > 0
-        ? '🗑️ Eliminar ' + checked.length + ' seleccionados'
-        : '🗑️ Eliminar seleccionados';
+    // Contar cualquier checkbox marcado dentro del dashboard (incluye orphan y select-all)
+    var checked = document.querySelectorAll('input[type="checkbox"]:checked');
+      var btn = document.getElementById('btn-delete-selected');
+      if (btn) {
+        btn.disabled = checked.length === 0;
+        btn.textContent = checked.length > 0
+          ? '🗑️ Eliminar ' + checked.length + ' seleccionados'
+          : '🗑️ Eliminar seleccionados';
+      }
+      
+    // Mostrar/ocultar botón "Ir arriba" según haya al menos un checkbox marcado
+    var goTopBtn = document.getElementById('go-top-btn');
+    if (goTopBtn) {
+      if (checked.length > 0) {
+        goTopBtn.classList.add('show');
+        goTopBtn.classList.remove('hide');
+      } else {
+        goTopBtn.classList.remove('show');
+        goTopBtn.classList.add('hide');
+      }
     }
-    
-  // Mostrar/ocultar botón "Ir arriba" según haya al menos un checkbox marcado
-  var goTopBtn = document.getElementById('go-top-btn');
-  if (goTopBtn) {
-    if (checked.length > 0) {
-      goTopBtn.classList.add('show');
-      goTopBtn.classList.remove('hide');
-    } else {
-      goTopBtn.classList.remove('show');
-      goTopBtn.classList.add('hide');
-    }
-  }
   }
 
   // Delete selected
@@ -251,7 +251,7 @@
             li.appendChild(nameSpan);
             var viewBtn = document.createElement('button');
             viewBtn.type = 'button';
-            viewBtn.className = 'btn btn-sm btn-outline-primary ms-2';
+            viewBtn.className = 'btn btn-sm btn-primary ms-2';
             viewBtn.textContent = 'Ver';
             viewBtn.setAttribute('data-url', f.url || '');
             viewBtn.setAttribute('data-type', f.type || (isImage ? 'image' : 'other'));
@@ -294,7 +294,7 @@
             li.appendChild(viewBtn);
             var delBtn = document.createElement('button');
             delBtn.type = 'button';
-            delBtn.className = 'btn btn-sm btn-outline-danger ms-2';
+            delBtn.className = 'btn btn-sm btn-danger ms-2';
             delBtn.textContent = '🗑️';
             delBtn.title = 'Eliminar archivo';
             delBtn.setAttribute('data-folder', '');
@@ -337,34 +337,21 @@
             listEl.appendChild(li);
           });
       }
-  // Abrir modal usando Bootstrap 5 API
-      var modalEl = document.getElementById('filesModal');
-      // Guardamos la instancia globalmente para poder cerrarla después
-      window._filesModalInstance = new bootstrap.Modal(modalEl);
-      window._filesModalInstance.show();
+  // Abrir modal usando Bootstrap 4 (jQuery) API
+      // Guardamos la referencia globalmente para poder cerrarla después
+      window._filesModalInstance = $('#filesModal');
+      window._filesModalInstance.modal('show');
     });
   });
 
   // Función auxiliar para cerrar modal de forma robusta
   // MÉTODO PRIMARIO: manipulación DOM directa (evita conflicto jQuery 3.2.1 + Bootstrap 5)
   function closeFilesModal() {
-    var modalEl = document.getElementById('filesModal');
-    if (!modalEl) return;
-    // 1. Quitar clase 'show' y ocultar
-    modalEl.classList.remove('show');
-    modalEl.removeAttribute('aria-modal');
-    modalEl.setAttribute('aria-hidden', 'true');
-    modalEl.style.display = 'none';
-    modalEl.style.paddingRight = '';
-    // 2. Eliminar todos los backdrops de Bootstrap
-    document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
-    // 3. Restaurar el body
-    document.body.classList.remove('modal-open');
-    document.body.style.paddingRight = '';
-    document.body.style.overflow = '';
-    // 4. Limpiar instancia de Bootstrap si existe
-    window._filesModalInstance = null;
-  }
+      if (window._filesModalInstance && typeof window._filesModalInstance.modal === 'function') {
+        window._filesModalInstance.modal('hide');
+      }
+      window._filesModalInstance = null;
+    }
 
   // Handler directo en el botón de cerrar del modal
   var closeBtnEl = document.getElementById('filesModalCloseBtn');

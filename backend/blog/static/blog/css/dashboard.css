@@ -445,19 +445,22 @@ body {
     box-shadow: 0 2px 8px rgba(220, 38, 38, .15);
 }
 
+/* Contenedor del tooltip, con alto z-index para sobresalir sobre la cabecera de la tabla */
 .files-tooltip {
     position: relative;
+    z-index: 1055;
 }
 
 /* Tooltip container hidden by default, positioned absolutely to avoid being clipped */
 .files-tooltip .files-tooltip-content {
     display: none;
     position: absolute;
-    /* Posicionar el tooltip aún más arriba para evitar el recorte en la primera fila */
-    top: -3rem;
+    /* Posicionar el tooltip justo encima de la celda, usando bottom para evitar que el <thead> lo tape */
+    bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-100%);
-    z-index: 1050;
+    transform: translateX(-50%) translateY(-4px);
+    /* Z‑index alto para que quede por encima del encabezado sticky */
+    z-index: 2000;
     background: #fff;
     border: 1px solid #e5e7eb;
     padding: 0.5rem 0.75rem;
@@ -468,14 +471,16 @@ body {
 
 /* Removed stray tooltip style that caused CSS syntax errors */
 
+/* Flecha del tooltip, apuntando hacia abajo (hacia la celda) */
 .files-tooltip .files-tooltip-content::after {
     content: '';
     position: absolute;
-    top: 100%;
+    bottom: -5px;
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: #1e293b;
+    border-top-color: transparent;
+    border-bottom-color: #1e293b;
 }
 
 .files-tooltip:hover .files-tooltip-content {

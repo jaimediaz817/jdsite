@@ -11,3 +11,4 @@ backend/staticfiles/
 __pycache__/
 backend/.env
 .env
+backend/static/blogs/

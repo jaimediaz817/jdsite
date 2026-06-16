@@ -831,6 +831,59 @@ class BlogDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["comment_form"] = CommentForm()
         context["comments"] = get_approved_comments(self.object.slug, limit=10)
+        # HU-012: Artículos relacionados (categoría + tags → categoría → recientes)
+        from django.db.models import Q
+
+        current = self.object
+        current_tag_ids = set(current.tags.values_list("id", flat=True))
+        related_ids = []
+        seen_ids = {current.id}
+        # 1) Misma categoría Y al menos 1 tag en común
+        if current.category and current_tag_ids:
+            by_cat_tag = (
+                BlogPost.objects.filter(
+                    is_published=True,
+                    category=current.category,
+                    tags__in=current.tags.all(),
+                )
+                .exclude(id=current.id)
+                .distinct()
+                .order_by("-publish_date")[:4]
+            )
+            for p in by_cat_tag:
+                if p.id not in seen_ids:
+                    related_ids.append(p.id)
+                    seen_ids.add(p.id)
+        # 2) Misma categoría (si faltan)
+        if len(related_ids) < 4 and current.category:
+            by_cat = (
+                BlogPost.objects.filter(
+                    is_published=True, category=current.category
+                )
+                .exclude(id__in=seen_ids)
+                .order_by("-publish_date")[: 4 - len(related_ids)]
+            )
+            for p in by_cat:
+                if p.id not in seen_ids:
+                    related_ids.append(p.id)
+                    seen_ids.add(p.id)
+        # 3) Los más recientes (si faltan)
+        if len(related_ids) < 4:
+            recent = (
+                BlogPost.objects.filter(is_published=True)
+                .exclude(id__in=seen_ids)
+                .order_by("-publish_date")[: 4 - len(related_ids)]
+            )
+            for p in recent:
+                if p.id not in seen_ids:
+                    related_ids.append(p.id)
+                    seen_ids.add(p.id)
+        if related_ids:
+            context["related_posts"] = BlogPost.objects.filter(
+                id__in=related_ids
+            ).order_by("-publish_date")
+        else:
+            context["related_posts"] = []
         context["comment_count"] = get_comment_count(self.object.slug)
         # Pasar mapa {id: status} de TODOS los comentarios para que el frontend
         # pueda decidir qué skeletons mostrar sin llamar N endpoints

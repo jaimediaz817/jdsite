@@ -43,10 +43,12 @@
     <meta property="article:publisher" content="https://www.linkedin.com/in/jdiaz817/" />
     {% if post.cover_image %}
       <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}" />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="{{ post.meta_description|default:post.title }}" />
+    {% else %}
+      <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-social-share.jpg' %}" />
     {% endif %}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="{{ post.meta_description|default:post.title }}" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -355,6 +357,11 @@
                       <i class="fas fa-link"></i>
                       <span>Copiar enlace</span>
                     </button>
+                    <a href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri|urlencode }}" 
+                       target="_blank" rel="noopener noreferrer" class="jd-share-btn jd-share-whatsapp">
+                      <i class="fab fa-whatsapp"></i>
+                      <span>WhatsApp</span>
+                    </a>
                   </div>
                 </div>
 
@@ -396,6 +403,33 @@
                     <span>Todos los artículos</span>
                   </a>
                 </footer>
+
+                <!-- ═══════════════════════════════════════
+                     HU-012: ARTÍCULOS RELACIONADOS
+                ═══════════════════════════════════════ -->
+                {% if related_posts %}
+                <section class="jd-related-section">
+                  <h3 class="jd-related-title">
+                    <i class="fas fa-book-open me-2"></i>Artículos relacionados
+                  </h3>
+                  <div class="jd-related-grid">
+                    {% for rpost in related_posts %}
+                      <a href="{% url 'blog:blog_detail' rpost.slug %}" class="jd-related-card">
+                        {% if rpost.cover_image %}
+                          <div class="jd-related-img" style="background-image: url('{{ rpost.cover_image }}');"></div>
+                        {% endif %}
+                        <div class="jd-related-body">
+                          {% if rpost.category %}
+                            <span class="jd-related-category">{{ rpost.category.name }}</span>
+                          {% endif %}
+                          <h4 class="jd-related-card-title">{{ rpost.title }}</h4>
+                          <p class="jd-related-desc">{{ rpost.description|default:''|truncatewords:15 }}</p>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  </div>
+                </section>
+                {% endif %}
 
                 <!-- ═══════════════════════════════════════
                      SECCIÓN COMENTARIOS

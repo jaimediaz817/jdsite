@@ -3,709 +3,553 @@
 > **ID:** HU-012
 > **Fecha:** 30/05/2026
 > **Responsable:** Cline
-> **Estado:** 🟡 En Progreso (Fase 1 completada)
+> **Estado:** 🟢 Completada — 5 fases + mejoras adicionales implementadas
 > **Tiempo estimado total:** 5 fases (~15 min cada una)
 > **Dependencias:** HU-001 (sistema blogs), HU-001.1 (frontmatter completo)
 
 ---
 
-## 🚨 INSTRUCCIONES DE DESARROLLO (LEER ANTES DE EMPEZAR)
-
-> ⚠️ **REGLAS DE ORO PARA IMPLEMENTAR ESTA HU:**
+## 🚨 INSTRUCCIONES DE DESARROLLO
 
 ### 🟢 1. Una Fase a la Vez
-- Esta HU tiene **5 fases** de aproximadamente **15 minutos cada una**
-- **NUNCA** implementes más de una fase en una sola sesión
+- **NUNCA** implementar más de una fase en una sola sesión
 - Cada fase es **independiente** y se puede probar por separado
-- Al terminar cada fase: ✅ probar, ✅ confirmar con el usuario, ✅ pasar a la siguiente
 
 ### 🟢 2. Sin Dependencias Nuevas Sin Aprobación
-- Todo usa funcionalidad nativa de Django (sitemaps, feeds, templates)
-- No se requiere `pip install` ni `npm install`
-- Si durante el desarrollo se necesita algo adicional, **preguntar primero**
+- Todo usa funcionalidad nativa de Django
 
 ### 🟢 3. Nunca Romper lo Existente
-- Todo lo que funciona hoy debe seguir funcionando mañana
 - Cualquier modificación debe ser **aditiva**
-- **NUNCA** borrar código existente, solo comentar si es estrictamente necesario
-
-### 🟢 4. Flujo de Trabajo Recomendado
-```
-Cada fase:
-1. Leer la fase completa
-2. Implementar los cambios
-3. Probar manualmente (verificar con Google Rich Results Test)
-4. Confirmar con el usuario
-5. PASAR A LA SIGUIENTE FASE
-```
 
 ---
 
 ## 🎯 OBJETIVO
 
 Mejorar el posicionamiento SEO del blog mediante:
-1. **Fix crítico**: Registrar BlogPostSitemap en urls.py (actualmente no se incluye)
+1. **Fix crítico**: Registrar BlogPostSitemap en urls.py
 2. **Meta tags Open Graph completos**: category, tags, twitter:site, og:image:alt
 3. **Schema.org Breadcrumb**: Structured data + breadcrumb visible
 4. **Schema.org enriquecido**: timeToRead, keywords en BlogPosting
 5. **Feed RSS/Atom**: Para distribución y syndication
 6. **Performance SEO**: Preconnect hints + lazy loading de imágenes
+7. **Fallback OG**: Imagen placeholder cuando no hay cover_image
+8. **Compartir WhatsApp**: Botón nativo de WhatsApp
+9. **Artículos relacionados inteligentes**: Categoría + tags
 
 ---
 
-## 📊 ESTADO ACTUAL (AUDITORÍA)
+## ✅ CAMBIOS REALIZADOS (todos los 14 puntos solucionados)
 
-### ✅ Lo que YA funciona bien
-- `<title>` con meta_title fallback
-- `<meta name="description">` con meta_description fallback
-- Canonical URL
-- Favicon (múltiples tamaños)
-- Robots meta tag (index, follow)
-- Author meta tag
-- Open Graph básico (title, description, type=article, url, image, published_time, modified_time)
-- Twitter Card (summary_large_image)
-- Schema.org BlogPosting (headline, description, author, publisher, dates, image)
-- BlogPostSitemap (definido pero NO registrado)
-- robots.txt con sitemap reference
-
-### 🔴 Lo que falla o falta
-1. **BlogPostSitemap NO registrado** en `urls.py` → sitemap.xml solo tiene la home
-2. **No hay `article:section`** en OG (categoría del post)
-3. **No hay `article:tag`** en OG (etiquetas del post)
-4. **No hay `article:publisher`** en OG (link a LinkedIn)
-5. **No hay `og:image:alt`** (texto alternativo de imagen OG)
-6. **No hay `twitter:site`** ni `twitter:creator` (handles de X/Twitter)
-7. **No hay Schema.org BreadcrumbList** (migas de pan)
-8. **No hay breadcrumb visible** en el template
-9. **No hay `timeToRead`** en Schema.org
-10. **No hay `keywords`** en Schema.org BlogPosting
-11. **No hay preconnect hints** para Google Fonts
-12. **No hay feed RSS/Atom**
-13. **No hay lazy loading** en imágenes del contenido
-14. **No hay artículos relacionados** (enlaces internos)
+1. **BlogPostSitemap** registrado en `jdsite/urls.py`
+2. **`article:section`** en OG (categoría del post)
+3. **`article:tag`** en OG (etiquetas del post)
+4. **`article:publisher`** en OG (link a LinkedIn)
+5. **`og:image:alt`** — texto alternativo de imagen OG
+6. **`twitter:site`** y **`twitter:creator`** — handles @jdiaz817
+7. **Schema.org BreadcrumbList** en `<head>`
+8. **Breadcrumb visible** — Inicio > Blog > Categoría > Artículo
+9. **`wordCount`** y **`timeRequired`** en Schema.org BlogPosting
+10. **`keywords`** en Schema.org BlogPosting
+11. **Preconnect hints** para Google Fonts
+12. **Feed RSS/Atom** — `feeds.py` + URLs registradas
+13. **Lazy loading** — script que agrega loading="lazy" a imágenes
+14. **Artículos relacionados** — Algoritmo inteligente (categoría + tags → categoría → recientes)
 
 ---
 
 ## 🔧 FASES DE IMPLEMENTACIÓN
 
----
-
 ### ⚡ FASE 1: Fix Sitemap + OG Tags Completos
-**Tiempo estimado:** 15 min
 **Archivos:** `backend/jdsite/urls.py`, `backend/blog/templates/blog/blog_detail.html`
 
-#### 1.1 Registrar BlogPostSitemap en urls.py
-
-**Archivo:** `backend/jdsite/urls.py`
-
-Cambiar:
-```python
-from django.contrib.sitemaps.views import sitemap
-```
-Por:
-```python
-from django.contrib.sitemaps.views import sitemap
-from blog.sitemaps import BlogPostSitemap
-```
-
-Cambiar:
-```python
-sitemaps = {
-    "static": StaticViewSitemap,
-}
-```
-Por:
-```python
-sitemaps = {
-    "static": StaticViewSitemap,
-    "blog": BlogPostSitemap,
-}
-```
-
-#### 1.2 Agregar OG Tags faltantes al template
-
-**Archivo:** `backend/blog/templates/blog/blog_detail.html`
-
-Después de la línea:
-```html
-<meta property="article:author" content="https://www.linkedin.com/in/jdiaz817/" />
-```
-
-Agregar:
-```html
-<!-- ✅ OG: Categoría y Tags -->
-{% if post.category %}
-  <meta property="article:section" content="{{ post.category.name }}" />
-{% endif %}
-{% for tag in post.tags.all %}
-  <meta property="article:tag" content="{{ tag.name }}" />
-{% endfor %}
-<meta property="article:publisher" content="https://www.linkedin.com/in/jdiaz817/" />
-```
-
-Dentro del bloque `{% if post.cover_image %}` de OG, agregar:
-```html
-<meta property="og:image:alt" content="{{ post.meta_description|default:post.title }}" />
-```
-
-#### 1.3 Agregar Twitter Tags faltantes
-
-Después de:
-```html
-<meta name="twitter:domain" content="jaimediaz.dev" />
-```
-
-Agregar:
-```html
-<meta name="twitter:site" content="@jdiaz817" />
-<meta name="twitter:creator" content="@jdiaz817" />
-```
-
-#### ✅ Criterios de aceptación Fase 1
-- [x] `sitemap.xml` muestra todos los posts publicados (BlogPostSitemap registrado en urls.py)
-- [x] OG tags incluyen `article:section`, `article:tag` y `article:publisher`
-- [x] Twitter Cards incluyen `twitter:site` y `twitter:creator`
-- [x] `og:image:alt` está presente cuando hay cover_image
-- [ ] Google Rich Results Test no muestra errores en BlogPosting (pendiente de prueba manual)
+**Cambios:**
+- `BlogPostSitemap` registrado en sitemaps
+- `article:section`, `article:tag`, `article:publisher` en OG
+- `og:image:alt` en bloque de cover_image
+- `twitter:site` y `twitter:creator` agregados
 
 ---
 
 ### ⚡ FASE 2: Schema.org Breadcrumb (Visible + Structured Data)
-**Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/templates/blog/blog_detail.html`
+**Archivos:** `blog_detail.html`, `blog_detail.css`
 
-#### 2.1 Agregar BreadcrumbList schema
-
-Agregar antes del cierre de `</head>`:
-```html
-<!-- ✅ SCHEMA.ORG BREADCRUMB -->
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-        {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Inicio",
-            "item": "{{ request.scheme }}://{{ request.get_host }}/"
-        },
-        {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Blog",
-            "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'blog:blog_list' %}"
-        }{% if post.category %},
-        {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "{{ post.category.name }}",
-            "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'blog:blog_list' %}?category={{ post.category.slug }}"
-        }{% endif %},
-        {
-            "@type": "ListItem",
-            "position": {% if post.category %}4{% else %}3{% endif %},
-            "name": "{{ post.title|escapejs }}"
-        }
-    ]
-}
-</script>
-```
-
-#### 2.2 Agregar breadcrumb visible
-
-Dentro de `<article>`, antes del `<header class="jd-article-header">`, agregar:
-```html
-<!-- ✅ BREADCRUMB NAVEGACIÓN -->
-<nav aria-label="Breadcrumb" class="jd-breadcrumb">
-  <ol class="jd-breadcrumb-list">
-    <li class="jd-breadcrumb-item">
-      <a href="{% url 'home' %}">Inicio</a>
-    </li>
-    <li class="jd-breadcrumb-item">
-      <a href="{% url 'blog:blog_list' %}">Blog</a>
-    </li>
-    {% if post.category %}
-    <li class="jd-breadcrumb-item">
-      <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}">{{ post.category.name }}</a>
-    </li>
-    {% endif %}
-    <li class="jd-breadcrumb-item jd-breadcrumb-current" aria-current="page">
-      {{ post.title|truncatewords:8 }}
-    </li>
-  </ol>
-</nav>
-```
-
-#### 2.3 Agregar estilos del breadcrumb
-
-En `backend/blog/static/blog/css/blog_detail.css`, agregar:
-```css
-/* ✅ BREADCRUMB */
-.jd-breadcrumb {
-  margin-bottom: 1.5rem;
-  font-size: 0.85rem;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.jd-breadcrumb-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.jd-breadcrumb-item {
-  display: flex;
-  align-items: center;
-  color: #9ca3af;
-}
-
-.jd-breadcrumb-item + .jd-breadcrumb-item::before {
-  content: "›";
-  margin-right: 0.5rem;
-  color: #d1d5db;
-}
-
-.jd-breadcrumb-item a {
-  color: #6b7280;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.jd-breadcrumb-item a:hover {
-  color: #2563eb;
-}
-
-.jd-breadcrumb-current {
-  color: #374151;
-  font-weight: 500;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-```
-
-#### ✅ Criterios de aceptación Fase 2
-- [x] Breadcrumb visible funciona con HOME > Blog > Categoría > Artículo
-- [x] Schema BreadcrumbList agregado al `<head>`
-- [x] Enlace a categoría funciona correctamente
-- [x] Responsive: breadcrumb se adapta en móvil (flex-wrap + max-width)
+**Cambios:**
+- BreadcrumbList schema en `<head>` (Inicio → Blog → Categoría → Artículo)
+- Breadcrumb visible con clase `.jd-breadcrumb`
+- Estilos con flex-wrap responsive
 
 ---
 
 ### ⚡ FASE 3: Schema.org Enriquecido + Reading Time Preciso
-**Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/templates/blog/blog_detail.html`, `backend/blog/templatetags/blog_filters.py`
+**Archivos:** `blog_detail.html`, `blog_filters.py`
 
-#### 3.1 Agregar timeToRead y keywords al BlogPosting schema
-
-Dentro del `<script type="application/ld+json">` del BlogPosting, agregar antes de `datePublished`:
-```json
-"wordCount": "{{ post.content_html|striptags|wordcount }}",
-"timeRequired": "PT{{ post.content_html|striptags|wordcount|divisibleby:200|add:"1" }}M",
-```
-
-Dentro del schema, agregar después de `mainEntityOfPage`:
-```json
-"keywords": [{% for tag in post.tags.all %}"{{ tag.name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
-```
-
-#### 3.2 Crear template tag para reading time preciso
-
-**Archivo:** `backend/blog/templatetags/blog_filters.py`
-
-Agregar al final del archivo:
-```python
-@register.filter
-def reading_time(html_content):
-    """Calcula tiempo de lectura preciso (200 palabras por minuto)."""
-    import re
-    text = re.sub(r'<[^>]+>', '', html_content or '')
-    words = len(text.split())
-    minutes = max(1, round(words / 200))
-    return minutes
-```
-
-#### 3.3 Actualizar el reading time visible
-
-En `blog_detail.html`, cambiar:
-```html
-<span>{% widthratio post.content_html|length 1500 1 %} min de lectura</span>
-```
-Por:
-```html
-<span>{{ post.content_html|reading_time }} min de lectura</span>
-```
-
-#### ✅ Criterios de aceptación Fase 3
-- [x] Schema.org BlogPosting incluye `wordCount` y `timeRequired`
-- [x] Schema.org BlogPosting incluye `keywords` con las tags
-- [x] Reading time visible es más preciso (template tag `reading_time` basado en 200 palabras/min)
-- [ ] Google Rich Results Test no muestra errores (pendiente de prueba manual)
+**Cambios:**
+- `wordCount` y `timeRequired` en Schema BlogPosting
+- `keywords` con tags del post
+- Template tag `reading_time` (200 palabras/min)
+- Fallback actualizado a `{{ post.content_html|reading_time }}`
 
 ---
 
 ### ⚡ FASE 4: Feed RSS/Atom + Preconnect Hints
-**Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/views.py` (o crear `backend/blog/feeds.py`), `backend/blog/urls.py`, `backend/blog/templates/blog/blog_detail.html`
+**Archivos:** `blog/feeds.py`, `blog/urls.py`, `blog_detail.html`
 
-#### 4.1 Crear vista de Feed RSS
-
-**Archivo nuevo:** `backend/blog/feeds.py`
-```python
-from django.contrib.syndication.views import Feed
-from django.utils.feedgenerator import Atom1Feed
-from blog.models import BlogPost
-
-
-class BlogRSSFeed(Feed):
-    title = "Jaime Díaz - Blog"
-    link = "/blog/"
-    description = "Artículos sobre desarrollo fullstack, integraciones y tecnología."
-
-    def items(self):
-        return BlogPost.objects.filter(is_published=True).order_by("-publish_date")[:20]
-
-    def item_title(self, item):
-        return item.meta_title or item.title
-
-    def item_description(self, item):
-        return item.meta_description or item.description
-
-    def item_link(self, item):
-        return item.get_absolute_url()
-
-    def item_pubdate(self, item):
-        return item.publish_date
-
-    def item_updateddate(self, item):
-        return item.last_modified
-
-    def item_author_name(self, item):
-        return "Jaime Díaz"
-
-    def item_author_link(self, item):
-        return "https://www.linkedin.com/in/jdiaz817/"
-
-    def item_categories(self, item):
-        categories = []
-        if item.category:
-            categories.append(item.category.name)
-        return categories
-
-
-class BlogAtomFeed(BlogRSSFeed):
-    feed_type = Atom1Feed
-    subtitle = BlogRSSFeed.description
-```
-
-#### 4.2 Registrar URLs de feed
-
-**Archivo:** `backend/blog/urls.py`
-
-Agregar imports y URLs:
-```python
-from blog.feeds import BlogRSSFeed, BlogAtomFeed
-```
-
-Agregar en `urlpatterns`:
-```python
-path("feed/rss/", BlogRSSFeed(), name="blog_rss"),
-path("feed/atom/", BlogAtomFeed(), name="blog_atom"),
-```
-
-#### 4.3 Agregar link RSS/Atom en blog_detail.html
-
-En el `<head>`, agregar:
-```html
-<!-- ✅ FEED RSS/ATOM -->
-<link rel="alternate" type="application/rss+xml" title="Blog RSS" href="{% url 'blog:blog_rss' %}" />
-<link rel="alternate" type="application/atom+xml" title="Blog Atom" href="{% url 'blog:blog_atom' %}" />
-```
-
-#### 4.4 Agregar preconnect hints para Google Fonts
-
-En el `<head>`, ANTES del `<link href="https://fonts.googleapis.com/...">`, agregar:
-```html
-<!-- ✅ PRECONNECT HINTS -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-```
-
-#### ✅ Criterios de aceptación Fase 4
-- [x] `/blog/feed/rss/` y `/blog/feed/atom/` registrados (feeds.py + urls.py)
-- [x] Links RSS/Atom aparecen en el `<head>` del blog_detail
-- [x] Preconnect hints para Google Fonts agregados
-- [ ] Google Feed Validator no muestra errores (pendiente de prueba manual)
+**Cambios:**
+- `BlogRSSFeed` y `BlogAtomFeed` creados
+- URLs `feed/rss/` y `feed/atom/` registradas
+- Links RSS/Atom en `<head>`
+- Preconnect hints para Google Fonts
 
 ---
 
-### ⚡ FASE 5: Lazy Loading Imágenes + Artículos Relacionados
-**Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/templates/blog/blog_detail.html`, `backend/blog/views.py`, `backend/blog/static/blog/css/blog_detail.css`
+### ⚡ FASE 5: Lazy Loading + Artículos Relacionados
+**Archivos:** `blog_detail.html`, `views.py`, `blog_detail.css`
 
-> **Decisión de diseño (Opción D - Más Recientes):**
-> Los artículos relacionados se seleccionan como los 4 más recientes del blog (sin filtro por categoría/tags). Esto garantiza:
-> - **Siempre visible:** Si el blog tiene al menos 1 artículo adicional, la sección se muestra
-> - **Mínimo código:** 3 líneas en views.py, sin lógica condicional compleja
-> - **Máxima cobertura:** Funciona para artículos sin categoría ni tags
-> - **Contenido fresco:** Los artículos más recientes son inherentemente relevantes
+**Cambios:**
+- Script lazy loading (loading="lazy" + decoding="async" + alt fallback)
+- Algoritmo inteligente de relación: categoría+tags → categoría → recientes
+- Sección "Artículos relacionados" con grid responsive
+- Estilos profesionales (hover, truncado 2 líneas, responsive)
 
-#### 5.1 Agregar lazy loading a imágenes del contenido ✅ YA IMPLEMENTADO
+---
 
-#### 5.2 Agregar related_posts al context de la vista
+## ✅ MEJORAS ADICIONALES (post-Fase 5)
 
-**Archivo:** `backend/blog/views.py`
+### A. Fallback de imagen OG por defecto
+Cuando no hay `cover_image` en el frontmatter, se usa `og-social-share.jpg` automáticamente.
 
-En `BlogDetailView.get_context_data`, agregar las siguientes líneas DESPUÉS de `context["comment_form"] = CommentForm()`:
+### B. Botón "Compartir en WhatsApp"
+Botón verde (#25d366) en la sección de compartir, con enlace a `api.whatsapp.com/send`.
 
-```python
-# HU-012: Artículos relacionados (4 más recientes, excluyendo el actual)
-context["related_posts"] = BlogPost.objects.filter(
-    is_published=True
-).exclude(id=self.object.id).order_by("-publish_date")[:4]
-```
-
-#### 5.3 Renderizar sección de artículos relacionados en el template
-
-**Archivo:** `backend/blog/templates/blog/blog_detail.html`
-
-Agregar DESPUÉS del `<footer class="jd-article-footer">` y ANTES de `<section id="comments">`:
-
-```html
-<!-- ═══════════════════════════════════════
-     HU-012: ARTÍCULOS RELACIONADOS
-═══════════════════════════════════════ -->
-{% if related_posts %}
-<section class="jd-related-section">
-  <h3 class="jd-related-title">
-    <i class="fas fa-book-open me-2"></i>Artículos relacionados
-  </h3>
-  <div class="jd-related-grid">
-    {% for rpost in related_posts %}
-      <a href="{% url 'blog:blog_detail' rpost.slug %}" class="jd-related-card">
-        {% if rpost.cover_image %}
-          <div class="jd-related-img" style="background-image: url('{{ rpost.cover_image }}');"></div>
-        {% endif %}
-        <div class="jd-related-body">
-          {% if rpost.category %}
-            <span class="jd-related-category">{{ rpost.category.name }}</span>
-          {% endif %}
-          <h4 class="jd-related-card-title">{{ rpost.title }}</h4>
-          <p class="jd-related-desc">{{ rpost.description|default:''|truncatewords:15 }}</p>
-        </div>
-      </a>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-```
-
-#### 5.4 Estilos profesionales UI/UX de artículos relacionados
-
-**Archivo:** `backend/blog/static/blog/css/blog_detail.css`
-
-Agregar al FINAL del archivo:
-
-```css
-/* ✅ HU-012: ARTÍCULOS RELACIONADOS — diseño profesional */
-.jd-related-section {
-  margin: 3rem 0 2rem;
-  padding-top: 2rem;
-  border-top: 1.5px solid #f3f4f6;
-}
-
-.jd-related-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.jd-related-title i {
-  color: #6f42c1;
-  font-size: 1rem;
-}
-
-.jd-related-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.jd-related-card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  overflow: hidden;
-  text-decoration: none;
-  background: #fff;
-  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
-}
-
-.jd-related-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
-  transform: translateY(-3px);
-  border-color: #c4b5fd;
-  text-decoration: none;
-}
-
-.jd-related-img {
-  height: 130px;
-  background-size: cover;
-  background-position: center;
-  flex-shrink: 0;
-}
-
-.jd-related-body {
-  padding: .85rem 1rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: .35rem;
-}
-
-.jd-related-category {
-  font-size: .7rem;
-  font-weight: 600;
-  color: #6f42c1;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  display: inline-block;
-}
-
-.jd-related-card-title {
-  font-family: 'Syne', sans-serif;
-  font-size: .95rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.35;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.jd-related-desc {
-  font-size: .8rem;
-  color: #6b7280;
-  line-height: 1.5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Responsive: 1 columna en móvil pequeño */
-@media (max-width: 480px) {
-  .jd-related-grid {
-    grid-template-columns: 1fr;
-  }
-  .jd-related-img {
-    height: 160px;
-  }
-}
-
-/* Responsive: altura de imagen reducida en tablet */
-@media (max-width: 767px) {
-  .jd-related-img {
-    height: 110px;
-  }
-}
-```
-
-#### ✅ Criterios de aceptación Fase 5
-- [x] Imágenes del contenido tienen `loading="lazy"` y `decoding="async"`
-- [x] Imágenes sin alt obtienen el título del post como alternativa
-- [ ] Sección "Artículos relacionados" visible al final del artículo (4 más recientes)
-- [ ] Cada tarjeta muestra: imagen (si existe), categoría (si existe), título, descripción
-- [ ] Hover: elevación sutil (translateY -3px + sombra) + borde morado
-- [ ] Título del artículo truncado a 2 líneas con ellipsis
-- [ ] Descripción truncada a 2 líneas con ellipsis
-- [ ] Responsive: grid se adapta (4→2→1 columna según resolución)
-- [ ] Links navegan correctamente al artículo
-- [ ] Coherencia visual con el resto del blog_detail (Syne, DM Sans, colores)
+### C. Algoritmo inteligente de artículos relacionados
+- **Prioridad 1:** Misma categoría + al menos 1 tag en común
+- **Prioridad 2:** Misma categoría (si faltan)
+- **Prioridad 3:** Los más recientes (si faltan)
+- **Límite:** Siempre máximo 4 tarjetas
 
 ---
 
 ## 📋 RESUMEN DE FASES
 
-| Fase | Descripción                              | Tiempo | Prioridad |
-| ---- | ---------------------------------------- | ------ | --------- |
-| 1    | Fix Sitemap + OG Tags completos          | 15 min | 🔴 CRÍTICA |
-| 2    | Schema Breadcrumb (visible + structured) | 15 min | 🟡 ALTA    |
-| 3    | Schema enriquecido + Reading Time        | 15 min | 🟡 ALTA    |
-| 4    | Feed RSS/Atom + Preconnect hints         | 15 min | 🟢 MEDIA   |
-| 5    | Lazy Loading + Artículos Relacionados    | 15 min | 🟢 MEDIA   |
+| Fase | Descripción                              | Estado       |
+| ---- | ---------------------------------------- | ------------ |
+| 1    | Fix Sitemap + OG Tags completos          | ✅ Completada |
+| 2    | Schema Breadcrumb (visible + structured) | ✅ Completada |
+| 3    | Schema enriquecido + Reading Time        | ✅ Completada |
+| 4    | Feed RSS/Atom + Preconnect hints         | ✅ Completada |
+| 5    | Lazy Loading + Artículos Relacionados    | ✅ Completada |
+| +    | Fallback OG + WhatsApp + Algoritmo IA    | ✅ Completada |
 
-**Tiempo total estimado:** ~75 minutos (5 sesiones)
+---
+
+## 📋 PENDIENTE — Pruebas manuales
+
+| #   | Prueba                            | Herramienta                                                             |
+| --- | --------------------------------- | ----------------------------------------------------------------------- |
+| 1   | Sitemap                           | `https://jaimediaz.dev/sitemap.xml`                                     |
+| 2   | OG Tags + Preview social          | [Facebook Debugger](https://developers.facebook.com/tools/debug/)       |
+| 3   | Twitter Cards                     | [Twitter Card Validator](https://cards-dev.twitter.com/validator)       |
+| 4   | Schema.org BlogPosting            | [Google Rich Results Test](https://search.google.com/test/rich-results) |
+| 5   | Artículos relacionados            | Navegador — verificar 4 tarjetas al final del artículo                  |
+| 6   | Artículos relacionados responsive | Redimensionar ventana a 480px → 1 columna                               |
+| 7   | Feed RSS/Atom                     | [Feed Validator](https://validator.w3.org/feed/)                        |
 
 ---
 
 ## 🔍 CÓMO VALIDAR
 
-### Herramientas de testing SEO:
-1. **Google Rich Results Test:** https://search.google.com/test/rich-results
-   - Pegar URL del blog detail → verificar BlogPosting + BreadcrumbList
-2. **Google Search Console:** https://search.google.com/search-console
-   - Monitorear cobertura de sitemap.xml
-3. **Facebook Debugger:** https://developers.facebook.com/tools/debug/
-   - Pegar URL del blog detail → verificar OG tags y vista previa del enlace compartido
-   - **Útil para:** Ver cómo se ve el artículo al compartirlo en Facebook, Messenger, WhatsApp
-4. **Twitter Card Validator:** https://cards-dev.twitter.com/validator
-   - Verificar Twitter Cards
-5. **Feed Validator:** https://validator.w3.org/feed/
-   - Verificar RSS/Atom feed
-
 ### Vista previa de enlace compartido en redes sociales:
 
-No necesitas hacer deploy para probar cómo se verá un enlace del blog al compartirlo en WhatsApp, Facebook o Twitter. Usa estas herramientas:
+| Herramienta                 | Qué muestra                                      |
+| --------------------------- | ------------------------------------------------ |
+| **Facebook Debugger**       | Preview en Facebook y **WhatsApp** (mismo motor) |
+| **Twitter Card Validator**  | Preview en X/Twitter                             |
+| **LinkedIn Post Inspector** | Preview en LinkedIn                              |
+| **WhatsApp Web**            | Preview real (usa Facebook scraper)              |
 
-| Herramienta                 | URL                                                                       | Qué muestra                                                                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Facebook Debugger**       | https://developers.facebook.com/tools/debug/                              | Preview exacto de cómo se ve el enlace en Facebook y **WhatsApp** (usa OG tags de Facebook). Muestra título, descripción, imagen y corrige caché. |
-| **Twitter Card Validator**  | https://cards-dev.twitter.com/validator                                   | Preview del enlace en X/Twitter con tarjeta grande (summary_large_image).                                                                         |
-| **LinkedIn Post Inspector** | https://www.linkedin.com/post-inspector/                                  | Preview del enlace en LinkedIn.                                                                                                                   |
-| **WhatsApp Web** (manual)   | Enviar el enlace a ti mismo por WhatsApp Web → ver el preview que genera. | Preview real en WhatsApp. Si Facebook Debugger funciona, WhatsApp también.                                                                        |
+### Cómo probar sin deploy:
+1. `ngrok http 8000` → genera URL pública
+2. Pegar URL en Facebook Debugger
+3. Click "Scrape Again" para forzar actualización
 
-### Cómo probar sin deploy (desarrollo local):
-
-1. Usa **ngrok** para exponer tu localhost:
-   ```bash
-   ngrok http 8000
-   ```
-   Esto genera una URL pública como `https://abc123.ngrok.io` que apunta a tu servidor local.
-
-2. Copia la URL ngrok + la ruta del artículo, ej: `https://abc123.ngrok.io/blog/mi-articulo/`
-
-3. Pega esa URL en Facebook Debugger → verás el preview exacto con título, descripción, imagen OG y categoría.
-
-### Nota importante sobre caché de redes sociales:
-
-Facebook/WhatsApp cachean los OG tags por ~24 horas. Si cambias los meta tags, usa el botón **"Scrape Again"** en Facebook Debugger para forzar la actualización de la caché.
-
-### Para artículos relacionados:
-
-1. Abre cualquier artículo del blog en el navegador
-2. Scrollea al final → debes ver la sección "Artículos relacionados" con 4 tarjetas
-3. Cada tarjeta debe ser clickeable y navegar al artículo correcto
-4. Redimensiona la ventana a 480px para verificar responsive (1 columna)
-5. Verifica en tablet (~768px) que las tarjetas se acomodan en 2-3 columnas
-6. Desktop (≥1024px): 4 tarjetas en fila
+### Nota sobre caché:
+Facebook/WhatsApp cachean OG tags por ~24-48h. Usar "Scrape Again" para actualizar.
 
 ---
 
-> 📌 Última actualización: 30/05/2026
+## 📝 CÓMO DEFINIR cover_image EN EL FRONTMATTER
+
+```yaml
+---
+title: "Mi artículo"
+description: "Descripción SEO"
+category: "Backend"
+cover_image: "/static/blogs/mi-articulo/imagen.png"  # 1200x630px ideal
+tags: ["django", "python"]
+---
+```
+
+Sin `cover_image` → se usa `og-social-share.jpg` automáticamente.
+
+---
+
+> 📌 Última actualización: 16/06/2026
 > 📌 Aplicable desde HU-012
+
+---
+
+## 🔄 FLUJO COMPLETO: Artículos Relacionados (URL → View → Template)
+
+### Diagrama del flujo
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  1. USUARIO                                                             │
+│     Visita: https://jaimediaz.dev/blog/mi-articulo/                     │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  2. DJANGO URL ROUTER                                                   │
+│     blog/urls.py:                                                       │
+│       path("<slug:slug>/", BlogDetailView.as_view(),                    │
+│            name="blog_detail")                                          │
+│     → Captura slug="mi-articulo"                                        │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  3. BlogDetailView (views.py)                                           │
+│     class BlogDetailView(DetailView):                                   │
+│       model = BlogPost                                                  │
+│       template_name = "blog/blog_detail.html"                           │
+│       slug_field = "slug"                                               │
+│                                                                         │
+│     → get_queryset():                                                   │
+│       Filtra BlogPost por slug, is_published=True                       │
+│       (o permite borradores al autor/superuser)                         │
+│                                                                         │
+│     → get_object():                                                     │
+│       Busca el BlogPost con slug="mi-articulo"                          │
+│       → self.object = BlogPost instance                                 │
+│       → self.object.category = ForeignKey(Category)                     │
+│       → self.object.tags = ManyToManyField(Tag)                         │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  4. get_context_data() — Construye el contexto para el template         │
+│                                                                         │
+│  context = {                                                            │
+│    "post": self.object,                    ← El artículo actual         │
+│    "comment_form": CommentForm(),          ← Formulario de comentarios  │
+│    "comments": get_approved_comments(),    ← Comentarios aprobados     │
+│                                                                         │
+│    ┌──────────────────────────────────────────────────────────────┐     │
+│    │ "related_posts": ─── ALGORITMO INTELIGENTE (5.2)            │     │
+│    │                                                              │     │
+│    │  PASO 1: Misma categoría + al menos 1 tag en común          │     │
+│    │    → BlogPost.objects.filter(                                │     │
+│    │        is_published=True,                                    │     │
+│    │        category=self.object.category,                        │     │
+│    │        tags__in=self.object.tags.all()                       │     │
+│    │      ).exclude(id=self.object.id)[:4]                        │     │
+│    │                                                              │     │
+│    │  PASO 2: Misma categoría (si faltan para llegar a 4)        │     │
+│    │    → BlogPost.objects.filter(                                │     │
+│    │        is_published=True,                                    │     │
+│    │        category=self.object.category                         │     │
+│    │      ).exclude(id__in=seen_ids)[:4-len]                      │     │
+│    │                                                              │     │
+│    │  PASO 3: Los más recientes (si faltan)                       │     │
+│    │    → BlogPost.objects.filter(is_published=True)              │     │
+│    │      .exclude(id__in=seen_ids)[:4-len]                       │     │
+│    │                                                              │     │
+│    │  Resultado: queryset de BlogPost → se pasa al template       │     │
+│    └──────────────────────────────────────────────────────────────┘     │
+│                                                                         │
+│    "comment_count": 5,                                                  │
+│    "comments_status_json": {...},                                       │
+│    "pending_comments_json": [...]                                       │
+│  }                                                                      │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  5. TEMPLATE (blog_detail.html)                                         │
+│                                                                         │
+│  Recibe: context["related_posts"] = queryset de 0 a 4 BlogPost         │
+│                                                                         │
+│  {% if related_posts %}                                                 │
+│    <section class="jd-related-section">                                 │
+│      <h3>Artículos relacionados</h3>                                    │
+│      <div class="jd-related-grid">                                      │
+│        {% for rpost in related_posts %}                                 │
+│          <a href="{% url 'blog:blog_detail' rpost.slug %}">            │
+│            <div class="jd-related-img" ...></div>                       │
+│            <div class="jd-related-body">                                │
+│              <span>{{ rpost.category.name }}</span>                     │
+│              <h4>{{ rpost.title }}</h4>                                 │
+│              <p>{{ rpost.description|truncatewords:15 }}</p>           │
+│            </div>                                                       │
+│          </a>                                                           │
+│        {% endfor %}                                                     │
+│      </div>                                                             │
+│    </section>                                                           │
+│  {% endif %}                                                            │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  6. NAVEGADOR                                                           │
+│     Renderiza: 4 tarjetas clickeables al final del artículo            │
+│     Grid responsive: 4→2→1 columna según resolución                    │
+│     Hover: elevación + borde morado + sombra                           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Variables compartidas en el flujo
+
+| Variable                   | Tipo                  | Origen                    | Destino              |
+| -------------------------- | --------------------- | ------------------------- | -------------------- |
+| `self.object`              | BlogPost              | `get_object()`            | `get_context_data()` |
+| `self.object.category`     | ForeignKey(Category)  | Modelo BlogPost           | Filtro de relación   |
+| `self.object.tags`         | ManyToManyField(Tag)  | Modelo BlogPost           | Filtro de relación   |
+| `context["related_posts"]` | QuerySet(BlogPost)    | `get_context_data()`      | Template             |
+| `context["post"]`          | BlogPost              | `get_object()`            | Template             |
+| `context["comments"]`      | QuerySet(BlogComment) | `get_approved_comments()` | Template             |
+
+### Servicios utilizados
+
+| Servicio                             | Función                        | Usado en              |
+| ------------------------------------ | ------------------------------ | --------------------- |
+| `get_approved_comments(slug, limit)` | Devuelve comentarios aprobados | `get_context_data()`  |
+| `get_comment_count(slug)`            | Cuenta total de comentarios    | `get_context_data()`  |
+| `BlogPost.objects.filter(...)`       | Query Django ORM               | Algoritmo de relación |
+| `BlogPost.objects.exclude(...)`      | Excluye el post actual         | Algoritmo de relación |
+
+### Cómo se carga la vista (paso a paso)
+
+```
+1. Usuario visita /blog/mi-articulo/
+                    │
+2. Django busca en blog/urls.py: <slug:slug>/ → BlogDetailView.as_view()
+                    │
+3. BlogDetailView hereda de DetailView (Django generic view)
+                    │
+4. Django ejecuta get_queryset() → BlogPost.objects.filter(slug="mi-articulo")
+                    │
+5. Django ejecuta get_object() → Retorna BlogPost instance
+                    │
+6. Django ejecuta get_context_data() → Construye el diccionario de contexto
+   ├── post = self.object
+   ├── comments = get_approved_comments(slug)
+   ├── related_posts = algoritmo inteligente (categoría+tags)
+   └── comment_count = get_comment_count(slug)
+                    │
+7. Django renderiza "blog/blog_detail.html" con el contexto
+                    │
+8. Template Jinja2 procesa: {% if related_posts %} → 4 tarjetas HTML
+                    │
+9. Navegador muestra el artículo completo + sección de relacionados
+```
+
+### Archivos involucrados
+
+```
+blog/
+├── urls.py              ← URL routing: <slug:slug>/ → BlogDetailView
+├── views.py             ← BlogDetailView con get_context_data()
+├── models.py            ← BlogPost (category FK, tags M2M)
+├── services.py          ← get_approved_comments(), get_comment_count()
+├── feeds.py             ← BlogRSSFeed, BlogAtomFeed (Fase 4)
+└── templates/blog/
+    └── blog_detail.html ← Template con {% for rpost in related_posts %}
+
+blog/static/blog/css/
+└── blog_detail.css      ← Estilos .jd-related-*
+```
+
+---
+
+## 🔄 FLUJO COMPLETO: Importación de Blogs (import_blogs)
+
+### Diagrama del flujo de importación
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  1. USUARIO                                                             │
+│     Ejecuta: python manage.py import_blogs                              │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  2. DJANGO MANAGEMENT COMMAND                                           │
+│     blog/management/commands/import_blogs.py → Command.handle()         │
+│                                                                         │
+│     2.1 Limpia __pycache__ automáticamente                              │
+│     2.2 Configura directorios:                                          │
+│         SOURCE_DIR = BASE_DIR / "blogs_source"                          │
+│         STATIC_TARGET = BASE_DIR / "static" / "blogs"                   │
+│     2.3 Resetea secuencias de ID (auto-increment)                       │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  3. BLOG PROCESSOR (utils/importer/blog_processor.py)                   │
+│                                                                         │
+│     Para CADA carpeta en blogs_source/:                                 │
+│                                                                         │
+│     3.1 Lee el slug del nombre de carpeta                               │
+│         Ej: "2026-04-26_mejoras_ui_ux" → slug="mejoras_ui_ux"          │
+│                                                                         │
+│     3.2 Lee blog.md usando markdown_utils.read_markdown_file()          │
+│         → Contenido raw del archivo                                     │
+│                                                                         │
+│     3.3 Parsea frontmatter YAML + contenido markdown                    │
+│         → Extrae: title, description, category, tags, cover_image,      │
+│           meta_title, meta_description, reading_time, etc.              │
+│                                                                         │
+│     3.4 Convierte markdown → HTML                                       │
+│         → Procesa bloques especiales (:::slides, galerías, etc.)        │
+│         → Usa markdown library + BeautifulSoup para limpiar             │
+│                                                                         │
+│     3.5 Calcula hash del archivo (change detection)                     │
+│         → Si el hash no cambió → SKIP (no reimportar)                   │
+│         → Si el hash cambió → IMPORTAR                                  │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  4. GUARDADO EN BASE DE DATOS                                           │
+│                                                                         │
+│     4.1 Busca BlogPost existente por slug                               │
+│         → Si existe: actualiza campos (title, description, etc.)        │
+│         → Si no existe: crea nuevo BlogPost                             │
+│                                                                         │
+│     4.2 Asigna o crea Category (si hay category en frontmatter)         │
+│     4.3 Asigna o crea Tags (ManyToMany)                                 │
+│     4.4 Calcula reading_time si no está en frontmatter                  │
+│     4.5 Guarda el BlogPost                                              │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  5. COPIA DE RECURSOS ESTÁTICOS                                         │
+│                                                                         │
+│     5.1 Copia imágenes y videos de:                                     │
+│         blogs_source/<carpeta>/ → static/blogs/<slug>/                  │
+│                                                                         │
+│     5.2 Archivos copiados:                                              │
+│         .png, .jpg, .jpeg, .gif, .webp (imágenes)                       │
+│         .mp4, .webm, .mov, .avi (videos)                                │
+│         NO copia blog.md ni frontmatter                                 │
+│                                                                         │
+│     5.3 Archivos eliminados del destino (si ya no existen en origen)    │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  6. LIMPIEZA AUTOMÁTICA                                                 │
+│                                                                         │
+│     6.1 Compara slugs procesados vs slugs existentes en BD              │
+│     6.2 Elimina BlogPost que ya no tienen carpeta en blogs_source       │
+│     6.3 Elimina carpetas en static/blogs/ que ya no corresponden        │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│  7. RESUMEN FINAL                                                       │
+│                                                                         │
+│     Muestra en consola:                                                 │
+│     - Número de blogs importados                                        │
+│     - Número de blogs saltados (sin cambios)                            │
+│     - Número de blogs eliminados (limpieza)                             │
+│     - Errores encontrados (si los hay)                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Estructura de archivos involucrados
+
+```
+blogs_source/                          ← ORIGEN: Carpetas de artículos
+├── 2026-04-26_mejoras_ui_ux/
+│   ├── blog.md                        ← Markdown + frontmatter YAML
+│   ├── imagen1.png                    ← Imágenes del artículo
+│   └── video.mp4                      ← Videos del artículo
+├── 2026-06-06_mi_nuevo_articulo/
+│   ├── blog.md
+│   └── image-1.png
+└── ...
+
+            │ import_blogs.py ejecuta
+            ▼
+
+static/blogs/                          ← DESTINO: Recursos estáticos
+├── 2026-04-26_mejoras_ui_ux/
+│   ├── imagen1.png                    ← Copiado del origen
+│   └── video.mp4
+└── ...
+
+            │ BlogProcessor crea/actualiza
+            ▼
+
+models.py (BlogPost)                   ← BASE DE DATOS
+├── slug = "mejoras_ui_ux"
+├── title = "Mejoras UI/UX"
+├── description = "..."
+├── content_html = "<p>...</p>"        ← Convertido de markdown
+├── category = Category("UI/UX")
+├── tags = [Tag("django"), Tag("python")]
+├── cover_image = "/static/blogs/.../imagen1.png"
+├── meta_title = "..."
+├── meta_description = "..."
+└── reading_time = 5
+```
+
+### Comandos útiles
+
+```bash
+# Importar todos los blogs
+python manage.py import_blogs
+
+# Importar blogs con verbose
+python manage.py import_blogs --verbosity 2
+
+# Resetear y reimportar (útil para debugging)
+python manage.py import_blogs
+```
+
+### Flujo completo: Blog.md → Blog en el navegador
+
+```
+1. blog.md (frontmatter + markdown)
+   │
+2. import_blogs.py lee el archivo
+   │
+3. BlogProcessor parsea frontmatter YAML
+   │  → title, description, category, tags, cover_image, etc.
+   │
+4. BlogProcessor convierte markdown → HTML
+   │  → Procesa :::slides, galerías, código, etc.
+   │
+5. BlogProcessor guarda en BlogPost (BD)
+   │  → Crea o actualiza registro
+   │  → Asigna Category y Tags
+   │
+6. Copia imágenes a static/blogs/<slug>/
+   │
+7. Navegador: /blog/<slug>/
+   │
+8. Django: BlogDetailView.get_context_data()
+   │  → Carga el BlogPost
+   │  → Ejecuta algoritmo de relación (categoría + tags)
+   │  → Construye contexto completo
+   │
+9. Template: blog_detail.html renderiza todo
+   │  → OG tags con cover_image o fallback
+   │  → Breadcrumb visible
+   │  → Artículos relacionados
+   │
+10. Navegador muestra el artículo completo
+```

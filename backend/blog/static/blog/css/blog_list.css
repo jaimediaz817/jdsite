@@ -63,6 +63,18 @@
     justify-content: space-between;
 }
 
+.fieldset-container {
+    /* justify-content: space-around; */
+    flex-grow: 1;
+    /* text-align: start; */
+    gap: 1.5rem;
+
+    button#toggle-sort-menu {
+        width: 128px;
+        margin-left: 0;
+    }
+}
+
 .blog-date-range-container {
     display: flex;
     align-items: center;
@@ -966,28 +978,6 @@ body.home-p {
     gap: 2rem 1.5rem;
 }
 
-/* 3 columnas en pantallas medianas (hasta 1199px) */
-@media (max-width: 1199px) {
-    .blog-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* 2 columnas en tablets (hasta 991px) */
-@media (max-width: 991px) {
-    .blog-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* 1 columna en móviles (hasta 767px) */
-@media (max-width: 767px) {
-    .blog-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-
 .jd-section {
     position: relative;
 
@@ -1240,17 +1230,7 @@ body.home-p {
 }
 
 /* Responsive: en mobile se achica */
-@media (max-width: 767px) {
-    .blog-clear-btn {
-        padding: 8px 12px;
-        margin-left: 6px;
-        font-size: 0.75rem;
-    }
-
-    .blog-clear-btn span {
-        display: none;
-    }
-}
+@media (max-width: 767px) {}
 
 .blog-search-hint {
     text-align: center;
@@ -1270,31 +1250,7 @@ body.home-p {
     color: #6a11cb;
 }
 
-/* Responsive: mobile */
-@media (max-width: 576px) {
-    .blog-search-form {
-        max-width: 100%;
-    }
 
-    .blog-search-input {
-        font-size: 0.85rem;
-        padding: 10px 8px;
-    }
-
-    .blog-search-btn {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-    }
-
-    .blog-clear-btn {
-        padding: 10px 12px;
-    }
-
-    .blog-search-icon {
-        padding-left: 12px;
-        padding-right: 6px;
-    }
-}
 
 /* ==========================================================================
    BOTÓN FLOTANTE "IR ARRIBA"
@@ -1365,15 +1321,7 @@ body.home-p {
 }
 
 /* Responsive: mobile */
-@media (max-width: 576px) {
-    .back-to-top {
-        right: 1rem;
-        bottom: 1rem;
-        width: 2.4rem;
-        height: 2.4rem;
-        font-size: 1rem;
-    }
-}
+@media (max-width: 576px) {}
 
 /* ============================================
    🟡 Fecha/tiempo flotante en la imagen
@@ -1705,4 +1653,86 @@ span.author-name {
     left: 0;
     margin-top: 6px;
     min-width: 220px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* 3 columnas en pantallas medianas (hasta 1199px) */
+@media (max-width: 1199px) {
+    .blog-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 2 columnas en tablets (hasta 991px) */
+@media (max-width: 991px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 1 columna en móviles (hasta 767px) */
+@media (max-width: 767px) {
+    .fieldset-container {
+        flex-direction: column;
+
+        button#toggle-sort-menu {}
+    }
+
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-clear-btn {
+        padding: 8px 12px;
+        margin-left: 6px;
+        font-size: 0.75rem;
+    }
+
+    .blog-clear-btn span {
+        display: none;
+    }
+}
+
+/* Responsive: mobile */
+@media (max-width: 576px) {
+    .blog-search-form {
+        max-width: 100%;
+    }
+
+    .blog-search-input {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+
+    .blog-search-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .blog-clear-btn {
+        padding: 10px 12px;
+    }
+
+    .blog-search-icon {
+        padding-left: 12px;
+        padding-right: 6px;
+    }
+
+    .back-to-top {
+        right: 1rem;
+        bottom: 1rem;
+        width: 2.4rem;
+        height: 2.4rem;
+        font-size: 1rem;
+    }
 }

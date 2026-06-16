@@ -111,84 +111,91 @@
                                     <!-- 🟡 COLLAPSE: Filtros avanzados (fechas + acciones) -->
                                     <div class="collapse{% if has_active_filters %} show{% endif %}" id="advanced-filters-collapse">
                                         <div class="blog-toolbar-row">
-                                            <fieldset class="filtro-fecha-creacion">
-                                                <legend class="fecha-creacion-title-filters">Fecha de creación del artículo</legend>
-                                                <div class="blog-date-range-container">
-                                                    <div class="blog-date-field">
-                                                        <label class="blog-date-label" for="date-from">
-                                                            <i class="far fa-calendar-alt"></i>
-                                                            <span>Desde</span>
-                                                        </label>
-                                                        <input type="text"
-                                                            name="date_from"
-                                                            id="date-from"
-                                                            class="blog-date-input"
-                                                            placeholder="Fecha inicio"
-                                                            value="{{ date_from }}"
-                                                            autocomplete="off">
+                                            <div class="fieldset-container d-flex">
+                                                {% comment %} NOTE: Filtrar por rango de fechas {% endcomment %}
+                                                <fieldset class="filtro-fecha-creacion">
+                                                    <legend class="fecha-creacion-title-filters">Fecha de creación del artículo</legend>
+                                                    <div class="blog-date-range-container">
+                                                        <div class="blog-date-field">
+                                                            <label class="blog-date-label" for="date-from">
+                                                                <i class="far fa-calendar-alt"></i>
+                                                                <span>Desde</span>
+                                                            </label>
+                                                            <input type="text"
+                                                                name="date_from"
+                                                                id="date-from"
+                                                                class="blog-date-input"
+                                                                placeholder="Fecha inicio"
+                                                                value="{{ date_from }}"
+                                                                autocomplete="off">
+                                                        </div>
+                                                        <div class="blog-date-separator">
+                                                            <i class="fas fa-arrow-right"></i>
+                                                        </div>
+                                                        <div class="blog-date-field">
+                                                            <label class="blog-date-label" for="date-to">
+                                                                <i class="far fa-calendar-alt"></i>
+                                                                <span>Hasta</span>
+                                                            </label>
+                                                            <input type="text"
+                                                                name="date_to"
+                                                                id="date-to"
+                                                                class="blog-date-input"
+                                                                placeholder="Fecha fin"
+                                                                value="{{ date_to }}"
+                                                                autocomplete="off">
+                                                        </div>
+                                                        <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtro de fechas">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        {% if date_from or date_to %}
+                                                        <a href="?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                                                        class="btn blog-date-clear-btn" title="Limpiar fechas">
+                                                            <i class="fas fa-times"></i>
+                                                        </a>
+                                                        {% endif %}
                                                     </div>
-                                                    <div class="blog-date-separator">
-                                                        <i class="fas fa-arrow-right"></i>
-                                                    </div>
-                                                    <div class="blog-date-field">
-                                                        <label class="blog-date-label" for="date-to">
-                                                            <i class="far fa-calendar-alt"></i>
-                                                            <span>Hasta</span>
-                                                        </label>
-                                                        <input type="text"
-                                                            name="date_to"
-                                                            id="date-to"
-                                                            class="blog-date-input"
-                                                            placeholder="Fecha fin"
-                                                            value="{{ date_to }}"
-                                                            autocomplete="off">
-                                                    </div>
-                                                    <button type="submit" class="btn blog-date-apply-btn" title="Aplicar filtro de fechas">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    {% if date_from or date_to %}
-                                                    <a href="?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
-                                                    class="btn blog-date-clear-btn" title="Limpiar fechas">
-                                                        <i class="fas fa-times"></i>
-                                                    </a>
-                                                    {% endif %}
-                                                </div>
-                                            </fieldset>
-                                            <div class="blog-toolbar-actions">
-                                                <!-- Selector de ordenamiento -->
-                                                <div class="sort-dropdown-wrapper">
-                                                    <button type="button"
-                                                        id="toggle-sort-menu"
-                                                        class="btn btn-sm btn-outline-secondary rounded-pill px-3"
-                                                        style="font-size:.82rem; white-space:nowrap;"
-                                                        aria-expanded="false"
-                                                        title="Ordenar artículos">
-                                                        <i class="fas fa-sort-amount-down me-1"></i>
-                                                        <span id="toggle-sort-text">
-                                                            {% if current_sort == "weight_desc" %}Peso ↓
-                                                            {% elif current_sort == "weight_asc" %}Peso ↑
-                                                            {% else %}Fecha{% endif %}
-                                                        </span>
-                                                    </button>
-                                                    <!-- Menú de ordenamiento (oculto por defecto) -->
-                                                    <div class="sort-menu" id="sort-menu" style="display:none;">
-                                                        <div class="sort-menu-inner">
-                                                            <a href="?sort=date&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
-                                                                class="sort-option {% if current_sort == 'date' %}active{% endif %}">
-                                                                <i class="fas fa-clock me-1"></i> Por fecha (más reciente)
-                                                            </a>
-                                                            <a href="?sort=weight_desc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
-                                                                class="sort-option {% if current_sort == 'weight_desc' %}active{% endif %}">
-                                                                <i class="fas fa-weight-hanging me-1"></i> Mayor peso (más recursos)
-                                                            </a>
-                                                            <a href="?sort=weight_asc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
-                                                                class="sort-option {% if current_sort == 'weight_asc' %}active{% endif %}">
-                                                                <i class="fas fa-weight-hanging me-1"></i> Menor peso (menos recursos)
-                                                            </a>
+                                                </fieldset>
+
+                                                <fieldset class="filtro-fecha-creacion">
+                                                    <legend class="fecha-creacion-title-filters">Ordenar artículos</legend>
+                                                    <!-- Selector de ordenamiento -->
+                                                    <div class="sort-dropdown-wrapper">
+                                                        <button type="button"
+                                                            id="toggle-sort-menu"
+                                                            class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                                            style="font-size:.82rem; white-space:nowrap;"
+                                                            aria-expanded="false"
+                                                            title="Ordenar artículos">
+                                                            <i class="fas fa-sort-amount-down me-1"></i>
+                                                            <span id="toggle-sort-text">
+                                                                {% if current_sort == "weight_desc" %}Peso ↓
+                                                                {% elif current_sort == "weight_asc" %}Peso ↑
+                                                                {% else %}Fecha{% endif %}
+                                                            </span>
+                                                        </button>
+                                                        <!-- Menú de ordenamiento (oculto por defecto) -->
+                                                        <div class="sort-menu" id="sort-menu" style="display:none;">
+                                                            <div class="sort-menu-inner">
+                                                                <a href="?sort=date&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                    class="sort-option {% if current_sort == 'date' %}active{% endif %}">
+                                                                    <i class="fas fa-clock me-1"></i> Por fecha (más reciente)
+                                                                </a>
+                                                                <a href="?sort=weight_desc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                    class="sort-option {% if current_sort == 'weight_desc' %}active{% endif %}">
+                                                                    <i class="fas fa-weight-hanging me-1"></i> Mayor peso (más recursos)
+                                                                </a>
+                                                                <a href="?sort=weight_asc&{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}"
+                                                                    class="sort-option {% if current_sort == 'weight_asc' %}active{% endif %}">
+                                                                    <i class="fas fa-weight-hanging me-1"></i> Menor peso (menos recursos)
+                                                                </a>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </fieldset> 
+                                            </div>                                               
 
+                                            <div class="blog-toolbar-actions">
                                                 {% if user.is_authenticated %}
                                                 <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn" title="Escribir un nuevo artículo">
                                                     <i class="fas fa-pen-fancy me-1"></i>
@@ -239,17 +246,17 @@
                                         </div>
                                         {% endif %}
 
-                                            <!-- Botón toggle para filtros avanzados -->
-                                            <button type="button"
-                                                id="toggle-advanced-filters"
-                                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 flex-shrink-0"
-                                                style="font-size:.82rem; white-space:nowrap;"
-                                                aria-expanded="false"
-                                                aria-controls="advanced-filters-collapse"
-                                                title="Mostrar/ocultar filtros avanzados">
-                                                <i class="fas fa-cog me-1"></i>
-                                                <span id="toggle-advanced-text">Filtros avanzados</span>
-                                            </button>                                        
+                                        <!-- Botón toggle para filtros avanzados -->
+                                        <button type="button"
+                                            id="toggle-advanced-filters"
+                                            class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 flex-shrink-0"
+                                            style="font-size:.82rem; white-space:nowrap;"
+                                            aria-expanded="false"
+                                            aria-controls="advanced-filters-collapse"
+                                            title="Mostrar/ocultar filtros avanzados">
+                                            <i class="fas fa-cog me-1"></i>
+                                            <span id="toggle-advanced-text">Filtros avanzados</span>
+                                        </button>                                        
                                     </div>
                                 </fieldset>
                             </form>

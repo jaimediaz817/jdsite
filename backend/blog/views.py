@@ -1228,7 +1228,7 @@ def dashboard_resources_view(request):
     all_folders = static_folders | source_folders
     compilation_map = []
     orphans_list = []
-    total_images = total_videos = total_size_all = 0
+    total_images = total_videos = total_other = total_size_all = 0
     for slug in sorted(all_folders):
         in_source = slug in source_folders
         in_static = slug in static_folders
@@ -1237,9 +1237,15 @@ def dashboard_resources_view(request):
         c_img = info.get("images", 0)
         c_vid = info.get("videos", 0)
         c_sz = info.get("total_size", 0)
+        c_files = info.get("files", [])
+        # Contador de archivos totales en la carpeta
+        c_total_files = len(c_files)
+        # Otros recursos = total - imágenes - videos
+        c_other = max(c_total_files - c_img - c_vid, 0)
         if in_static:
             total_images += c_img
             total_videos += c_vid
+            total_other += c_other
             total_size_all += c_sz
         if in_source and in_static and in_bd:
             status, label, color = "synced", "✅ Sincronizado", "green"
@@ -1285,12 +1291,13 @@ def dashboard_resources_view(request):
     if filter_slug:
         filtered_map = [e for e in compilation_map if e["slug"] == filter_slug]
         filtered_orphans = [o for o in orphans_list if o["folder"] == filter_slug]
-
+    # Construir los datos de recursos, usando la lista de huérfanos filtrada cuando corresponda
     resources_data = {
         "stats": {
             "total_folders": len(all_folders),
             "total_images": total_images,
             "total_videos": total_videos,
+            "total_other": total_other,
             "total_size": _format_size(total_size_all),
             "orphan_count": len(orphans_list),
             "synced_count": sum(
@@ -1299,10 +1306,11 @@ def dashboard_resources_view(request):
             "uncompiled_count": sum(
                 1 for e in compilation_map if e["status"] == "uncompiled"
             ),
-            "orphan_total_files": sum(o["file_count"] for o in orphans_list),
+            # Si se aplicó filtro, contabilizamos solo los huérfanos mostrados
+            "orphan_total_files": sum(o["file_count"] for o in filtered_orphans),
         },
         "compilation_map": compilation_map,
-        "orphans": orphans_list,
+        "orphans": filtered_orphans,
     }
     # --- Paginación del compilation_map (25 por página) ---
     page_number = request.GET.get("page")

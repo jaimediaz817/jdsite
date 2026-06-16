@@ -5,7 +5,7 @@ body {
 
 .stat-card {
     border: none;
-    border-radius: 14px;
+    border-radius: 0;
     transition: transform .2s, box-shadow .2s;
     background: #fff;
 }
@@ -449,22 +449,24 @@ body {
     position: relative;
 }
 
+/* Tooltip container hidden by default, positioned absolutely to avoid being clipped */
 .files-tooltip .files-tooltip-content {
     display: none;
     position: absolute;
-    bottom: calc(100% + 6px);
+    /* Posicionar el tooltip aún más arriba para evitar el recorte en la primera fila */
+    top: -3rem;
     left: 50%;
-    transform: translateX(-50%);
-    background: #1e293b;
-    color: #f8fafc;
-    border-radius: 10px;
-    padding: .6rem .8rem;
-    font-size: .72rem;
+    transform: translateX(-50%) translateY(-100%);
+    z-index: 1050;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
-    z-index: 100;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
-    pointer-events: none;
 }
+
+/* Removed stray tooltip style that caused CSS syntax errors */
 
 .files-tooltip .files-tooltip-content::after {
     content: '';
@@ -478,6 +480,11 @@ body {
 
 .files-tooltip:hover .files-tooltip-content {
     display: block;
+}
+
+/* Permitir que el tooltip sobresalga del contenedor responsivo de la tabla */
+.table-responsive {
+    overflow: visible !important;
 }
 
 .files-tooltip .files-tooltip-content span {

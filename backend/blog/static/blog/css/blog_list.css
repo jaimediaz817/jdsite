@@ -434,6 +434,8 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
+
+
 /* Ensure cards that also have Bootstrap's border-0 keep the ultra‑minimal style (no border) */
 .blog-card.card.border-0 {
     border: none !important;
@@ -455,6 +457,10 @@
     border-top-right-radius: 12px;
     overflow: hidden;
     position: relative;
+
+    aspect-ratio: 16/11;
+    overflow: hidden;
+    background: #f8f9fa;
 }
 
 .blog-card-image img {
@@ -1665,14 +1671,22 @@ span.author-name {
 
 
 
-
+/* media query: 3 columnas en pantallas medianas (hasta 1199px) */
 /* 3 columnas en pantallas medianas (hasta 1199px) */
+
+/* 
+    Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
+*/
 @media (max-width: 1199px) {
     .blog-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
+/* 
+    mediaquery: 2 columnas en tablets (hasta 991px) 
+     Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
+*/
 /* 2 columnas en tablets (hasta 991px) */
 @media (max-width: 991px) {
     .blog-grid {
@@ -1680,6 +1694,9 @@ span.author-name {
     }
 }
 
+/*  media query: 1 columna en móviles (hasta 767px) 
+   Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
+*/
 /* 1 columna en móviles (hasta 767px) */
 @media (max-width: 767px) {
     .fieldset-container {
@@ -1703,6 +1720,7 @@ span.author-name {
     }
 }
 
+/* media query: 1 columna en móviles (hasta 575px) */
 /* Responsive: mobile */
 @media (max-width: 576px) {
     .blog-search-form {

@@ -206,18 +206,14 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
 }
 
-/* Cabecera del modal con fondo oscuro para contraste del botón de cierre */
 .modal-custom .modal-header {
     border-bottom: 1px solid #f1f5f9;
     padding: 1.2rem 1.5rem;
     background: #6f42c1;
-    /* color principal del dashboard */
     color: #fff;
-    /* texto legible sobre fondo oscuro */
     position: relative;
 }
 
-/* Botón de cierre (X) en el modal — forzar visibilidad sobre fondo morado */
 .modal-custom .btn-close {
     width: 32px;
     height: 32px;
@@ -345,10 +341,18 @@ body {
     z-index: 9999;
 }
 
-.btn-action-wrap {
+.btn-action-wrap,
+.dashboard-actions-top-container {
     display: flex;
     gap: 4px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    /* border: 1px solid red; */
+
+    .btn-icon {
+        flex: 1;
+    }
+
+    .btn-action-dashboard {}
 }
 
 /* =============================================
@@ -445,21 +449,18 @@ body {
     box-shadow: 0 2px 8px rgba(220, 38, 38, .15);
 }
 
-/* Contenedor del tooltip, con alto z-index para sobresalir sobre la cabecera de la tabla */
+/* Contenedor del tooltip */
 .files-tooltip {
     position: relative;
     z-index: 1055;
 }
 
-/* Tooltip container hidden by default, positioned absolutely to avoid being clipped */
 .files-tooltip .files-tooltip-content {
     display: none;
     position: absolute;
-    /* Posicionar el tooltip justo encima de la celda, usando bottom para evitar que el <thead> lo tape */
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(-4px);
-    /* Z‑index alto para que quede por encima del encabezado sticky */
     z-index: 2000;
     background: #fff;
     border: 1px solid #e5e7eb;
@@ -469,9 +470,6 @@ body {
     white-space: nowrap;
 }
 
-/* Removed stray tooltip style that caused CSS syntax errors */
-
-/* Flecha del tooltip, apuntando hacia abajo (hacia la celda) */
 .files-tooltip .files-tooltip-content::after {
     content: '';
     position: absolute;
@@ -487,9 +485,11 @@ body {
     display: block;
 }
 
-/* Permitir que el tooltip sobresalga del contenedor responsivo de la tabla */
-.table-responsive {
-    overflow: visible !important;
+/* Solo permitir tooltip overflow en desktop; en móvil respetar scroll horizontal */
+@media (min-width: 768px) {
+    .table-responsive {
+        overflow: visible !important;
+    }
 }
 
 .files-tooltip .files-tooltip-content span {
@@ -689,7 +689,7 @@ body {
 }
 
 /* =============================================
-   HU-17.18: Botón X del buscador (inyectado con JS)
+   HU-17.18: Botón X del buscador
    ============================================= */
 #toggle-advanced-filters {
     margin-left: 0;
@@ -724,4 +724,178 @@ span.input-group-text.blog-search-icon {
 
 .blog-search-group .btn-clear-search:hover {
     color: #6b7280;
+}
+
+/* =============================================
+   🟣 Responsive Dashboard - Mobile First
+   ============================================= */
+
+/*
+    HU-011.10: En móviles, el contenedor de botones de acción se adapta para mostrar 2 columnas, con cada botón ocupando el 50% del ancho disponible.
+    media query: 2 columnas en móviles (hasta 1199px)
+*/
+@media (max-width: 1199px) {
+
+    .btn-action-wrap,
+    .dashboard-actions-top-container {
+        flex-wrap: wrap;
+
+        .btn-icon,
+        .btn-action-dashboard {
+            /* 
+                * En móviles, cada botón de acción ocupa el 50% del ancho del contenedor, con un pequeño gap entre ellos.
+            */
+            flex: inherit;
+        }
+    }
+}
+
+
+/* media query: 3 columnas en pantallas medianas (hasta 1199px) */
+/* 3 columnas en pantallas medianas (hasta 1199px) */
+
+/* 
+    
+*/
+@media (max-width: 1199px) {}
+
+/* media query: 2 columnas en tablets (hasta 991px) */
+@media (max-width: 991px) {
+
+    .btn-action-wrap,
+    .dashboard-actions-top-container {
+        .btn-icon {
+            /* 
+                * En móviles, cada botón de acción ocupa el 50% del ancho del contenedor, con un pequeño gap entre ellos.
+            */
+            flex: 1 calc(50% - 5px);
+            /* flex: 0 0 calc(50% - 5px); */
+        }
+
+        .btn-action-dashboard {
+            flex: 1 auto;
+        }
+    }
+}
+
+/*  media query: 1 columna en móviles (hasta 767px) 
+    1 columna en móviles (hasta 767px) 
+*/
+@media (max-width: 767px) {}
+
+/* 🟡 MÓVIL (hasta lg): Corregir navbar-collapse que blog_header.css fuerza a display:flex */
+@media (max-width: 991px) {
+    #navigation-menu .navbar-collapse {
+        display: none !important;
+    }
+
+    #navigation-menu .navbar-collapse.show {
+        display: flex !important;
+    }
+}
+
+
+
+/* 🟡 MÓVIL: Prevenir desbordamiento horizontal */
+@media (max-width: 575.98px) {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Header del dashboard: apilar verticalmente */
+    .d-flex.justify-content-between.align-items-strech {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    /* Indicador de email: truncar texto largo */
+    .email-indicator {
+        font-size: .72rem;
+        padding: 4px 8px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Ocultar columnas: #, Autor, Cat., Com., Fecha, Archivos */
+    .table thead th:nth-child(1),
+    .table thead th:nth-child(3),
+    .table thead th:nth-child(4),
+    .table thead th:nth-child(5),
+    .table thead th:nth-child(6),
+    .table thead th:nth-child(9),
+    .table tbody td:nth-child(1),
+    .table tbody td:nth-child(3),
+    .table tbody td:nth-child(4),
+    .table tbody td:nth-child(5),
+    .table tbody td:nth-child(6),
+    .table tbody td:nth-child(9) {
+        display: none !important;
+    }
+
+    .table td,
+    .table th {
+        padding: .45rem .35rem;
+        font-size: .78rem;
+    }
+
+    .btn-icon {
+        width: 30px;
+        height: 30px;
+        font-size: .78rem;
+    }
+
+    .btn-action-wrap {
+        gap: 3px;
+    }
+
+    .stat-number {
+        font-size: 1.3rem;
+    }
+
+    .stat-label {
+        font-size: .65rem;
+    }
+
+    .moderation-select {
+        min-width: 100px;
+        font-size: .72rem;
+        padding: .25rem .4rem .25rem .5rem;
+    }
+
+    .toggle-wrap {
+        width: 40px;
+        height: 24px;
+    }
+
+    .toggle-track {
+        width: 36px;
+        height: 20px;
+    }
+
+    .toggle-track::after {
+        width: 16px;
+        height: 16px;
+    }
+
+    .toggle-wrap input:checked+.toggle-track::after {
+        left: calc(100% - 18px);
+    }
+
+    .files-badge {
+        font-size: .68rem;
+        padding: 2px 6px;
+    }
+}
+
+/* 🟡 TABLET: Dimensiones intermedias */
+@media (min-width: 576px) and (max-width: 767.98px) {
+
+    .table td,
+    .table th {
+        padding: .5rem .4rem;
+        font-size: .8rem;
+    }
 }

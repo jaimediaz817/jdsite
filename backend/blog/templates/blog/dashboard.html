@@ -12,31 +12,32 @@
     <!-- Estilos específicos del dashboard  -->
     <link rel="stylesheet" href="{% static 'blog/css/dashboard.css' %}">
     {% if user.is_superuser %}
-    <!-- NOTE: Distintivo visual para superadmin — barra top y acentos morados sutiles -->
-    <style>
-        .sa-badge { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg,#6f42c1,#5a33a0); color:#fff; font-size:.65rem; font-weight:600; padding:2px 10px; border-radius:20px; letter-spacing:.3px; vertical-align:middle; }
-        .sa-top-border { border-top:3px double #6f42c1; padding-top:8px; }
-        .sa-stat-border .stat-card { border-left:3px solid transparent; transition:border-left-color .2s ease; }
-        .sa-stat-border .stat-card:hover { border-left-color:#6f42c1; }
-        .sa-footer { font-size:.68rem; color:#a1a1aa; text-align:center; margin-top:1.5rem; padding-top:.8rem; border-top:1px dashed #e4e4e7; }
-    </style>
+        <!-- NOTE: Distintivo visual para superadmin — barra top y acentos morados sutiles -->
+        <style>
+            .sa-badge { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg,#6f42c1,#5a33a0); color:#fff; font-size:.65rem; font-weight:600; padding:2px 10px; border-radius:20px; letter-spacing:.3px; vertical-align:middle; }
+            .sa-top-border { border-top:3px double #6f42c1; padding-top:8px; }
+            .sa-stat-border .stat-card { border-left:3px solid transparent; transition:border-left-color .2s ease; }
+            .sa-stat-border .stat-card:hover { border-left-color:#6f42c1; }
+            .sa-footer { font-size:.68rem; color:#a1a1aa; text-align:center; margin-top:1.5rem; padding-top:.8rem; border-top:1px dashed #e4e4e7; }
+        </style>
     {% endif %}
-</head>
+</head> 
 <body class="home-p">
     {% include "partials/_navigation_menu.html" %}
     <div class="toast-container" id="toastContainer"></div>
 
     <div class="container mt-4 mb-5">
-        <div class="d-flex justify-content-between align-items-strech mb-4">
+        <!-- Header: make it wrap on small screens -->
+        <div class="d-flex justify-content-between align-items-strech flex-wrap gap-2 mb-4">
             <h1 class="mb-0" style="font-size: 1.4rem; font-weight: 700;">📊 Dashboard de Moderación
                 {% if user.is_superuser %}<span class="sa-badge ms-2">🔐 Admin</span>{% endif %}
             </h1>
-            <div class="d-flex align-items-center gap-2">
+            <div class="dashboard-actions-top-container d-flex align-items-center gap-2">
                 {# HU-011.85: Indicador animado de envío de emails (2 grupos) #}
                 {% if user.is_superuser %}
                 {% with any_on=email_config.admin_notifications_enabled|default:email_config.author_notifications_enabled %}
                 <a href="{% url 'blog:blog_email_config' %}"
-                   class="email-indicator {% if any_on %}email-active{% else %}email-inactive{% endif %}"
+                   class="btn-action-dashboard email-indicator {% if any_on %}email-active{% else %}email-inactive{% endif %}"
                    title="Configuración de emails del blog">
                     <i class="fas fa-envelope"></i>Configuración Emails global
                     {% if not any_on %}
@@ -46,7 +47,12 @@
                 {% endwith %}
                 {% endif %}
                 <!-- Botón de refresco manual visible para todos los usuarios -->
-                <button type="button" id="refresh-dashboard" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size:.82rem;">
+                <button 
+                    type="button" 
+                    id="refresh-dashboard" 
+                    class="btn-action-dashboard btn btn-sm btn-outline-primary rounded-pill px-3"
+                    style="font-size:.82rem;"
+                >
                     <i class="fas fa-sync-alt me-1"></i>Refrescar
                 </button>
                 
@@ -62,13 +68,14 @@
         </div>
 
         {% if stats %}
-        <div class="row g-2 mb-4{% if user.is_superuser %} sa-top-border sa-stat-border{% endif %}">
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-success">{{ stats.published }}</div><div class="stat-label">Publicados</div></div></div>
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-warning">{{ stats.drafts }}</div><div class="stat-label">Borradores</div></div></div>
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number" style="color:#f97316;">{{ stats.pending }}</div><div class="stat-label">Pendientes</div></div></div>
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-success">{{ stats.approved }}</div><div class="stat-label">Aprobados</div></div></div>
-            <div class="col-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-danger">{{ stats.rejected }}</div><div class="stat-label">Rechazados</div></div></div>
+        <!-- Stats cards: responsive layout (2 per row on xs, 3 on sm, 6 on md+) -->
+        <div class="row g-2 mb-4 d-flex flex-wrap{% if user.is_superuser %} sa-top-border sa-stat-border{% endif %}">
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-success">{{ stats.published }}</div><div class="stat-label">Publicados</div></div></div>
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-warning">{{ stats.drafts }}</div><div class="stat-label">Borradores</div></div></div>
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number" style="color:#f97316;">{{ stats.pending }}</div><div class="stat-label">Pendientes</div></div></div>
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-success">{{ stats.approved }}</div><div class="stat-label">Aprobados</div></div></div>
+            <div class="col-6 col-sm-4 col-md-2"><div class="card stat-card text-center p-2"><div class="stat-number text-danger">{{ stats.rejected }}</div><div class="stat-label">Rechazados</div></div></div>
         </div>
         {% endif %}
 
@@ -242,16 +249,16 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th class="d-none d-md-table-cell">#</th>
                                     <th>Título</th>
-                                    <th>Autor</th>
-                                    <th>Cat.</th>
-                                    <th>Com.</th>
-                                    <th>Fecha</th>
+                                    <th class="d-none d-md-table-cell">Autor</th>
+                                    <th class="d-none d-lg-table-cell">Cat.</th>
+                                    <th class="d-none d-lg-table-cell">Com.</th>
+                                    <th class="d-none d-md-table-cell">Fecha</th>
                                     <th class="text-center">Pub.</th>
                                     <th>Moderación</th>
                                     {% if user.is_superuser %}
-                                    <th class="text-center">📁 Archivos</th>
+                                    <th class="text-center d-none d-sm-table-cell">📁 Archivos</th>
                                     {% endif %}
                                     <th class="text-center">Acciones</th>
                                 </tr>
@@ -259,19 +266,19 @@
                             <tbody>
                             {% for post in page_obj %}
                                 <tr id="row-{{ post.slug }}">
-                                    <td class="text-muted">{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td>
+                                    <td class="text-muted d-none d-md-table-cell">{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td>
                                     <td>
                                         <strong style="font-size:.82rem;">{{ post.title|truncatewords:6 }}</strong>
                                         <br><small class="text-muted">/{{ post.slug|truncatechars:24 }}</small>
                                     </td>
-                                    <td>{% if post.author %}{{ post.author.get_full_name|default:post.author.username }}{% else %}<em class="text-muted">—</em>{% endif %}</td>
-                                    <td>{% if post.category %}<span class="cat-badge">{{ post.category.name }}</span>{% else %}<em class="text-muted">—</em>{% endif %}</td>
-                                    <td class="text-center">
+                                    <td class="d-none d-md-table-cell">{% if post.author %}{{ post.author.get_full_name|default:post.author.username }}{% else %}<em class="text-muted">—</em>{% endif %}</td>
+                                    <td class="d-none d-lg-table-cell">{% if post.category %}<span class="cat-badge">{{ post.category.name }}</span>{% else %}<em class="text-muted">—</em>{% endif %}</td>
+                                    <td class="text-center d-none d-lg-table-cell">
                                             <span class="badge rounded-pill" style="background:linear-gradient(135deg,#6f42c1,#5a33a0); font-size:1rem; color:#fff;">
                                                 <i class="far fa-comment me-1 mr-1"></i>{{ post.comment_total }}
                                             </span>
                                     </td>
-                                    <td><small>{{ post.publish_date|date:"d/m/y" }}</small></td>
+                                    <td class="d-none d-md-table-cell"><small>{{ post.publish_date|date:"d/m/y" }}</small></td>
                                     <td class="text-center">
                                         {% if user.is_superuser %}
                                         <div class="toggle-wrap">
@@ -308,7 +315,7 @@
                                         {% endif %}
                                     </td>
                                     {% if user.is_superuser %}
-                                    <td class="text-center">
+                                    <td class="text-center d-none d-sm-table-cell">
                                         {% if post.files_info.file_count > 0 %}
                                         <div class="files-tooltip">
                                             <a href="{% url 'blog:dashboard_resources' %}?slug={{ post.slug }}" class="text-decoration-none" title="Ver recursos de este artículo">
@@ -420,11 +427,12 @@
             <h4 class="mb-3" style="font-size:1.1rem; font-weight:700;">📂 Gestión de Recursos</h4>
 
             <!-- KPIs -->
+            <!-- KPI cards: responsive (2 per row on xs, 4 on sm+, using col-6 col-sm-3) -->
             <div class="row g-2 mb-4">
-                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_folders }}</div><div class="stat-label">📂 Carpetas</div></div></div>
-                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_images }}</div><div class="stat-label">🖼️ Imágenes</div></div></div>
-                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_videos }}</div><div class="stat-label">🎬 Videos</div></div></div>
-                <div class="col-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_size }}</div><div class="stat-label">💾 Tamaño total</div></div></div>
+                <div class="col-6 col-sm-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_folders }}</div><div class="stat-label">📂 Carpetas</div></div></div>
+                <div class="col-6 col-sm-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_images }}</div><div class="stat-label">🖼️ Imágenes</div></div></div>
+                <div class="col-6 col-sm-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_videos }}</div><div class="stat-label">🎬 Videos</div></div></div>
+                <div class="col-6 col-sm-3"><div class="card stat-card text-center p-2"><div class="stat-number">{{ resources_data.stats.total_size }}</div><div class="stat-label">💾 Tamaño total</div></div></div>
             </div>
             <div class="row g-2 mb-3">
                 <div class="col-3"><div class="card stat-card text-center p-2" style="border-left:3px solid #22c55e;"><div class="stat-number text-success">{{ resources_data.stats.synced_count }}</div><div class="stat-label">✅ Sincronizados</div></div></div>
@@ -509,7 +517,11 @@
     </div>
     {% endif %}
 
-    {% if user.is_superuser %}<div class="sa-footer">🔐 Panel de administración — tienes control total sobre todos los artículos del blog</div>{% endif %}
+    {% if user.is_superuser %}
+    <div class="container">
+        <div class="sa-footer">🔐 Panel de administración — tienes control total sobre todos los artículos del blog</div>        
+    </div>    
+    {% endif %}
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
 

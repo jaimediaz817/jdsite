@@ -299,7 +299,7 @@
                     <div class="articles-list__container blog-grid px-0 px-md-3 pt-md-3">
                             {% for post in posts %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
-                                <div class="blog-card-image position-relative" style="aspect-ratio: 16/9; overflow: hidden; background: #f8f9fa;">
+                                <div class="blog-card-image position-relative">
                                     {% with post|blog_thumbnail as thumb_url %}
                                     {% if thumb_url %}
                                     <img src="{{ thumb_url }}" alt="{{ post.title }}" class="w-100 h-100 object-fit-cover" onerror="this.parentElement.classList.add('blog-card-image--no-img'); this.style.display='none';">

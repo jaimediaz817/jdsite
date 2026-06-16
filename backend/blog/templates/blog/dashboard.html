@@ -243,7 +243,21 @@
 
         <!-- Tabla -->
         {% if page_obj %}
+
             <div class="card border-0 shadow-sm rounded-3">
+                <!--
+                    Agregar titulo de la tabla:
+                -->
+                <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <!-- estilizar mejor el titulo de la tabla  -->                    
+                    <h2 class="mb-0" style=" font-size:1.1rem; font-weight:600; color: #333;">Gestionar Artículos</h2>
+                    <span class="text-muted" style="font-size:.82rem;">{{ page_obj.paginator.count }} artículo{{ page_obj.paginator.count|pluralize:'s' }}</span>
+                </div>
+                <!-- separar un poco titulo de tabla con barra horizontal -->
+                <div class="card-header bg-white border-bottom-0">
+                    <hr class="my-0">
+                </div>
+
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover">

@@ -187,3 +187,12 @@ def remove_param(request, param):
     query = request.GET.copy()
     query.pop(param, None)
     return query.urlencode()
+
+
+@register.filter
+def reading_time(html_content):
+    """Calcula tiempo de lectura preciso (200 palabras por minuto)."""
+    text = re.sub(r"<[^>]+>", "", html_content or "")
+    words = len(text.split())
+    minutes = max(1, round(words / 200))
+    return minutes

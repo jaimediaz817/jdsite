@@ -12,6 +12,7 @@ from django.views.static import serve
 
 # IMPORTACIONES SEO
 from django.contrib.sitemaps.views import sitemap
+from blog.sitemaps import BlogPostSitemap
 from django.urls import include, path, reverse
 from django.views.generic import TemplateView
 from inquiries.views_threads import (
@@ -36,6 +37,7 @@ class StaticViewSitemap(Sitemap):
 
 sitemaps = {
     "static": StaticViewSitemap,
+    "blog": BlogPostSitemap,
 }
 
 urlpatterns = [

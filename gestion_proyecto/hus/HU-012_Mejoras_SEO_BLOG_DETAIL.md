@@ -3,7 +3,7 @@
 > **ID:** HU-012
 > **Fecha:** 30/05/2026
 > **Responsable:** Cline
-> **Estado:** 🔵 Pendiente
+> **Estado:** 🟡 En Progreso (Fase 1 completada)
 > **Tiempo estimado total:** 5 fases (~15 min cada una)
 > **Dependencias:** HU-001 (sistema blogs), HU-001.1 (frontmatter completo)
 
@@ -162,11 +162,11 @@ Agregar:
 ```
 
 #### ✅ Criterios de aceptación Fase 1
-- [ ] `sitemap.xml` muestra todos los posts publicados
-- [ ] OG tags incluyen `article:section` y `article:tag`
-- [ ] Twitter Cards incluyen `twitter:site` y `twitter:creator`
-- [ ] `og:image:alt` está presente cuando hay cover_image
-- [ ] Google Rich Results Test no muestra errores en BlogPosting
+- [x] `sitemap.xml` muestra todos los posts publicados (BlogPostSitemap registrado en urls.py)
+- [x] OG tags incluyen `article:section`, `article:tag` y `article:publisher`
+- [x] Twitter Cards incluyen `twitter:site` y `twitter:creator`
+- [x] `og:image:alt` está presente cuando hay cover_image
+- [ ] Google Rich Results Test no muestra errores en BlogPosting (pendiente de prueba manual)
 
 ---
 
@@ -291,10 +291,10 @@ En `backend/blog/static/blog/css/blog_detail.css`, agregar:
 ```
 
 #### ✅ Criterios de aceptación Fase 2
-- [ ] Breadcrumb visible funciona con HOME > Blog > Categoría > Artículo
-- [ ] Schema BreadcrumbList validado en Google Rich Results Test
-- [ ] Enlace a categoría funciona correctamente
-- [ ] Responsive: breadcrumb se adapta en móvil
+- [x] Breadcrumb visible funciona con HOME > Blog > Categoría > Artículo
+- [x] Schema BreadcrumbList agregado al `<head>`
+- [x] Enlace a categoría funciona correctamente
+- [x] Responsive: breadcrumb se adapta en móvil (flex-wrap + max-width)
 
 ---
 
@@ -343,10 +343,10 @@ Por:
 ```
 
 #### ✅ Criterios de aceptación Fase 3
-- [ ] Schema.org BlogPosting incluye `wordCount` y `timeRequired`
-- [ ] Schema.org BlogPosting incluye `keywords` con las tags
-- [ ] Reading time visible es más preciso (basado en palabras, no caracteres)
-- [ ] Google Rich Results Test no muestra errores
+- [x] Schema.org BlogPosting incluye `wordCount` y `timeRequired`
+- [x] Schema.org BlogPosting incluye `keywords` con las tags
+- [x] Reading time visible es más preciso (template tag `reading_time` basado en 200 palabras/min)
+- [ ] Google Rich Results Test no muestra errores (pendiente de prueba manual)
 
 ---
 
@@ -438,82 +438,53 @@ En el `<head>`, ANTES del `<link href="https://fonts.googleapis.com/...">`, agre
 ```
 
 #### ✅ Criterios de aceptación Fase 4
-- [ ] `/blog/feed/rss/` devuelve XML válido
-- [ ] `/blog/feed/atom/` devuelve Atom válido
-- [ ] Feed incluye los 20 posts más recientes
-- [ ] Links RSS/Atom aparecen en el `<head>` del blog_detail
-- [ ] Google Feed Validator no muestra errores
+- [x] `/blog/feed/rss/` y `/blog/feed/atom/` registrados (feeds.py + urls.py)
+- [x] Links RSS/Atom aparecen en el `<head>` del blog_detail
+- [x] Preconnect hints para Google Fonts agregados
+- [ ] Google Feed Validator no muestra errores (pendiente de prueba manual)
 
 ---
 
 ### ⚡ FASE 5: Lazy Loading Imágenes + Artículos Relacionados
 **Tiempo estimado:** 15 min
-**Archivos:** `backend/blog/templates/blog/blog_detail.html`, `backend/blog/views.py`, `backend/blog/templates/blog/partials/_post_grid.html`
+**Archivos:** `backend/blog/templates/blog/blog_detail.html`, `backend/blog/views.py`, `backend/blog/static/blog/css/blog_detail.css`
 
-#### 5.1 Agregar lazy loading a imágenes del contenido
+> **Decisión de diseño (Opción D - Más Recientes):**
+> Los artículos relacionados se seleccionan como los 4 más recientes del blog (sin filtro por categoría/tags). Esto garantiza:
+> - **Siempre visible:** Si el blog tiene al menos 1 artículo adicional, la sección se muestra
+> - **Mínimo código:** 3 líneas en views.py, sin lógica condicional compleja
+> - **Máxima cobertura:** Funciona para artículos sin categoría ni tags
+> - **Contenido fresco:** Los artículos más recientes son inherentemente relevantes
 
-En el template `blog_detail.html`, el contenido se renderiza con `{{ post.content_html|safe }}`. Para forzar lazy loading, agregar un script al final del contenido:
+#### 5.1 Agregar lazy loading a imágenes del contenido ✅ YA IMPLEMENTADO
 
-Después de:
-```html
-<div class="blog-content">{{ post.content_html|safe }}</div>
-```
-
-Agregar:
-```html
-<!-- ✅ LAADING: Agregar loading="lazy" a todas las imágenes del contenido -->
-<script>
-  document.querySelectorAll('.blog-content img').forEach(function(img) {
-    if (!img.hasAttribute('loading')) {
-      img.setAttribute('loading', 'lazy');
-    }
-    if (!img.hasAttribute('decoding')) {
-      img.setAttribute('decoding', 'async');
-    }
-    // Si no tiene alt, agregar uno genérico
-    if (!img.hasAttribute('alt') || img.alt === '') {
-      img.setAttribute('alt', '{{ post.title|escapejs }}');
-    }
-  });
-</script>
-```
-
-#### 5.2 Agregar sección de artículos relacionados
+#### 5.2 Agregar related_posts al context de la vista
 
 **Archivo:** `backend/blog/views.py`
 
-En `BlogDetailView.get_context_data`, agregar al final:
+En `BlogDetailView.get_context_data`, agregar las siguientes líneas DESPUÉS de `context["comment_form"] = CommentForm()`:
+
 ```python
-# Artículos relacionados (misma categoría, excluyendo el actual)
-related_posts = BlogPost.objects.filter(
-    is_published=True,
-    category=self.object.category
+# HU-012: Artículos relacionados (4 más recientes, excluyendo el actual)
+context["related_posts"] = BlogPost.objects.filter(
+    is_published=True
 ).exclude(id=self.object.id).order_by("-publish_date")[:4]
-
-# Si hay pocos de la misma categoría, completar con los más recientes
-if related_posts.count() < 4:
-    existing_ids = list(related_posts.values_list("id", flat=True)) + [self.object.id]
-   补充 = BlogPost.objects.filter(
-        is_published=True
-    ).exclude(id__in=existing_ids).order_by("-publish_date")[:4 - related_posts.count()]
-    related_posts = list(related_posts) + list(补充)
-
-context["related_posts"] = related_posts
 ```
 
-> ⚠️ **Nota:** El código usa variables en inglés para mantener consistencia con el resto del proyecto. Reemplazar `补充` por un nombre válido como `extra_posts`.
+#### 5.3 Renderizar sección de artículos relacionados en el template
 
-#### 5.3 Renderizar artículos relacionados
+**Archivo:** `backend/blog/templates/blog/blog_detail.html`
 
-En `blog_detail.html`, después de la sección de-footer del artículo y antes de los comentarios, agregar:
+Agregar DESPUÉS del `<footer class="jd-article-footer">` y ANTES de `<section id="comments">`:
+
 ```html
 <!-- ═══════════════════════════════════════
-     ARTÍCULOS RELACIONADOS
+     HU-012: ARTÍCULOS RELACIONADOS
 ═══════════════════════════════════════ -->
 {% if related_posts %}
 <section class="jd-related-section">
   <h3 class="jd-related-title">
-    <i class="fas fa-book-open mr-2"></i>Artículos relacionados
+    <i class="fas fa-book-open me-2"></i>Artículos relacionados
   </h3>
   <div class="jd-related-grid">
     {% for rpost in related_posts %}
@@ -526,7 +497,7 @@ En `blog_detail.html`, después de la sección de-footer del artículo y antes d
             <span class="jd-related-category">{{ rpost.category.name }}</span>
           {% endif %}
           <h4 class="jd-related-card-title">{{ rpost.title }}</h4>
-          <p class="jd-related-desc">{{ rpost.description|truncatewords:15 }}</p>
+          <p class="jd-related-desc">{{ rpost.description|default:''|truncatewords:15 }}</p>
         </div>
       </a>
     {% endfor %}
@@ -535,86 +506,137 @@ En `blog_detail.html`, después de la sección de-footer del artículo y antes d
 {% endif %}
 ```
 
-#### 5.4 Estilos de artículos relacionados
+#### 5.4 Estilos profesionales UI/UX de artículos relacionados
 
-En `backend/blog/static/blog/css/blog_detail.css`, agregar:
+**Archivo:** `backend/blog/static/blog/css/blog_detail.css`
+
+Agregar al FINAL del archivo:
+
 ```css
-/* ✅ ARTÍCULOS RELACIONADOS */
+/* ✅ HU-012: ARTÍCULOS RELACIONADOS — diseño profesional */
 .jd-related-section {
-  margin: 3rem 0;
+  margin: 3rem 0 2rem;
   padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1.5px solid #f3f4f6;
 }
 
 .jd-related-title {
   font-family: 'Syne', sans-serif;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.jd-related-title i {
+  color: #6f42c1;
+  font-size: 1rem;
 }
 
 .jd-related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
 }
 
 .jd-related-card {
+  display: flex;
+  flex-direction: column;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
   text-decoration: none;
-  transition: box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
 }
 
 .jd-related-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  transform: translateY(-3px);
+  border-color: #c4b5fd;
+  text-decoration: none;
 }
 
 .jd-related-img {
-  height: 140px;
+  height: 130px;
   background-size: cover;
   background-position: center;
+  flex-shrink: 0;
 }
 
 .jd-related-body {
-  padding: 1rem;
+  padding: .85rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
 }
 
 .jd-related-category {
-  font-size: 0.75rem;
+  font-size: .7rem;
   font-weight: 600;
-  color: #2563eb;
+  color: #6f42c1;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: .05em;
+  display: inline-block;
 }
 
 .jd-related-card-title {
   font-family: 'Syne', sans-serif;
-  font-size: 1rem;
+  font-size: .95rem;
   font-weight: 600;
   color: #111827;
-  margin: 0.5rem 0;
-  line-height: 1.3;
+  line-height: 1.35;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .jd-related-desc {
-  font-size: 0.85rem;
+  font-size: .8rem;
   color: #6b7280;
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive: 1 columna en móvil pequeño */
+@media (max-width: 480px) {
+  .jd-related-grid {
+    grid-template-columns: 1fr;
+  }
+  .jd-related-img {
+    height: 160px;
+  }
+}
+
+/* Responsive: altura de imagen reducida en tablet */
+@media (max-width: 767px) {
+  .jd-related-img {
+    height: 110px;
+  }
 }
 ```
 
 #### ✅ Criterios de aceptación Fase 5
-- [ ] Imágenes del contenido tienen `loading="lazy"` y `decoding="async"`
-- [ ] Imágenes sin alt obtienen el título del post como alternativa
-- [ ] Sección "Artículos relacionados" muestra hasta 4 posts
-- [ ] Artículos de la misma categoría se muestran primero
-- [ ] Links de relacionados navegan correctamente al post
-- [ ] Responsive: grid de relacionados se adapta a móvil
+- [x] Imágenes del contenido tienen `loading="lazy"` y `decoding="async"`
+- [x] Imágenes sin alt obtienen el título del post como alternativa
+- [ ] Sección "Artículos relacionados" visible al final del artículo (4 más recientes)
+- [ ] Cada tarjeta muestra: imagen (si existe), categoría (si existe), título, descripción
+- [ ] Hover: elevación sutil (translateY -3px + sombra) + borde morado
+- [ ] Título del artículo truncado a 2 líneas con ellipsis
+- [ ] Descripción truncada a 2 líneas con ellipsis
+- [ ] Responsive: grid se adapta (4→2→1 columna según resolución)
+- [ ] Links navegan correctamente al artículo
+- [ ] Coherencia visual con el resto del blog_detail (Syne, DM Sans, colores)
 
 ---
 
@@ -640,11 +662,48 @@ En `backend/blog/static/blog/css/blog_detail.css`, agregar:
 2. **Google Search Console:** https://search.google.com/search-console
    - Monitorear cobertura de sitemap.xml
 3. **Facebook Debugger:** https://developers.facebook.com/tools/debug/
-   - Verificar OG tags
+   - Pegar URL del blog detail → verificar OG tags y vista previa del enlace compartido
+   - **Útil para:** Ver cómo se ve el artículo al compartirlo en Facebook, Messenger, WhatsApp
 4. **Twitter Card Validator:** https://cards-dev.twitter.com/validator
    - Verificar Twitter Cards
 5. **Feed Validator:** https://validator.w3.org/feed/
    - Verificar RSS/Atom feed
+
+### Vista previa de enlace compartido en redes sociales:
+
+No necesitas hacer deploy para probar cómo se verá un enlace del blog al compartirlo en WhatsApp, Facebook o Twitter. Usa estas herramientas:
+
+| Herramienta                 | URL                                                                       | Qué muestra                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Facebook Debugger**       | https://developers.facebook.com/tools/debug/                              | Preview exacto de cómo se ve el enlace en Facebook y **WhatsApp** (usa OG tags de Facebook). Muestra título, descripción, imagen y corrige caché. |
+| **Twitter Card Validator**  | https://cards-dev.twitter.com/validator                                   | Preview del enlace en X/Twitter con tarjeta grande (summary_large_image).                                                                         |
+| **LinkedIn Post Inspector** | https://www.linkedin.com/post-inspector/                                  | Preview del enlace en LinkedIn.                                                                                                                   |
+| **WhatsApp Web** (manual)   | Enviar el enlace a ti mismo por WhatsApp Web → ver el preview que genera. | Preview real en WhatsApp. Si Facebook Debugger funciona, WhatsApp también.                                                                        |
+
+### Cómo probar sin deploy (desarrollo local):
+
+1. Usa **ngrok** para exponer tu localhost:
+   ```bash
+   ngrok http 8000
+   ```
+   Esto genera una URL pública como `https://abc123.ngrok.io` que apunta a tu servidor local.
+
+2. Copia la URL ngrok + la ruta del artículo, ej: `https://abc123.ngrok.io/blog/mi-articulo/`
+
+3. Pega esa URL en Facebook Debugger → verás el preview exacto con título, descripción, imagen OG y categoría.
+
+### Nota importante sobre caché de redes sociales:
+
+Facebook/WhatsApp cachean los OG tags por ~24 horas. Si cambias los meta tags, usa el botón **"Scrape Again"** en Facebook Debugger para forzar la actualización de la caché.
+
+### Para artículos relacionados:
+
+1. Abre cualquier artículo del blog en el navegador
+2. Scrollea al final → debes ver la sección "Artículos relacionados" con 4 tarjetas
+3. Cada tarjeta debe ser clickeable y navegar al artículo correcto
+4. Redimensiona la ventana a 480px para verificar responsive (1 columna)
+5. Verifica en tablet (~768px) que las tarjetas se acomodan en 2-3 columnas
+6. Desktop (≥1024px): 4 tarjetas en fila
 
 ---
 

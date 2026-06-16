@@ -1,4 +1,5 @@
 from django.urls import path
+from blog.feeds import BlogRSSFeed, BlogAtomFeed
 from blog.views import (
     BlogListView,
     BlogDetailView,
@@ -32,6 +33,9 @@ urlpatterns = [
     path("", BlogListView.as_view(), name="blog_list"),
     # Rutas específicas ANTES de las rutas con <slug>
     path("quick-signup/", quick_signup, name="quick_signup"),
+    # HU-012: Feed RSS/Atom
+    path("feed/rss/", BlogRSSFeed(), name="blog_rss"),
+    path("feed/atom/", BlogAtomFeed(), name="blog_atom"),
     # HU-011: Editor Online (DEBE ir ANTES de <slug> para no ser capturado)
     path("editor/", blog_editor_view, name="blog_editor"),
     path("editor/<slug:slug>/", blog_editor_view, name="blog_editor_edit"),

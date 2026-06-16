@@ -33,15 +33,26 @@
     <meta property="article:published_time" content="{{ post.publish_date|date:'c' }}" />
     <meta property="article:modified_time" content="{{ post.last_modified|date:'c' }}" />
     <meta property="article:author" content="https://www.linkedin.com/in/jdiaz817/" />
+    <!-- ✅ OG: Categoría y Tags -->
+    {% if post.category %}
+      <meta property="article:section" content="{{ post.category.name }}" />
+    {% endif %}
+    {% for tag in post.tags.all %}
+      <meta property="article:tag" content="{{ tag.name }}" />
+    {% endfor %}
+    <meta property="article:publisher" content="https://www.linkedin.com/in/jdiaz817/" />
     {% if post.cover_image %}
       <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image }}" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="{{ post.meta_description|default:post.title }}" />
     {% endif %}
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:domain" content="jaimediaz.dev" />
+    <meta name="twitter:site" content="@jdiaz817" />
+    <meta name="twitter:creator" content="@jdiaz817" />
     <meta name="twitter:title" content="{{ post.meta_title|default:post.title }}" />
     <meta name="twitter:description" content="{{ post.meta_description|default:post.description }}" />
     {% if post.cover_image %}
@@ -74,6 +85,9 @@
             "@type": "WebPage",
             "@id": "{{ request.build_absolute_uri }}"
         },
+        "wordCount": "{{ post.content_html|striptags|wordcount }}",
+        "timeRequired": "PT{{ post.content_html|striptags|wordcount|divisibleby:200|add:'1' }}M",
+        "keywords": [{% for tag in post.tags.all %}"{{ tag.name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
         {% if post.cover_image %}
         "image": {
             "@type": "ImageObject",
@@ -101,8 +115,49 @@
     <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}" />
 
+    <!-- ✅ PRECONNECT HINTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ✅ FEED RSS/ATOM -->
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="{% url 'blog:blog_rss' %}" />
+    <link rel="alternate" type="application/atom+xml" title="Blog Atom" href="{% url 'blog:blog_atom' %}" />
+
     <!-- ✅ FUENTES: Syne + DM Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <!-- ✅ SCHEMA.ORG BREADCRUMB -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "{{ request.scheme }}://{{ request.get_host }}/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'blog:blog_list' %}"
+            }{% if post.category %},
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ post.category.name }}",
+                "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'blog:blog_list' %}?category={{ post.category.slug }}"
+            }{% endif %},
+            {
+                "@type": "ListItem",
+                "position": {% if post.category %}4{% else %}3{% endif %},
+                "name": "{{ post.title|escapejs }}"
+            }
+        ]
+    }
+    </script>
 
     <!-- ✅ ASEGURAR VISIBILIDAD DEL LOGO EN HEADER -->
   </head>
@@ -176,6 +231,26 @@
               </div>
 
               <article>
+                <!-- ✅ BREADCRUMB NAVEGACIÓN -->
+                <nav aria-label="Breadcrumb" class="jd-breadcrumb">
+                  <ol class="jd-breadcrumb-list">
+                    <li class="jd-breadcrumb-item">
+                      <a href="{% url 'home' %}">Inicio</a>
+                    </li>
+                    <li class="jd-breadcrumb-item">
+                      <a href="{% url 'blog:blog_list' %}">Blog</a>
+                    </li>
+                    {% if post.category %}
+                    <li class="jd-breadcrumb-item">
+                      <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}">{{ post.category.name }}</a>
+                    </li>
+                    {% endif %}
+                    <li class="jd-breadcrumb-item jd-breadcrumb-current" aria-current="page">
+                      {{ post.title|truncatewords:8 }}
+                    </li>
+                  </ol>
+                </nav>
+
                 <!-- ═══════════════════════════════════════
                      HEADER DEL ARTÍCULO
                 ═══════════════════════════════════════ -->
@@ -210,7 +285,7 @@
                         {% if post.reading_time %}
                           {{ post.reading_time }} min de lectura
                         {% else %}
-                          {% widthratio post.content_html|length 1500 1 %} min de lectura
+                          {{ post.content_html|reading_time }} min de lectura
                         {% endif %}
                       </span>
                     </div>
@@ -235,6 +310,21 @@
                      CONTENIDO DEL ARTÍCULO
                 ═══════════════════════════════════════ -->
                 <div class="blog-content">{{ post.content_html|safe }}</div>
+
+                <!-- ✅ LAZY LOADING: Agregar loading="lazy" a todas las imágenes del contenido -->
+                <script>
+                  document.querySelectorAll('.blog-content img').forEach(function(img) {
+                    if (!img.hasAttribute('loading')) {
+                      img.setAttribute('loading', 'lazy');
+                    }
+                    if (!img.hasAttribute('decoding')) {
+                      img.setAttribute('decoding', 'async');
+                    }
+                    if (!img.hasAttribute('alt') || img.alt === '') {
+                      img.setAttribute('alt', '{{ post.title|escapejs }}');
+                    }
+                  });
+                </script>
 
                 <!-- ═══════════════════════════════════════
                      COMPARTIR

@@ -23,7 +23,7 @@ Task Progress:
 <div class="container-fluid py-4">
 
   {# ── Encabezado ── #}
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
     <div>
       <h2 class="mb-1">📂 Gestión de Recursos</h2>
       <p class="text-muted mb-0">
@@ -48,16 +48,16 @@ Task Progress:
 
   {# ── KPIs ── #}
   {% if resources_data %}
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="estadisticas-gestion-recursos__container row g-3 mb-4">
+    <div class="col-6 col-sm-4 col-md-3">
       <div class="card text-center shadow-sm">
         <div class="card-body">
           <div class="fs-1 fw-bold text-primary">{{ resources_data.stats.total_folders }}</div>
-          <div class="text-muted">Carpetas totales</div>
+          <div class="text-muted">Carpetas</div>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-sm-4 col-md-3">
       <div class="card text-center shadow-sm">
         <div class="card-body">
           <div class="fs-1 fw-bold text-success">{{ resources_data.stats.synced_count }}</div>
@@ -65,7 +65,7 @@ Task Progress:
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-sm-4 col-md-3">
       <div class="card text-center shadow-sm">
         <div class="card-body">
           <div class="fs-1 fw-bold text-danger">{{ resources_data.stats.orphan_count }}</div>
@@ -73,32 +73,32 @@ Task Progress:
         </div>
       </div>
     </div>
-      <div class="col-md-3">
-        <div class="card text-center shadow-sm">
-          <div class="card-body">
-            <div class="fs-1 fw-bold text-info">{{ resources_data.stats.total_images }}</div>
-            <div class="text-muted">Imágenes</div>
-          </div>
+    <div class="col-6 col-sm-4 col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-info">{{ resources_data.stats.total_images }}</div>
+          <div class="text-muted">Imágenes</div>
         </div>
       </div>
-      <!-- Vídeos -->
-      <div class="col-md-3 mt-3">
-        <div class="card text-center shadow-sm">
-          <div class="card-body">
-            <div class="fs-1 fw-bold text-warning">{{ resources_data.stats.total_videos }}</div>
-            <div class="text-muted">Videos</div>
-          </div>
+    </div>
+    <!-- Vídeos -->
+    <div class="col-6 col-sm-4 col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-warning">{{ resources_data.stats.total_videos }}</div>
+          <div class="text-muted">Videos</div>
         </div>
       </div>
-      <!-- Otros recursos -->
-      <div class="col-md-3 mt-3">
-        <div class="card text-center shadow-sm">
-          <div class="card-body">
-            <div class="fs-1 fw-bold text-secondary">{{ resources_data.stats.total_other }}</div>
-            <div class="text-muted">Otros recursos</div>
-          </div>
+    </div>
+    <!-- Otros recursos -->
+    <div class="col-6 col-sm-4 col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-secondary">{{ resources_data.stats.total_other }}</div>
+          <div class="text-muted">Otros</div>
         </div>
       </div>
+    </div>
   </div>
 
   {# ── Filtros y Acciones ── #}
@@ -146,10 +146,10 @@ Task Progress:
               <th class="text-center">📂 Source</th>
               <th class="text-center">🔨 Compiled</th>
               <th class="text-center">📝 BlogPost</th>
-              <th class="text-center">🖼️ Img</th>
-              <th class="text-center">🎬 Vid</th>
-              <th class="text-center">📁 Archivos</th>
-              <th class="text-center">📊 Peso</th>
+              <th class="text-center d-none d-md-table-cell">🖼️ Img</th>
+              <th class="text-center d-none d-md-table-cell">🎬 Vid</th>
+              <th class="text-center d-none d-md-table-cell">📁 Archivos</th>
+              <th class="text-center d-none d-md-table-cell">📊 Peso</th>
               <th class="text-center">Estado</th>
             </tr>
           </thead>
@@ -171,12 +171,12 @@ Task Progress:
               <td class="text-center">
                 {% if entry.blogpost_exists %}✅{% else %}—{% endif %}
               </td>
-              <td class="text-center">{{ entry.images }}</td>
-              <td class="text-center">{{ entry.videos }}</td>
-              <td class="text-center">
+              <td class="text-center d-none d-md-table-cell">{{ entry.images }}</td>
+              <td class="text-center d-none d-md-table-cell">{{ entry.videos }}</td>
+              <td class="text-center d-none d-md-table-cell">
                 <button type="button" class="btn btn-sm btn-outline-primary view-files-btn" data-files='{{ entry.files|default:"[]"|safe }}' data-folder='{{ entry.slug }}'>Ver</button>
               </td>
-              <td class="text-center">{{ entry.total_size }}</td>
+              <td class="text-center d-none d-md-table-cell">{{ entry.total_size }}</td>
               <td class="text-center">
                 <span class="badge bg-{{ entry.status_color }}">{{ entry.status_label }}</span>
               </td>
@@ -263,9 +263,9 @@ Task Progress:
             <tr>
               <th style="width:40px;"><input type="checkbox" id="select-all-orphans"></th>
               <th>Carpeta</th>
-              <th>Ubicación</th>
+              <th class="d-none d-md-table-cell">Ubicación</th>
               <th>Archivos</th>
-              <th>Tamaño</th>
+              <th class="d-none d-md-table-cell">Tamaño</th>
               <th class="text-center" style="width:100px;">Acción</th>
             </tr>
           </thead>
@@ -274,9 +274,9 @@ Task Progress:
             <tr class="orphan-row" id="orphan-row-{{ orphan.folder }}">
               <td><input type="checkbox" class="orphan-checkbox" data-folder="{{ orphan.folder }}"></td>
               <td><code>{{ orphan.folder }}</code></td>
-              <td><small>{{ orphan.location }}</small></td>
+              <td class="d-none d-md-table-cell"><small>{{ orphan.location }}</small></td>
               <td><small>{{ orphan.file_count }} (🖼️ {{ orphan.images }} · 🎬 {{ orphan.videos }})</small></td>
-              <td><small>{{ orphan.total_size }}</small></td>
+              <td class="d-none d-md-table-cell"><small>{{ orphan.total_size }}</small></td>
               <td class="text-center">
                 <button type="button"
                         class="btn btn-sm btn-outline-danger delete-single-orphan"

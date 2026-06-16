@@ -3687,3 +3687,51 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 .jd-confirm-delete:hover {
     background: #b91c1c;
 }
+
+/* ✅ BREADCRUMB */
+.jd-breadcrumb {
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.jd-breadcrumb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.jd-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    color: #9ca3af;
+}
+
+.jd-breadcrumb-item+.jd-breadcrumb-item::before {
+    content: "\203A";
+    margin-right: 0.5rem;
+    color: #d1d5db;
+}
+
+.jd-breadcrumb-item a {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.jd-breadcrumb-item a:hover {
+    color: #2563eb;
+}
+
+.jd-breadcrumb-current {
+    color: #374151;
+    font-weight: 500;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

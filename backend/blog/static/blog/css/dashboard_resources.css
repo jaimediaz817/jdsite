@@ -1,3 +1,7 @@
+.estadisticas-gestion-recursos__container {
+    row-gap: 10px;
+}
+
 /* HU-011.17: Gestión de Recursos — orphan rows y filtros */
 .btn-recursos {
     margin-left: 0.5rem;
@@ -132,5 +136,156 @@
         border-radius: 0.5rem;
         line-height: 1.5;
         margin-left: 0.5rem;
+    }
+}
+
+/* =============================================
+   🟣 Responsive Dashboard Resources — Mobile First
+   ============================================= */
+
+/* ≈≤991px Card-header toggle button */
+@media (max-width: 991px) {
+    .btn-expandir-contraer {
+        width: auto;
+        min-width: 100px;
+        font-size: .75rem;
+    }
+}
+
+/* ≈≤767px Móviles: apilar header, ajustar KPIs, tablas, filtros */
+@media (max-width: 767px) {
+
+    /* Header: apilar verticalmente */
+    .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2 {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2>div:last-child {
+        margin-top: .5rem;
+    }
+
+    /* KPIs: reducir tamaño de fuente */
+    .estadisticas-gestion-recursos__container .card-body .fs-1 {
+        font-size: 1.3rem;
+    }
+
+    .estadisticas-gestion-recursos__container .card-body .text-muted {
+        font-size: .65rem;
+    }
+
+    /* Filtros: compactar botones */
+    .d-flex.flex-wrap.gap-2 .filter-btn {
+        font-size: .72rem;
+        padding: .3rem .6rem;
+        min-width: 0;
+    }
+
+    #btn-delete-selected {
+        font-size: .72rem;
+        padding: .3rem .5rem;
+    }
+
+    /* Tabla compilación: reducir padding, font-size */
+    .table td,
+    .table th {
+        padding: .4rem .3rem;
+        font-size: .78rem;
+    }
+
+    .table thead th {
+        font-size: .65rem;
+    }
+
+    /* Badge estado: tamaño reducido */
+    .badge {
+        font-size: .65rem;
+        padding: .2rem .4rem;
+    }
+
+    /* Botón "Ver" archivos: más compacto */
+    .view-files-btn {
+        font-size: .7rem;
+        padding: .2rem .4rem;
+    }
+
+    /* Botón expandir: ancho automático */
+    .btn-expandir-contraer {
+        width: auto;
+        min-width: 100px;
+        font-size: .72rem;
+        padding: .25rem .5rem;
+    }
+
+    /* Tabla huérfanos: ajustar */
+    .table-sm td,
+    .table-sm th {
+        padding: .3rem .25rem;
+        font-size: .72rem;
+    }
+
+    .delete-single-orphan {
+        font-size: .68rem;
+        padding: .15rem .4rem;
+    }
+
+    /* Modal archivos: ajustar padding y tamaño */
+    #filesModal .modal-dialog {
+        margin: .5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    #filesModal .modal-body {
+        padding: 1rem;
+    }
+
+    #filePreview img,
+    #filePreview video {
+        max-height: 250px;
+    }
+}
+
+/* ≈≤575px Móviles muy pequeños */
+@media (max-width: 575px) {
+
+    /* KPIs: 2 por fila, tamaño compacto */
+    .estadisticas-gestion-recursos__container .card-body .fs-1 {
+        font-size: 1.1rem;
+    }
+
+    .estadisticas-gestion-recursos__container .card-body .text-muted {
+        font-size: .6rem;
+    }
+
+    /* Filtros: un botón por fila */
+    .d-flex.flex-wrap.gap-2 .filter-btn {
+        font-size: .68rem;
+        padding: .25rem .5rem;
+    }
+
+    /* Tabla: fuente más pequeña */
+    .table td,
+    .table th {
+        padding: .35rem .2rem;
+        font-size: .72rem;
+    }
+
+    .table thead th {
+        font-size: .6rem;
+        letter-spacing: .3px;
+    }
+
+    /* Go-top-btn: ajustar posición */
+    .go-top-btn {
+        bottom: 60px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+    }
+
+    /* FORZAR checkbox siempre visible — dashboard.css oculta nth-child(1) */
+    .table thead th:first-child,
+    .table tbody td:first-child {
+        display: table-cell !important;
     }
 }

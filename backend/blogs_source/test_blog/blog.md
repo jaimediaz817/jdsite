@@ -1,7 +1,7 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-04"
+date: "2026-06-18"
 draft: false
 image: "image-1.png"
 author: "Jaime Diaz"
@@ -14,7 +14,24 @@ meta_description: "Los cambios concretos y medibles que implementamos para mejor
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
 tiempo_lectura: 2
 author_id: 15
+cover_image: "/static/blogs/test_blog/image.png"
 ---
+
+
+
+![image_e9571d7e.png](./image_e9571d7e.png)
+
+![IMG_20260501_181947.jpg](./IMG_20260501_181947.jpg)
+
+![image.png](./image.png)
+
+![image.png](./image.png)
+
+![image.png](./image.png)
+
+![image.png](./image.png)
+
+![Captura de pantalla 2025-11-06 154128.png](./Captura de pantalla 2025-11-06 154128.png)
 
 ## Introduccion1
 Este es el primer renglon de mi parrafo.
@@ -95,7 +112,6 @@ El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automati
 ### 3. Barra lateral flotante de reacciones
 
 :::slides
-![Barra lateral de reacciones|La barra flotante aparece discretamente mientras lees, mostrando botones de reacción sin interrumpir la lectura.](image.png)
 ![Disposición responsive|En móviles la barra se oculta y las reacciones aparecen al final del artículo, manteniendo la experiencia limpia.](image-1.png)
 :::
 

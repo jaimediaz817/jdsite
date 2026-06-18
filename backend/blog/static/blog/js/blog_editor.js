@@ -2,6 +2,14 @@
 // HU-011 + HU-017: Blog Editor JavaScript
 // EasyMDE + FilePond + auto-save + mejoras borradores
 // ======================================================
+// Task progress updated below.
+/*
+   TODO LIST (progress tracking)
+   - [x] Verificar que la expresión regular elimina solo la imagen solicitada
+   - [x] Implementar borrado completo de recursos desde el Editor (frontend + backend)
+   - [ ] Probar la eliminación en el navegador y validar que los contadores y markdown se actualizan
+   - [ ] Documentar la nueva funcionalidad en la HU correspondiente
+*/
 
 const uploadedFiles = [];
 let isSaved = false; // controla si el artículo ya se guardó para evitar la alerta de salida
@@ -296,12 +304,12 @@ function getCoverFilename() {
     return found ? found.filename : '';
 }
 
-/** Elimina del markdown las referencias a un archivo. */
 function removeMarkdownLineForFile(filename) {
     if (!easyMDE || !filename) return;
-    const safe = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\(\\./${safe}\\)\\s*\\n?`, 'gm');
-    const videoRegex = new RegExp(`<video[^>]*src=["']\\./${safe}["'][^>]*></video>\\s*\\n?`, 'g');
+    const safe = filename.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+    // Acepta rutas con o sin "./" y también dentro de bloques ::slides
+    const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\((\\.?\\/?)${safe}\\)\\s*\\n?`, 'gm');
+    const videoRegex = new RegExp(`<video[^>]*src=["']\\.?\\/?${safe}["'][^>]*></video>\\s*\\n?`, 'g');
     let current = easyMDE.value();
     const updated = current
         .replace(imgRegex, '')
@@ -312,20 +320,9 @@ function removeMarkdownLineForFile(filename) {
     }
 }
 
-/** Pide al backend borrar el archivo temporal (best-effort). */
-function deleteFileOnServer(filename) {
-    if (!filename) return Promise.resolve();
-    const formData = new FormData();
-    formData.append('action', 'delete');
-    formData.append('filename', filename);
-    return fetch('/blog/api/upload-file/', {
-        method: 'POST',
-        headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        body: formData,
-    }).catch(err => {
-        console.warn('No se pudo eliminar el archivo en el servidor:', err);
-    });
-}
+/* The deleteFileOnServer function is defined earlier in this file with proper handling of the
+ * DELETE_FILE_URL endpoint and folder information. The older implementation that posted to
+ * '/blog/api/upload-file/' has been removed to avoid conflicts. */
 
 /** Elimina vista previa, referencia, línea markdown y archivo físico. */
 async function removeUploadedFile(filename) {
@@ -758,6 +755,30 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
     return '';
+}
+
+/**
+ * Envía la petición al backend para eliminar físicamente el archivo.
+ * Utiliza la constante global `DELETE_FILE_URL` que se define en la plantilla
+ * `blog_editor.html`. Se envía el nombre del archivo y, si está disponible, el
+ * slug de la carpeta del artículo (campo oculto `edit-slug`).
+ */
+function deleteFileOnServer(filename) {
+    if (!filename) return Promise.resolve();
+    const formData = new FormData();
+    formData.append('action', 'delete');
+    formData.append('filename', filename);
+    // El slug (folder) puede estar vacío al crear un nuevo artículo; en ese
+    // caso el backend lo ignora.
+    const folder = document.getElementById('edit-slug')?.value;
+    if (folder) formData.append('folder', folder);
+    return fetch(DELETE_FILE_URL, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: formData,
+    }).catch(err => {
+        console.warn('Error al eliminar archivo en el servidor:', err);
+    });
 }
 
 // ======================================================

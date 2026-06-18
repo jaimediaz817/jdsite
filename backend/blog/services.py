@@ -673,13 +673,19 @@ def save_uploaded_file(uploaded_file, user):
     if uploaded_file.size > max_size:
         return None
 
-    # Asegurar nombre único para evitar colisiones
+    # Generar un nombre único siempre, independientemente de colisiones.
+    # Utilizamos el nombre original como base y le añadimos un sufijo corto de UUID
+    # (primeros 8 caracteres) para garantizar que cada archivo tenga un nombre
+    # distinto, evitando sobrescrituras al pegar varias imágenes con el mismo
+    # nombre (por ejemplo, "image.png" desde el portapapeles).
     original_name = Path(uploaded_file.name).stem
-    safe_name = f"{original_name}{ext}"
+    unique_suffix = uuid.uuid4().hex[:8]
+    safe_name = f"{original_name}_{unique_suffix}{ext}"
     temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(user.id)
     temp_dir.mkdir(parents=True, exist_ok=True)
 
     filepath = temp_dir / safe_name
+
     with open(filepath, "wb+") as dest:
         for chunk in uploaded_file.chunks():
             dest.write(chunk)

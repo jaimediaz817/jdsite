@@ -1,0 +1,491 @@
+/* -----------------------------------------------------------------------
+   Professional Blog Footer — Premium Redesign v2
+   Inspiración: Uber, Airbnb, Vercel
+   -----------------------------------------------------------------------
+   Características:
+   - Mobile-first con alineación izquierda (nada centrado en mobile)
+   - Grid de 1 columna → 2 → 4 columnas
+   - Newsletter CTA con input inline
+   - Micro-interacciones ultrafinas (0.15s-0.2s)
+   - SVGs inline para iconos sociales (sin dependencias)
+   - Sin separadores verticales, sin ruido, sin backdrop-filter pesado
+   - Accesibilidad: focus-visible, aria-labels, roles semánticos
+   - Responsive: 4 breakpoints (mobile, tablet, desktop, wide)
+   ----------------------------------------------------------------------- */
+
+/* ---------- 1. Reset & Base ---------- */
+.jd-footer {
+    background: #0b0d10;
+    color: #a0aec0;
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    width: 100%;
+    position: relative;
+}
+
+.jd-footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+/* ---------- 2. Links Base ---------- */
+.jd-footer a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.jd-footer a:hover,
+.jd-footer a:focus-visible {
+    color: #f1f5f9;
+}
+
+.jd-footer a:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---------- 3. Grid Layout ---------- */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem 0;
+    padding: 2.5rem 0 1.5rem;
+    text-align: left;
+}
+
+.footer-col {
+    min-width: 0;
+}
+
+/* Separador sutil entre filas en mobile */
+.footer-col+.footer-col {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 1.5rem;
+}
+
+/* ---------- 4. Brand Column ---------- */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.footer-logo img {
+    display: block;
+    max-width: 110px;
+    height: auto;
+    transition: opacity 0.15s ease;
+}
+
+.footer-logo img:hover {
+    opacity: 0.85;
+}
+
+.footer-description {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    max-width: 320px;
+    line-height: 1.55;
+}
+
+/* ---------- 5. Newsletter ---------- */
+.footer-newsletter {
+    width: 100%;
+    max-width: 340px;
+    margin-top: 0.25rem;
+}
+
+.newsletter-input-group {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.newsletter-input-group:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.newsletter-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 0.85rem;
+    border: none;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.newsletter-input::placeholder {
+    color: #475569;
+}
+
+.newsletter-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-right: 4px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.newsletter-btn:hover {
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.newsletter-btn:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* ---------- 6. Column Titles ---------- */
+.footer-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin: 0 0 0.85rem;
+    position: relative;
+}
+
+/* ---------- 7. Lists ---------- */
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.footer-list li {
+    margin: 0;
+}
+
+.footer-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0;
+    font-size: 0.85rem;
+    font-weight: 450;
+    color: #94a3b8;
+    position: relative;
+}
+
+.footer-list a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1.5px;
+    background: #6366f1;
+    transition: width 0.2s ease;
+}
+
+.footer-list a:hover::after,
+.footer-list a:focus-visible::after {
+    width: 100%;
+}
+
+/* ---------- 8. Posts List ---------- */
+.footer-posts-list a {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.4;
+}
+
+.post-dot {
+    flex-shrink: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #6366f1;
+    margin-top: 0.55rem;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.footer-post-link:hover .post-dot,
+.footer-post-link:focus-visible .post-dot {
+    transform: scale(1.4);
+    background: #a5b4fc;
+}
+
+.post-title {
+    word-break: break-word;
+}
+
+/* ---------- 9. Category List ---------- */
+.footer-category-list a {
+    gap: 0.2rem;
+}
+
+.cat-hash {
+    color: #6366f1;
+    font-weight: 700;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+}
+
+.footer-category-list a:hover .cat-hash,
+.footer-category-list a:focus-visible .cat-hash {
+    opacity: 1;
+}
+
+/* ---------- 10. Tags (Pills) ---------- */
+.footer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.5rem;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    list-style: none;
+}
+
+.footer-tags .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    color: #8892b0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.footer-tags .tag-pill:hover,
+.footer-tags .tag-pill:focus-visible {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #c7d2fe;
+    transform: translateY(-1px);
+}
+
+/* Titles for tags & social inside community column */
+.footer-title-tags {
+    margin-top: 1.25rem;
+}
+
+.footer-title-social {
+    margin-top: 0;
+}
+
+/* ---------- 11. Social Icons ---------- */
+.footer-social-wrapper {
+    margin-top: 1rem;
+}
+
+.footer-social {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.footer-social li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #64748b;
+    transition: all 0.15s ease;
+    padding: 0 !important;
+}
+
+.footer-social li a::after {
+    display: none;
+}
+
+.footer-social li a:hover,
+.footer-social li a:focus-visible {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+    transform: translateY(-2px);
+}
+
+.footer-social li a svg {
+    display: block;
+}
+
+/* ---------- 12. Empty State ---------- */
+.footer-empty {
+    color: #475569;
+    font-style: italic;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+/* ---------- 13. Bottom Bar ---------- */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 1.25rem 0;
+    margin-top: 0.5rem;
+}
+
+.footer-bottom-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-start;
+}
+
+.footer-copyright {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #475569;
+    font-weight: 400;
+}
+
+.footer-copyright a {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.footer-made-with {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #475569;
+}
+
+.heart {
+    color: #ef4444;
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+.heart:hover {
+    transform: scale(1.3);
+}
+
+/* ---------- 14. SR Only (for labels) ---------- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ---------- 15. Tablet (≥640px) ---------- */
+@media (min-width: 640px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem 2rem;
+    }
+
+    .footer-col+.footer-col {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .footer-bottom-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-logo img {
+        max-width: 120px;
+    }
+
+    .footer-social li a {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* ---------- 16. Desktop (≥1024px) ---------- */
+@media (min-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 1.4fr 0.8fr 1.2fr 1.2fr;
+        gap: 3rem 2.5rem;
+        padding: 3.5rem 0 2.5rem;
+    }
+
+    .footer-description {
+        font-size: 0.82rem;
+    }
+
+    .footer-list a {
+        padding: 0.25rem 0;
+        font-size: 0.85rem;
+    }
+
+    .footer-tags {
+        gap: 0.35rem 0.45rem;
+    }
+
+    .footer-tags .tag-pill {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.73rem;
+    }
+
+    .footer-logo img {
+        max-width: 130px;
+    }
+
+    .footer-social li a {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ---------- 17. Wide (≥1280px) ---------- */
+@media (min-width: 1280px) {
+    .jd-footer .container {
+        padding: 0 2rem;
+    }
+
+    .footer-grid {
+        gap: 4rem 3rem;
+    }
+}
+
+/* ---------- 18. Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .jd-footer *,
+    .jd-footer *::before,
+    .jd-footer *::after {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+}

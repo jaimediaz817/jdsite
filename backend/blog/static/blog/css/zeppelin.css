@@ -1,0 +1,103 @@
+.zeppelin-zone {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.zeppelin-track {
+    position: absolute;
+    top: 20px;
+    left: -300px;
+    /* start off‑screen left */
+    width: 300px;
+    height: 160px;
+    animation: zeppelinFly 10s linear infinite;
+}
+
+.jd-footer:hover .zeppelin-track {
+    animation-play-state: paused;
+}
+
+.zeppelin-body a {
+    cursor: pointer;
+}
+
+.zeppelin-body a:hover rect {
+    fill: rgba(99, 102, 241, 0.4) !important;
+    stroke: rgba(99, 102, 241, 0.7) !important;
+}
+
+.zeppelin-body a:hover path {
+    fill: #e2e8f0 !important;
+}
+
+@keyframes zeppelinFly {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 300px));
+    }
+}
+
+.zeppelin-propeller circle {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.zeppelin-trail {
+    position: absolute;
+    right: 100%;
+    top: 45%;
+    display: flex;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.zeppelin-trail .trail-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6366f1;
+    opacity: 0;
+    animation: trailFade 3s ease-out infinite;
+}
+
+.zeppelin-trail .trail-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.zeppelin-trail .trail-dot:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.zeppelin-trail .trail-dot:nth-child(3) {
+    animation-delay: 2s;
+}
+
+@keyframes trailFade {
+    0% {
+        opacity: 0.6;
+        transform: translateX(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.3);
+    }
+}

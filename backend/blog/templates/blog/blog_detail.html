@@ -113,6 +113,10 @@
     <!-- CUSTOM STYLES -->
     <link rel="stylesheet" href="{% static 'css/blog_header.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/blog_detail.css' %}?v={{ now|date:'U' }}" />
+    <!-- Custom footer for blog pages -->
+    <link rel="stylesheet" href="{% static 'blog/css/footer.css' %}?v={{ now|date:'U' }}">
+    <!-- Zeppelin volador footer -->
+    <link rel="stylesheet" href="{% static 'blog/css/zeppelin.css' %}?v={{ now|date:'U' }}">
     <link rel="stylesheet" href="{% static 'blog/css/reactions.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/comment-avatars.css' %}" />
     <link rel="stylesheet" href="{% static 'blog/css/tags.css' %}" />
@@ -404,6 +408,13 @@
                   </a>
                 </footer>
 
+
+
+
+
+
+
+
                 <!-- ═══════════════════════════════════════
                      HU-012: ARTÍCULOS RELACIONADOS
                 ═══════════════════════════════════════ -->
@@ -430,6 +441,20 @@
                   </div>
                 </section>
                 {% endif %}
+                {% comment %} De lo contrario, mostrar algún elemento maquetado que indique no hay artículos relacionados {% endcomment %}
+                {% if not related_posts %}
+                  {% comment %} hagamoslo mejor maquetado! mas estilos {% endcomment %}
+                  <div class="jd-no-related">
+                    <i class="fas fa-book-reader"></i>
+                    <p>No se encontraron artículos relacionados.</p>
+                  </div>          
+                {% endif %}
+
+
+
+
+
+
 
                 <!-- ═══════════════════════════════════════
                      SECCIÓN COMENTARIOS
@@ -718,7 +743,8 @@
       </div>
     </section>
 
-    {% include 'partials/_footer.html' %}
+    {% comment %} TODO: Refactorizar footer  {% endcomment %}
+    {% include 'blog/partials/_blog_footer.html' %}
 
     <!-- JQUERY LIB -->
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
@@ -745,6 +771,9 @@
 
     <!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
     <script src="{% static 'blog/js/blog_detail.js' %}"></script>
+
+    <!-- Zeppelin volador animación -->
+    <script src="{% static 'blog/js/zeppelin.js' %}"></script>
 
     <!-- Back to top button -->
     <button id="back-to-top" class="back-to-top" aria-label="Ir arriba">

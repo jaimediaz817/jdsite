@@ -22,7 +22,6 @@ from blog.views import (
     blog_email_config_view,
     delete_blog_view,
     api_authors_autocomplete,
-    delete_orphan_ajax,
     delete_resource_file_ajax,
     dashboard_resources_view,
 )
@@ -71,12 +70,6 @@ urlpatterns = [
         "dashboard/delete/<int:post_id>/",
         delete_blog_view,
         name="delete_blog",
-    ),
-    # HU-011.17: Eliminar carpetas huérfanas (AJAX)
-    path(
-        "dashboard/delete-orphan/",
-        delete_orphan_ajax,
-        name="delete_orphan",
     ),
     # HU-011.17: Eliminar archivo individual de recursos (AJAX)
     path(

@@ -69,13 +69,13 @@
       checked.forEach(function(cb) { folders.push(cb.getAttribute('data-folder')); });
       if (!confirm('¿Eliminar permanentemente ' + folders.length + ' carpeta(s)?')) return;
 
-      fetch(DELETE_ORPHAN_URL, {
+      fetch(DELETE_FILE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': CSRF_TOKEN
         },
-        body: JSON.stringify({folders: folders})
+        body: JSON.stringify({folder: folders})
       })
       .then(function(r) { return r.json(); })
       .then(function(data) {
@@ -391,13 +391,13 @@
       self.disabled = true;
       self.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>...';
 
-      fetch(DELETE_ORPHAN_URL, {
+      fetch(DELETE_FILE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': CSRF_TOKEN
         },
-        body: JSON.stringify({ folders: [folder] })
+        body: JSON.stringify({ folder: folder })
       })
       .then(function(r) { return r.json(); })
       .then(function(data) {

@@ -1,7 +1,7 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-06"
+date: "2026-06-17"
 draft: false
 cover_image: "/static/blogs/2026-04-26_mejoras_ui_ux_blog_historico_manualmente-05/IMG_20260517_130826.jpg"
 category: "UI/UX"
@@ -88,8 +88,6 @@ Si prefieres ver el proceso en acción, aquí tienes un mosaico interactivo con 
 <p class="text-center mt-2">
   <small>Haz clic en el mosaico para ver el video completo en nuestro canal de YouTube</small>
 </p>
-
-
 
 ## Los cambios concretos que implementamos
 

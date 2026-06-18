@@ -1,7 +1,7 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-05"
+date: "2026-06-17"
 draft: false
 image: "image-1.png"
 category: "UI/UX"
@@ -14,7 +14,10 @@ author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
 author_id: 15
+cover_image: "/static/blogs/2026-04-26_mejoras_ui_ux_blog_historico/image-2.png"
 ---
+
+
 
 ## Mi Introduccion
 
@@ -86,7 +89,6 @@ Si prefieres ver el proceso en acción, aquí tienes un mosaico interactivo con 
   <small>Haz clic en el mosaico para ver el video completo en nuestro canal de YouTube</small>
 </p>
 
-
 ## Los cambios concretos que implementamos
 
 ### 1. Ancho de linea perfecto
@@ -126,18 +128,16 @@ El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automati
 ## 3. Barra lateral flotante de reacciones
 
 :::popup:gallery
-![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda](image-3.png)
-![Barra inferior|Reacciones al final del artículo](image-4.png)
-![Barra inferior|Reacciones al final del artículo](image-2.png)
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda2](image-2.png)
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda2](image-4.png)
 :::
 
  
 Esta fue la mejora con mayor impacto.
 
 :::slides
-![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda](image-3.png)
-![Barra inferior|Reacciones al final del artículo](image-4.png)
-![Barra inferior|Reacciones al final del artículo](image-2.png)
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda2](image-2.png)
+![Barra lateral flotante|Interfaz de reacciones flotante a la izquierda2](image-4.png)
 :::
 
 Mientras lees, aparece una barra discreta en el lado izquierdo con los botones de reaccion. Cuando llegas al final, desaparece automaticamente y aparecen los botones abajo.
@@ -145,7 +145,6 @@ Mientras lees, aparece una barra discreta en el lado izquierdo con los botones d
 Nunca mas el usuario tiene que subir 3 pantallas para darle un me gusta. Nunca mas interrumpimos la lectura.
 
 ### 4. Nada de bordes por defecto
-
 
 Eliminamos absolutamente todos los estilos por defecto del navegador.
 

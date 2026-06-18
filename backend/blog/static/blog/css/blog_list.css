@@ -1024,28 +1024,24 @@ body.home-p {
    ========================================= */
 .blog-search-second-row {
     display: flex;
-    align-items: stretch;
-    flex-wrap: nowrap;
-    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
     width: 100%;
 }
 
 .blog-search-group {
-    border-radius: 50px;
-    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    flex: 1 1 360px;
+    min-width: 260px;
+    max-width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    overflow: visible;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     transition: box-shadow 0.25s ease, border-color 0.25s ease;
-    border: 2px solid transparent;
-
-    input {
-        height: 100%;
-        top: 2px;
-    }
-}
-
-.blog-search-group {
-    border-color: #1d76db;
-
 }
 
 .blog-search-group:focus-within {
@@ -1054,52 +1050,57 @@ body.home-p {
 }
 
 .blog-search-icon {
-    background: #fff;
+    background: transparent;
     border: none;
     color: #6a11cb;
-    padding-left: 20px;
+    padding-left: 18px;
     padding-right: 10px;
     font-size: 1rem;
+    z-index: 2;
 }
 
 .blog-search-input {
-    border: none;
-    padding: 12px 10px;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 12px 10px !important;
     font-size: 0.95rem;
     font-family: 'Roboto', sans-serif;
-    background: #fff;
+    background: transparent !important;
     color: #333;
     outline: none;
+    height: auto !important;
     box-shadow: none !important;
-}
-
-.blog-search-input::placeholder {
-    color: #aaa;
-    font-weight: 300;
-}
-
-.blog-search-input:focus {
-    box-shadow: none !important;
-    border-color: transparent;
+    /* Reset total para que el input crezca dentro del input-group sin interferencias de BS4 */
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    float: none !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
 }
 
 .blog-search-btn {
     background: linear-gradient(135deg, #6a11cb, #2575fc);
     color: #fff;
     border: none;
-    padding: 12px 24px;
+    border-radius: 0 999px 999px 0 !important;
+    padding: 12px 20px;
     font-weight: 600;
     font-size: 0.9rem;
     letter-spacing: 0.3px;
-    border-radius: 0 50px 50px 0 !important;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
+    height: 46px;
+}
 
-    span {
-        font-family: 'Montserrat', sans-serif;
-    }
+.blog-search-btn span {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .blog-search-btn:hover {
@@ -1110,6 +1111,71 @@ body.home-p {
 
 .blog-search-btn:active {
     transform: scale(0.98);
+}
+
+/* Mobile: columna y buscador al 100% ancho */
+@media (max-width: 767px) {
+    .blog-search-second-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.6rem;
+        width: 100% !important;
+    }
+
+    #toggle-advanced-filters {
+        align-self: flex-start;
+        white-space: nowrap;
+        width: auto;
+        min-width: 220px;
+    }
+
+    /* Forzar input-group a ocupar TODO el ancho disponible sin reservas */
+    .blog-search-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+    }
+
+    /* Icono de búsqueda con ancho fijo */
+    .blog-search-group .input-group-text {
+        flex: 0 0 auto !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        text-align: center !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* Input: absorbe TODO el espacio sobrante */
+    .blog-search-input {
+        flex: 1 1 0% !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        padding: 12px 10px !important;
+        border: none !important;
+    }
+
+    /* Botón Buscar tamaño fijo */
+    .blog-search-btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        height: 46px !important;
+    }
+
+    .blog-clear-btn,
+    .blog-result-count {
+        margin-top: 0.25rem !important;
+    }
+
+    .blog-result-count {
+        margin-left: auto !important;
+    }
 }
 
 /* ==========================================================================
@@ -1234,9 +1300,6 @@ body.home-p {
     transform: scale(0.96);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
-/* Responsive: en mobile se achica */
-@media (max-width: 767px) {}
 
 .blog-search-hint {
     text-align: center;
@@ -1527,6 +1590,7 @@ span.author-name {
     background: #fff;
     padding: 4px 0;
     transition: box-shadow 0.2s ease;
+    align-items: stretch;
 }
 
 #filters-sticky-row.is-sticky {
@@ -1579,9 +1643,20 @@ span.author-name {
    HU-17.19: Contador de resultados
    ============================================= */
 
-.blog-result-count {
+.blog-results-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.blog-results-row .blog-result-count {
     font-size: 0.78rem;
     color: #6b7280;
+    background: #f9fafb;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
 }
 
 /* =============================================
@@ -1694,10 +1769,7 @@ span.author-name {
     }
 }
 
-/*  media query: 1 columna en móviles (hasta 767px) 
-   Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
-*/
-/* 1 columna en móviles (hasta 767px) */
+/* 2 columnas en tablets pequeñas/móviles grandes (568px a 767px) */
 @media (max-width: 767px) {
     .fieldset-container {
         flex-direction: column;
@@ -1706,7 +1778,7 @@ span.author-name {
     }
 
     .blog-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .blog-clear-btn {
@@ -1717,6 +1789,13 @@ span.author-name {
 
     .blog-clear-btn span {
         display: none;
+    }
+}
+
+/* 1 columna en móviles pequeños (hasta 567px) */
+@media (max-width: 567px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1735,6 +1814,7 @@ span.author-name {
     .blog-search-btn {
         padding: 10px 14px;
         font-size: 0.85rem;
+        width: auto;
     }
 
     .blog-clear-btn {

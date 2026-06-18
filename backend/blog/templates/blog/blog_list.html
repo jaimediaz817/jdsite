@@ -62,6 +62,10 @@
     <link rel="stylesheet" href="{% static 'css/blog_header.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/blog_list.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/blog_sidebar.css' %}">
+    <!-- Custom footer for blog -->
+    <link rel="stylesheet" href="{% static 'blog/css/footer.css' %}">
+    <!-- Drone volador footer -->
+<link rel="stylesheet" href="{% static 'blog/css/zeppelin.css' %}">
 
     <!-- ✅ Flatpickr - Date picker profesional -->
     <link rel="stylesheet" href="{% static 'blog/vendor/flatpickr/flatpickr.min.css' %}">
@@ -212,8 +216,20 @@
                                         </div>
                                     </div>
 
-                                    <!-- 🟡 FILA STICKY: Buscador + toggle + contador -->
+                                    <!-- 🟡 FILA STICKY: Toggle primero, buscador abajo a lo ancho -->
                                     <div class="blog-search-second-row" id="filters-sticky-row">
+                                        <!-- Botón toggle para filtros avanzados -->
+                                        <button type="button"
+                                            id="toggle-advanced-filters"
+                                            class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 flex-shrink-0"
+                                            style=""
+                                            aria-expanded="false"
+                                            aria-controls="advanced-filters-collapse"
+                                            title="Mostrar/ocultar filtros avanzados">
+                                            <i class="fas fa-cog me-1 mr-1"></i>
+                                            <span id="toggle-advanced-text">Filtros avanzados</span>
+                                        </button>
+
                                         <div class="input-group blog-search-group">
                                             <span class="input-group-text blog-search-icon">
                                                 <i class="fas fa-search"></i>
@@ -237,27 +253,17 @@
                                             <span>Limpiar filtros</span>
                                         </a>
                                         {% endif %}
+                                    </div>
 
-                                        <!-- Contador de resultados -->
-                                        {% if search_query or date_from or date_to or request.GET.category %}
-                                        <div class="mt-1 blog-result-count">
+                                    <!-- Contador de resultados en línea aparte -->
+                                    {% if search_query or date_from or date_to or request.GET.category %}
+                                    <div class="blog-results-row">
+                                        <div class="blog-result-count">
                                             <i class="fas fa-info-circle me-1"></i>
                                             {{ page_obj.paginator.count }} artículo{{ page_obj.paginator.count|pluralize:'s' }} encontrado{{ page_obj.paginator.count|pluralize:'s' }}
                                         </div>
-                                        {% endif %}
-
-                                        <!-- Botón toggle para filtros avanzados -->
-                                        <button type="button"
-                                            id="toggle-advanced-filters"
-                                            class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 flex-shrink-0"
-                                            style="font-size:.82rem; white-space:nowrap;"
-                                            aria-expanded="false"
-                                            aria-controls="advanced-filters-collapse"
-                                            title="Mostrar/ocultar filtros avanzados">
-                                            <i class="fas fa-cog me-1"></i>
-                                            <span id="toggle-advanced-text">Filtros avanzados</span>
-                                        </button>                                        
                                     </div>
+                                    {% endif %}
                                 </fieldset>
                             </form>
 
@@ -459,7 +465,7 @@
         </div>
     </section>
 
-    {% include "partials/_footer.html" %}
+    {% include "blog/partials/_blog_footer.html" %}
 
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
@@ -562,6 +568,9 @@
             requestAnimationFrame(scrollStep);
         });
     </script>
+
+    <!-- Drone volador animación -->
+<script src="{% static 'blog/js/zeppelin.js' %}"></script>
 
     </body>
     </html>

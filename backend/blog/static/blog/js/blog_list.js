@@ -83,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateToggleText(isExpanded) {
         if (isExpanded) {
-            toggleBtn.innerHTML = '<i class="fas fa-times me-1"></i><span id="toggle-advanced-text">Cerrar filtros</span>';
+            toggleBtn.innerHTML = '<i class="fas fa-times me-1 mr-1"></i><span id="toggle-advanced-text">Cerrar filtros</span>';
             toggleBtn.setAttribute('aria-expanded', 'true');
         } else {
-            toggleBtn.innerHTML = '<i class="fas fa-cog me-1"></i><span id="toggle-advanced-text">Filtros avanzados</span>';
+            toggleBtn.innerHTML = '<i class="fas fa-cog me-1 mr-1"></i><span id="toggle-advanced-text">Filtros avanzados</span>';
             toggleBtn.setAttribute('aria-expanded', 'false');
         }
     }

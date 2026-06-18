@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.db.models import Prefetch
 
 import yaml
+import re
 
 from .models import BlogComment, BlogPost
 
@@ -864,6 +865,115 @@ def delete_resource_file(folder, filename):
 
     try:
         file_path.unlink()
+        # Además, eliminar la copia en ``blogs_source`` para que los contadores de archivos
+        # (usados por ``get_post_files_info``) reflejen la eliminación.  La carpeta del
+        # artículo en ``blogs_source`` suele incluir un prefijo de fecha
+        # (p.ej. ``2026-06-08_<slug>``), por lo que debemos buscar la carpeta que
+        # contenga el slug recibido en ``folder``.
+        blogs_source_root = Path(settings.BASE_DIR) / "blogs_source"
+        source_dir = None
+        # Intentar coincidencia directa primero
+        possible_path = blogs_source_root / folder
+        if possible_path.is_dir():
+            source_dir = possible_path
+        else:
+            # Buscar por prefijo parcial
+            for d in blogs_source_root.iterdir():
+                if d.is_dir() and folder in d.name:
+                    source_dir = d
+                    break
+
+        if source_dir:
+            source_file_path = source_dir / filename
+            if source_file_path.exists() and source_file_path.is_file():
+                try:
+                    source_file_path.unlink()
+                except OSError:
+                    import logging
+
+                    logger = logging.getLogger(__name__)
+                    logger.exception(
+                        "Error al eliminar archivo fuente %s", source_file_path
+                    )
+        # ---------------------------------
+        # Eliminar referencias a la imagen en los posts
+        # ---------------------------------
+        from .models import BlogPost
+        import re
+
+        # Patrón markdown simple para la imagen eliminada
+        markdown_pattern = re.compile(
+            r"!\[.*?\]\([^)]*" + re.escape(filename) + r"\)", re.IGNORECASE
+        )
+
+        # Patrón para bloques de slides que pueden contener la imagen
+        slides_block_pattern = re.compile(
+            r":::slides\s+(.*?)\s+:::", re.DOTALL | re.IGNORECASE
+        )
+
+        for post in BlogPost.objects.filter(slug__icontains=folder):
+            original = post.content_html or ""
+            updated = original
+
+            # Eliminar referencias markdown sueltas
+            updated = markdown_pattern.sub("", updated)
+
+            # Procesar bloques de slides
+            def clean_slides(match):
+                inner = match.group(1)
+                cleaned_inner = markdown_pattern.sub("", inner).strip()
+                return (
+                    ""
+                    if not cleaned_inner
+                    else f":::slides\n{cleaned_inner}\n:::"
+                )
+
+            updated = slides_block_pattern.sub(clean_slides, updated)
+
+            # Normalizar saltos de línea
+            updated = re.sub(r"\n{3,}", "\n\n", updated).strip()
+
+            if updated != original:
+                post.content_html = updated
+                post.save(update_fields=["content_html"])
+
+        # -----------------------------------------------------------------
+        # Además, actualizar el archivo markdown fuente (blog.md) para que el
+        # editor refleje la eliminación. Esto evita que la imagen siga
+        # apareciendo al abrir el artículo en el editor.
+        # -----------------------------------------------------------------
+        source_md_path = (
+            Path(settings.BASE_DIR) / "blogs_source" / folder / "blog.md"
+        )
+        if source_md_path.exists() and source_md_path.is_file():
+            try:
+                md_content = source_md_path.read_text(encoding="utf-8")
+                # Eliminar referencias markdown sueltas en el archivo fuente
+                md_updated = markdown_pattern.sub("", md_content)
+                # Eliminar bloques de slides en el archivo fuente
+                md_updated = slides_block_pattern.sub(clean_slides, md_updated)
+                # Eliminar etiquetas <img> que referencien la imagen
+                img_tag_pattern = re.compile(
+                    r"<img[^>]*src=[\"'].*?"
+                    + re.escape(filename)
+                    + r"[\"'][^>]*>",
+                    re.IGNORECASE,
+                )
+                md_updated = img_tag_pattern.sub("", md_updated)
+                # Normalizar saltos de línea
+                md_updated = re.sub(r"\n{3,}", "\n\n", md_updated).strip()
+                if md_updated != md_content:
+                    source_md_path.write_text(md_updated, encoding="utf-8")
+            except Exception as e:
+                # Si falla la actualización del markdown, registramos pero no
+                # interrumpimos el flujo de eliminación de recursos.
+                import logging
+
+                logger = logging.getLogger(__name__)
+                logger.exception(
+                    "Error al actualizar markdown para %s: %s", source_md_path, e
+                )
+
         return {
             "success": True,
             "message": f"Archivo {safe_filename} eliminado correctamente de {safe_folder}/",

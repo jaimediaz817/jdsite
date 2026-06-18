@@ -193,6 +193,9 @@
 
 /* Icono FontAwesome dentro de cada enlace de categoría */
 .category-link__icon {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     color: #6c757d;
     width: 1rem;
     text-align: center;

@@ -1,7 +1,7 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-18"
+date: "2026-06-19"
 draft: false
 image: "image-1.png"
 author: "Jaime Diaz"
@@ -14,23 +14,30 @@ meta_description: "Los cambios concretos y medibles que implementamos para mejor
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
 tiempo_lectura: 2
 author_id: 15
-cover_image: "/static/blogs/test_blog/image.png"
+cover_image: "/static/blogs/test_blog/image-1.png"
 ---
 
 
 
-![image_e9571d7e.png](./image_e9571d7e.png)
+
+
+
+
+:::no-import:::
+![Captura de pantalla 2025-11-10 164914_c3defa9f.png](./Captura de pantalla 2025-11-10 164914_c3defa9f.png)
+
+:::no-import:::
+![Captura de pantalla 2025-11-12 155136_d277be6d.png](./Captura de pantalla 2025-11-12 155136_d277be6d.png)
+
+:::no-import:::
+![Captura de pantalla 2025-11-12 155136_00e2d5af.png](./Captura de pantalla 2025-11-12 155136_00e2d5af.png)
+
+![image_5f2daeb7.png](./image_5f2daeb7.png)
 
 ![IMG_20260501_181947.jpg](./IMG_20260501_181947.jpg)
 
-![image.png](./image.png)
 
-![image.png](./image.png)
-
-![image.png](./image.png)
-
-![image.png](./image.png)
-
+:::no-import:::
 ![Captura de pantalla 2025-11-06 154128.png](./Captura de pantalla 2025-11-06 154128.png)
 
 ## Introduccion1
@@ -40,6 +47,7 @@ Este es el tercer renglon.
 Y este es el cuarto renglon.
 
 Nuevo parrafo aqui.
+
 
 ![cover](image-1.png)
 

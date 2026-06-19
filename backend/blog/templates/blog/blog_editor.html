@@ -2,7 +2,6 @@
 {% load static %}
 <html lang="es" class="html-jd">
 <head>
-    <!-- Replaced ASCII icon with Font Awesome pen icon for a professional look -->
     <title><i class="fas fa-pen"></i> Editor de Artículo | Jaime Díaz</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,19 +29,16 @@
             <div class="row">
                 <!-- SIDEBAR: Frontmatter -->
                 <aside class="col-md-3 editor-sidebar">
-                <!-- Sidebar title icon updated -->
-                <h4 class="sidebar-title"><i class="fas fa-file-alt"></i> Cabecera del artículo</h4>
+                    <h4 class="sidebar-title"><i class="fas fa-file-alt"></i> Cabecera del artículo</h4>
 
                     <!-- Badge de estado del artículo -->
                     <div id="article-status-badge" class="mb-3">
-                        <!-- Badge icon updated -->
                         <span class="badge Artikel-badge Artikel-badge-new" id="status-badge">
                             <i class="fas fa-circle text-primary"></i> Nuevo artículo
                         </span>
                     </div>
 
                     <form id="frontmatter-form">
-                        <!-- Campo oculto para identificar edición vs creación -->
                         <input type="hidden" id="edit-slug" name="slug" value="">
                         
                         <div class="mb-3">
@@ -57,7 +53,7 @@
                         
                         <div class="mb-3" id="category-select-wrapper">
                             <label class="form-label" for="category">Categoría *</label>
-                        <select id="category" class="form-select modern-select" aria-describedby="categoryHelp">
+                            <select id="category" class="form-select modern-select" aria-describedby="categoryHelp">
                                 <option value="">Seleccionar categoría</option>
                                 {% for cat in categories %}
                                 <option value="{{ cat.name }}">{{ cat.name }}</option>
@@ -65,12 +61,12 @@
                             </select>
                             <div id="categoryHelp" class="form-text">Elige la categoría que mejor describa el tema del artículo.</div>
                         </div>
-                        <!-- Checkbox para categoría nueva -->
+                        
                         <div class="form-check mb-2">
                             <input type="checkbox" class="form-check-input" id="category-toggle-new">
                             <label class="form-check-label" for="category-toggle-new">No encontré la categoría que busco</label>
                         </div>
-                        <!-- Input para categoría libre, oculto por defecto -->
+                        
                         <div class="mb-3 d-none" id="new-category-wrapper">
                             <label class="form-label" for="new_category">Nueva categoría</label>
                             <input type="text" id="new_category" class="form-control" placeholder="Escribe la categoría" aria-describedby="newCategoryHelp">
@@ -83,11 +79,10 @@
                             <div id="tags-list" class="tags-list mt-2"></div>
                         </div>
 
-                <!-- Campo para indicar la imagen de portada seleccionada -->
-                <div class="mb-3">
-                    <label class="form-label" for="cover_image">Imagen de portada (seleccionada con la estrella)</label>
-                    <input type="text" id="cover_image" name="cover_image" class="form-control" placeholder="Nombre de la imagen de portada" readonly>
-                </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="cover_image">Imagen de portada (seleccionada con la estrella)</label>
+                            <input type="text" id="cover_image" name="cover_image" class="form-control" placeholder="Nombre de la imagen de portada" readonly>
+                        </div>
                                 
                         <hr>
                         
@@ -117,7 +112,6 @@
                         
                         <hr>
                         
-                        <!-- Tiempo de lectura mixto -->
                         <div class="mb-3 reading-time-field">
                             <label class="form-label">Tiempo de lectura (minutos)</label>
                             <input type="number" id="tiempo_lectura" class="form-control" min="1" value="1">
@@ -128,7 +122,6 @@
                             </small>
                         </div>
                         
-                        <!-- Info automática (solo lectura) -->
                         <fieldset disabled class="mb-3">
                             <legend class="h6">📌 Información automática</legend>
                             <div class="mb-2">
@@ -146,11 +139,8 @@
                         </fieldset>
                     </form>
 
-                    <!-- Indicador de borrador local persistente -->
                     <div id="draft-indicator" class="draft-indicator d-none">
-                        <span class="badge bg-warning text-dark">
-                            📝 Hay borrador local
-                        </span>
+                        <span class="badge bg-warning text-dark">📝 Hay borrador local</span>
                         <button type="button" id="btn-discard-draft" class="btn btn-sm btn-outline-danger ms-2">
                             <i class="fas fa-trash-alt"></i> Descartar
                         </button>
@@ -159,7 +149,6 @@
                 
                 <!-- CENTRO: Editor -->
                 <main class="col-md-9 editor-main">
-                    <!-- Header icon updated -->
                     <h2><i class="fas fa-code"></i> Editor Markdown</h2>
                     <p class="text-muted small">Escribe en markdown o HTML directo. Pega imágenes/videos con <kbd>Ctrl+V</kbd> o arrástralos aquí.</p>
                     
@@ -167,12 +156,13 @@
                         <textarea id="editor"></textarea>
                     </div>
                     
-                    <!-- FilePond -->
+                    <!-- FilePond upload nativo -->
                     <div class="filepond-container mb-3">
                         <input type="file" id="filepond" multiple accept="image/*,video/mp4,video/webm,video/quicktime">
                     </div>
-                    <!-- Área para previsualizar archivos subidos -->
-                    <div id="uploaded-files" class="uploaded-files mb-3 d-flex flex-wrap gap-2"></div>
+
+                    <!-- Contenedor de archivos subidos (grid tipo carpeta) -->
+                    <div id="uploaded-files" class="uploaded-files-grid mb-3"></div>
                     
                     <!-- Botones de acción -->
                     <div class="editor-actions">
@@ -188,8 +178,6 @@
                         <div id="status-message" class="mt-3"></div>
                     </div>
                     
-                    <!-- Indicador de auto-save -->
-                    <!-- Autosave indicator icon updated -->
                     <div id="autosave-indicator" class="autosave-indicator"><i class="fas fa-save"></i> Auto-guardado</div>
                 </main>
             </div>
@@ -201,10 +189,10 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="draftRecoveryModalLabel"><i class="fas fa-file-alt"></i> Borrador local encontrado</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="draftRecoveryModalLabel"><i class="fas fa-file-alt"></i> Borrador local encontrado</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+        </button>
                 </div>
                 <div class="modal-body">
                     <p>Tienes un borrador guardado localmente <strong id="draft-age">hace unos momentos</strong>.</p>
@@ -229,7 +217,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="confirmDiscardModalLabel"><i class="fas fa-trash-alt"></i> Descartar borrador</h5>
+                    <h5 class="modal-title" id="confirmDiscardModalLabel"><i class="fas fa-trash-alt"></i> Descartar borrador</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -245,17 +233,73 @@
         </div>
     </div>
 
-    <!-- Toast de auto-save mejorado -->
-    <div id="autosave-toast" class="toast autosave-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-        <div class="toast-header autosave-toast-header">
-                <strong class="me-auto autosave-toast-title"><i class="fas fa-save"></i> Borrador guardado</strong>
-            <small class="text-muted autosave-toast-time">ahora</small>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    <!-- Modal Bootstrap: Confirmar eliminación de archivo -->
+    <div class="modal fade" id="deleteFileModal" tabindex="-1" role="dialog" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteFileModalLabel"><i class="fas fa-exclamation-triangle text-danger me-2"></i> Confirmar eliminación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">¿Eliminar permanentemente este archivo?</p>
+                    <p class="fw-bold text-danger mb-2" id="deleteFileModalTitle"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel-grad" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger-custom" id="btnConfirmDeleteFile" onclick="executeDeleteFile()">Eliminar</button>
+                </div>
+            </div>
         </div>
-        <div class="toast-body autosave-toast-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <span id="autosave-toast-detail">—</span>
-                <button type="button" id="toast-discard-draft" class="btn btn-sm btn-outline-danger ms-2">
+    </div>
+
+    <!-- Modal Bootstrap: Vista previa de imagen -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content image-preview-modal-content">
+                <div class="modal-header image-preview-modal-header">
+                    <h5 class="modal-title image-preview-modal-title" id="imagePreviewModalLabel">
+                        <i class="fas fa-image me-2"></i><span id="preview-modal-filename">—</span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body image-preview-modal-body p-0">
+                    <img id="preview-modal-img" src="" alt="Vista previa" class="img-fluid w-100">
+                </div>
+                <div class="modal-footer image-preview-modal-footer">
+                    <button type="button" class="btn btn-cancel-grad" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast profesional de auto-save -->
+    <div id="autosave-toast" class="toast autosave-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="autosave-toast-inner">
+            <!-- Barra de progreso animada -->
+            <div class="autosave-progress-bar" id="autosave-progress-bar"></div>
+            <div class="autosave-toast-header">
+                <div class="autosave-toast-icon-wrapper">
+                    <i class="fas fa-save"></i>
+                </div>
+                <div class="autosave-toast-content">
+                    <strong class="autosave-toast-title">Borrador guardado</strong>
+                    <span class="autosave-toast-time" id="autosave-toast-time">ahora</span>
+                </div>
+                <button type="button" class="autosave-toast-close" id="autosave-toast-close" aria-label="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="autosave-toast-body">
+                <div class="autosave-toast-detail-wrapper">
+                    <i class="fas fa-check-circle text-success autosave-toast-check"></i>
+                    <span id="autosave-toast-detail">—</span>
+                </div>
+                <button type="button" id="toast-discard-draft" class="btn btn-sm autosave-toast-discard-btn">
                     <i class="fas fa-trash-alt"></i> Descartar
                 </button>
             </div>
@@ -264,7 +308,26 @@
 
     <!-- HU-011.7: Barra de herramientas MTP (Mark to Post) -->
     <aside class="mtp-toolbar" id="mtpToolbar" role="toolbar" aria-label="Barra de herramientas MTP">
+        <button type="button" class="mtp-btn" data-mtp="cover-image" data-tip="Portada (frontmatter)">
+            <i class="fas fa-image"></i>
+        </button>
+        <button type="button" class="mtp-btn" data-mtp="image" data-tip="Imagen markdown">
+            <i class="fas fa-camera"></i>
+        </button>
+        <button type="button" class="mtp-btn" data-mtp="video" data-tip="Video HTML">
+            <i class="fas fa-video"></i>
+        </button>
 
+        <div class="mtp-divider"></div>
+
+        <button type="button" class="mtp-btn" data-mtp="slides" data-tip="Slides ::slides">
+            <i class="fas fa-layer-group"></i>
+        </button>
+        <button type="button" class="mtp-btn" data-mtp="callout-info" data-tip="Callout info ℹ️">
+            <i class="fas fa-info-circle"></i>
+        </button>
+        <button type="button" class="mtp-btn" data-mtp="callout-warning" data-tip="Callout warning ⚠️">
+            <i class="fas fa-exclamation-triangle"></i>
         <!-- Grupo: Multimedia -->
         <button type="button" class="mtp-btn" data-mtp="cover-image" data-tip="Portada (frontmatter)">
             <i class="fas fa-image"></i>
@@ -313,8 +376,7 @@
         <button type="button" class="mtp-btn" data-mtp="minimize" data-tip="Minimizar ◀">
             <i class="fas fa-angle-right"></i>
         </button>
-    </aside>
-
+</aside>
     <!-- Botón toggle para mostrar la barra cuando está minimizada -->
     <button type="button" class="mtp-toggle-btn" id="mtpToggleBtn" aria-label="Mostrar barra MTP" title="Mostrar barra MTP">
         <i class="fas fa-pencil-alt"></i>

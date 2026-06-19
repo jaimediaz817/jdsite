@@ -12,44 +12,80 @@
 */
 
 const uploadedFiles = [];
+// Nombre del archivo que se está a punto de eliminar (usado por el modal de confirmación)
+let pendingDeleteFilename = null;
 let isSaved = false; // controla si el artículo ya se guardó para evitar la alerta de salida
 const DRAFT_KEY = 'blog_editor_draft';
 let userOverride = false;
 let lastAutoSaveTime = null;
 let autoSaveTimer = null;
 
+// FASE 5 HU-019: Referencia al contenedor para estado vacío
+const uploadedFilesContainer = document.getElementById('uploaded-files');
+console.log('Contenedor de archivos subidos:', uploadedFilesContainer);
 // Iconos SVG inline (mejor calidad visual y accesibilidad)
-const ICON_EYE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3c-3.5 0-6.5 2.3-7.5 5.5C1.5 11.7 4.5 14 8 14s6.5-2.3 7.5-5.5C14.5 5.3 11.5 3 8 3zm0 9c-1.9 0-3.5-1.6-3.5-3.5S6.1 5 8 5s3.5 1.6 3.5 3.5S9.9 12 8 12zm0-5.5C7.2 6.5 6.5 7.2 6.5 8s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5z"/></svg>';
-const ICON_EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5c-1.4 0-2.7.3-3.8.8l1.6 1.6c.7-.2 1.4-.4 2.2-.4 3.5 0 6.5 2.3 7.5 5.5-.3.9-.8 1.7-1.4 2.5l-1.7-1.7zM2 2l1.4 1.4C1.9 4.5.5 6.5 0 8c0 0 1.5 2.7 4.2 4.2l-1.5 1.5 1.4 1.4 12-12L14 2 2 2zm6.4 6.4l1.2 1.2c0 .2-.1.3-.1.5 0 .8.7 1.5 1.5 1.5.2 0 .3 0 .5-.1l1.2 1.2c-.5.2-1.1.3-1.7.3-1.9 0-3.5-1.6-3.5-3.5 0-.6.1-1.2.3-1.7l-.4.6z"/></svg>';
+// Use Font Awesome icons for clearer toggle state (eye / eye-slash)
+const ICON_EYE = '<i class="fas fa-eye"></i>';
+const ICON_EYE_OFF = '<i class="fas fa-eye-slash"></i>';
 const ICON_TRASH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>';
 const ICON_STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/></svg>';
 const ICON_STAR_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>';
 
 // ======================================================
-// Funciones helper: Toast manual (compatible Bootstrap 4)
+// Funciones helper: Toast profesional (transiciones CSS)
 // ======================================================
 function showAutoSaveToast(title, detail) {
     const toastEl = document.getElementById('autosave-toast');
     if (!toastEl) return;
     const titleEl = toastEl.querySelector('.autosave-toast-title');
     const detailEl = document.getElementById('autosave-toast-detail');
-    const timeEl = toastEl.querySelector('.autosave-toast-time');
+    const timeEl = document.getElementById('autosave-toast-time');
+    const progressBar = document.getElementById('autosave-progress-bar');
     if (titleEl) titleEl.innerHTML = title;
     if (detailEl) detailEl.textContent = detail || '—';
     if (timeEl) {
         const now = new Date();
         timeEl.textContent = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
     }
-    // Mostrar toast manualmente con clase 'show' (compatible BS4)
-    toastEl.classList.add('show');
-    toastEl.style.display = 'block';
-    // Auto-ocultar a los 5 segundos
+    // Reiniciar barra de progreso
+    if (progressBar) {
+        progressBar.style.animation = 'none';
+        progressBar.offsetHeight; // Reflow
+        progressBar.style.animation = '';
+    }
+    // Limpiar timers previos
     clearTimeout(toastEl._hideTimer);
+    clearTimeout(toastEl._closeTimer);
+    // Quitar estado hiding si existe
+    toastEl.classList.remove('hiding');
+    // Mostrar toast con transición CSS
+    toastEl.classList.add('show');
+    // Auto-ocultar a los 5 segundos
     toastEl._hideTimer = setTimeout(() => {
-        toastEl.classList.remove('show');
-        toastEl.style.display = 'none';
+        hideAutoSaveToast(toastEl);
     }, 5000);
 }
+
+function hideAutoSaveToast(toastEl) {
+    if (!toastEl) toastEl = document.getElementById('autosave-toast');
+    if (!toastEl || !toastEl.classList.contains('show')) return;
+    toastEl.classList.add('hiding');
+    clearTimeout(toastEl._closeTimer);
+    toastEl._closeTimer = setTimeout(() => {
+        toastEl.classList.remove('show', 'hiding');
+    }, 250);
+}
+
+// Cerrar toast manualmente con el botón ×
+document.addEventListener('DOMContentLoaded', function () {
+    const closeBtn = document.getElementById('autosave-toast-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+            const toastEl = document.getElementById('autosave-toast');
+            hideAutoSaveToast(toastEl);
+        });
+    }
+});
 
 function formatTimeAgo(date) {
     if (!date) return 'hace unos momentos';
@@ -110,7 +146,7 @@ function getDraftAge() {
     }
 }
 
-// ======================================================
+// =================================================
 // F Unctions de archivos (render, cover, toggle, remove)
 // ======================================================
 
@@ -120,9 +156,14 @@ function getDraftAge() {
  * @param {{filename:string, type:string, hidden?:boolean, is_cover?:boolean}} file
  */
 function renderUploadedFile(file) {
+    console.log('Renderizando archivo subido:', file);
     if (!file || !file.filename) return;
-    const container = document.getElementById('uploaded-files');
+    const container = uploadedFilesContainer;
     if (!container) return;
+
+    // FASE 5 HU-019: Ocultar estado vacío si existe
+    const emptyState = container.querySelector('.uploaded-files-empty');
+    if (emptyState) emptyState.remove();
     // Intentamos cargar la imagen/video desde la ruta temporal (media) y, si falla, desde la ruta definitiva en static/blogs/<slug>/
     const tempUrl = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
     let element;
@@ -168,8 +209,14 @@ function renderUploadedFile(file) {
     };
     const wrapper = document.createElement('div');
     wrapper.className = 'uploaded-item';
-    if (file.hidden) wrapper.classList.add('is-hidden');
+    // Estado de visibilidad: si está oculto (envuelto en no-import) usamos .is-hidden, de lo contrario .is-visible
+    if (file.hidden) {
+        wrapper.classList.add('is-hidden');
+    } else {
+        wrapper.classList.add('is-visible');
+    }
     if (file.is_cover) wrapper.classList.add('is-cover');
+    if (file.type && file.type.startsWith('video')) wrapper.classList.add('is-video');
     wrapper.dataset.filename = file.filename;
     wrapper.dataset.cover = file.is_cover ? 'true' : 'false';
 
@@ -190,14 +237,28 @@ function renderUploadedFile(file) {
         controls.appendChild(coverBtn);
     }
 
-    // Botón toggle (ver/ocultar)
+    // Botón vista previa (solo imágenes)
+    if (file.type !== 'video') {
+        const previewBtn = document.createElement('button');
+        previewBtn.type = 'button';
+        previewBtn.className = 'btn-control btn-preview';
+        previewBtn.setAttribute('data-tooltip', 'Vista previa');
+        previewBtn.setAttribute('aria-label', 'Ver vista previa');
+        previewBtn.innerHTML = ICON_EYE;
+        previewBtn.onclick = () => showImagePreview(file.filename, tempUrl);
+        controls.appendChild(previewBtn);
+    }
+
+    // Botón toggle (ver/ocultar) — para ocultar en el markdown
     const toggleBtn = document.createElement('button');
     toggleBtn.type = 'button';
     toggleBtn.className = 'btn-control btn-toggle';
-    toggleBtn.setAttribute('data-tooltip', file.hidden ? 'Mostrar' : 'Ocultar');
-    toggleBtn.setAttribute('aria-label', file.hidden ? 'Mostrar archivo' : 'Ocultar archivo');
+    toggleBtn.setAttribute('data-tooltip', file.hidden ? 'Mostrar en editor' : 'Ocultar en editor');
+    toggleBtn.setAttribute('aria-label', file.hidden ? 'Mostrar archivo en editor' : 'Ocultar archivo en editor');
+    // Use eye icons: eye when visible, eye-off when hidden
     toggleBtn.innerHTML = file.hidden ? ICON_EYE_OFF : ICON_EYE;
     toggleBtn.onclick = () => toggleUploadedFile(file.filename);
+    toggleBtn.style.fontSize = '0.8rem';
 
     // Botón eliminar
     const removeBtn = document.createElement('button');
@@ -206,12 +267,23 @@ function renderUploadedFile(file) {
     removeBtn.setAttribute('data-tooltip', 'Eliminar');
     removeBtn.setAttribute('aria-label', 'Eliminar archivo');
     removeBtn.innerHTML = ICON_TRASH;
-    removeBtn.onclick = () => removeUploadedFile(file.filename);
+    // Open confirmation modal before actual deletion
+    removeBtn.onclick = () => confirmDeleteFile(file.filename);
 
     controls.appendChild(toggleBtn);
     controls.appendChild(removeBtn);
 
     wrapper.appendChild(controls);
+
+    // FASE 3 HU-019: Icono de tipo de archivo overlay
+    const typeIcon = document.createElement('span');
+    typeIcon.className = 'file-type-icon';
+    if (file.type === 'video') {
+        typeIcon.innerHTML = '<i class="fas fa-file-video"></i>';
+    } else {
+        typeIcon.innerHTML = '<i class="fas fa-file-image"></i>';
+    }
+    wrapper.appendChild(typeIcon);
 
     // Badge "PORTADA"
     if (file.is_cover) {
@@ -234,7 +306,35 @@ function renderUploadedFile(file) {
     fileName.style.maxWidth = '100%';
     wrapper.appendChild(fileName);
 
+    // FASE 1 HU-019: Limitar ancho del wrapper para evitar desbordamiento
+    wrapper.style.maxWidth = '220px';
+    wrapper.style.minWidth = '140px';
+    wrapper.style.flexShrink = '0';
+
+    // Si el archivo está oculto, añadir badge visual de bloqueo
+    if (file.hidden) {
+        const blockedBadge = document.createElement('span');
+        blockedBadge.className = 'blocked-badge';
+        blockedBadge.textContent = 'BLOQUEADO';
+        wrapper.appendChild(blockedBadge);
+    }
+
     container.appendChild(wrapper);
+}
+
+// FASE 5 HU-019: Mostrar estado vacío del contenedor
+function showUploadedFilesEmpty() {
+    const container = uploadedFilesContainer;
+    if (!container) return;
+    if (container.querySelector('.uploaded-files-empty')) return;
+
+    const empty = document.createElement('div');
+    empty.className = 'uploaded-files-empty';
+    empty.innerHTML = `
+        <i class="fas fa-folder-open"></i>
+        <p>No hay archivos subidos. Arrastra o pega imágenes/videos aquí.</p>
+    `;
+    container.appendChild(empty);
 }
 
 /**
@@ -316,7 +416,9 @@ function removeMarkdownLineForFile(filename) {
         .replace(videoRegex, '')
         .replace(/\n{3,}/g, '\n\n');
     if (updated !== current) {
-        easyMDE.value(updated);
+        // Remove any stray end tags that might remain if the start tag was not matched
+        const cleaned = updated.replace(/^\s*:::final-no-import:::\s*$/gm, '');
+        easyMDE.value(cleaned);
     }
 }
 
@@ -335,20 +437,155 @@ async function removeUploadedFile(filename) {
     await deleteFileOnServer(filename);
 }
 
-/** Alterna la visibilidad del archivo multimedia. */
+/**
+ * Alterna la visibilidad del archivo multimedia en el editor y en el HTML final.
+ * Al ocultar: envuelve TODAS las referencias a la imagen con :::no-import:::
+ * Al mostrar: elimina las etiquetas :::no-import::: / :::final-no-import:::
+ * Si la imagen es la única en un ::slides:: / ::popup:gallery::, el bloque completo se oculta.
+ */
 function toggleUploadedFile(filename) {
     const container = document.getElementById('uploaded-files');
     const item = container.querySelector(`.uploaded-item[data-filename="${filename}"]`);
     if (!item) return;
-    const isHidden = item.classList.toggle('is-hidden');
+    const currentlyHidden = item.classList.contains('is-hidden');
+    // Toggle hidden state
+    const nowHidden = !currentlyHidden;
+    // Apply visibility classes
+    item.classList.toggle('is-hidden', nowHidden);
+    if (nowHidden) {
+        item.classList.remove('is-visible');
+    } else {
+        item.classList.add('is-visible');
+    }
     const toggleBtn = item.querySelector('.btn-toggle');
     if (toggleBtn) {
-        toggleBtn.innerHTML = isHidden ? ICON_EYE_OFF : ICON_EYE;
-        toggleBtn.setAttribute('data-tooltip', isHidden ? 'Mostrar' : 'Ocultar');
-        toggleBtn.setAttribute('aria-label', isHidden ? 'Mostrar archivo' : 'Ocultar archivo');
+        toggleBtn.innerHTML = nowHidden ? ICON_EYE_OFF : ICON_EYE;
+        toggleBtn.setAttribute('data-tooltip', nowHidden ? 'Mostrar en editor' : 'Ocultar en editor');
+        toggleBtn.setAttribute('aria-label', nowHidden ? 'Mostrar archivo' : 'Ocultar archivo');
+        // Añadir clase activa para reflejar visualmente el estado oculto
+        toggleBtn.classList.toggle('is-active', nowHidden);
     }
     const f = uploadedFiles.find(f => f.filename === filename);
-    if (f) f.hidden = isHidden;
+    if (f) f.hidden = nowHidden;
+
+    // Gestionar badge de bloqueo visual
+    const existingBadge = item.querySelector('.blocked-badge');
+    if (nowHidden) {
+        if (!existingBadge) {
+            const blockedBadge = document.createElement('span');
+            blockedBadge.className = 'blocked-badge';
+            blockedBadge.textContent = 'BLOQUEADO';
+            item.appendChild(blockedBadge);
+        }
+    } else {
+        if (existingBadge) existingBadge.remove();
+    }
+
+    if (!easyMDE) return;
+
+    // Escapar nombre de archivo para regex
+    const safe = filename.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+    let current = easyMDE.value();
+
+    // Use the actual hidden state (nowHidden) to decide the operation
+    if (nowHidden) {
+        // OCULTAR: envolver cada referencia con :::no-import:::
+        // 1) Buscar líneas con imagen markdown: ![alt](filename) o <video src="filename">
+        const imgLineRegex = new RegExp(
+            `(^[ \\t]*!\\[[^\\]]*\\]\\((\\.?\\/?)${safe}\\).*$)` +
+            `|(<video[^>]*src=["']\\.?\\/?${safe}["'][^>]*></video>)`,
+            'gm'
+        );
+        let match;
+        let result = current;
+        const matches = [];
+        while ((match = imgLineRegex.exec(current)) !== null) {
+            matches.push({ index: match.index, length: match[0].length });
+        }
+
+        // Procesar de atrás hacia adelante para no romper índices
+        for (let i = matches.length - 1; i >= 0; i--) {
+            const m = matches[i];
+            const before = result.substring(0, m.index);
+            const line = result.substring(m.index, m.index + m.length);
+            const after = result.substring(m.index + m.length);
+
+            // Analizar contexto: ¿está dentro de un bloque ::slides:: o ::popup:gallery::?
+            const textBefore = before;
+            const slidesMatch = textBefore.match(/:::\s*(slides|popup:gallery)\s*\n(.*?)$/s);
+            if (slidesMatch) {
+                const blockContent = slidesMatch[2] || '';
+                // Contar cuántas imágenes hay en el bloque
+                const imgCount = (blockContent.match(/!\[.*?\]\(.*?\)/g) || []).length;
+                const isOnlyImage = imgCount <= 1;
+                if (isOnlyImage) {
+                    // El bloque completo se envuelve
+                    const blockRegex = new RegExp(
+                        `(:::\\s*slides\\s*\\n[\\s\\S]*?\\n:::)` +
+                        `|(:::\\s*popup:gallery\\s*\\n[\\s\\S]*?\\n:::)`, 'g'
+                    );
+                    result = result.replace(blockRegex, (fullBlock) => {
+                        if (fullBlock.includes(filename)) {
+                            return `:::no-import:::\n${fullBlock}\n:::final-no-import:::`;
+                        }
+                        return fullBlock;
+                    });
+                    continue;
+                }
+            }
+
+            // Envoltura simple de la línea individual
+            const wrapped = `:::no-import:::\n${line}\n:::final-no-import:::`;
+            result = before + wrapped + after;
+        }
+
+        easyMDE.value(result);
+
+    } else {
+        // MOSTRAR: eliminar todas las envolturas :::no-import::: que contengan esta imagen
+        // Allow optional whitespace before/after the tags to match cases where tags are indented
+        const noImportRegex = new RegExp(
+            `\s*:::no-import:::\s*\n([\s\S]*?\b${safe}\b[\s\S]*?)\n\s*:::final-no-import:::`,
+            'gm'
+        );
+        current = easyMDE.value();
+        const updated = current.replace(noImportRegex, (match, content) => {
+            return content;
+        });
+        // También limpiar bloques que envuelven slides completos
+        // Same tolerance for block-level wrappers
+        const blockNoImportRegex = /\s*:::no-import:::\s*\n([\s\S]*?)\n\s*:::final-no-import:::/gm;
+        const finalUpdated = updated.replace(blockNoImportRegex, (match, content) => {
+            if (content.includes(filename) || content.includes(safe)) {
+                return content;
+            }
+            return match;
+        });
+
+        easyMDE.value(finalUpdated);
+        // Clean any stray end tags that might remain if start tag was not matched
+        const cleanedAfterShow = finalUpdated.replace(/^\s*:::final-no-import:::\s*$/gm, '');
+        if (cleanedAfterShow !== finalUpdated) {
+            easyMDE.value(cleanedAfterShow);
+        }
+    }
+}
+
+// ======================================================
+// Función: Vista previa de imagen en modal
+// ======================================================
+function showImagePreview(filename, url) {
+    const modal = document.getElementById('imagePreviewModal');
+    if (!modal) return;
+    const img = document.getElementById('preview-modal-img');
+    const nameEl = document.getElementById('preview-modal-filename');
+    if (img) {
+        img.src = url || '';
+        img.alt = filename || 'Vista previa';
+    }
+    if (nameEl) nameEl.textContent = filename || '—';
+    // Mostrar modal Bootstrap 4 con jQuery
+    $('#imagePreviewModal').modal('show');
 }
 
 // ======================================================
@@ -568,6 +805,33 @@ function showDraftRecoveryModal(draftData) {
     $('#draftRecoveryModal').modal({ backdrop: 'static', keyboard: false });
 }
 
+/**
+ * Muestra el modal de confirmación para eliminar un archivo.
+ * @param {string} filename Nombre del archivo a eliminar.
+ */
+function confirmDeleteFile(filename) {
+    pendingDeleteFilename = filename;
+    // Actualizar título del modal con el nombre del archivo
+    const titleEl = document.getElementById('deleteFileModalTitle');
+    if (titleEl) titleEl.textContent = filename;
+    // Mostrar modal usando Bootstrap 4 (jQuery)
+    $('#deleteFileModal').modal('show');
+}
+
+/**
+ * Ejecuta la eliminación del archivo después de la confirmación del usuario.
+ * Llama a la lógica existente removeUploadedFile que elimina la vista previa,
+ * la línea markdown y envía la petición al backend.
+ */
+function executeDeleteFile() {
+    if (!pendingDeleteFilename) return;
+    // Ocultar modal antes de iniciar la operación
+    $('#deleteFileModal').modal('hide');
+    // Utilizar la función ya definida que maneja la eliminación completa
+    removeUploadedFile(pendingDeleteFilename);
+    pendingDeleteFilename = null;
+}
+
 function restoreDraft(data) {
     // Si el borrador incluye slug (artículo ya creado previamente), lo asignamos para que el fallback de imágenes funcione.
     if (data.slug) {
@@ -640,6 +904,11 @@ function discardDraft() {
 // 5c. Al cargar la página: detectar draft y mostrar modal
 // ======================================================
 window.addEventListener('load', () => {
+    // FASE 5 HU-019: Mostrar estado vacío si no hay archivos
+    if (uploadedFiles.length === 0) {
+        showUploadedFilesEmpty();
+    }
+
     const draft = localStorage.getItem(DRAFT_KEY);
     if (!draft) {
         // Verificar si hay artículo cargado para actualizar badge
@@ -877,33 +1146,23 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
             updateStatusBadge('new');
         }
 
-        // Si el backend envía archivos existentes, marcamos cuál es la portada
-        // según el frontmatter. Compatibilidad con la clave antigua ``image``.
+        // Procesar archivos existentes del artículo
         if (data.existing_files && data.existing_files.length > 0) {
-            // El frontmatter puede traer la portada como:
-            //   - ruta completa: "/static/blogs/<slug>/<filename>"
-            //   - solo el nombre: "<filename>"
-            //   - ruta Markdown: "./<filename>"
-            // Extraemos solo el nombre del archivo para comparar de forma
-            // robusta.
+            let resolvedCoverName = '';
             const coverRaw = fm.cover_image || fm.image || '';
             const coverName = coverRaw ? coverRaw.split('/').pop() : '';
-            console.log('🐛 [DEBUG] coverRaw =', coverRaw);
-            console.log('🐛 [DEBUG] coverName =', coverName);
-            let resolvedCoverName = '';
             data.existing_files.forEach(file => {
-                const isCover = (file.filename === coverName);
+                const isCover = file.filename === coverName;
                 file.is_cover = isCover;
                 if (isCover) resolvedCoverName = file.filename;
-                console.log('🐛 [DEBUG] file =', file.filename, 'isCover =', isCover);
-                // Añadir al arreglo global para que setAsCover funcione
+                // Detectar si el archivo está envuelto en bloques :::no-import:::
+                const hiddenPattern = new RegExp(`:::no-import:::[\\s\\S]*?${file.filename}[\\s\\S]*?:::final-no-import:::`, 'i');
+                file.hidden = hiddenPattern.test(data.content_md);
+                console.log('🐛 [DEBUG] file =', file.filename, 'isCover =', isCover, 'hidden =', file.hidden);
                 uploadedFiles.push(file);
                 renderUploadedFile(file);
             });
-            // ✅ Garantizar que la estrella aparezca rellena aunque haya
-            // edge cases (mayúsculas, espacios, etc.). Llamamos a
-            // setAsCover que es la función canónica que aplica todas
-            // las clases CSS y actualiza el campo oculto.
+            // Asegurar que la portada quede marcada visualmente
             if (resolvedCoverName && typeof setAsCover === 'function') {
                 setAsCover(resolvedCoverName);
             }

@@ -23,6 +23,12 @@
     border-bottom: 2px solid var(--primary-color, #0d6efd);
 }
 
+/* Ensure labels in the sidebar wrap instead of being cut off */
+.editor-sidebar label.form-label {
+    word-break: break-word;
+    white-space: normal;
+}
+
 .editor-main {
     padding-left: 20px;
 }
@@ -172,10 +178,11 @@
     font-weight: 500;
 }
 
-/* Uploaded files preview */
-.uploaded-item {
+/* Item container – compact card, override inline height/style */
+.filepond--item {
     position: relative;
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     margin-bottom: 12px;
     margin-right: 12px;
     border-radius: 8px;
@@ -183,6 +190,36 @@
     background-color: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: box-shadow 0.25s ease, transform 0.25s ease;
+    /* Flexible sizing controlled by grid */
+    width: 100%;
+    min-width: 140px;
+    max-width: 220px;
+    min-height: 130px;
+    height: auto !important;
+    /* override inline fixed height */
+    margin: 0.4rem;
+    /* tighter spacing between items */
+    padding: 0.4rem;
+    box-sizing: border-box;
+    /* Removed stray transition block that caused CSS syntax error */
+}
+
+/* FASE 1 HU-019: Ancho flexible para uploaded-item dentro del grid */
+.uploaded-item.is-visible {
+    border: 2px solid #d6d6d6;
+}
+
+.uploaded-item {
+    width: 100%;
+    max-width: 220px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    /* Allow tooltips to escape the item bounds on both axes */
+    overflow: visible;
+    position: relative;
+    border-radius: 8px;
 }
 
 .uploaded-item:hover {
@@ -193,24 +230,39 @@
 .uploaded-image,
 .uploaded-video {
     display: block;
-    max-width: 200px;
-    max-height: 150px;
-    width: auto;
-    height: auto;
+    max-width: 100%;
+    max-height: 170px;
+    width: 100%;
+    height: 170px;
 
     object-fit: cover;
     border-radius: 8px;
 }
 
+/* FASE 1 HU-019: Imágenes/videos no desbordan del item contenedor */
+.uploaded-item>.uploaded-image,
+.uploaded-item>.uploaded-video {
+    max-width: 100%;
+    max-height: 170px;
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
 /* Overlay de controles moderno y sutil */
 .uploaded-controls {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 4px;
+    right: 4px;
     display: flex;
-    gap: 6px;
+    gap: 4px;
     opacity: 0;
     transition: opacity 0.25s ease;
+
+    /* FASE 1 HU-019: Evitar que controles se desborden */
+    z-index: 10;
 }
 
 .uploaded-item:hover .uploaded-controls,
@@ -218,13 +270,37 @@
     opacity: 1;
 }
 
+/* En items portada: badge pequeño en esquina, controles en barra inferior */
+/* For cover items, keep controls at the top to avoid covering the filename */
+.uploaded-item.is-cover .uploaded-controls {
+    top: 4px;
+    /* same as default position */
+    bottom: auto;
+    right: 4px;
+    left: auto;
+    justify-content: flex-start;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    gap: 4px;
+}
+
+.uploaded-item.is-cover .cover-badge {
+    top: 3px;
+    left: 3px;
+    max-width: 40px;
+    font-size: 0.5rem;
+    padding: 0px 2px;
+    letter-spacing: 0;
+}
+
 /* Botones circulares con glassmorphism */
 .uploaded-controls .btn-control {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     padding: 0;
     border: none;
     border-radius: 50%;
@@ -233,14 +309,25 @@
     -webkit-backdrop-filter: blur(8px);
     color: #495057;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease;
     position: relative;
 }
 
+/* Highlight the star button when active (cover image) */
+.uploaded-controls .btn-cover.is-active {
+    color: #ffc107;
+    /* Bootstrap warning (yellow) */
+}
+
+/* Ensure the SVG inside the active star button is filled with yellow */
+.uploaded-controls .btn-cover.is-active svg {
+    fill: #ffc107 !important;
+}
+
 .uploaded-controls .btn-control svg {
-    width: 16px;
-    height: 16px;
+    width: 13px;
+    height: 13px;
     pointer-events: none;
 }
 
@@ -297,11 +384,37 @@
     transform: translateX(-50%) translateY(0);
 }
 
-/* Estado oculto (cuando se toggle off) */
+/* FASE 1 HU-019: Nombre de archivo truncado */
+.uploaded-filename {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* FASE 6 HU-019: Estado oculto con trama diagonal */
 .uploaded-item.is-hidden .uploaded-image,
 .uploaded-item.is-hidden .uploaded-video {
     opacity: 0.3;
     filter: grayscale(80%);
+}
+
+.uploaded-item.is-hidden {
+    position: relative;
+    border: 2px solid #e58991;
+}
+
+.uploaded-item.is-hidden::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0, 0, 0, 0.03) 5px, rgba(0, 0, 0, 0.03) 10px);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .uploaded-item.is-hidden .btn-toggle {
@@ -309,27 +422,67 @@
     color: #fff;
 }
 
-/* ✅ HU: estado de portada — estrella rellena siempre visible */
-.uploaded-item.is-cover {
-    box-shadow: 0 0 0 3px #ffc107, 0 4px 12px rgba(255, 193, 7, 0.4);
-    border: 2px solid #ffc107;
+/* Cuando el botón toggle está activo (archivo oculto) mostrar overlay blanco */
+.uploaded-item.is-hidden .btn-toggle.is-active {
+    background: #fff;
+    color: #0d6efd;
 }
 
-.uploaded-item.is-cover .uploaded-image,
-.uploaded-item.is-cover .uploaded-video {
-    outline: 2px solid #ffc107;
-    outline-offset: -2px;
-}
-
-.uploaded-controls .btn-cover {
-    color: #6c757d;
-}
-
-.uploaded-controls .btn-cover.is-active {
-    background: #ffc107;
+/* Badge visual para indicar que el archivo está bloqueado/oculto */
+.uploaded-item.is-hidden .blocked-badge {
+    position: absolute;
+    top: -1px;
+    left: 0px;
+    right: inherit;
+    background: rgba(255, 0, 0, 0.75);
     color: #fff;
-    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3), 0 2px 8px rgba(255, 193, 7, 0.5);
-    transform: scale(1.05);
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    z-index: 5;
+    text-transform: uppercase;
+}
+
+/* FASE 6 HU-019: Estado video - borde azul sutil */
+.uploaded-item.is-video {
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.35), 0 4px 12px rgba(13, 110, 253, 0.25);
+
+    /* ------------------------------------------------------------------
+     * NOTE: Bloque original de estilo para .uploaded-item.is-cover
+     * Se comenta para evitar conflicto con el nuevo estilo mejorado
+     * definido al inicio del archivo. Mantener el código comentado permite
+     * revertir fácilmente si fuera necesario sin romper la regla de no
+     * borrar código existente.
+     */
+    /*
+     * Original .uploaded-item.is-cover styles (commented out to avoid conflict
+     * with the new modern styling defined at the top of this file). Keeping the
+     * code here allows easy re‑enablement if needed.
+     *
+     * ✅ HU: estado de portada — estrella rellena siempre visible
+     * .uploaded-item.is-cover {
+     *     box-shadow: 0 0 0 3px #ffc107, 0 4px 12px rgba(255, 193, 7, 0.4);
+     *     border: 2px solid #ffc107;
+     * }
+     *
+     * .uploaded-item.is-cover .uploaded-image,
+     * .uploaded-item.is-cover .uploaded-video {
+     *     outline: 2px solid #ffc107;
+     *     outline-offset: -2px;
+     * }
+     *
+      * .uploaded-item.is-cover .uploaded-controls {
+      *     opacity: 1;
+      * }
+      */
+
+    .uploaded-controls .btn-cover.is-active {
+        background: #ffc107;
+        color: #fff;
+        box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3), 0 2px 8px rgba(255, 193, 7, 0.5);
+        transform: scale(1.05);
+    }
 }
 
 .uploaded-controls .btn-cover.is-active:hover {
@@ -343,14 +496,18 @@
     left: 6px;
     background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
     color: #fff;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    z-index: 5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    z-index: 4;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    max-width: calc(100% - 40px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ✅ Mostrar controles cuando es portada (sin necesidad de hover) */
@@ -358,11 +515,42 @@
     opacity: 1;
 }
 
-
-#autosave-toast.show {
-    display: block;
-    animation: fadeInUp 0.3s ease;
+/* ---------------------------------------------------
+   Modern visual cue for the selected cover image/video
+   --------------------------------------------------- */
+/* Add a subtle primary‑color outline and soft shadow to the cover image/video */
+.uploaded-item.is-cover .uploaded-image,
+.uploaded-item.is-cover .uploaded-video {
+    outline: 3px solid var(--primary-color, #0d6efd);
+    outline-offset: -3px;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+    transition: outline 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* Refine the cover badge to use the primary color palette and a compact style */
+/* Move badge upward so it protrudes above the image */
+.uploaded-item.is-cover .cover-badge {
+    background: var(--primary-color, #0d6efd);
+    color: #fff;
+    font-size: 0.6rem;
+    max-width: max-content;
+    padding: 3px 12px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    top: -15px;
+    left: -1px;
+    z-index: 5;
+    border-bottom-left-radius: 0
+}
+
+/* Add a subtle border to the cover image/item to emphasize it */
+.uploaded-item.is-cover {
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    overflow: visible;
+    /* allow badge to overflow */
+}
+
 
 @keyframes fadeInUp {
     from {
@@ -373,6 +561,98 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* FASE 2 HU-019: Grid tipo carpeta para contenedor de archivos subidos */
+button#btn-save {
+    i {
+        color: #fff;
+    }
+}
+
+.editor-actions {
+    .editor-btn-cancel {
+        border: 2px solid #e56873;
+        background: #e56873;
+        color: #fff;
+
+        &:hover {
+            background: #e04e5c;
+            border-color: #e04e5c;
+        }
+
+        i {
+            color: #fff;
+        }
+    }
+}
+
+.uploaded-files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 16px;
+    overflow-x: hidden;
+}
+
+/* FASE 3 HU-019: Icono de tipo de archivo overlay */
+.file-type-icon {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #495057;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    z-index: 8;
+    pointer-events: none;
+}
+
+/* FASE 5 HU-019: Estado vacío del contenedor */
+.uploaded-files-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #adb5bd;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+.uploaded-files-empty i {
+    font-size: 3rem;
+    color: #ced4da;
+    margin-bottom: 12px;
+}
+
+.uploaded-files-empty p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+
+/* FASE 7 HU-019: Responsive avanzado para el grid de archivos */
+@media (max-width: 1200px) {
+    .uploaded-files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .uploaded-files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
     }
 }
 
@@ -410,6 +690,52 @@
 
     .filepond--drop-label {
         min-height: 100px !important;
+    }
+
+    /* FASE 4 HU-019: Móvil - controles siempre visibles y botones más grandes */
+    .uploaded-controls {
+        opacity: 1 !important;
+        background: rgba(190, 171, 171, 0.95);
+    }
+
+    .uploaded-controls .btn-control {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* FASE 7 HU-019: Móvil - grid más compacto */
+    .uploaded-files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* FASE 7 HU-019: Móvil pequeño - items de ancho completo en fila */
+    .uploaded-files-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .uploaded-item {
+        max-width: 100%;
+        flex-direction: row;
+        height: auto !important;
+        min-height: 80px;
+    }
+
+    .uploaded-item>.uploaded-image,
+    .uploaded-item>.uploaded-video {
+        width: 80px;
+        height: 80px;
+        max-height: 80px;
+    }
+
+    .uploaded-filename {
+        text-align: left;
+        margin-left: 10px;
     }
 }
 
@@ -604,89 +930,219 @@ fieldset[disabled] input {
 }
 
 /* ======================================================
-   HU-017: Toast de auto-save mejorado
+   HU-017: Toast de auto-save profesional (rediseñado)
    ====================================================== */
 .autosave-toast {
     position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+    bottom: 24px !important;
+    right: 24px !important;
     z-index: 9999 !important;
-    min-width: 320px !important;
+    min-width: 340px !important;
     max-width: 420px !important;
-    background: #212529 !important;
-    color: #f8f9fa !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    background: transparent !important;
+    border: none !important;
     display: none;
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .autosave-toast.show {
     display: block !important;
-    animation: toastSlideIn 0.35s ease-out !important;
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
 }
 
+.autosave-toast-inner {
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 33, 38, 0.97) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45),
+        0 2px 8px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Barra de progreso animada */
+.autosave-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, #2ea043, #3fb950) !important;
+    border-radius: 14px 14px 0 0;
+    animation: autosaveProgress 5s linear forwards;
+    transform-origin: left center;
+    z-index: 1;
+}
+
+@keyframes autosaveProgress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* Header del toast */
 .autosave-toast-header {
-    background: #2a2e33 !important;
-    color: #f8f9fa !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-    padding: 12px 16px !important;
     display: flex !important;
     align-items: center !important;
-    border-radius: 12px 12px 0 0 !important;
+    padding: 14px 16px 10px 16px !important;
+    gap: 10px !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 0 !important;
+    position: relative;
+    z-index: 2;
+}
+
+.autosave-toast-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(46, 160, 67, 0.15);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.autosave-toast-icon-wrapper i {
+    font-size: 0.95rem;
+    color: #3fb950;
+}
+
+.autosave-toast-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }
 
 .autosave-toast-title {
-    font-size: 0.9rem !important;
+    font-size: 0.85rem !important;
     font-weight: 600 !important;
-    color: #75b798 !important;
+    color: #e6edf3 !important;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
 }
 
 .autosave-toast-time {
-    font-size: 0.75rem !important;
-    color: #adb5bd !important;
-    margin-right: 10px !important;
+    font-size: 0.7rem !important;
+    color: #8b949e !important;
+    font-weight: 400;
+    line-height: 1.2;
 }
 
+/* Botón cerrar */
+.autosave-toast-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    border-radius: 6px;
+    color: #8b949e;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.autosave-toast-close i {
+    font-size: 0.75rem;
+}
+
+.autosave-toast-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #e6edf3;
+}
+
+/* Body del toast */
 .autosave-toast-body {
-    padding: 12px 16px 16px !important;
-    font-size: 0.85rem !important;
-    color: #e9ecef !important;
-    background: #212529 !important;
-    border-radius: 0 0 12px 12px !important;
+    padding: 10px 16px 14px 58px !important;
+    font-size: 0.82rem !important;
+    color: #c9d1d9 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    position: relative;
+    z-index: 2;
 }
 
-.autosave-toast-body .btn-outline-danger {
+.autosave-toast-detail-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+}
+
+.autosave-toast-check {
     font-size: 0.75rem !important;
-    padding: 4px 12px !important;
+    flex-shrink: 0;
+}
+
+#autosave-toast-detail {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+/* Botón descartar */
+.autosave-toast-discard-btn {
+    font-size: 0.72rem !important;
+    padding: 4px 10px !important;
     border-radius: 6px !important;
-    border: 1px solid #dc3545 !important;
-    color: #dc3545 !important;
-    background: white !important;
+    border: 1px solid rgba(220, 53, 69, 0.35) !important;
+    color: #f85149 !important;
+    background: transparent !important;
     font-weight: 500 !important;
     cursor: pointer !important;
     line-height: 1.4 !important;
     transition: all 0.2s ease !important;
     white-space: nowrap !important;
+    flex-shrink: 0;
 }
 
-.autosave-toast-body .btn-outline-danger:hover {
-    background: #dc3545 !important;
-    border-color: #dc3545 !important;
-    color: #fff !important;
+.autosave-toast-discard-btn:hover {
+    background: rgba(248, 81, 73, 0.12) !important;
+    border-color: #f85149 !important;
+    color: #f85149 !important;
 }
 
-/* Animación de entrada del toast */
-@keyframes toastSlideIn {
-    from {
-        opacity: 0;
-        transform: translateX(40px);
-    }
+.autosave-toast-discard-btn:active {
+    background: rgba(248, 81, 73, 0.20) !important;
+}
 
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+/* Animación de salida del toast (vía JS) */
+.autosave-toast.hiding {
+    opacity: 0 !important;
+    transform: translateY(8px) scale(0.97) !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+/* ======================================================
+   #autosave-toast.show legacy support
+   ====================================================== */
+#autosave-toast.show {
+    display: block;
 }
 
 /* ======================================================
@@ -1001,10 +1457,347 @@ h2 i,
     border-radius: 4px;
 }
 
-/* Ensure icons have pointer cursor where appropriate */
-button i,
-.mtp-btn i {
-    cursor: pointer;
+/* ---------------------------------------------------
+   UI Profesional para FilePond items (subida de archivos)
+   Estilo tipo "card grid" moderno tipo macOS Finder
+   --------------------------------------------------- */
+.filepond--list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.filepond--item {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transition: box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.25s ease !important;
+    overflow: hidden !important;
+    position: relative !important;
+    min-height: 160px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+.filepond--item:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08),
+        0 4px 10px rgba(0, 0, 0, 0.04) !important;
+    transform: translateY(-3px) !important;
+    border-color: #d0d5dd !important;
+}
+
+/* Wrapper interno de la imagen/video */
+.filepond--file-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+/* Panel de preview con fondo sutil */
+.filepond--file {
+    width: 100% !important;
+    height: 140px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    margin-bottom: 10px !important;
+    position: relative !important;
+    border: 1px solid #f0f0f0 !important;
+}
+
+.filepond--file:hover {
+    background: #f1f3f5 !important;
+}
+
+/* Imagen/video dentro del preview – crop perfecto */
+.filepond--image-wrapper,
+.filepond--media {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+}
+
+.filepond--image-wrapper img,
+.filepond--media img,
+.filepond--media video,
+.filepond--image-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.3s ease !important;
+}
+
+.filepond--item:hover .filepond--image-wrapper img,
+.filepond--item:hover .filepond--media img,
+.filepond--item:hover .filepond--media video {
+    transform: scale(1.03) !important;
+}
+
+/* Nombre del archivo – elegante y legible */
+.filepond--file-wrapper legend {
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    color: #344054 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 4px !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* Botones de acción FilePond (abort, retry) – completamente ocultos */
+.filepond--file-action-button {
+    display: none !important;
+}
+
+/* Indicador "Upload complete" profesional */
+.filepond--processing-complete-indicator {
+    position: absolute !important;
+    bottom: 4px !important;
+    right: 4px !important;
+    width: 20px !important;
+    height: 20px !important;
+    background: #ffffff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: scale(1) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 5 !important;
+}
+
+.filepond--processing-complete-indicator::before {
+    content: "✓" !important;
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #2ea043 !important;
+    line-height: 1 !important;
+}
+
+/* Ocultar el icono SVG por defecto de FilePond */
+.filepond--processing-complete-indicator svg {
+    display: none !important;
+}
+
+/* Status label "Upload complete" – pequeño badge elegante */
+.filepond--file-status {
+    position: absolute !important;
+    bottom: 28px !important;
+    right: 4px !important;
+    font-size: 0.6rem !important;
+    color: #2ea043 !important;
+    font-weight: 600 !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    padding: 1px 6px !important;
+    border-radius: 4px !important;
+    backdrop-filter: blur(4px) !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* Panel de progreso – barra delgada y elegante */
+.filepond--progress-indicator {
+    width: 24px !important;
+    height: 24px !important;
+    color: #0d6efd !important;
+}
+
+.filepond--progress-indicator[data-state="processing-complete"] {
+    color: #2ea043 !important;
+}
+
+/* File size text – pequeño y discreto */
+.filepond--file-info {
+    font-size: 0.65rem !important;
+    color: #98a2b3 !important;
+    text-align: center !important;
+    margin-top: 2px !important;
+    line-height: 1.3 !important;
+}
+
+/* For cover items, ensure filename is visible at bottom overlay */
+.uploaded-item.is-cover .uploaded-filename {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    padding: 2px 0;
+    font-size: 0.75rem;
+    color: #212529;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Drop label area más atractivo */
+.filepond--drop-label {
+    min-height: 160px !important;
+    border: 2px dashed #d0d5dd !important;
+    border-radius: 14px !important;
+    background: #fafbfc !important;
+    transition: border-color 0.3s ease, background 0.3s ease !important;
+}
+
+.filepond--drop-label:hover,
+.filepond--drop-label.filepond--drop-label-drag {
+    border-color: #0d6efd !important;
+    background: rgba(13, 110, 253, 0.03) !important;
+}
+
+.filepond--label-action {
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    color: #0d6efd !important;
+}
+
+/* Action buttons originales para abort/revert – ocultos decorosamente */
+[data-filepond-item-state="processing-complete"] .filepond--file-action-button {
+    display: none !important;
+}
+
+/* Ocultar el texto "Upload complete" nativo de FilePond */
+.filepond--file-status[data-status="processing-complete"] {
+    display: none !important;
+}
+
+/* ======================================================
+   Estilos: filename Montserrat en uploaded-item
+   ====================================================== */
+.uploaded-filename {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    color: #344054 !important;
+    letter-spacing: 0.01em;
+    padding: 6px 4px 2px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    margin-top: 6px !important;
+    width: 100% !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+}
+
+/* ======================================================
+   Estilos: Modal de vista previa de imagen
+   ====================================================== */
+.image-preview-modal-content {
+    border: none !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.25) !important;
+}
+
+.image-preview-modal-header {
+    background: #1a1d23 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 14px 18px !important;
+}
+
+.image-preview-modal-title {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #e6edf3 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.image-preview-modal-title i {
+    color: #3fb950 !important;
+    font-size: 0.85rem !important;
+}
+
+.image-preview-modal-header .close {
+    color: #8b949e !important;
+    text-shadow: none !important;
+    opacity: 0.8 !important;
+    font-size: 1.4rem !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.image-preview-modal-header .close:hover {
+    opacity: 1 !important;
+    color: #e6edf3 !important;
+}
+
+.image-preview-modal-body {
+    background: #0d1117 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 300px !important;
+    max-height: 70vh !important;
+    overflow: hidden !important;
+}
+
+#preview-modal-img {
+    max-width: 100% !important;
+    max-height: 70vh !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+.image-preview-modal-footer {
+    background: #1a1d23 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 10px 18px !important;
+}
+
+.image-preview-modal-footer .btn-cancel-grad {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 0.8rem !important;
+    padding: 6px 18px !important;
+}
+
+/* Responsive: modal preview en mobile */
+@media (max-width: 576px) {
+    .image-preview-modal-body {
+        min-height: 200px !important;
+        max-height: 50vh !important;
+    }
+
+    #preview-modal-img {
+        max-height: 50vh !important;
+    }
+
+    .image-preview-modal-title {
+        font-size: 0.8rem !important;
+    }
 }
 
 .mtp-toolbar.minimized+.mtp-toggle-btn {

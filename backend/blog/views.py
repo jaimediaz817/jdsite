@@ -873,14 +873,60 @@ class BlogDetailView(DetailView):
         context["comments"] = get_approved_comments(post.slug)
         context["comment_count"] = get_comment_count(post.slug)
         context["comment_form"] = CommentForm()
-        return context
 
 
 # NOTE: The previous duplicate implementation of `delete_resource_file_ajax` (which handled comments) was erroneous and has been removed.
 
 
+# ---------------------------------------------------------------------
+# HU-011.17: Eliminación de archivo individual de recursos (AJAX)
+# ---------------------------------------------------------------------
+@csrf_exempt
+def delete_resource_file_ajax(request):
+    """Endpoint AJAX para eliminar un archivo estático asociado a un post.
+
+    Expected POST parameters:
+        - ``folder``: nombre de la carpeta del artículo (slug o prefijo de fecha).
+        - ``filename``: nombre del archivo a eliminar.
+
+    Sólo los superusuarios pueden ejecutar esta acción.
+    Devuelve un ``JsonResponse`` con la estructura que espera el test:
+        {"success": bool, "message": str}
+    """
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "error": "Método no permitido."}, status=405
+        )
+
+    # Seguridad: solo superuser
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    folder = request.POST.get("folder", "").strip()
+    filename = request.POST.get("filename", "").strip()
+
+    if not folder or not filename:
+        return JsonResponse(
+            {"success": False, "error": "Parámetros faltantes."}, status=400
+        )
+
+    # Delegar la lógica real al servicio
+    result = delete_resource_file(folder, filename)
+    # El servicio ya devuelve un dict con ``success`` y ``message``
+    return JsonResponse(result)
+
+
 @csrf_exempt
 def quick_signup(request):
+    """Registro rápido de usuarios.
+
+    La vista acepta únicamente peticiones ``POST``. En caso de método distinto
+    devuelve un error 405. No se realizan validaciones exhaustivas – se confía
+    en el formulario para crear el usuario y, si todo va bien, se inicia la
+    sesión y se devuelve la URL de redirección.
+    """
     if request.method != "POST":
         return JsonResponse(
             {
@@ -891,7 +937,7 @@ def quick_signup(request):
         )
     try:
         form = QuickSignupForm(request.POST)
-        # Para registro rápido, no validamos estrictamente - aceptamos cualquier dato
+        # Para registro rápido, no validamos estrictamente – aceptamos cualquier dato
         # y enviamos mensaje de confirmación por email
         email = form.data.get("email", "").strip()
         username = form.data.get("username", "").strip()

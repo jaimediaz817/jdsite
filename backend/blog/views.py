@@ -873,9 +873,10 @@ class BlogDetailView(DetailView):
         context["comments"] = get_approved_comments(post.slug)
         context["comment_count"] = get_comment_count(post.slug)
         context["comment_form"] = CommentForm()
+        # Return the enriched context
+        return context
 
-
-# NOTE: The previous duplicate implementation of `delete_resource_file_ajax` (which handled comments) was erroneous and has been removed.
+    # NOTE: The previous duplicate implementation of `delete_resource_file_ajax` (which handled comments) was erroneous and has been removed.
 
 
 # ---------------------------------------------------------------------

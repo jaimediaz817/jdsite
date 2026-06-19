@@ -109,6 +109,9 @@ class BlogProcessor:
             content_md, blog_dir, blog_static_dir, slug, frontmatter
         )
 
+        # HU-20.A: Eliminar bloques :::no-import::: antes de cualquier procesamiento
+        content_sin_portada = self._remove_no_import_blocks(content_sin_portada)
+
         # Pre-process special markdown blocks before conversion
         markdown_with_specials = self.replace_special_blocks_md(
             content_sin_portada, blog_dir, blog_static_dir, slug
@@ -520,6 +523,30 @@ class BlogProcessor:
         return "".join(html_parts)
 
     # The following methods delegate to the original command's implementations.
+    def _remove_no_import_blocks(self, content_md: str) -> str:
+        """HU-20.A: Eliminar bloques ``:::no-import:::`` y sus cierres.
+
+        En el editor se pueden marcar secciones como *no importables* usando
+        ``:::no-import:::`` como apertura y ``:::final-no-import:::`` o
+        ``:::final-niimport:::`` (error tipográfico histórico) como cierre.
+        Esta función elimina todo el bloque, incluyendo ambas marcas, y también
+        limpia cualquier marca suelta que pudiera quedar si sólo se había
+        eliminado el cierre.
+        """
+        # 1️⃣ Eliminar bloques completos (apertura + contenido + cierre)
+        block_pattern = r":::no-import:::\n([\s\S]*?)\n:::(?:final-no-import|final-niimport):::"
+        stripped = re.sub(block_pattern, "", content_md)
+
+        # 2️⃣ Eliminar marcas sueltas que pudieran quedar aisladas
+        stripped = re.sub(r":::no-import:::", "", stripped)
+        stripped = re.sub(
+            r":::(?:final-no-import|final-niimport):::", "", stripped
+        )
+
+        # 3️⃣ Normalizar saltos de línea en blanco excesivos
+        stripped = re.sub(r"\n{3,}", "\n\n", stripped)
+        return stripped.strip()
+
     def apply_custom_formatting(self, html: str) -> str:
         """Delegate to the command's full formatting implementation."""
         return self.command.apply_custom_formatting(html)

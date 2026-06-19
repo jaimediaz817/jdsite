@@ -70,7 +70,18 @@ if sys.platform == "win32":
     sys.stderr.reconfigure(encoding="utf-8")
 
 # --- DB ---
-if os.getenv("DB_ENGINE") == "mysql":
+# Use SQLite for the test suite to avoid external DB dependencies.
+import sys
+
+if "test" in sys.argv:
+    # Isolated SQLite database for tests.
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test_db.sqlite3",
+        }
+    }
+elif os.getenv("DB_ENGINE") == "mysql":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",

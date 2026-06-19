@@ -209,6 +209,7 @@
     border: 2px solid #d6d6d6;
 }
 
+/* Ensure tooltips can escape the item bounds */
 .uploaded-item {
     width: 100%;
     max-width: 220px;
@@ -216,9 +217,10 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    /* Allow tooltips to escape the item bounds on both axes */
     overflow: visible;
+    /* allow tooltip overflow on both axes */
     position: relative;
+    /* ensure absolute children are positioned correctly */
     border-radius: 8px;
 }
 
@@ -252,15 +254,17 @@
 }
 
 /* Overlay de controles moderno y sutil */
+/* Ensure controls allow tooltip overflow */
+/* Ensure controls allow tooltip overflow */
 .uploaded-controls {
     position: absolute;
-    top: 4px;
     right: 4px;
     display: flex;
     gap: 4px;
     opacity: 0;
     transition: opacity 0.25s ease;
-
+    overflow: visible;
+    /* allow tooltip overflow */
     /* FASE 1 HU-019: Evitar que controles se desborden */
     z-index: 10;
 }
@@ -642,102 +646,23 @@ button#btn-save {
     color: #6c757d;
 }
 
-/* FASE 7 HU-019: Responsive avanzado para el grid de archivos */
-@media (max-width: 1200px) {
-    .uploaded-files-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    }
-}
 
-@media (max-width: 992px) {
-    .uploaded-files-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
-    }
-}
 
-/* Responsive: en mobile el sidebar va arriba */
-@media (max-width: 768px) {
-    .editor-sidebar {
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
-        /* padding-right: 0; */
-        padding-bottom: 20px;
-        margin-bottom: 20px;
-        max-height: none;
-        overflow-y: visible;
-    }
 
-    .editor-main {
-        /* padding-left: 0; */
-    }
 
-    .editor-container .CodeMirror {
-        min-height: 300px;
-    }
 
-    .editor-actions .d-flex {
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
-    }
 
-    .editor-actions .btn-lg {
-        width: 100%;
-        min-height: 48px;
-        justify-content: center;
-    }
 
-    .filepond--drop-label {
-        min-height: 100px !important;
-    }
 
-    /* FASE 4 HU-019: Móvil - controles siempre visibles y botones más grandes */
-    .uploaded-controls {
-        opacity: 1 !important;
-        background: rgba(190, 171, 171, 0.95);
-    }
 
-    .uploaded-controls .btn-control {
-        width: 36px;
-        height: 36px;
-    }
 
-    /* FASE 7 HU-019: Móvil - grid más compacto */
-    .uploaded-files-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-        padding: 12px;
-    }
-}
 
-@media (max-width: 480px) {
 
-    /* FASE 7 HU-019: Móvil pequeño - items de ancho completo en fila */
-    .uploaded-files-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
 
-    .uploaded-item {
-        max-width: 100%;
-        flex-direction: row;
-        height: auto !important;
-        min-height: 80px;
-    }
 
-    .uploaded-item>.uploaded-image,
-    .uploaded-item>.uploaded-video {
-        width: 80px;
-        height: 80px;
-        max-height: 80px;
-    }
 
-    .uploaded-filename {
-        text-align: left;
-        margin-left: 10px;
-    }
-}
+
+
 
 /* Mensajes de estado */
 #status-message .alert {
@@ -1784,31 +1709,43 @@ h2 i,
     padding: 6px 18px !important;
 }
 
-/* Responsive: modal preview en mobile */
-@media (max-width: 576px) {
-    .image-preview-modal-body {
-        min-height: 200px !important;
-        max-height: 50vh !important;
-    }
-
-    #preview-modal-img {
-        max-height: 50vh !important;
-    }
-
-    .image-preview-modal-title {
-        font-size: 0.8rem !important;
-    }
-}
-
 .mtp-toolbar.minimized+.mtp-toggle-btn {
     display: flex;
 }
 
-/* ======================================================
-   HU-011.8: Responsive — en mobile la barra va abajo, ancha, fija
-   ====================================================== */
-@media (max-width: 992px) {
 
+
+
+
+
+
+
+
+
+/* FASE 7 HU-019: Responsive avanzado para el grid de archivos */
+@media (max-width: 768px) {
+    .uploaded-files-grid {
+        /* 2 columns between 568px and 768px */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 567px) {
+    .uploaded-files-grid {
+        /* 1 column below 568px */
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    .uploaded-files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    /* ======================================================
+    HU-011.8: Responsive — en mobile la barra va abajo, ancha, fija
+    ====================================================== */
     /* En tablet/mobile la barra se pega abajo y ocupa todo el ancho */
     .mtp-toolbar {
         position: fixed;
@@ -1865,7 +1802,77 @@ h2 i,
     }
 }
 
+/* Responsive: en mobile el sidebar va arriba */
+@media (max-width: 768px) {
+    .editor-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        /* padding-right: 0; */
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .editor-main {
+        /* padding-left: 0; */
+    }
+
+    .editor-container .CodeMirror {
+        min-height: 300px;
+    }
+
+    .editor-actions .d-flex {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .editor-actions .btn-lg {
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+    }
+
+    .filepond--drop-label {
+        min-height: 100px !important;
+    }
+
+    /* FASE 4 HU-019: Móvil - controles siempre visibles y botones más grandes */
+    .uploaded-controls {
+        opacity: 1 !important;
+        background: rgba(190, 171, 171, 0.95);
+    }
+
+    .uploaded-controls .btn-control {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* FASE 7 HU-019: Móvil - grid más compacto */
+    .uploaded-files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        padding: 12px;
+    }
+}
+
+
 @media (max-width: 576px) {
+
+    .image-preview-modal-body {
+        min-height: 200px !important;
+        max-height: 50vh !important;
+    }
+
+    #preview-modal-img {
+        max-height: 50vh !important;
+    }
+
+    .image-preview-modal-title {
+        font-size: 0.8rem !important;
+    }
+
     .mtp-toolbar {
         padding: 6px 8px;
         gap: 1px;
@@ -1881,5 +1888,33 @@ h2 i,
 
     .mtp-btn::after {
         display: none;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* FASE 7 HU-019: Móvil pequeño - items de ancho completo en fila */
+    .uploaded-files-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .uploaded-item {
+        max-width: 100%;
+        flex-direction: row;
+        height: auto !important;
+        min-height: 80px;
+    }
+
+    .uploaded-item>.uploaded-image,
+    .uploaded-item>.uploaded-video {
+        width: 80px;
+        height: 80px;
+        max-height: 80px;
+    }
+
+    .uploaded-filename {
+        text-align: left;
+        margin-left: 10px;
     }
 }

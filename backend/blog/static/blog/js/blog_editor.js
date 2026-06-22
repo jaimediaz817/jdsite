@@ -684,9 +684,11 @@ cm.on('drop', (cmInstance, event) => {
 // 1c. HU-20-B: Widget flotante con menú por línea de imagen/video
 // ======================================================
 
-// Almacén de widgets activos (lineNumber -> {widget, node, menuOpen})
+// Almacén de widgets activos (lineNumber -> {widget, node, menuOpen, widgetId})
 let imageWidgets = {};
 let imageWidgetCleanup = null;
+// Contador para IDs únicos de widgets
+let widgetIdCounter = 0;
 
 /**
  * Crea el DOM del widget para una línea de imagen/video.
@@ -695,8 +697,11 @@ let imageWidgetCleanup = null;
  * @returns {HTMLElement} El elemento widget
  */
 function createImageWidget(lineNumber, filename) {
+    // Generar ID único para este widget
+    const widgetId = 'img-widget-' + (++widgetIdCounter);
     const widget = document.createElement('span');
     widget.className = 'img-line-widget';
+    widget.id = widgetId;
     widget.dataset.line = lineNumber;
     widget.dataset.filename = filename;
 
@@ -811,19 +816,104 @@ function createImageWidget(lineNumber, filename) {
         }
     }, 0);
 
-    // Las opciones del menú son placeholder (no ejecutan acciones reales)
+    // Acciones reales del menú de línea de imagen
     dropdown.querySelectorAll('.img-line-dropdown-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
             e.stopPropagation();
             var action = this.dataset.action;
             console.log('[HU-20-B] Acción:', action, 'para', filename);
-            // Placeholder: no ejecuta acciones reales
+            
+            if (action === 'delete') {
+                // Eliminar línea markdown del editor
+                deleteImageLineFromEditor(lineNumber, filename);
+                // Limpiar widget del CodeMirror
+                cleanupImageWidget(lineNumber);
+                // Eliminar vista previa del grid de archivos subidos
+                removeUploadedFilePreview(filename);
+                // Eliminar del array local
+                var idx = uploadedFiles.findIndex(function(f) { return f.filename === filename; });
+                if (idx !== -1) uploadedFiles.splice(idx, 1);
+                // Eliminar archivo físico del servidor
+                deleteFileOnServer(filename);
+                // Mostrar feedback sutil
+                showStatusMessage('Archivo eliminado: ' + filename, 'info');
+            } else if (action === 'block') {
+                toggleUploadedFile(filename);
+            } else if (action === 'cover') {
+                setAsCover(filename);
+            }
+            
             dropdown.classList.remove('is-open');
             btn.classList.remove('is-open');
         });
     });
 
-    return widget;
+    // Retornar el widget junto con su ID para poder rastrearlo
+    return { widgetElement: widget, widgetId: widgetId };
+}
+
+/**
+ * Elimina la línea de imagen/video del editor en la posición indicada.
+ * @param {number} lineNumber - Número de línea en CodeMirror
+ * @param {string} filename - Nombre del archivo a eliminar
+ */
+function deleteImageLineFromEditor(lineNumber, filename) {
+    if (!easyMDE || !filename) return;
+    const doc = easyMDE.codemirror.getDoc();
+    const safe = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\((\\.?\\/?)${safe}\\)\\s*\\n?`, 'gm');
+    const videoRegex = new RegExp(`<video[^>]*src=["']\\.?\\/?${safe}["'][^>]*></video>\\s*\\n?`, 'g');
+    let current = easyMDE.value();
+    const updated = current
+        .replace(imgRegex, '')
+        .replace(videoRegex, '')
+        .replace(/\n{3,}/g, '\n\n');
+    if (updated !== current) {
+        const cleaned = updated.replace(/^\s*:::final-no-import:::\s*$/gm, '');
+        easyMDE.value(cleaned);
+    }
+}
+
+/**
+ * Limpia un widget de imagen del CodeMirror por número de línea.
+ * @param {number} lineNumber - Número de línea
+ */
+function cleanupImageWidget(lineNumber) {
+    if (imageWidgets[lineNumber] && imageWidgets[lineNumber].widget) {
+        try {
+            imageWidgets[lineNumber].widget.clear();
+        } catch(e) { /* ignore */ }
+    }
+    delete imageWidgets[lineNumber];
+}
+
+/**
+ * Elimina la vista previa del grid de archivos subidos.
+ * @param {string} filename - Nombre del archivo
+ */
+function removeUploadedFilePreview(filename) {
+    const container = document.getElementById('uploaded-files');
+    if (!container) return;
+    const item = container.querySelector('.uploaded-item[data-filename="' + filename + '"]');
+    if (item) item.remove();
+    // Mostrar estado vacío si no quedan archivos
+    const remaining = container.querySelectorAll('.uploaded-item');
+    if (remaining.length === 0) {
+        showUploadedFilesEmpty();
+    }
+}
+
+/**
+ * Muestra un mensaje de estado temporal.
+ * @param {string} msg - Texto del mensaje
+ * @param {string} type - Tipo: 'info', 'success', 'danger'
+ */
+function showStatusMessage(msg, type) {
+    const el = document.getElementById('status-message');
+    if (!el) return;
+    const alertClass = type === 'success' ? 'alert-success' : type === 'danger' ? 'alert-danger' : 'alert-info';
+    const html = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button></div>';
+    el.innerHTML = html;
 }
 
 /**
@@ -878,7 +968,8 @@ function refreshImageWidgets() {
                 try {
                     var lineHandle = doc.getLineHandle(i);
                     console.log('[HU-20-B] LineHandle para', i, ':', lineHandle);
-                    var widgetNode = createImageWidget(i, filename);
+                    var widgetData = createImageWidget(i, filename);
+                    var widgetNode = widgetData.widgetElement;
                     console.log('[HU-20-B] Nodo widget creado:', widgetNode.outerHTML.substring(0, 80));
                     var lineWidget = cm.addLineWidget(lineHandle, widgetNode, {
                         position: 'after',
@@ -888,7 +979,8 @@ function refreshImageWidgets() {
                     newWidgets[i] = {
                         widget: lineWidget,
                         node: widgetNode,
-                        menuOpen: false
+                        menuOpen: false,
+                        widgetId: widgetData.widgetId
                     };
                     console.log('[HU-20-B] Widget insertado exitosamente en linea', i);
                 } catch(e) {

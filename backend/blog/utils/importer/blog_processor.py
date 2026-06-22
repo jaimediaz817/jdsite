@@ -533,17 +533,20 @@ class BlogProcessor:
         limpia cualquier marca suelta que pudiera quedar si sólo se había
         eliminado el cierre.
         """
-        # 1️⃣ Eliminar bloques completos (apertura + contenido + cierre)
-        block_pattern = r":::no-import:::\n([\s\S]*?)\n:::(?:final-no-import|final-niimport):::"
-        stripped = re.sub(block_pattern, "", content_md)
+        # 1️⃣ Eliminar bloques completos (apertura + contenido + cierre).
+        #    El bloque puede contener cualquier cosa, incluidas imágenes.
+        #    Se aceptan tanto ``\n`` como ``\r\n`` y posibles espacios
+        #    alrededor de los marcadores.
+        block_pattern = r"^\s*:::no-import:::\s*\r?\n[\s\S]*?\r?\n\s*:::(?:final-no-import|final-niimport):::\s*$"
+        stripped = re.sub(block_pattern, "", content_md, flags=re.MULTILINE)
 
-        # 2️⃣ Eliminar marcas sueltas que pudieran quedar aisladas
-        stripped = re.sub(r":::no-import:::", "", stripped)
+        # 2️⃣ Eliminar cualquier marcador suelto que pudiera quedar aislado.
+        stripped = re.sub(r"\s*:::no-import:::\s*", "", stripped)
         stripped = re.sub(
-            r":::(?:final-no-import|final-niimport):::", "", stripped
+            r"\s*:::(?:final-no-import|final-niimport):::\s*", "", stripped
         )
 
-        # 3️⃣ Normalizar saltos de línea en blanco excesivos
+        # 3️⃣ Normalizar saltos de línea en blanco excesivos.
         stripped = re.sub(r"\n{3,}", "\n\n", stripped)
         return stripped.strip()
 

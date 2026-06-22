@@ -5,16 +5,22 @@
 
 /* Layout principal */
 .editor-wrapper {
-    min-height: calc(100vh - 80px);
-    padding: 20px 0;
+
 }
 
-.editor-sidebar {
-    border-right: 1px solid #e0e0e0;
-    padding-right: 20px;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
+.editor-wrapper {
+    min-height: calc(100vh - 80px);
+    padding: 20px 0;
+
+    .editor-sidebar {
+        border-right: 1px solid #e0e0e0;
+        padding-right: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 120px);
+        position: sticky!important;
+    }
 }
+
 
 .editor-sidebar .sidebar-title {
     font-size: 1.1rem;
@@ -250,7 +256,9 @@
     height: 170px;
     object-fit: cover;
     border-radius: 8px;
-    flex-shrink: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    flex-shrink: 0;    
 }
 
 /* Overlay de controles moderno y sutil */
@@ -1833,20 +1841,13 @@ h2 i,
 
 
 
-/* FASE 7 HU-019: Responsive avanzado para el grid de archivos */
-@media (max-width: 768px) {
-    .uploaded-files-grid {
-        /* 2 columns between 568px and 768px */
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
-@media (max-width: 567px) {
-    .uploaded-files-grid {
-        /* 1 column below 568px */
-        grid-template-columns: 1fr;
-    }
-}
+
+
+
+
+
+
 
 @media (max-width: 992px) {
     .uploaded-files-grid {
@@ -1913,9 +1914,35 @@ h2 i,
     }
 }
 
-/* Responsive: en mobile el sidebar va arriba */
+
+
+/* FASE 7 HU-019: Responsive avanzado para el grid de archivos */
 @media (max-width: 768px) {
+    .editor-wrapper {
+        .editor-sidebar {
+            /* position: relative !important; */
+        }
+    }
+
+
+    .uploaded-files-grid {
+        /* 2 columns between 568px and 768px */
+        /* grid-template-columns: repeat(2, 1fr); */
+    }
+
+    /* FASE 7 HU-019: Móvil pequeño - items de ancho completo en fila */
+    .uploaded-files-grid {
+        /* grid-template-columns: 1fr;
+        gap: 10px; */
+        grid-template-columns: 2fr;
+        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 3px;        
+    }    
+
     .editor-sidebar {
+        position: sticky;
         border-right: none;
         border-bottom: 1px solid #e0e0e0;
         /* padding-right: 0; */
@@ -1952,7 +1979,6 @@ h2 i,
     /* FASE 4 HU-019: Móvil - controles siempre visibles y botones más grandes */
     .uploaded-controls {
         opacity: 1 !important;
-        background: rgba(190, 171, 171, 0.95);
     }
 
     .uploaded-controls .btn-control {
@@ -1965,9 +1991,8 @@ h2 i,
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 10px;
         padding: 12px;
-    }
+    }    
 }
-
 
 @media (max-width: 576px) {
 
@@ -2004,25 +2029,48 @@ h2 i,
 
 @media (max-width: 480px) {
 
-    /* FASE 7 HU-019: Móvil pequeño - items de ancho completo en fila */
-    .uploaded-files-grid {
-        grid-template-columns: 1fr;
+    
+    .editor-actions .d-flex {
+        flex-direction: row;
         gap: 10px;
+        align-items: stretch;
     }
+    .uploaded-controls {
+        width: 98%;
+        justify-content: space-between !important;
+    }    
 
     .uploaded-item {
-        max-width: 100%;
+        /* max-width: 100%;
         flex-direction: row;
         height: auto !important;
-        min-height: 80px;
+        min-height: 80px; */
+
+
+        height: 152px;
+        flex-direction: column;        
     }
 
     .uploaded-item>.uploaded-image,
     .uploaded-item>.uploaded-video {
-        width: 80px;
+        /* width: 80px;
         height: 80px;
-        max-height: 80px;
+        max-height: 80px; */
+   
+        width: 100%;
+        height: 80%;
+        max-height: fit-content;
+        object-fit: cover;        
     }
+
+    .editor-actions .btn-lg {
+        justify-content: center;
+        text-align: center;
+        line-height: 1.25rem;
+        font-size: 0.85rem;
+        flex-direction: column;
+        padding: 9px 0px;
+    }    
 
     .uploaded-filename {
         text-align: left;

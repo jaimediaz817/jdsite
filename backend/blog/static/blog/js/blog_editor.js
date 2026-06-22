@@ -1214,7 +1214,7 @@ function restoreDraft(data) {
         });
     }
     document.getElementById('status-message').innerHTML =
-        '<div class="alert alert-info">📝 Borrador recuperado de localStorage</div>';
+        '<div class="alert alert-info alert-dismissible fade show" role="alert">📝 Borrador recuperado de localStorage<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
     updateDraftIndicator(true);
     updateStatusBadge('draft_local');
 }
@@ -1228,7 +1228,7 @@ function discardDraft() {
         updateStatusBadge('new');
     }
     document.getElementById('status-message').innerHTML =
-        '<div class="alert alert-secondary">🗑️ Borrador local descartado</div>';
+        '<div class="alert alert-secondary alert-dismissible fade show" role="alert">🗑️ Borrador local descartado<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 }
 
 // ======================================================
@@ -1275,15 +1275,15 @@ window.addEventListener('load', () => {
 document.getElementById('btn-save').addEventListener('click', async () => {
     const data = collectFormData();
     if (!data.title.trim()) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger">El título es obligatorio</div>';
+        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">El título es obligatorio<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
         return;
     }
     if (!data.description.trim()) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger">La descripción es obligatoria</div>';
+        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">La descripción es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
         return;
     }
     if (!data.category) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger">La categoría es obligatoria</div>';
+        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">La categoría es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
         return;
     }
     const btn = document.getElementById('btn-save');
@@ -1304,17 +1304,17 @@ document.getElementById('btn-save').addEventListener('click', async () => {
             localStorage.removeItem(DRAFT_KEY);
             updateDraftIndicator(false);
             if (result.published) {
-                document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-success">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a></div>`;
+                document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-success alert-dismissible fade show" role="alert">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
                 updateStatusBadge('published');
             } else {
-                document.getElementById('status-message').innerHTML = '<div class="alert alert-process-editor__container alert-warning">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a></div>';
+                document.getElementById('status-message').innerHTML = '<div class="alert alert-process-editor__container alert-warning alert-dismissible fade show" role="alert">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
                 updateStatusBadge('pending');
             }
         } else {
-            document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger">Error: ${result.error || 'Error desconocido'}</div>`;
+            document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error: ${result.error || 'Error desconocido'}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
         }
     } catch (err) {
-        document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger">Error de conexión: ${err.message}</div>`;
+        document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error de conexión: ${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
     } finally {
         btn.disabled = false;
         btn.innerHTML = document.querySelector('#btn-save').dataset.originalText || 'Guardar';
@@ -1507,10 +1507,10 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
             coverInput.value = currentCover;
         }
         document.title = `Editando: ${fm.title || editSlug} | Editor Blog`;
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-success">Artículo cargado. Cambios se guardan en la misma carpeta.</div>';
+        document.getElementById('status-message').innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">Artículo cargado. Cambios se guardan en la misma carpeta.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
     } catch (err) {
         console.error('Error cargando artículo:', err);
-        document.getElementById('status-message').innerHTML = `<div class="alert alert-danger">Error al cargar artículo: ${err.message}</div>`;
+        document.getElementById('status-message').innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">Error al cargar artículo: ${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
     }
 })();
 

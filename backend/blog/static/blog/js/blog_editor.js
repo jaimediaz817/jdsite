@@ -781,6 +781,14 @@ function createImageWidget(lineNumber, filename) {
     widget.dataset.line = lineNumber;
     widget.dataset.filename = filename;
 
+    // Área de agarre (grip) para iniciar arrastre
+    const gripBtn = document.createElement('button');
+    gripBtn.type = 'button';
+    gripBtn.className = 'img-line-grip-btn';
+    gripBtn.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+    gripBtn.setAttribute('aria-label', 'Arrastrar imagen');
+    gripBtn.setAttribute('title', 'Arrastrar para mover');
+
     // Botón del menú (⋮ tres puntos verticales)
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -835,6 +843,7 @@ function createImageWidget(lineNumber, filename) {
         '</button>',
     ].join('\n');
 
+    widget.appendChild(gripBtn);
     widget.appendChild(btn);
     widget.appendChild(helpBtn);
     widget.appendChild(dropdown);
@@ -927,6 +936,12 @@ function createImageWidget(lineNumber, filename) {
             document.addEventListener('click', imageWidgetCleanup);
         }
     }, 0);
+
+    // Arrastre desde el icono de agarre (no interfiere con el botón ⋮)
+    gripBtn.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return; // solo click izquierdo
+        startImageDrag(lineNumber, gripBtn);
+    });
 
     // Acciones reales del menú de línea de imagen
     dropdown.querySelectorAll('.img-line-dropdown-item').forEach(function(item) {
@@ -1211,6 +1226,18 @@ function refreshImageWidgets() {
                         menuOpen: false,
                         widgetId: widgetData.widgetId
                     };
+                    // HU-20-C-V1-ADD Fase 3: marcar widget como arrastrable
+                    try {
+                        widgetNode.classList.add('img-line-draggable');
+                        const menuBtn = widgetNode.querySelector('.img-line-menu-btn');
+                        if (menuBtn) {
+                            menuBtn.addEventListener('mousedown', function(e) {
+                                // Solo activar arrastre con click izquierdo
+                                if (e.button !== 0) return;
+                                startImageDrag(i, this);
+                            });
+                        }
+                    } catch(err) { console.warn('Error marcando draggable linea', i, err); }
                     console.log('[HU-20-B] Widget insertado exitosamente en linea', i);
                 } catch(e) {
                     console.warn('[HU-20-B] Error al añadir widget linea', i, e);
@@ -1953,6 +1980,211 @@ function detectImageContext() {
     }
     
     return { mode, startLine };
+}
+
+// ======================================================
+// FASE 1 HU-20-C-V1-ADD: Utilidades de detección de líneas de imagen
+// ======================================================
+
+/** Regex para detectar una línea de imagen (modo normal o slides/gallery). */
+function getImageLineRegex() {
+    // Acepta: ![texto](ruta), ![texto|desc](ruta) y variantes con ./ o ruta relativa
+    return /^!\[[^\]]*\]\([^)]+\)\s*$/;
+}
+
+/** Retorna { lineNumber, text } para cada línea de imagen en el documento. */
+function getImageLines() {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return [];
+    const doc = cm.getDoc();
+    const total = doc.lineCount();
+    const result = [];
+    const regex = getImageLineRegex();
+    for (let i = 0; i < total; i++) {
+        const text = doc.getLine(i) || '';
+        if (regex.test(text.trim())) {
+            result.push({ lineNumber: i, text });
+        }
+    }
+    return result;
+}
+
+/** true si la línea indicada es una línea de imagen. */
+function isImageLine(lineNumber) {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return false;
+    const text = cm.getDoc().getLine(lineNumber) || '';
+    return getImageLineRegex().test(text.trim());
+}
+
+// ======================================================
+// FASE 4 HU-20-C-V1-ADD: Drag & drop de líneas de imagen
+// ======================================================
+
+window.imageDragActive = false;
+window.imageDragOriginLine = null;
+window.imageDragText = '';
+window.imageDragGuideEl = null;
+
+function startImageDrag(lineNumber, triggerElement) {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm || !isImageLine(lineNumber)) return;
+
+    const text = cm.getDoc().getLine(lineNumber) || '';
+    if (!text) return;
+
+    window.imageDragActive = true;
+    window.imageDragOriginLine = lineNumber;
+    window.imageDragText = text;
+
+    // Marcar línea origen (por vía del widget, no del handle interno)
+    const widgetEntry = imageWidgets[lineNumber];
+    if (widgetEntry && widgetEntry.node) {
+        widgetEntry.node.classList.add('img-line-dragging');
+    }
+
+    // Crear guía de inserción
+    const guide = document.createElement('div');
+    guide.className = 'CodeMirror-lines img-drop-guide';
+    guide.style.position = 'absolute';
+    guide.style.left = '0';
+    guide.style.right = '0';
+    guide.style.height = '2px';
+    guide.style.pointerEvents = 'none';
+    guide.style.zIndex = '9999';
+    window.imageDragGuideEl = guide;
+    document.body.appendChild(guide);
+
+    // Listeners globales
+    document.addEventListener('mousemove', moveImageDragGuide);
+    document.addEventListener('mouseup', endImageDrag);
+    document.addEventListener('keydown', cancelImageDragOnEscape);
+}
+
+function moveImageDragGuide(event) {
+    if (!window.imageDragActive) return;
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return;
+
+    const pos = cm.coordsChar({ left: 0, top: event.clientY });
+    const lineInfo = cm.charCoords(pos, 'page');
+    const top = lineInfo.top;
+
+    if (window.imageDragGuideEl) {
+        window.imageDragGuideEl.style.top = top + 'px';
+        window.imageDragGuideEl.style.display = 'block';
+    }
+}
+
+function endImageDrag(event) {
+    if (!window.imageDragActive) return;
+    const cm = easyMDE ? easyMDE.codemirror : null;
+
+    // Guardar valores en variables locales ANTES de cleanup
+    const origin = window.imageDragOriginLine;
+    const text = window.imageDragText;
+
+    cleanupImageDragState();
+
+    if (!cm) return;
+
+    try {
+        const pos = cm.coordsChar({ left: 0, top: event.clientY });
+    let destLine = Math.min(pos.line, cm.getDoc().lineCount() - 1);
+
+        if (destLine !== origin && text) {
+            // Eliminar línea origen primero y recalcular destino según reindexado
+            cm.getDoc().replaceRange('', {
+                line: origin,
+                ch: 0
+            }, {
+                line: origin + 1,
+                ch: 0
+            });
+
+            let adjusted = destLine;
+            if (destLine > origin) {
+                adjusted = Math.max(0, destLine - 1);
+            }
+            const maxLine = cm.getDoc().lineCount() - 1;
+            adjusted = Math.min(adjusted, maxLine);
+
+            // Reinsertar en destino corregido (línea 0..N, ch 0)
+            cm.getDoc().replaceRange(text + '\n', {
+                line: adjusted,
+                ch: 0
+            });
+
+            // Refrescar widgets tras mover
+            setTimeout(refreshImageWidgets, 100);
+        }
+    } catch (e) {
+        console.warn('[HU-20-C-V1-ADD] Error en endImageDrag:', e);
+    }
+}
+
+function cancelImageDragOnEscape(event) {
+    if (!window.imageDragActive) return;
+    if (event.key === 'Escape') {
+        cleanupImageDragState();
+    }
+}
+
+function cleanupImageDragState() {
+    document.removeEventListener('mousemove', moveImageDragGuide);
+    document.removeEventListener('mouseup', endImageDrag);
+    document.removeEventListener('keydown', cancelImageDragOnEscape);
+
+    if (window.imageDragGuideEl && window.imageDragGuideEl.parentElement) {
+        window.imageDragGuideEl.parentElement.removeChild(window.imageDragGuideEl);
+        window.imageDragGuideEl = null;
+    }
+
+    // Limpiar clase .img-line-dragging desde el widget asociado
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (cm && typeof window.imageDragOriginLine === 'number') {
+        try {
+            const entry = imageWidgets[window.imageDragOriginLine];
+            if (entry && entry.node && entry.node.classList) {
+                entry.node.classList.remove('img-line-dragging');
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    window.imageDragActive = false;
+    window.imageDragOriginLine = null;
+    window.imageDragText = '';
+}
+
+/** Regex para detectar una línea de imagen (modo normal o slides/gallery). */
+function getImageLineRegex() {
+    // Acepta: ![texto](ruta), ![texto|desc](ruta) y variantes con ./ o ruta relativa
+    return /^!\[[^\]]*\]\([^)]+\)\s*$/;
+}
+
+/** Retorna { lineNumber, text } para cada línea de imagen en el documento. */
+function getImageLines() {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return [];
+    const doc = cm.getDoc();
+    const total = doc.lineCount();
+    const result = [];
+    const regex = getImageLineRegex();
+    for (let i = 0; i < total; i++) {
+        const text = doc.getLine(i) || '';
+        if (regex.test(text.trim())) {
+            result.push({ lineNumber: i, text });
+        }
+    }
+    return result;
+}
+
+/** true si la línea indicada es una línea de imagen. */
+function isImageLine(lineNumber) {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return false;
+    const text = cm.getDoc().getLine(lineNumber) || '';
+    return getImageLineRegex().test(text.trim());
 }
 
 

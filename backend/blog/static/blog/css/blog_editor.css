@@ -2649,3 +2649,36 @@ h2 i,
     font-size: 18px !important;
     pointer-events: none !important;
 }
+
+/* ======================================================
+   HU-20-C-V1-ADD Fase 3b: Estilos del botón de agarre (grip)
+   ====================================================== */
+
+.img-line-grip-btn {
+    background: none;
+    border: none;
+    padding: 4px 6px;
+    cursor: grab;
+    color: #6c757d;
+    font-size: 12px;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.img-line-grip-btn:hover {
+    opacity: 1;
+    color: #0d6efd;
+}
+
+.img-line-grip-btn:active {
+    cursor: grabbing;
+}
+
+.img-line-draggable .img-line-grip-btn {
+    opacity: 0.6;
+}
+
+.img-line-draggable:hover .img-line-grip-btn {
+    opacity: 1;
+}

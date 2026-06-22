@@ -609,6 +609,7 @@ button#btn-save {
     border-radius: 12px;
     padding: 16px;
     overflow-x: hidden;
+    overflow: visible;
 }
 
 /* FASE 3 HU-019: Icono de tipo de archivo overlay */

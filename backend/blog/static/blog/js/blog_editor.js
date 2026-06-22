@@ -718,7 +718,8 @@ function createImageWidget(lineNumber, filename) {
     dropdown.className = 'img-line-dropdown';
     dropdown.innerHTML = [
         '<button type="button" class="img-line-dropdown-item" data-action="block">',
-        '  <i class="fas fa-eye-slash"></i> Bloquear en artículo',
+        '  <i class="fas fa-eye-slash block-icon"></i>',
+        '  <span class="block-text">Bloquear en artículo</span>',
         '</button>',
         '<button type="button" class="img-line-dropdown-item" data-action="cover">',
         '  <i class="fas fa-star"></i> Marcar como portada',
@@ -739,6 +740,9 @@ function createImageWidget(lineNumber, filename) {
         btn.classList.toggle('is-open', isOpen);
         
         if (isOpen) {
+            // Actualizar el texto del botón de bloqueo según el estado actual del archivo
+            updateBlockButtonState(filename);
+            
             // Mover a body para escapar de stacking contexts (CodeMirror, widget padre)
             if (dropdown.parentElement !== document.body) {
                 document.body.appendChild(dropdown);
@@ -839,6 +843,8 @@ function createImageWidget(lineNumber, filename) {
                 showStatusMessage('Archivo eliminado: ' + filename, 'info');
             } else if (action === 'block') {
                 toggleUploadedFile(filename);
+                // Actualizar el texto del botón después de cambiar el estado
+                updateBlockButtonState(filename);
             } else if (action === 'cover') {
                 setAsCover(filename);
             }
@@ -850,6 +856,51 @@ function createImageWidget(lineNumber, filename) {
 
     // Retornar el widget junto con su ID para poder rastrearlo
     return { widgetElement: widget, widgetId: widgetId };
+}
+
+/**
+ * Actualiza el texto y icono del botón de bloqueo/desbloqueo según el estado actual del archivo.
+ * @param {string} filename - Nombre del archivo
+ */
+function updateBlockButtonState(filename) {
+    if (!filename) return;
+    
+    // Buscar el archivo en el array para ver si está oculto
+    const file = uploadedFiles.find(f => f.filename === filename);
+    const isHidden = file ? file.hidden : false;
+    
+    // Buscar todos los botones de bloqueo en los dropdowns
+    const blockButtons = document.querySelectorAll('.img-line-dropdown-item[data-action="block"]');
+    blockButtons.forEach(function(button) {
+        // Verificar si este botón pertenece al widget del archivo actual
+        const widget = button.closest('.img-line-widget');
+        if (!widget) return;
+        
+        const widgetFilename = widget.dataset.filename;
+        if (widgetFilename !== filename) return;
+        
+        // Actualizar icono y texto
+        const icon = button.querySelector('.block-icon');
+        const text = button.querySelector('.block-text');
+        
+        if (isHidden) {
+            // Está bloqueado → mostrar "Desbloquear" con ojo abierto
+            if (icon) {
+                icon.className = 'fas fa-eye block-icon';
+            }
+            if (text) {
+                text.textContent = 'Desbloquear en artículo';
+            }
+        } else {
+            // No está bloqueado → mostrar "Bloquear" con ojo cerrado
+            if (icon) {
+                icon.className = 'fas fa-eye-slash block-icon';
+            }
+            if (text) {
+                text.textContent = 'Bloquear en artículo';
+            }
+        }
+    });
 }
 
 /**
@@ -879,11 +930,31 @@ function deleteImageLineFromEditor(lineNumber, filename) {
  * @param {number} lineNumber - Número de línea
  */
 function cleanupImageWidget(lineNumber) {
-    if (imageWidgets[lineNumber] && imageWidgets[lineNumber].widget) {
-        try {
-            imageWidgets[lineNumber].widget.clear();
-        } catch(e) { /* ignore */ }
+    const entry = imageWidgets[lineNumber];
+    if (!entry) return;
+    
+    // Eliminar el elemento del DOM por ID si existe
+    if (entry.widgetId) {
+        const widgetEl = document.getElementById(entry.widgetId);
+        if (widgetEl && widgetEl.parentElement) {
+            widgetEl.parentElement.removeChild(widgetEl);
+            console.log('[HU-20-B] Widget DOM eliminado:', entry.widgetId);
+        }
+    } else if (entry.node && entry.node.parentElement) {
+        // Fallback: eliminar por referencia al nodo
+        entry.node.parentElement.removeChild(entry.node);
     }
+    
+    // Limpiar el widget de CodeMirror
+    if (entry.widget) {
+        try {
+            entry.widget.clear();
+            console.log('[HU-20-B] Widget CodeMirror limpiado en linea', lineNumber);
+        } catch(e) { 
+            console.warn('[HU-20-B] Error al limpiar widget:', e);
+        }
+    }
+    
     delete imageWidgets[lineNumber];
 }
 

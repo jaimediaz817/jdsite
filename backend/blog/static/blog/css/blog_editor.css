@@ -1491,7 +1491,7 @@ fieldset[disabled] input {
    CodeMirror genera: .CodeMirror-code > div[style*="position: relative"]
    que contiene tanto <pre class="CodeMirror-line"> como el widget */
 .CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) {
-    position: relative !important;
+    /* position: relative !important;
     display: inline-flex;
     padding: 8px 40px 8px 14px !important;
     margin: 6px 0 !important;
@@ -1502,8 +1502,31 @@ fieldset[disabled] input {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     animation: mtpWidgetFadeIn 0.35s ease !important;
     min-height: 36px !important;
-    width: auto;    
+    width: auto;     */
 
+
+    position: relative !important;
+    display: inline-flex;
+    padding: 2px 40px 2px 14px !important;
+    /* height: 9px !important; */
+    margin: 0 !important;
+    border: 1.5px solid rgba(13, 110, 253, 0.18) !important;
+    border-radius: 10px !important;
+    background: rgba(13, 110, 253, 0.03) !important;
+    box-shadow: 0 1px 4px rgba(13, 110, 253, 0.05) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: mtpWidgetFadeIn 0.35s ease !important;
+    min-height: auto;
+    width: auto;  
+    
+    .CodeMirror-line {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    span, pre {
+        font-size: 0.85rem !important;
+    }
 
 }
 
@@ -1552,11 +1575,32 @@ fieldset[disabled] input {
 
 /* El span interno .img-line-widget queda limpio — solo display inline */
 .img-line-widget.mtp-branded {
-    display: inline-block !important;
+    display: inline-flex !important;
     position: relative !important;
     vertical-align: middle !important;
     margin-left: 6px !important;
     z-index: 100 !important;
+    gap: 6px !important;
+    align-items: center !important;
+}
+
+/* Asegurar que el hover del contenedor padre NO muestre el botón del menú */
+.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover .img-line-menu-btn {
+    opacity: 0.4 !important;
+}
+
+/* FIX CARRETA DESFASADA: GPU layer + z-index del caret */
+.CodeMirror-lines {
+    transform: translateZ(0);
+    will-change: auto;
+}
+.CodeMirror-cursor {
+    z-index: 1000 !important;
+    vertical-align: baseline !important;
+}
+.CodeMirror-line {
+    animation: none !important;
+    transition: none !important;
 }
 
 /* Animación fadeIn al aparecer el widget */
@@ -1571,7 +1615,7 @@ fieldset[disabled] input {
     }
 }
 
-/* Botón tres puntos inline - SIEMPRE visible */
+/* Botón tres puntos inline - funcional */
 .img-line-menu-btn {
     display: inline-flex !important;
     align-items: center !important;
@@ -1590,8 +1634,7 @@ fieldset[disabled] input {
     line-height: 1 !important;
 }
 
-/* Mostrar el botón en hover de cualquier parte del widget */
-.img-line-widget:hover .img-line-menu-btn,
+/* Mostrar el botón SOLO en hover / focus del propio botón (no de todo el widget) */
 .img-line-menu-btn.is-open,
 .img-line-menu-btn:focus {
     opacity: 1 !important;
@@ -1599,14 +1642,14 @@ fieldset[disabled] input {
     box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25) !important;
 }
 
-.img-line-menu-btn:hover {
-    background: rgba(13, 110, 253, 0.06) !important;
-    color: #0d6efd !important;
-}
+/* El botón del menú NO tiene hover visual — solo se activa al hacer clic */
 
-/* Mantener visible si el menú está abierto */
-.img-line-menu-btn.is-open {
+/* Mostrar opaco solo cuando tiene focus (Tab) o cuando el dropdown está abierto */
+.img-line-menu-btn.is-open,
+.img-line-menu-btn:focus {
     opacity: 1 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25) !important;
 }
 
 /* Dropdown del menú — oculto por defecto (no ocupa espacio) */
@@ -2525,4 +2568,84 @@ h2 i,
         text-align: left;
         margin-left: 10px;
     }
+}
+
+/* ======================================================
+   HU-20-C-Parent: MTP Help Button
+   Botón ? redondo que se inyecta en .mtp-btn
+   ====================================================== */
+.mtp-help-btn {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(13, 110, 253, 0.25);
+    background: #fff;
+    color: #0d6efd;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+    padding: 0;
+    line-height: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.mtp-help-btn:hover,
+.mtp-help-btn:focus {
+    opacity: 1;
+    background: #e8f0fe;
+    border-color: #0d6efd;
+    outline: none;
+}
+
+.mtp-help-btn i {
+    font-size: 9px;
+    pointer-events: none;
+}
+
+/* Asegurar que .mtp-btn tenga position relative para posicionar el botón help */
+.mtp-btn {
+    position: relative;
+}
+
+/* Botón de ayuda (?) en el widget de imagen MTP */
+.img-line-help-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(13, 110, 253, 0.2) !important;
+    border-radius: 4px !important;
+    background: #fff !important;
+    color: #0d6efd !important;
+    cursor: pointer !important;
+    opacity: 0.45 !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    margin-left: 12px !important;
+    vertical-align: middle !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;    
+}
+.img-line-help-btn:hover,
+.img-line-help-btn:focus {
+    opacity: 1 !important;
+    transform: scale(1.1) !important;
+    background: #e8f0fe !important;
+    border-color: #0d6efd !important;
+    outline: none !important;
+}
+.img-line-help-btn i {
+    font-size: 18px !important;
+    pointer-events: none !important;
 }

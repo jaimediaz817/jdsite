@@ -681,11 +681,80 @@ cm.on('paste', (cmInstance, event) => {
 });
 
 cm.on('drop', (cmInstance, event) => {
-    // Prevenir que CodeMirror inserte nombres de archivo como texto cuando se arrastran archivos
     if (event.dataTransfer.files.length > 0) {
         event.preventDefault();
+        // Guardar estado y reprogramar sincronización en múltiples frames
+        // para que se ejecute DESPUÉS de que FilePond inserte el markdown
+        // y el navegador complete todos los reflows.
+        window._pendingDropFix = {
+            cursor: cmInstance.getCursor(),
+            scroll: cmInstance.getScrollInfo(),
+            frame: 0,
+        };
+        scheduleDropFix();
     }
 });
+
+function scheduleDropFix() {
+    if (!window._pendingDropFix) return;
+    window._pendingDropFix.frame++;
+    // Ejecutar en requestAnimationFrame para sincronizar con el paint del navegador
+    requestAnimationFrame(function() {
+        if (!window._pendingDropFix) return;
+        const fix = window._pendingDropFix;
+        // Solo ejecutar después de 2 frames (asegura que FilePond ya insertó)
+        if (fix.frame >= 2) {
+            setTimeout(function() {
+                try {
+                    const cm = easyMDE.codemirror;
+                    const cursor = fix.cursor;
+                    // Forzar scroll y refresh MÚLTIPLES veces para eliminar desfase
+                    cm.scrollIntoView(cursor, 50);
+                    cm.refresh();
+                    cm.setCursor(cursor);
+                    // Segundo refresh para confirmar
+                    setTimeout(function() {
+                        try {
+                            cm.scrollIntoView(cursor, 50);
+                            cm.refresh();
+                            cm.setCursor(cursor);
+                        } catch (e) { /* ignore */ }
+                    }, 50);
+                } catch (e) {
+                    console.warn('[blog_editor] Error en fix post-drop:', e);
+                }
+                window._pendingDropFix = null;
+            }, 0);
+        } else {
+            // Seguir esperando frames
+            scheduleDropFix();
+        }
+    });
+}
+
+// ======================================================
+// FIX CARRETA DESFASADA (v2)
+// Re-sincronizar scroll y posición del cursor después de
+// cada cambio, para eliminar el desfase visual del caret
+// cuando hay widgets de imagen insertados.
+// ======================================================
+(function() {
+    let syncTimer = null;
+    cm.on('change', function() {
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(function() {
+            try {
+                const c = cm.getCursor();
+                const s = cm.getScrollInfo();
+                if (s.top > 0 || s.left > 0) {
+                    cm.scrollIntoView(c, 50);
+                    cm.refresh();
+                    cm.setCursor(c);
+                }
+            } catch (e) { /* ignore */ }
+        }, 50);
+    });
+})();
 
 // ======================================================
 // 1c. HU-20-B: Widget flotante con menú por línea de imagen/video
@@ -720,6 +789,34 @@ function createImageWidget(lineNumber, filename) {
     btn.setAttribute('aria-label', 'Opciones de imagen');
     btn.setAttribute('title', 'Opciones');
 
+    // HU-20-C-Parent: Botón de ayuda (?) al lado del menú
+    const helpBtn = document.createElement('button');
+    helpBtn.type = 'button';
+    helpBtn.className = 'img-line-help-btn';
+    helpBtn.innerHTML = '<i class="fas fa-info-circle"></i>';
+    helpBtn.setAttribute('aria-label', 'Ayuda del widget MTP');
+    helpBtn.setAttribute('title', '¿Cómo funciona este widget MTP?');
+
+    // Reutilizable: el tipo de ayuda se define por data-mtp-help-type
+    // Tipos existentes: 'image-widget', y se pueden añadir más
+    const helpType = btn.dataset.mtpHelpType || 'image-widget';
+
+    helpBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openWidgetHelpModal(helpType);
+    });
+
+    // Hover (desktop) → abre modal tras 500ms
+    var hoverTimer = null;
+    // helpBtn.addEventListener('mouseenter', function() {
+    //     if (window.innerWidth < 768) return;
+    //     clearTimeout(hoverTimer);
+    //     hoverTimer = setTimeout(function() { openWidgetHelpModal(helpType); }, 500);
+    // });
+    // helpBtn.addEventListener('mouseleave', function() {
+    //     clearTimeout(hoverTimer);
+    // });
+
     // Dropdown del menú
     const dropdown = document.createElement('div');
     dropdown.className = 'img-line-dropdown';
@@ -739,6 +836,7 @@ function createImageWidget(lineNumber, filename) {
     ].join('\n');
 
     widget.appendChild(btn);
+    widget.appendChild(helpBtn);
     widget.appendChild(dropdown);
 
     // Toggle del menú (manual, sin Popper.js)
@@ -1139,17 +1237,40 @@ function refreshImageWidgets() {
 }
 
 // Refrescar widgets al cambiar el contenido del editor
-cm.on('change', function() {
+// (consolidado en un solo handler para evitar condiciones de carrera)
+cm.off('change', window._changeHandler); // Remover handler previo si existe
+window._changeHandler = function() {
+    const cursor = cm.getCursor();
+    const scroll = cm.getScrollInfo();
     // Debounce para no refrescar en cada pulsación de tecla
     if (window._imgWidgetTimer) clearTimeout(window._imgWidgetTimer);
-    window._imgWidgetTimer = setTimeout(refreshImageWidgets, 300);
-});
+    window._imgWidgetTimer = setTimeout(() => {
+        refreshImageWidgets();
+        // Restaurar cursor y scroll para evitar el desfase visual
+        try {
+            cm.setCursor(cursor);
+            cm.scrollTo(scroll.left, scroll.top);
+            // Re-sincronización adicional post-refresco
+            setTimeout(function() {
+                try {
+                    const c = cm.getCursor();
+                    cm.scrollIntoView(c, 50);
+                    cm.refresh();
+                    cm.setCursor(c);
+                } catch (e) { /* ignore */ }
+            }, 100);
+        } catch (e) { /* ignore */ }
+    }, 300);
+};
+cm.on('change', window._changeHandler);
+
 
 // Refrescar después de pegar imágenes
 var _origPasteHandler = cm._handlers && cm._handlers.paste;
 cm.on('paste', function() {
     setTimeout(refreshImageWidgets, 100);
 });
+
 
 // ======================================================
 // 2. Calcular tiempo de lectura (fórmula 200 ppm)
@@ -2117,6 +2238,43 @@ function insertMtpTemplate(action) {
             btn.style.transition = '';
         }, 200);
     }
+}
+
+// ======================================================
+// HU-20-C-Parent: Help/Info para widget de imagen MTP
+// ======================================================
+
+/**
+ * Abre el modal Help/Info con contenido reutilizable según el tipo de control.
+ * @param {'image-widget'} type - Tipo de ayuda. Default: 'image-widget'.
+ */
+function openWidgetHelpModal(type) {
+    type = type || 'image-widget';
+    var title = '';
+    var desc = '';
+    var usage = '';
+    if (type === 'image-widget') {
+        title = 'Widget de imagen MTP';
+        desc = 'Este widget aparece automáticamente al lado de cada línea de imagen o video en el editor. Sirve para gestionar archivos multimedia directamente desde el editor sin tener que ir al grid de archivos subidos.';
+        usage = 'El menú <strong>⋮</strong> tiene estas opciones:<br><br>' +
+            '• <strong>Bloquear/Desbloquear en artículo</strong> — Oculta la imagen en el artículo final sin borrarla del editor. Útil para imágenes temporales o borradores.<br>' +
+            '• <strong>Marcar como portada</strong> — Define esta imagen como la imagen principal del artículo (portada).<br>' +
+            '• <strong>Eliminar archivo</strong> — Borra la imagen permanentemente del servidor y del editor.<br><br>' +
+            'El contorno azul y el sello <strong>MTP</strong> indican que es un widget gestionado por el sistema Mark to Post.';
+    } else {
+        title = 'Ayuda';
+        desc = 'Contenido de ayuda para: ' + type;
+        usage = 'Instrucciones próximamente.';
+    }
+    document.getElementById('mtpHelpTitle').textContent = title;
+    document.getElementById('mtpHelpDesc').textContent = desc;
+    document.getElementById('mtpHelpUsage').innerHTML = usage;
+
+    // Ocultar pasos y screenshot (no aplican aquí)
+    document.getElementById('mtpHelpStepsWrap').classList.add('d-none');
+    document.getElementById('mtpHelpScreenshotWrap').classList.add('d-none');
+
+    $('#mtpHelpModal').modal('show');
 }
 
 /**

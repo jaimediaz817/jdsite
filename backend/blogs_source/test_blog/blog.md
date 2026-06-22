@@ -1,13 +1,13 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-19"
+date: "2026-06-21"
 draft: false
 image: "image-1.png"
 author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
-category: "UI/UX"
+category: "categoraiNuevaMacho"
 tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
 meta_title: "Mejoras de UI/UX que aumentaron el tiempo de lectura"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"
@@ -20,24 +20,15 @@ cover_image: "/static/blogs/test_blog/image-1.png"
 
 
 
-
-
-
-:::no-import:::
 ![Captura de pantalla 2025-11-10 164914_c3defa9f.png](./Captura de pantalla 2025-11-10 164914_c3defa9f.png)
 
-:::no-import:::
 ![Captura de pantalla 2025-11-12 155136_d277be6d.png](./Captura de pantalla 2025-11-12 155136_d277be6d.png)
 
-:::no-import:::
 ![Captura de pantalla 2025-11-12 155136_00e2d5af.png](./Captura de pantalla 2025-11-12 155136_00e2d5af.png)
 
 ![image_5f2daeb7.png](./image_5f2daeb7.png)
-
 ![IMG_20260501_181947.jpg](./IMG_20260501_181947.jpg)
 
-
-:::no-import:::
 ![Captura de pantalla 2025-11-06 154128.png](./Captura de pantalla 2025-11-06 154128.png)
 
 ## Introduccion1
@@ -47,7 +38,6 @@ Este es el tercer renglon.
 Y este es el cuarto renglon.
 
 Nuevo parrafo aqui.
-
 
 ![cover](image-1.png)
 

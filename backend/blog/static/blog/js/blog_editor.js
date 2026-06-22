@@ -20,6 +20,13 @@ let userOverride = false;
 let lastAutoSaveTime = null;
 let autoSaveTimer = null;
 
+// ======================================================
+// HU-20-C-V1: Selector de imágenes existentes
+// ======================================================
+window.imageSelectorOpen = false;
+window.selectedImageFilename = null;
+window.selectedImageMode = null;
+
 // FASE 5 HU-019: Referencia al contenedor para estado vacío
 const uploadedFilesContainer = document.getElementById('uploaded-files');
 console.log('Contenedor de archivos subidos:', uploadedFilesContainer);
@@ -1223,7 +1230,23 @@ const pond = FilePond.create(document.getElementById('filepond'), {
     onload: (response) => {
         const data = JSON.parse(response);
         uploadedFiles.push(data);
-        // Forzar saltos de línea antes y después para que cada imagen/video quede en su propia línea
+        
+        // HU-20-C-V1: Si el selector está abierto, NO insertar automáticamente en el editor
+        if (window.imageSelectorOpen) {
+            // Solo renderizar en el grid de archivos subidos
+            renderUploadedFile(data);
+            // Cerrar modal selector e insertar usando el flujo del selector
+            $('#imageSelectorModal').modal('hide');
+            // Obtener modo guardado
+            const mode = window.selectedImageMode || 'normal';
+            const title = document.getElementById('selector-title')?.value || '';
+            const desc = document.getElementById('selector-description')?.value || '';
+            // Insertar en el editor usando la posición guardada
+            insertImageInEditor(data.filename, title, desc, mode);
+            return JSON.stringify(data);
+        }
+        
+        // Comportamiento normal: insertar en el editor inmediatamente
         const cm = easyMDE.codemirror;
         const doc = cm.getDoc();
         const cursor = doc.getCursor();
@@ -1253,6 +1276,41 @@ const pond = FilePond.create(document.getElementById('filepond'), {
 
 // Llamada inicial para pintar los widgets HU-20-B cuando carga el editor
 setTimeout(refreshImageWidgets, 500);
+
+// ======================================================
+// HU-20-C-V1: Event handlers del modal selector
+// ======================================================
+
+// Botón "Seleccionar" del modal
+document.getElementById('selector-select-btn')?.addEventListener('click', function() {
+    if (!window.selectedImageFilename) return;
+    const mode = window.selectedImageMode || 'normal';
+    const title = document.getElementById('selector-title')?.value || '';
+    const desc = document.getElementById('selector-description')?.value || '';
+    $('#imageSelectorModal').modal('hide');
+    insertImageInEditor(window.selectedImageFilename, title, desc, mode);
+});
+
+// Botón "Cargar desde PC" del modal: activa el input FilePond
+document.getElementById('selector-upload-btn')?.addEventListener('click', function() {
+    // Activar el input file de FilePond
+    const filepondEl = document.querySelector('.filepond--browser');
+    if (filepondEl) {
+        filepondEl.click();
+    } else {
+        // Fallback: intentar con el input original oculto
+        const originalInput = document.getElementById('filepond');
+        if (originalInput) originalInput.click();
+    }
+});
+
+// Limpiar estado al cerrar modal (Cancelar o backdrop)
+$('#imageSelectorModal').on('hidden.bs.modal', function() {
+    window.imageSelectorOpen = false;
+    window.selectedImageFilename = null;
+    // No limpiar _imageSelectorCursor aquí porque si se cerró sin seleccionar,
+    // el cursor debe seguir donde estaba
+});
 
 // ======================================================
 // 5. collectFormData + auto-save + restore
@@ -1731,6 +1789,205 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
 })();
 
 // ======================================================
+// HU-20-C-V1: Funciones auxiliares del selector de imágenes
+// ======================================================
+
+
+function detectImageContext() {
+    if (!easyMDE) return { mode: 'normal', startLine: null };
+    
+    const cm = easyMDE.codemirror;
+    const doc = cm.getDoc();
+    const cursor = doc.getCursor();
+    const currentLine = cursor.line;
+    
+    // Buscar hacia arriba desde la línea actual
+    let mode = 'normal';
+    let startLine = null;
+    
+    for (let i = currentLine; i >= 0; i--) {
+        const lineText = doc.getLine(i) || '';
+        const trimmed = lineText.trim();
+        
+        // Detectar bloques de apertura
+        if (/^:::\s*slides\s*$/.test(trimmed)) {
+            mode = 'slides';
+            startLine = i;
+            break;
+        }
+        if (/^:::\s*popup:gallery\s*$/.test(trimmed)) {
+            mode = 'popup:gallery';
+            startLine = i;
+            break;
+        }
+        // Detectar cierre de bloques
+        if (/^:::\s*$/.test(trimmed)) {
+            // Encontramos un cierre genérico, salir (ya no estamos dentro del bloque)
+            break;
+        }
+        // Si encontramos cualquier otro bloque especial, también salimos
+        if (/^:::/.test(trimmed) && !/^:::\s*(slides|popup:gallery)\s*$/.test(trimmed)) {
+            break;
+        }
+    }
+    
+    return { mode, startLine };
+}
+
+
+function openImageSelectorModal() {
+    if (!easyMDE) return;
+    
+    // Guardar la posición del cursor antes de abrir el modal
+    const cm = easyMDE.codemirror;
+    const doc = cm.getDoc();
+    window._imageSelectorCursor = doc.getCursor();
+    
+    const modeInfo = detectImageContext();
+    window.selectedImageMode = modeInfo.mode;
+    
+    // Actualizar badge del modo
+    const badge = document.getElementById('selector-mode-badge');
+    const fieldsWrapper = document.getElementById('selector-fields-wrapper');
+    
+    if (badge) {
+        if (modeInfo.mode === 'normal') {
+            badge.textContent = '📝 Artículo normal';
+            badge.className = 'badge bg-info ms-2 selector-mode-badge';
+        } else if (modeInfo.mode === 'slides') {
+            badge.textContent = '📊 Dentro de :::slides';
+            badge.className = 'badge bg-warning ms-2 selector-mode-badge';
+        } else if (modeInfo.mode === 'popup:gallery') {
+            badge.textContent = '🖼️ Dentro de :::popup:gallery';
+            badge.className = 'badge bg-primary ms-2 selector-mode-badge';
+        }
+    }
+    
+    // Mostrar/ocultar campos título/descripción según modo
+    if (fieldsWrapper) {
+        if (modeInfo.mode === 'slides' || modeInfo.mode === 'popup:gallery') {
+            fieldsWrapper.classList.remove('d-none');
+        } else {
+            fieldsWrapper.classList.add('d-none');
+        }
+    }
+    
+    // Limpiar inputs
+    const titleInput = document.getElementById('selector-title');
+    const descInput = document.getElementById('selector-description');
+    if (titleInput) titleInput.value = '';
+    if (descInput) descInput.value = '';
+    
+    // Poblar grid de imágenes existentes
+    const grid = document.getElementById('selector-existing-images');
+    const emptyState = document.getElementById('selector-empty-state');
+    if (grid) {
+        grid.innerHTML = '';
+        
+        if (uploadedFiles.length === 0) {
+            if (emptyState) emptyState.classList.remove('d-none');
+        } else {
+            if (emptyState) emptyState.classList.add('d-none');
+            
+            uploadedFiles.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'selector-thumb-item';
+                item.dataset.filename = file.filename;
+                
+                // Imagen thumbnail
+                const img = document.createElement('img');
+                img.className = 'selector-thumb';
+                img.src = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+                img.alt = file.filename;
+                img.loading = 'lazy';
+                
+                // Fallback si falla la carga
+                img.onerror = function() {
+                    this.src = `/static/blog/images/no-image.png`;
+                };
+                
+                // Nombre del archivo
+                const name = document.createElement('div');
+                name.className = 'uploaded-filename';
+                name.textContent = file.filename;
+                name.style.fontSize = '0.65rem';
+                name.style.padding = '4px';
+                
+                item.appendChild(img);
+                item.appendChild(name);
+                
+                // Click handler: seleccionar imagen
+                item.addEventListener('click', function() {
+                    // Remover clase selected de otros items
+                    grid.querySelectorAll('.selector-thumb-item').forEach(el => {
+                        el.classList.remove('is-selected');
+                    });
+                    // Marcar este como seleccionado
+                    this.classList.add('is-selected');
+                    
+                    // Guardar filename seleccionado y habilitar botón
+                    window.selectedImageFilename = file.filename;
+                    const selectBtn = document.getElementById('selector-select-btn');
+                    if (selectBtn) selectBtn.disabled = false;
+                });
+                
+                grid.appendChild(item);
+            });
+        }
+    }
+    
+    // Resetear estado
+    window.imageSelectorOpen = true;
+    window.selectedImageFilename = null;
+    
+    // Abrir modal
+    $('#imageSelectorModal').modal('show');
+    
+    // Focus en primer campo visible si hay título/descripción
+    if (modeInfo.mode === 'slides' || modeInfo.mode === 'popup:gallery') {
+        setTimeout(() => {
+            if (titleInput) titleInput.focus();
+        }, 300);
+    }
+}
+
+
+function insertImageInEditor(filename, title, description, mode) {
+    if (!easyMDE || !filename) return;
+    
+    // Restaurar cursor al lugar original antes de abrir el modal
+    const cm = easyMDE.codemirror;
+    const doc = cm.getDoc();
+    
+    // Reconstruir el texto markdown según el modo
+    let markdown;
+    if (mode === 'slides' || mode === 'popup:gallery') {
+        const titleText = (title || 'Título').trim();
+        const descText = (description || 'Descripción').trim();
+        markdown = `![${titleText}|${descText}](./${filename})\n`;
+    } else {
+        markdown = `![${filename}](./${filename})\n`;
+    }
+    
+    // Insertar en la posición guardada o en el cursor actual
+    const cursor = window._imageSelectorCursor || doc.getCursor();
+    doc.replaceRange(markdown, cursor);
+    
+    // Limpiar estado del selector
+    window.imageSelectorOpen = false;
+    window.selectedImageFilename = null;
+    window.selectedImageMode = null;
+    window._imageSelectorCursor = null;
+    
+    // Refrescar widgets de imagen para que aparezca el menú ⋮
+    setTimeout(refreshImageWidgets, 100);
+    
+    // Focus de vuelta en el editor
+    cm.focus();
+}
+
+
+// ======================================================
 // HU-011.7: Barra de herramientas MTP (Mark to Post)
 // Motor de inserción de templates en el editor
 // ======================================================
@@ -1820,6 +2077,12 @@ function insertMtpTemplate(action) {
         return;
     }
 
+    // HU-20-C-V1: Interceptar acción 'image' para abrir el selector de imágenes
+    if (action === 'image') {
+        openImageSelectorModal();
+        return;
+    }
+
     const template = MTP_TEMPLATES[action];
     if (!template) {
         console.warn(`[MTP] Template desconocido: ${action}`);
@@ -1863,10 +2126,31 @@ function initMtpToolbar() {
     const toolbar = document.getElementById('mtpToolbar');
     if (!toolbar) return;
 
+    // HU-20-C-V1: Marcar botón imagen como migrado y bloquear los demás
+    const imageBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"]');
+    imageBtns.forEach(function(btn) {
+        btn.classList.add('mtp-migrated');
+    });
+    // Bloquear visualmente los botones NO migrados
+    const allBtns = toolbar.querySelectorAll('.mtp-btn');
+    const MTP_PRODUCTION = window.MTP_PRODUCTION !== undefined ? window.MTP_PRODUCTION : true;
+    allBtns.forEach(function(btn) {
+        if (btn.dataset.mtp !== 'image') {
+            if (MTP_PRODUCTION) {
+                btn.classList.add('mtp-disabled');
+            }
+        }
+    });
+
     // Delegación de eventos: un solo listener para todos los botones
     toolbar.addEventListener('click', (e) => {
         const btn = e.target.closest('.mtp-btn');
         if (!btn) return;
+        // Si el botón está bloqueado (mtp-disabled), no hacer nada
+        if (btn.classList.contains('mtp-disabled')) {
+            e.preventDefault();
+            return;
+        }
         const action = btn.dataset.mtp;
         if (action) {
             e.preventDefault();

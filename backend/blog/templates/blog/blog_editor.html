@@ -277,6 +277,62 @@
         </div>
     </div>
 
+    <!-- HU-20-C-V1: Modal Selector de Imágenes Existentes -->
+    <div class="modal fade" id="imageSelectorModal" tabindex="-1" role="dialog" aria-labelledby="imageSelectorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageSelectorModalLabel">
+                        <i class="fas fa-images me-2"></i> Seleccionar imagen
+                    </h5>
+                    <span id="selector-mode-badge" class="badge bg-info ms-2 selector-mode-badge">📝 Artículo normal</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Campos título y descripción (solo visibles en slides/gallery) -->
+                    <div class="d-none" id="selector-fields-wrapper">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold" for="selector-title">Título</label>
+                                <input type="text" id="selector-title" class="form-control form-control-sm" placeholder="Título de la imagen">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold" for="selector-description">Descripción</label>
+                                <textarea id="selector-description" class="form-control form-control-sm" rows="1" placeholder="Descripción de la imagen"></textarea>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <span class="text-muted small">Formato: Título | Descripción</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                    </div>
+
+                    <!-- Grid de imágenes existentes -->
+                    <div id="selector-existing-images" class="selector-thumb-grid mb-3">
+                        <!-- Se puebla dinámicamente con JS -->
+                    </div>
+                    <div id="selector-empty-state" class="d-none text-center text-muted py-4">
+                        <i class="fas fa-folder-open fa-2x mb-2"></i>
+                        <p class="mb-0">No hay imágenes subidas aún</p>
+                    </div>
+
+                    <!-- Botón cargar desde PC -->
+                    <button type="button" id="selector-upload-btn" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="fas fa-upload me-1"></i> Cargar nueva imagen desde PC
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel-grad" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="selector-select-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-check me-1"></i> Seleccionar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast profesional de auto-save -->
     <div id="autosave-toast" class="toast autosave-toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="autosave-toast-inner">
@@ -308,31 +364,12 @@
 
     <!-- HU-011.7: Barra de herramientas MTP (Mark to Post) -->
     <aside class="mtp-toolbar" id="mtpToolbar" role="toolbar" aria-label="Barra de herramientas MTP">
-        <button type="button" class="mtp-btn" data-mtp="cover-image" data-tip="Portada (frontmatter)">
-            <i class="fas fa-image"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="image" data-tip="Imagen markdown">
-            <i class="fas fa-camera"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="video" data-tip="Video HTML">
-            <i class="fas fa-video"></i>
-        </button>
-
-        <div class="mtp-divider"></div>
-
-        <button type="button" class="mtp-btn" data-mtp="slides" data-tip="Slides ::slides">
-            <i class="fas fa-layer-group"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="callout-info" data-tip="Callout info ℹ️">
-            <i class="fas fa-info-circle"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="callout-warning" data-tip="Callout warning ⚠️">
-            <i class="fas fa-exclamation-triangle"></i>
         <!-- Grupo: Multimedia -->
         <button type="button" class="mtp-btn" data-mtp="cover-image" data-tip="Portada (frontmatter)">
             <i class="fas fa-image"></i>
         </button>
         <button type="button" class="mtp-btn" data-mtp="image" data-tip="Imagen markdown">
+            <span class="mtp-badge">MTP</span>
             <i class="fas fa-camera"></i>
         </button>
         <button type="button" class="mtp-btn" data-mtp="video" data-tip="Video HTML">
@@ -376,7 +413,7 @@
         <button type="button" class="mtp-btn" data-mtp="minimize" data-tip="Minimizar ◀">
             <i class="fas fa-angle-right"></i>
         </button>
-</aside>
+    </aside>
     <!-- Botón toggle para mostrar la barra cuando está minimizada -->
     <button type="button" class="mtp-toggle-btn" id="mtpToggleBtn" aria-label="Mostrar barra MTP" title="Mostrar barra MTP">
         <i class="fas fa-pencil-alt"></i>

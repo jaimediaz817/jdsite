@@ -280,8 +280,8 @@
     <!-- HU-20-C-V1: Modal Selector de Imágenes Existentes -->
     <div class="modal fade" id="imageSelectorModal" tabindex="-1" role="dialog" aria-labelledby="imageSelectorModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content selector-modal-content">
+                <div class="modal-header selector-modal-header">
                     <h5 class="modal-title" id="imageSelectorModalLabel">
                         <i class="fas fa-images me-2"></i> Seleccionar imagen
                     </h5>
@@ -290,20 +290,20 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body selector-modal-body">
                     <!-- Campos título y descripción (solo visibles en slides/gallery) -->
                     <div class="d-none" id="selector-fields-wrapper">
                         <div class="row g-2 mb-3">
                             <div class="col-md-5">
                                 <label class="form-label small fw-bold" for="selector-title">Título</label>
-                                <input type="text" id="selector-title" class="form-control form-control-sm" placeholder="Título de la imagen">
+                                <input type="text" id="selector-title" class="form-control form-control-sm" placeholder="Ej: Amanecer en la montaña">
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label small fw-bold" for="selector-description">Descripción</label>
-                                <textarea id="selector-description" class="form-control form-control-sm" rows="1" placeholder="Descripción de la imagen"></textarea>
+                                <textarea id="selector-description" class="form-control form-control-sm" rows="1" placeholder="Breve descripción de la imagen"></textarea>
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
-                                <span class="text-muted small">Formato: Título | Descripción</span>
+                                <span class="text-muted selector-format-hint">Formato: Título | Descripción</span>
                             </div>
                         </div>
                         <hr class="my-3">
@@ -313,19 +313,24 @@
                     <div id="selector-existing-images" class="selector-thumb-grid mb-3">
                         <!-- Se puebla dinámicamente con JS -->
                     </div>
-                    <div id="selector-empty-state" class="d-none text-center text-muted py-4">
-                        <i class="fas fa-folder-open fa-2x mb-2"></i>
-                        <p class="mb-0">No hay imágenes subidas aún</p>
+                    <div id="selector-empty-state" class="d-none text-center text-muted py-5 selector-empty-state">
+                        <div class="selector-empty-icon-wrapper mb-3">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1">No hay imágenes subidas</h6>
+                        <p class="mb-0 small">Sube una imagen desde tu PC o arrastra archivos al editor.</p>
                     </div>
 
                     <!-- Botón cargar desde PC -->
-                    <button type="button" id="selector-upload-btn" class="btn btn-outline-primary btn-sm w-100">
-                        <i class="fas fa-upload me-1"></i> Cargar nueva imagen desde PC
-                    </button>
+                    <div class="selector-upload-wrapper">
+                        <button type="button" id="selector-upload-btn" class="btn selector-upload-btn">
+                            <i class="fas fa-upload me-2"></i> Subir imagen desde PC
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel-grad" data-dismiss="modal">Cancelar</button>
-                    <button type="button" id="selector-select-btn" class="btn btn-primary" disabled>
+                <div class="modal-footer selector-modal-footer">
+                    <button type="button" class="btn btn-cancel-grad btn-sm selector-btn-cancel" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="selector-select-btn" class="btn btn-primary btn-sm selector-btn-select" disabled>
                         <i class="fas fa-check me-1"></i> Seleccionar
                     </button>
                 </div>

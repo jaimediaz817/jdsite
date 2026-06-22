@@ -707,7 +707,7 @@ function createImageWidget(lineNumber, filename) {
     // Generar ID único para este widget
     const widgetId = 'img-widget-' + (++widgetIdCounter);
     const widget = document.createElement('span');
-    widget.className = 'img-line-widget';
+    widget.className = 'img-line-widget mtp-branded';
     widget.id = widgetId;
     widget.dataset.line = lineNumber;
     widget.dataset.filename = filename;

@@ -721,8 +721,9 @@ function createImageWidget(lineNumber, filename) {
         '  <i class="fas fa-eye-slash block-icon"></i>',
         '  <span class="block-text">Bloquear en artículo</span>',
         '</button>',
-        '<button type="button" class="img-line-dropdown-item" data-action="cover">',
-        '  <i class="fas fa-star"></i> Marcar como portada',
+        '<button type="button" class="img-line-dropdown-item cover-dropdown-item" data-action="cover">',
+        '  <i class="fas fa-star cover-icon"></i>',
+        '  <span class="cover-text">Marcar como portada</span>',
         '</button>',
         '<div class="img-line-dropdown-divider"></div>',
         '<button type="button" class="img-line-dropdown-item" data-action="delete">',
@@ -742,6 +743,8 @@ function createImageWidget(lineNumber, filename) {
         if (isOpen) {
             // Actualizar el texto del botón de bloqueo según el estado actual del archivo
             updateBlockButtonState(filename);
+            // Actualizar el texto del botón de portada según el estado actual
+            updateCoverButtonState(filename);
             
             // Mover a body para escapar de stacking contexts (CodeMirror, widget padre)
             if (dropdown.parentElement !== document.body) {
@@ -847,6 +850,11 @@ function createImageWidget(lineNumber, filename) {
                 updateBlockButtonState(filename);
             } else if (action === 'cover') {
                 setAsCover(filename);
+                // Guardar automáticamente después de marcar como portada
+                setTimeout(function() {
+                    var saveBtn = document.getElementById('btn-save');
+                    if (saveBtn) saveBtn.click();
+                }, 300);
             }
             
             dropdown.classList.remove('is-open');
@@ -898,6 +906,51 @@ function updateBlockButtonState(filename) {
             }
             if (text) {
                 text.textContent = 'Bloquear en artículo';
+            }
+        }
+    });
+}
+
+/**
+ * Actualiza el texto y icono del botón de portada según el estado actual del archivo.
+ * @param {string} filename - Nombre del archivo
+ */
+function updateCoverButtonState(filename) {
+    if (!filename) return;
+    
+    // Buscar el archivo en el array para ver si es portada
+    const file = uploadedFiles.find(f => f.filename === filename);
+    const isCover = file ? file.is_cover : false;
+    
+    // Buscar todos los botones de portada en los dropdowns
+    const coverButtons = document.querySelectorAll('.cover-dropdown-item[data-action="cover"]');
+    coverButtons.forEach(function(button) {
+        // Verificar si este botón pertenece al widget del archivo actual
+        const widget = button.closest('.img-line-widget');
+        if (!widget) return;
+        
+        const widgetFilename = widget.dataset.filename;
+        if (widgetFilename !== filename) return;
+        
+        // Actualizar icono y texto
+        const icon = button.querySelector('.cover-icon');
+        const text = button.querySelector('.cover-text');
+        
+        if (isCover) {
+            // Es la portada → mostrar "Quitar como portada" con icono sólido
+            if (icon) {
+                icon.className = 'fas fa-star cover-icon';
+            }
+            if (text) {
+                text.textContent = 'Quitar como imagen de portada';
+            }
+        } else {
+            // No es portada → mostrar "Marcar como portada" con icono vacío
+            if (icon) {
+                icon.className = 'far fa-star cover-icon';
+            }
+            if (text) {
+                text.textContent = 'Marcar como portada';
             }
         }
     });

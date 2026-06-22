@@ -811,10 +811,13 @@
 
 .section-sub-title {
     background-color: white;
-    width: 100%;
+    width: auto;
+    padding: 2px 14px;
     text-align: center;
-    margin: auto;
+    margin: 0;
     border-radius: 10px;
+    display: inline-flex;
+    align-items: center;  
 }
 
 .section-title::after {
@@ -1762,11 +1765,23 @@ span.author-name {
     mediaquery: 2 columnas en tablets (hasta 991px) 
      Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
 */
+/* 
+    mediaquery: 2 columnas en tablets (hasta 991px) 
+     Con el nuevo enfoque de CSS Grid usando auto-fit y minmax, estas media queries explícitas para el número de columnas ya no son necesarias, ya que el diseño se adapta automáticamente al ancho disponible. Sin embargo, si deseas mantener un control más estricto sobre el número de columnas en ciertos puntos de quiebre, puedes conservar estas media queries. De lo contrario, se pueden eliminar para evitar conflictos con el comportamiento automático del grid.
+*/
 /* 2 columnas en tablets (hasta 991px) */
 @media (max-width: 991px) {
     .blog-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* 2 columnas en tablets (hasta 991px) */
+@media (max-width: 768px) {
+    /* 2 columnas entre 568px y 768px */
+    /* .blog-grid {        
+        grid-template-columns: repeat(2, 1fr);
+    } */
 }
 
 /* 2 columnas en tablets pequeñas/móviles grandes (568px a 767px) */

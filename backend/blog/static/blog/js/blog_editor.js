@@ -2126,16 +2126,18 @@ function initMtpToolbar() {
     const toolbar = document.getElementById('mtpToolbar');
     if (!toolbar) return;
 
-    // HU-20-C-V1: Marcar botón imagen como migrado y bloquear los demás
+    // HU-20-C-V1: Marcar botón imagen como migrado
     const imageBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"]');
     imageBtns.forEach(function(btn) {
         btn.classList.add('mtp-migrated');
     });
-    // Bloquear visualmente los botones NO migrados
+    // Bloquear visualmente los botones NO migrados (excluyendo image y minimize)
     const allBtns = toolbar.querySelectorAll('.mtp-btn');
     const MTP_PRODUCTION = window.MTP_PRODUCTION !== undefined ? window.MTP_PRODUCTION : true;
     allBtns.forEach(function(btn) {
-        if (btn.dataset.mtp !== 'image') {
+        const action = btn.dataset.mtp;
+        // No bloquear 'image' (migrado) ni 'minimize' (siempre funcional)
+        if (action !== 'image' && action !== 'minimize') {
             if (MTP_PRODUCTION) {
                 btn.classList.add('mtp-disabled');
             }

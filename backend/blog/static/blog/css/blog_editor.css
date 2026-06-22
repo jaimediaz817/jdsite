@@ -1492,7 +1492,7 @@ fieldset[disabled] input {
    que contiene tanto <pre class="CodeMirror-line"> como el widget */
 .CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) {
     position: relative !important;
-    display: block !important;
+    display: inline-flex;
     padding: 8px 40px 8px 14px !important;
     margin: 6px 0 !important;
     border: 1.5px solid rgba(13, 110, 253, 0.18) !important;
@@ -1502,14 +1502,19 @@ fieldset[disabled] input {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     animation: mtpWidgetFadeIn 0.35s ease !important;
     min-height: 36px !important;
+    width: auto;    
+
+
 }
 
-/* El .CodeMirror-linewidget hijo se limpia de padding extra */
+/* El .CodeMirror-linewidget hijo — sin estilos extra, ocupa su flujo natural */
 .CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) > .CodeMirror-linewidget {
     padding: 0 !important;
     border: none !important;
     background: none !important;
     box-shadow: none !important;
+    display: inline-block !important;
+    width: auto !important;
 }
 
 /* Badge "MTP" — sello en la esquina superior derecha del contenedor PADRE */

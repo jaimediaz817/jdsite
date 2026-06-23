@@ -173,4 +173,7 @@ function insertImageInEditor(filename, title, description, mode) {
     console.log('[blog_editor][image-selector] insertImageInEditor finalizado', { filename, mode });
 }
 
-export { detectImageContext, openImageSelectorModal, insertImageInEditor };
+// Exponer funciones globalmente para que index.js y otros scripts puedan usarlas sin módulos ES.
+window.detectImageContext = detectImageContext;
+window.openImageSelectorModal = openImageSelectorModal;
+window.insertImageInEditor = insertImageInEditor;

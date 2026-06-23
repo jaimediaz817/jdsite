@@ -41,15 +41,15 @@
                     <form id="frontmatter-form">
                         <input type="hidden" id="edit-slug" name="slug" value="">
                         
-                        <div class="mb-3">
-                            <label class="form-label">Título *</label>
-                            <input type="text" id="title" class="form-control" required maxlength="60" placeholder="Título del artículo">
-                        </div>
+                         <div class="mb-3">
+                             <label class="form-label" for="title">Título *</label>
+                             <input type="text" id="title" class="form-control" required maxlength="60" placeholder="Título del artículo">
+                         </div>
                         
-                        <div class="mb-3">
-                            <label class="form-label">Descripción *</label>
-                            <textarea id="description" class="form-control" required maxlength="155" rows="2" placeholder="Breve descripción (SEO)"></textarea>
-                        </div>
+                         <div class="mb-3">
+                             <label class="form-label" for="description">Descripción *</label>
+                             <textarea id="description" class="form-control" required maxlength="155" rows="2" placeholder="Breve descripción (SEO)"></textarea>
+                         </div>
                         
                         <div class="mb-3" id="category-select-wrapper">
                             <label class="form-label" for="category">Categoría *</label>
@@ -73,11 +73,11 @@
                             <div id="newCategoryHelp" class="form-text">Escribe el nombre de la categoría que deseas crear.</div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label class="form-label">Tags (máx 5 - Enter para agregar)</label>
-                            <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
-                            <div id="tags-list" class="tags-list mt-2"></div>
-                        </div>
+                         <div class="mb-3">
+                             <label class="form-label" for="tag-input">Tags (máx 5 - Enter para agregar)</label>
+                             <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
+                             <div id="tags-list" class="tags-list mt-2"></div>
+                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="cover_image">Imagen de portada (seleccionada con la estrella)</label>
@@ -112,9 +112,9 @@
                         
                         <hr>
                         
-                        <div class="mb-3 reading-time-field">
-                            <label class="form-label">Tiempo de lectura (minutos)</label>
-                            <input type="number" id="tiempo_lectura" class="form-control" min="1" value="1">
+                         <div class="mb-3 reading-time-field">
+                             <label class="form-label" for="tiempo_lectura">Tiempo de lectura (minutos)</label>
+                             <input type="number" id="tiempo_lectura" class="form-control" min="1" value="1">
                             <small class="form-text text-muted">
                                 <span id="word-count">0 palabras</span>
                                 → sugerido: <strong><span id="suggested-time">1 min</span></strong>
@@ -125,16 +125,16 @@
                         <fieldset disabled class="mb-3">
                             <legend class="h6">📌 Información automática</legend>
                             <div class="mb-2">
-                                <label class="form-label small">Autor</label>
-                                <input type="text" class="form-control form-control-sm" value="{{ user.get_full_name|default:user.username }}">
+                                 <label class="form-label small" for="author">Autor</label>
+                                 <input type="text" id="author" class="form-control form-control-sm" value="{{ user.get_full_name|default:user.username }}">
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small">Email</label>
-                                <input type="email" class="form-control form-control-sm" value="{{ user.email }}">
+                                 <label class="form-label small" for="email">Email</label>
+                                 <input type="email" id="email" class="form-control form-control-sm" value="{{ user.email }}">
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small">Fecha</label>
-                                <input type="text" class="form-control form-control-sm" value="{% now 'Y-m-d' %}">
+                                 <label class="form-label small" for="date">Fecha</label>
+                                 <input type="text" id="date" class="form-control form-control-sm" value="{% now 'Y-m-d' %}">
                             </div>
                         </fieldset>
                     </form>
@@ -487,6 +487,8 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
     <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <!-- Import the image selector module before the main editor script -->
+    <script src="{% static 'blog/js/blog_editor/image-selector.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
   <script>
     // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)

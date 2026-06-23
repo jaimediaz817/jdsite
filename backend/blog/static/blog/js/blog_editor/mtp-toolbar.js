@@ -1,6 +1,11 @@
 // ======================================================
 // HU-20-D: MTP Toolbar - módulo extraído
 // ======================================================
+// NOTE: Las funciones de selector de imágenes (detectImageContext,
+// openImageSelectorModal, insertImageInEditor) se encuentran en el
+// módulo externo "image-selector.js" y se exponen globalmente vía
+// window. Este archivo asume que dicho módulo ya está cargado antes
+// de usar la acción "image" del toolbar.
 console.log('[blog_editor][mtp-toolbar] modulo cargado');
 
 const MTP_TEMPLATES = {
@@ -169,13 +174,22 @@ function initMtpToolbar() {
     });
 
     const allBtns = toolbar.querySelectorAll('.mtp-btn');
-    const MTP_PRODUCTION = window.MTP_PRODUCTION !== undefined ? window.MTP_PRODUCTION : true;
+    // Respect the global production flag. In development we set window.MTP_PRODUCTION = false
+    // before importing this module, so only the image and minimize buttons stay enabled.
+    // In development (MTP_PRODUCTION = false) we want to disable all buttons except image and minimize.
+    // In production (MTP_PRODUCTION = true) the toolbar should be fully functional.
+    // Desactivar todos los botones excepto "image" y "minimize".
+    // Esto garantiza que en el entorno de desarrollo solo esos dos estén activos.
     allBtns.forEach(function(btn) {
         const action = btn.dataset.mtp;
         if (action !== 'image' && action !== 'minimize') {
-            if (MTP_PRODUCTION) {
-                btn.classList.add('mtp-disabled');
-            }
+            // Añadir clase visual y atributo disabled para impedir interacción
+            btn.classList.add('mtp-disabled');
+            btn.setAttribute('disabled', 'disabled');
+        } else {
+            // Asegurarse de que los botones permitidos no tengan el atributo disabled
+            btn.removeAttribute('disabled');
+            btn.classList.remove('mtp-disabled');
         }
     });
 

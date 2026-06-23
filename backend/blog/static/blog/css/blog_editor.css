@@ -585,6 +585,9 @@ button#btn-save {
 }
 
 .editor-actions {
+    button {
+        font-size: 0.99rem;
+    }
     .editor-btn-cancel {
         border: 2px solid #e56873;
         background: #e56873;

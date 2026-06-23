@@ -1413,52 +1413,15 @@ const pond = FilePond.create(document.getElementById('filepond'), {
         revert: null,
     },
     allowMultiple: true,
-    maxFileSize: '100MB',
-    acceptedFileTypes: [
-        'image/png', 'image/jpeg', 'image/gif', 'image/webp',
-        'video/mp4', 'video/webm', 'video/quicktime'
-    ],
-    labelIdle: 'Arrastra imágenes y videos aquí o haz clic para seleccionar<br><span class="filepond--label-action">(También puedes pegar con Ctrl+V)</span>',
-    instantUpload: true,
 });
-
-// Llamada inicial para pintar los widgets HU-20-B cuando carga el editor
-setTimeout(refreshImageWidgets, 500);
-
-// ======================================================
-// HU-20-C-V1: Event handlers del modal selector
-// ======================================================
-
-// Botón "Seleccionar" del modal
-document.getElementById('selector-select-btn')?.addEventListener('click', function() {
-    if (!window.selectedImageFilename) return;
-    const mode = window.selectedImageMode || 'normal';
-    const title = document.getElementById('selector-title')?.value || '';
-    const desc = document.getElementById('selector-description')?.value || '';
-    $('#imageSelectorModal').modal('hide');
-    insertImageInEditor(window.selectedImageFilename, title, desc, mode);
-});
-
-// Botón "Cargar desde PC" del modal: activa el input FilePond
-document.getElementById('selector-upload-btn')?.addEventListener('click', function() {
-    // Activar el input file de FilePond
-    const filepondEl = document.querySelector('.filepond--browser');
-    if (filepondEl) {
-        filepondEl.click();
-    } else {
-        // Fallback: intentar con el input original oculto
-        const originalInput = document.getElementById('filepond');
-        if (originalInput) originalInput.click();
-    }
-});
-
-// Limpiar estado al cerrar modal (Cancelar o backdrop)
-$('#imageSelectorModal').on('hidden.bs.modal', function() {
-    window.imageSelectorOpen = false;
-    window.selectedImageFilename = null;
-    // No limpiar _imageSelectorCursor aquí porque si se cerró sin seleccionar,
-    // el cursor debe seguir donde estaba
-});
+// HU-20-C-V1: Selector de imágenes existente ha sido extraído a "image-selector.js".
+// Las funciones detectImageContext, openImageSelectorModal, insertImageInEditor y los
+// manejadores de eventos del modal ahora se encuentran en ese módulo y se exponen
+// globalmente. Este bloque se ha eliminado para evitar duplicación.
+window.imageSelectorOpen = false;
+window.selectedImageFilename = null;
+// No limpiar _imageSelectorCursor aquí porque si se cerró sin seleccionar,
+// el cursor debe seguir donde estaba
 
 // ======================================================
 // 5. collectFormData + auto-save + restore
@@ -2371,16 +2334,28 @@ try {
     if (typeof window !== 'undefined') {
       const init = async () => {
         try {
-          const mod = await import('{% static "blog/js/blog_editor/mtp-toolbar.js" %}');
+      // Importar el módulo MTP Toolbar usando ruta relativa, ya que este archivo
+      // se sirve como recurso estático y no pasa por el motor de plantillas de Django.
+      // Forzar modo de desarrollo: desactivar la bandera de producción antes de cargar.
+      window.MTP_PRODUCTION = false;
+      const mod = await import('./mtp-toolbar.js');
+          // Exponer funciones y variables globales
           window.MTP_TEMPLATES = mod.MTP_TEMPLATES;
           window.insertMtpTemplate = mod.insertMtpTemplate;
           window.openWidgetHelpModal = mod.openWidgetHelpModal;
           window.initMtpToolbar = mod.initMtpToolbar;
-          
-          // Preservar variables globales legacy
+          // Preservar variables legacy
           MTP_TEMPLATES = mod.MTP_TEMPLATES;
           insertMtpTemplate = mod.insertMtpTemplate;
           openWidgetHelpModal = mod.openWidgetHelpModal;
+          // Inicializar la barra de herramientas MTP después de cargar el módulo
+          if (typeof window.initMtpToolbar === 'function') {
+              try {
+                  window.initMtpToolbar();
+              } catch (e) {
+                  console.warn('[blog_editor][index] Error al inicializar MTP Toolbar:', e);
+              }
+          }
         } catch (e) {
           console.warn('[blog_editor][index] No se pudo cargar mtp-toolbar.js:', e);
         }
@@ -2390,5 +2365,12 @@ try {
 } catch (e) {
   // Si la importación dinámica no es soportada, el código legacy queda en index.js como fallback
 }
+
+
+
+
+
+
+
 
 

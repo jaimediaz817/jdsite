@@ -41,6 +41,18 @@ Incorporar en la barra de herramientas MTP (ubicada en el *aside* derecho del ed
 13. Además del modal, el editor debe permitir **arrastrar y soltar** archivos de video desde el explorador del sistema, de forma idéntica a la funcionalidad existente para imágenes. Al soltar el archivo, se sube automáticamente y se inserta el bloque `<video src="{ruta_local}" controls></video>` con los estilos y sello MTP.
 14. Al pasar el cursor sobre el botón **Video** (o sobre el área de arrastre) el puntero debe cambiar a un cursor de "arrastrar" (por ejemplo `cursor: move;` o `cursor: grab;`) para indicar la interacción de arrastre.
 
+### 🎨 Detalles de UI/UX adicionales
+
+* **Consistencia del modal**: el modal que se abre al pulsar el botón de video debe seguir el mismo estilo que el modal con id `imageSelectorModal`. Esto incluye:
+  * Uso de la misma estructura HTML (clase `modal`, `modal-dialog`, `modal-content`).
+  * Cabecera con título y botón de cierre usando la clase `.close` (Bootstrap 4).
+  * Pie con botones de acción (`Cancelar`, `Insertar`).
+  * Estilos de fondo y bordes idénticos al modal de imágenes.
+* **Borde del video insertado**: el bloque `<video>` o el mosaico de YouTube debe quedar rodeado por un borde de `1px solid #ced4da` (color gris Bootstrap), con `border-radius: 4px` y conservar el sello MTP (atributo o clase que lo identifique).
+* **Dropdown de opciones**: el dropdown asociado al botón de video debe incluir la opción "Portada" pero **debe estar deshabilitada** (atributo `disabled`) ya que un video no puede ser portada.
+* **Botón de información**: junto al botón de video debe haber un ícono de información (`fa-info-circle`). Al hacer clic muestra un tooltip o modal breve con instrucciones de uso (p.ej., "Solo se pueden insertar videos locales o de YouTube. El video no puede ser portada.").
+* **Arrastrar y soltar**: el área del botón debe aceptar arrastre de archivos de video, mostrando una indicación visual (borde punteado) mientras se arrastra. Al soltar, se ejecuta la misma lógica de subida que para imágenes.
+
 ---
 
 ## 📐 Diseño
@@ -97,13 +109,21 @@ El modal permite al usuario elegir entre subir un archivo local o pegar la URL d
 
 ### Pasos de implementación granular (máximo 20 min cada uno)
 
-1. **Crear `video-widget.js`** con la función de inserción.
-2. **Añadir botón al HTML** de la barra MTP (en `blog_editor.html`).
-3. **Modificar `mtp-toolbar.js`** para que, al detectar `data-mtp="video"`, invoque la función del paso 1.
-4. **Estilizar botón** en `blog_editor.css`.
-6. **Implementar drag‑and‑drop** para videos en `video-widget.js` (reutilizando la lógica de `image-selector.js`).
-7. **Añadir estilo de cursor** (`cursor: move;` o `cursor: grab;`) al botón/área de arrastre en `blog_editor.css`.
-5. **Pruebas manuales**: abrir el editor, pulsar el botón y verificar que la plantilla se inserta y se renderiza.
+1. **Crear `video-widget.js`** con la función de inserción. ✅
+2. **Añadir botón al HTML** de la barra MTP (en `blog_editor.html`). ✅
+3. **Modificar `video-widget.js`** para alinear el HTML del widget insertado al patrón MTP de imágenes:  
+   - Usar `<span class="img-line-widget mtp-branded video-widget-mtp">` como envoltorio, tanto para YouTube como para video local. ✅
+   - Reemplazar `.video-widget-menu` / `.video-widget-dropdown` por `.img-line-menu-btn` / `.img-line-dropdown`. ✅
+   - Actualizar handlers para usar el nuevo markup. ✅
+4. **Estilizar botón** en `blog_editor.css`. ✅
+5. **Implementar drag‑and‑drop** para videos en `video-widget.js`. ✅
+6. **Añadir estilo de cursor** (`cursor: grab;` / `grabbing`) al widget de video en `blog_editor.css`. ✅
+7. **Pruebas manuales**: abrir el editor, pulsar el botón y verificar que:  
+   - El video insertado aparece con borde azul MTP y sello “MTP”.  
+   - El botón de 3 puntos abre dropdown con opciones (portada deshabilitada).  
+   - El cursor cambia a agarre sobre el widget.  
+   - El icono info abre el modal de ayuda.  
+   - Drag & drop funciona.  
 
 ---
 
@@ -119,12 +139,12 @@ El modal permite al usuario elegir entre subir un archivo local o pegar la URL d
 
 ## 📦 Fases de Implementación
 
-| Fase | Descripción                                                     |
-| ---- | --------------------------------------------------------------- |
-| 1    | Creación del widget JavaScript (`video-widget.js`).             |
-| 2    | Integración del botón en la barra MTP y conexión con el widget. |
-| 3    | Estilos y ajustes visuales.                                     |
-| 4    | Pruebas y validación.                                           |
+| Fase | Descripción                                                     | Estado |
+| ---- | --------------------------------------------------------------- | ------ |
+| 1    | Creación del widget JavaScript (`video-widget.js`).             | ✅      |
+| 2    | Integración del botón en la barra MTP y conexión con el widget. | ✅      |
+| 3    | Estilos y ajustes visuales, alineación MTP unificado.           | ✅      |
+| 4    | Pruebas y validación.                                           | ⏳      |
 
 ---
 

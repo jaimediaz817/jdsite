@@ -173,7 +173,197 @@ function insertImageInEditor(filename, title, description, mode) {
     console.log('[blog_editor][image-selector] insertImageInEditor finalizado', { filename, mode });
 }
 
-// Exponer funciones globalmente para que index.js y otros scripts puedan usarlas sin módulos ES.
+// ======================================================
+// Handler para el botón de subida desde PC en el modal
+// ======================================================
+function initUploadButton() {
+    console.log('[blog_editor][image-selector] initUploadButton iniciado');
+    const uploadBtn = document.getElementById('selector-upload-btn');
+    if (!uploadBtn) return;
+    
+    uploadBtn.removeEventListener('click', handleUploadClick);
+    uploadBtn.addEventListener('click', handleUploadClick);
+    console.log('[blog_editor][image-selector] initUploadButton finalizado');
+}
+
+function handleUploadClick() {
+    console.log('[blog_editor][image-selector] click en selector-upload-btn');
+    
+    let fileInput = document.getElementById('selector-file-input');
+    if (!fileInput) {
+        fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.id = 'selector-file-input';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+        
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                uploadFileToServer(this.files[0]);
+            }
+        });
+    }
+    
+    fileInput.click();
+}
+
+async function uploadFileToServer(file) {
+    console.log('[blog_editor][image-selector] uploadFileToServer iniciado', file.name);
+    
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona un archivo de imagen válido');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const uploadBtn = document.getElementById('selector-upload-btn');
+    if (uploadBtn) {
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subiendo...';
+    }
+    
+    try {
+        const response = await fetch('/blog/api/upload-file/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('[blog_editor][image-selector] Archivo subido exitosamente:', data);
+        
+        uploadedFiles.push(data);
+        renderUploadedFile(data);
+        
+        if (window.imageSelectorOpen) {
+            const grid = document.getElementById('selector-existing-images');
+            const emptyState = document.getElementById('selector-empty-state');
+            
+            if (grid) {
+                if (emptyState) emptyState.classList.add('d-none');
+                
+                const item = document.createElement('div');
+                item.className = 'selector-thumb-item';
+                item.dataset.filename = data.filename;
+                
+                const img = document.createElement('img');
+                img.className = 'selector-thumb';
+                img.src = data.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${data.filename}`;
+                img.alt = data.filename;
+                img.loading = 'lazy';
+                
+                img.onerror = function() {
+                    this.src = `/static/blog/images/no-image.png`;
+                };
+                
+                const name = document.createElement('div');
+                name.className = 'uploaded-filename';
+                name.textContent = data.filename;
+                name.style.fontSize = '0.65rem';
+                name.style.padding = '4px';
+                
+                item.appendChild(img);
+                item.appendChild(name);
+                
+                item.addEventListener('click', function() {
+                    grid.querySelectorAll('.selector-thumb-item').forEach(el => {
+                        el.classList.remove('is-selected');
+                    });
+                    this.classList.add('is-selected');
+                    
+                    window.selectedImageFilename = data.filename;
+                    const selectBtn = document.getElementById('selector-select-btn');
+                    if (selectBtn) selectBtn.disabled = false;
+                });
+                
+                grid.appendChild(item);
+            }
+            
+            window.selectedImageFilename = data.filename;
+            const selectBtn = document.getElementById('selector-select-btn');
+            if (selectBtn) selectBtn.disabled = false;
+            
+            if (grid) {
+                const items = grid.querySelectorAll('.selector-thumb-item');
+                items.forEach(item => {
+                    if (item.dataset.filename === data.filename) {
+                        item.classList.add('is-selected');
+                    } else {
+                        item.classList.remove('is-selected');
+                    }
+                });
+            }
+        }
+        
+    } catch (error) {
+        console.error('[blog_editor][image-selector] Error en upload:', error);
+        alert('Error al subir imagen: ' + error.message);
+    } finally {
+        if (uploadBtn) {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i> Subir imagen desde PC';
+        }
+        
+        const fileInput = document.getElementById('selector-file-input');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    }
+}
+
+// ======================================================
+// Registrar click handler del botón "Seleccionar" del modal
+// ======================================================
+function initImageSelector() {
+    console.log('[blog_editor][image-selector] initImageSelector iniciado');
+    const selectBtn = document.getElementById('selector-select-btn');
+    if (selectBtn) {
+        selectBtn.removeEventListener('click', handleSelectClick);
+        selectBtn.addEventListener('click', handleSelectClick);
+    }
+    console.log('[blog_editor][image-selector] initImageSelector finalizado');
+}
+
+function handleSelectClick() {
+    console.log('[blog_editor][image-selector] click en selector-select-btn');
+    const filename = window.selectedImageFilename;
+    if (!filename) return;
+
+    const title = document.getElementById('selector-title')?.value || '';
+    const description = document.getElementById('selector-description')?.value || '';
+    const mode = window.selectedImageMode || 'normal';
+
+    insertImageInEditor(filename, title, description, mode);
+    $('#imageSelectorModal').modal('hide');
+}
+
+// ======================================================
+// Inicializar cuando el DOM esté listo
+// ======================================================
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        initImageSelector();
+        initUploadButton();
+    });
+} else {
+    initImageSelector();
+    initUploadButton();
+}
+
+// Exponer funciones globalmente
 window.detectImageContext = detectImageContext;
 window.openImageSelectorModal = openImageSelectorModal;
 window.insertImageInEditor = insertImageInEditor;
+window.initImageSelector = initImageSelector;
+window.initUploadButton = initUploadButton;

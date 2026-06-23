@@ -135,6 +135,9 @@ class BlogProcessor:
             processed_html, blog_dir, blog_static_dir, slug
         )
 
+        # [FIX] Convertir referencias [youtube:ID] en mosaico HTML
+        processed_html = self.process_youtube_embeds(processed_html)
+
         # Auto-create carousels for consecutive images
         processed_html = self.auto_create_carousels(processed_html)
 
@@ -168,7 +171,7 @@ class BlogProcessor:
         return slug
 
     # ---------------------------------------------------------------------
-    # Helper methods (mostly copied from the original command)
+    # Helper methods (mostly copied from the original file)
     # ---------------------------------------------------------------------
     def extract_title(self, content_md: str, blog_dir: Path) -> Tuple[str, str]:
         """Extract the title from markdown or fallback to the folder name."""
@@ -441,6 +444,33 @@ class BlogProcessor:
 
         return str(soup) if modified else html_content
 
+    def process_youtube_embeds(self, html_content: str) -> str:
+        """Convert [youtube:ID] references into YouTube mosaic HTML.
+
+        After markdown conversion, [youtube:ID] may appear inside <p> tags
+        (or as plain text in the HTML). This method finds those references
+        and replaces them with the interactive mosaic thumbnail that links
+        to the video on YouTube.
+        """
+        yt_pattern = re.compile(r"\[youtube:([A-Za-z0-9_-]{11})\]")
+        html_content = yt_pattern.sub(
+            lambda m: self._build_youtube_mosaic(m.group(1)), html_content
+        )
+        return html_content
+
+    def _build_youtube_mosaic(self, video_id: str) -> str:
+        """Return the mosaic HTML for a YouTube video ID."""
+        return (
+            '<div class="youtube-mosaic compact video-widget" '
+            'data-video-id="{}" '
+            "onclick=\"window.open('https://www.youtube.com/watch?v={}', '_blank')\">"
+            '<img src="https://img.youtube.com/vi/{}/0.jpg" '
+            'alt="Miniatura del video" loading="lazy" decoding="async" />'
+            '<div class="play-overlay"><i class="fas fa-play play-icon"></i></div>'
+            '<div class="caption">Ver video en YouTube</div>'
+            "</div>"
+        ).format(video_id, video_id, video_id)
+
     def _resolve_video_src(self, video_src, blog_dir, blog_static_dir, slug):
         """Resolve video source path to the static location."""
         if video_src.startswith(("http://", "https://", "/static/")):
@@ -524,11 +554,11 @@ class BlogProcessor:
 
     # The following methods delegate to the original command's implementations.
     def _remove_no_import_blocks(self, content_md: str) -> str:
-        """HU-20.A: Eliminar bloques ``:::no-import:::`` y sus cierres.
+        """HU-20.A: Eliminar bloques ``:::no-import:::` y sus cierres.
 
         En el editor se pueden marcar secciones como *no importables* usando
-        ``:::no-import:::`` como apertura y ``:::final-no-import:::`` o
-        ``:::final-niimport:::`` (error tipográfico histórico) como cierre.
+        ``:::no-import:::` como apertura y ``:::final-no-import:::` o
+        ``:::final-niimport:::` (error tipográfico histórico) como cierre.
         Esta función elimina todo el bloque, incluyendo ambas marcas, y también
         limpia cualquier marca suelta que pudiera quedar si sólo se había
         eliminado el cierre.

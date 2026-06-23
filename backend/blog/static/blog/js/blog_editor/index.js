@@ -413,7 +413,7 @@ function getCoverFilename() {
 
 function removeMarkdownLineForFile(filename) {
     if (!easyMDE || !filename) return;
-    const safe = filename.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+    const safe = filename.replace(/[.*+?^${}()[\]\\|]/g, '\\$&');
     // Acepta rutas con o sin "./" y también dentro de bloques ::slides
     const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\((\\.?\\/?)${safe}\\)\\s*\\n?`, 'gm');
     const videoRegex = new RegExp(`<video[^>]*src=["']\\.?\\/?${safe}["'][^>]*></video>\\s*\\n?`, 'g');
@@ -644,6 +644,8 @@ const easyMDE = new EasyMDE({
     placeholder: '# Escribe tu artículo aquí...\n\nPega imágenes y videos con Ctrl+V o arrástralos.'
 });
 
+window.easyMDE = easyMDE;
+
 // ======================================================
 // 1b. Asegurar que cada imagen/video insertado (paste/drag) quede en su propia línea
 // ======================================================
@@ -765,6 +767,157 @@ let imageWidgets = {};
 let imageWidgetCleanup = null;
 // Contador para IDs únicos de widgets
 let widgetIdCounter = 0;
+
+/**
+ * Crea el DOM del widget MTP para una referencia de video de YouTube [youtube:ID].
+ * Muestra un mosaico con miniatura y play button. Abre el video en nueva pestaña al hacer clic.
+ * @param {number} lineNumber
+ * @param {string} videoId
+ * @returns {{ widgetElement: HTMLElement, widgetId: string }}
+ */
+function createYouTubeWidget(lineNumber, videoId) {
+    const widgetId = 'img-widget-' + (++widgetIdCounter);
+    const widget = document.createElement('span');
+    widget.className = 'img-line-widget mtp-branded video-widget-mtp';
+    widget.id = widgetId;
+    widget.dataset.line = lineNumber;
+    widget.dataset.videoId = videoId;
+
+    // Contenedor principal del widget (layout horizontal: thumbnail + controles)
+    const body = document.createElement('div');
+    body.className = 'youtube-widget-body';
+
+    // Miniaturilla con overlay de play
+    const mosaic = document.createElement('div');
+    mosaic.className = 'youtube-mosaic';
+    mosaic.style.cursor = 'pointer';
+    mosaic.setAttribute('role', 'button');
+    mosaic.setAttribute('aria-label', 'Abrir video en YouTube');
+    mosaic.setAttribute('title', 'Abrir video en YouTube');
+
+    const img = document.createElement('img');
+    img.src = 'https://img.youtube.com/vi/' + videoId + '/0.jpg';
+    img.alt = 'Miniatura del video';
+    img.loading = 'lazy';
+    img.style.cssText = 'width:160px; height:90px; object-fit:cover; border-radius:4px; display:block;';
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.25); border-radius:4px;';
+    overlay.innerHTML = '<i class="fas fa-play" style="font-size:28px; color:#fff; opacity:0.9;"></i>';
+
+    mosaic.appendChild(img);
+    mosaic.appendChild(overlay);
+
+    mosaic.addEventListener('click', function() {
+        const url = 'https://www.youtube.com/watch?v=' + videoId;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    });
+
+    body.appendChild(mosaic);
+
+    // Contenedor de controles a la derecha (siempre visibles)
+    const controls = document.createElement('div');
+    controls.className = 'youtube-widget-controls';
+
+    // Grip
+    const gripBtn = document.createElement('button');
+    gripBtn.type = 'button';
+    gripBtn.className = 'img-line-grip-btn';
+    gripBtn.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+    gripBtn.setAttribute('aria-label', 'Arrastrar video');
+    gripBtn.setAttribute('title', 'Arrastrar para mover');
+
+    // Menú
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'img-line-menu-btn';
+    btn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+    btn.setAttribute('aria-label', 'Opciones de video');
+    btn.setAttribute('title', 'Opciones');
+
+    // Ayuda
+    const helpBtn = document.createElement('button');
+    helpBtn.type = 'button';
+    helpBtn.className = 'img-line-help-btn';
+    helpBtn.innerHTML = '<i class="fas fa-info-circle"></i>';
+    helpBtn.setAttribute('aria-label', 'Ayuda del widget MTP');
+    helpBtn.setAttribute('title', '¿Cómo funciona este widget MTP?');
+    helpBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openWidgetHelpModal === 'function') openWidgetHelpModal('youtube-widget');
+    });
+
+    controls.appendChild(gripBtn);
+    controls.appendChild(btn);
+    controls.appendChild(helpBtn);
+    body.appendChild(controls);
+
+    // Dropdown (sin portada ni bloqueo, solo eliminar)
+    const dropdown = document.createElement('div');
+    dropdown.className = 'img-line-dropdown';
+    dropdown.innerHTML = [
+        '<div class="img-line-dropdown-divider"></div>',
+        '<button type="button" class="img-line-dropdown-item" data-action="delete">',
+        '  <i class="fas fa-trash-alt"></i> Eliminar video',
+        '</button>',
+    ].join('\n');
+
+    widget.appendChild(body);
+    widget.appendChild(dropdown);
+
+    // Toggle del menú (mismo patrón MTP)
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var isOpen = dropdown.classList.toggle('is-open');
+        btn.classList.toggle('is-open', isOpen);
+        if (isOpen) {
+            if (dropdown.parentElement !== document.body) document.body.appendChild(dropdown);
+            var btnRect = btn.getBoundingClientRect();
+            dropdown.style.top = (btnRect.bottom + 4) + 'px';
+            dropdown.style.bottom = 'auto';
+            dropdown.style.left = btnRect.left + 'px';
+            dropdown.style.right = 'auto';
+            dropdown.style.position = 'fixed';
+            dropdown.style.zIndex = '99999';
+        } else {
+            if (dropdown.parentElement === document.body && widget.contains(dropdown) === false) widget.appendChild(dropdown);
+            dropdown.style.position = ''; dropdown.style.top = ''; dropdown.style.bottom = ''; dropdown.style.left = ''; dropdown.style.right = ''; dropdown.style.zIndex = '';
+        }
+        document.querySelectorAll('.img-line-dropdown.is-open').forEach(function(d) {
+            if (d !== dropdown) { d.classList.remove('is-open'); var parentBtn = d.parentElement ? d.parentElement.querySelector('.img-line-menu-btn') : null; if (parentBtn) parentBtn.classList.remove('is-open'); if (d.parentElement === document.body) d.style.position = ''; }
+        });
+    });
+
+    gripBtn.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        startImageDrag(lineNumber, gripBtn);
+    });
+
+    // Acciones del dropdown (solo delete para YouTube)
+    dropdown.querySelectorAll('.img-line-dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var action = this.dataset.action;
+            if (action === 'delete') {
+                // Solo eliminar la línea [youtube:ID] del documento (NO borra el archivo físico)
+                const cm = window.easyMDE ? window.easyMDE.codemirror : null;
+                if (!cm) return;
+                const doc = cm.getDoc();
+                const content = doc.getValue();
+                const ytRegex = new RegExp('^\\[youtube:' + videoId + '\\]\\s*\\n?', 'gm');
+                const cleaned = content.replace(ytRegex, '').replace(/\n{3,}/g, '\n\n');
+                doc.setValue(cleaned);
+                // Limpiar widget del CodeMirror
+                cleanupImageWidget(lineNumber);
+                cm.focus();
+            }
+            dropdown.classList.remove('is-open');
+            btn.classList.remove('is-open');
+        });
+    });
+
+    return { widgetElement: widget, widgetId: widgetId };
+}
 
 /**
  * Crea el DOM del widget para una línea de imagen/video.
@@ -951,19 +1104,19 @@ function createImageWidget(lineNumber, filename) {
             console.log('[HU-20-B] Acción:', action, 'para', filename);
             
             if (action === 'delete') {
-                // Eliminar línea markdown del editor
+                // Solo eliminar la línea markdown del editor (NO borra el archivo físico ni lo deslista)
+                // Cancelar timer de refresh pendiente para evitar recrear el widget que estamos eliminando
+                if (window._imgWidgetTimer) {
+                    clearTimeout(window._imgWidgetTimer);
+                    window._imgWidgetTimer = null;
+                }
                 deleteImageLineFromEditor(lineNumber, filename);
+                // Refrescar widgets después de eliminar la línea para que el resto se reorganicen
+                setTimeout(refreshImageWidgets, 50);
                 // Limpiar widget del CodeMirror
                 cleanupImageWidget(lineNumber);
-                // Eliminar vista previa del grid de archivos subidos
-                removeUploadedFilePreview(filename);
-                // Eliminar del array local
-                var idx = uploadedFiles.findIndex(function(f) { return f.filename === filename; });
-                if (idx !== -1) uploadedFiles.splice(idx, 1);
-                // Eliminar archivo físico del servidor
-                deleteFileOnServer(filename);
                 // Mostrar feedback sutil
-                showStatusMessage('Archivo eliminado: ' + filename, 'info');
+                showStatusMessage('Referencia eliminada del editor: ' + filename, 'info');
             } else if (action === 'block') {
                 toggleUploadedFile(filename);
                 // Actualizar el texto del botón después de cambiar el estado
@@ -1080,21 +1233,50 @@ function updateCoverButtonState(filename) {
  * Elimina la línea de imagen/video del editor en la posición indicada.
  * @param {number} lineNumber - Número de línea en CodeMirror
  * @param {string} filename - Nombre del archivo a eliminar
+ *
+ * NOTA: La lógica de eliminación de markdown está unificada en
+ * removeMarkdownLineForFile(filename) para evitar duplicación.
+ * Si esta función falla, revertir a la implementación original comentada abajo.
  */
 function deleteImageLineFromEditor(lineNumber, filename) {
-    if (!easyMDE || !filename) return;
+    if (!easyMDE || typeof lineNumber !== 'number') return;
     const doc = easyMDE.codemirror.getDoc();
-    const safe = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const imgRegex = new RegExp(`^!\\[[^\\]]*\\]\\((\\.?\\/?)${safe}\\)\\s*\\n?`, 'gm');
-    const videoRegex = new RegExp(`<video[^>]*src=["']\\.?\\/?${safe}["'][^>]*></video>\\s*\\n?`, 'g');
-    let current = easyMDE.value();
-    const updated = current
-        .replace(imgRegex, '')
-        .replace(videoRegex, '')
-        .replace(/\n{3,}/g, '\n\n');
-    if (updated !== current) {
-        const cleaned = updated.replace(/^\s*:::final-no-import:::\s*$/gm, '');
-        easyMDE.value(cleaned);
+    
+    // Buscar la línea que realmente contiene este filename / referencia
+    function isTargetLine(text) {
+        const t = text.trim();
+        return t.includes(filename) && (t.startsWith('![') || t.startsWith('<video') || t.startsWith('[youtube:'));
+    }
+    
+    let targetLine = -1;
+    // 1) Buscar cerca del lineNumber (±5 líneas)
+    const startNear = Math.max(0, lineNumber - 5);
+    const endNear = Math.min(doc.lineCount() - 1, lineNumber + 5);
+    for (let i = startNear; i <= endNear; i++) {
+        const t = (doc.getLine(i) || '').trim();
+        if (isTargetLine(t)) { targetLine = i; break; }
+    }
+    
+    // 2) Si no se encontró cerca, buscar la primera ocurrencia en todo el documento
+    if (targetLine === -1) {
+        const lines = doc.getValue().split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (isTargetLine(lines[i])) { targetLine = i; break; }
+        }
+    }
+    
+    if (targetLine === -1) return;
+    
+    // Eliminar la línea objetivo y también la siguiente si está vacía
+    const nextLine = doc.getLine(targetLine + 1) || '';
+    const lineEnd = nextLine.trim() === '' ? targetLine + 2 : targetLine + 1;
+    doc.replaceRange('', { line: targetLine, ch: 0 }, { line: lineEnd, ch: 0 });
+    
+    // Limpiar newlines sobrantes
+    const current = doc.getValue();
+    const cleaned = current.replace(/\n{3,}/g, '\n\n');
+    if (cleaned !== current) {
+        doc.setValue(cleaned);
     }
 }
 
@@ -1180,27 +1362,32 @@ function refreshImageWidgets() {
         var lineText = doc.getLine(i) || '';
         var trimmed = lineText.trim();
         
-        // Detectar imagen markdown o video HTML
+        // Detectar imagen markdown, video HTML local, o referencia YouTube [youtube:ID]
         var isImage = /^!\[.*?\]\(.*?\)$/.test(trimmed);
         var isVideo = /^<video[^>]*src=.*><\/video>$/.test(trimmed);
+        var isYouTube = /^\[youtube:[A-Za-z0-9_-]{11}\]$/.test(trimmed);
         
-        if (isImage || isVideo) {
+        if (isImage || isVideo || isYouTube) {
             foundImages++;
             console.log('[HU-20-B] Linea', i, 'deteccion:', trimmed.substring(0, 60));
             
-            // Extraer nombre de archivo
+            // Para videos locales e imágenes usamos filename; para YouTube usamos videoId como id interno
             var filename = '';
+            var videoId = '';
             if (isImage) {
                 var match = trimmed.match(/\]\(\.?\/?(.*?)\)/);
                 if (match) filename = match[1];
-            } else {
+            } else if (isVideo) {
                 var match = trimmed.match(/src=["']\.?\/?(.*?)["']/);
                 if (match) filename = match[1];
+            } else if (isYouTube) {
+                var match = trimmed.match(/\[youtube:([A-Za-z0-9_-]{11})\]/);
+                if (match) videoId = match[1];
             }
             
-            console.log('[HU-20-B] filename extraido:', filename);
+            console.log('[HU-20-B] Referencia detectada:', { isImage, isVideo, isYouTube, filename, videoId });
             
-            if (!filename) continue;
+            if (!filename && !videoId) continue;
             
             // Si ya existe un widget para esta línea, reusarlo
             if (imageWidgets[i]) {
@@ -1212,27 +1399,46 @@ function refreshImageWidgets() {
                 try {
                     var lineHandle = doc.getLineHandle(i);
                     console.log('[HU-20-B] LineHandle para', i, ':', lineHandle);
-                    var widgetData = createImageWidget(i, filename);
+                    
+                    // Para videos de YouTube generamos un widget distinto
+                    let widgetData;
+                    if (isYouTube && videoId) {
+                        widgetData = createYouTubeWidget(i, videoId);
+                    } else {
+                        widgetData = createImageWidget(i, filename);
+                    }
+                    
                     var widgetNode = widgetData.widgetElement;
                     console.log('[HU-20-B] Nodo widget creado:', widgetNode.outerHTML.substring(0, 80));
+                    
+                    // Añadir clase específica para estilos de video
+                    if (isYouTube) {
+                        widgetNode.classList.add('video-widget-mtp');
+                    }
+                    
                     var lineWidget = cm.addLineWidget(lineHandle, widgetNode, {
                         position: 'after',
                         coverGutter: false,
                         noHScroll: true
                     });
-                    newWidgets[i] = {
+                    
+                    var widgetEntry = {
                         widget: lineWidget,
                         node: widgetNode,
                         menuOpen: false,
-                        widgetId: widgetData.widgetId
+                        widgetId: widgetData.widgetId,
+                        type: isYouTube ? 'youtube' : (isVideo ? 'video' : 'image'),
+                        ref: videoId || filename
                     };
+                    
+                    newWidgets[i] = widgetEntry;
+                    
                     // HU-20-C-V1-ADD Fase 3: marcar widget como arrastrable
                     try {
                         widgetNode.classList.add('img-line-draggable');
                         const menuBtn = widgetNode.querySelector('.img-line-menu-btn');
                         if (menuBtn) {
                             menuBtn.addEventListener('mousedown', function(e) {
-                                // Solo activar arrastre con click izquierdo
                                 if (e.button !== 0) return;
                                 startImageDrag(i, this);
                             });
@@ -1355,9 +1561,23 @@ tagInput.addEventListener('keydown', (e) => {
 });
 
 function renderTags() {
-    tagsList.innerHTML = tags.map(t =>
-        `<span class="badge bg-primary me-1 mb-1 px-2 py-1">${t}<button type="button" class="btn-close btn-close-white ms-1" style="font-size:10px" onclick="removeTag('${t}')" aria-label="Eliminar"></button></span>`
-    ).join('');
+    // tagsList.innerHTML = tags.map(t =>
+    //     `<span class="badge bg-primary me-1 mb-1 px-2 py-1">${t}<button type="button" class="btn-close btn-close-white ms-1" style="font-size:10px" onclick="removeTag('${t}')" aria-label="Eliminar"></button></span>`
+    // ).join('');
+
+    tagsList.innerHTML = tags.map(tag => `
+        <span class="badge bg-primary me-1 mb-1">
+            ${tag}
+            <button
+                type="button"
+                class="btn-close btn-close-white ms-1"
+                style="font-size: 10px;"
+                onclick="removeTag('${tag}')"
+                aria-label="Eliminar">
+            </button>
+        </span>
+    `).join('');
+
 }
 
 function removeTag(tag) {
@@ -1893,6 +2113,10 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
         }
         document.title = `Editando: ${fm.title || editSlug} | Editor Blog`;
         document.getElementById('status-message').innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">Artículo cargado. Cambios se guardan en la misma carpeta.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        
+        // Forzar refresco de widgets de imagen/video para que el artículo cargado
+        // muestre sus widgets MTP (incluyendo [youtube:ID]) nada más abrir el editor.
+        try { refreshImageWidgets(); } catch (e) { /* ignore */ }
     } catch (err) {
         console.error('Error cargando artículo:', err);
         document.getElementById('status-message').innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">Error al cargar artículo: ${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
@@ -1991,7 +2215,11 @@ window.imageDragGuideEl = null;
 
 function startImageDrag(lineNumber, triggerElement) {
     const cm = easyMDE ? easyMDE.codemirror : null;
-    if (!cm || !isImageLine(lineNumber)) return;
+    if (!cm) return;
+
+    const widgetEntry = imageWidgets[lineNumber];
+    const isYouTube = widgetEntry && widgetEntry.type === 'youtube';
+    if (!isImageLine(lineNumber) && !isYouTube) return;
 
     const text = cm.getDoc().getLine(lineNumber) || '';
     if (!text) return;
@@ -2001,7 +2229,6 @@ function startImageDrag(lineNumber, triggerElement) {
     window.imageDragText = text;
 
     // Marcar línea origen (por vía del widget, no del handle interno)
-    const widgetEntry = imageWidgets[lineNumber];
     if (widgetEntry && widgetEntry.node) {
         widgetEntry.node.classList.add('img-line-dragging');
     }
@@ -2135,38 +2362,6 @@ function cleanupImageDragState() {
     window.imageDragOriginLine = null;
     window.imageDragText = '';
 }
-
-/** Regex para detectar una línea de imagen (modo normal o slides/gallery). */
-function getImageLineRegex() {
-    // Acepta: ![texto](ruta), ![texto|desc](ruta) y variantes con ./ o ruta relativa
-    return /^!\[[^\]]*\]\([^)]+\)\s*$/;
-}
-
-/** Retorna { lineNumber, text } para cada línea de imagen en el documento. */
-function getImageLines() {
-    const cm = easyMDE ? easyMDE.codemirror : null;
-    if (!cm) return [];
-    const doc = cm.getDoc();
-    const total = doc.lineCount();
-    const result = [];
-    const regex = getImageLineRegex();
-    for (let i = 0; i < total; i++) {
-        const text = doc.getLine(i) || '';
-        if (regex.test(text.trim())) {
-            result.push({ lineNumber: i, text });
-        }
-    }
-    return result;
-}
-
-/** true si la línea indicada es una línea de imagen. */
-function isImageLine(lineNumber) {
-    const cm = easyMDE ? easyMDE.codemirror : null;
-    if (!cm) return false;
-    const text = cm.getDoc().getLine(lineNumber) || '';
-    return getImageLineRegex().test(text.trim());
-}
-
 
 function openImageSelectorModal() {
     if (!easyMDE) return;

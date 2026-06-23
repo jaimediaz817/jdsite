@@ -367,6 +367,57 @@
         </div>
     </div>
 
+    <!-- HU-20-C-V1: Modal de inserción de video -->
+    <div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content selector-modal-content">
+                <div class="modal-header selector-modal-header">
+                    <h5 class="modal-title" id="videoModalLabel">
+                        <i class="fas fa-video me-2"></i> Insertar video
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body selector-modal-body">
+                    <!-- Opción 1: Subir archivo local -->
+                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
+                        <h6 class="fw-bold" style="font-size:0.9rem;">
+                            <i class="fas fa-upload text-primary me-2"></i>Subir archivo de video
+                        </h6>
+                        <p class="small text-muted mb-2">Selecciona un archivo MP4, WebM u otro formato soportado desde tu computadora.</p>
+                        <input type="file" id="videoFileInput" accept="video/*" class="form-control form-control-sm" aria-describedby="videoFileHelp">
+                        <div id="videoFileHelp" class="form-text mt-1">El archivo debe estar guardado localmente antes de subirlo.</div>
+                    </div>
+
+                    <!-- Separador -->
+                    <div class="text-center mb-3">
+                        <span class="badge bg-secondary">O</span>
+                    </div>
+
+                    <!-- Opción 2: URL de YouTube -->
+                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #dc3545;">
+                        <h6 class="fw-bold" style="font-size:0.9rem;">
+                            <i class="fab fa-youtube text-danger me-2"></i>Video de YouTube
+                        </h6>
+                        <p class="small text-muted mb-2">Pega la URL del video de YouTube que deseas insertar.</p>
+                        <input type="url" id="videoUrlInput" class="form-control form-control-sm" placeholder="https://www.youtube.com/watch?v=..." aria-describedby="videoUrlHelp">
+                        <div id="videoUrlHelp" class="form-text mt-1">Ejemplo: https://www.youtube.com/watch?v=ydvR27eZEj4</div>
+                    </div>
+
+                    <!-- Mensaje de error/validación -->
+                    <div id="videoModalError" class="alert alert-danger d-none py-2 small mb-0" role="alert"></div>
+                </div>
+                <div class="modal-footer selector-modal-footer">
+                    <button type="button" class="btn btn-cancel-grad btn-sm selector-btn-cancel" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-sm selector-btn-select" id="videoInsertBtn">
+                        <i class="fas fa-check me-1"></i> Insertar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- HU-20-C-Parent: Modal Help/Info MTP (único, reusable) -->
     <div class="modal fade" id="mtpHelpModal" tabindex="-1" role="dialog" aria-labelledby="mtpHelpModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -431,8 +482,12 @@
             <span class="mtp-badge">MTP</span>
             <i class="fas fa-camera"></i>
         </button>
-        <button type="button" class="mtp-btn" data-mtp="video" data-tip="Video HTML">
+        <button type="button" class="mtp-btn" data-mtp="video" data-tip="Video">
+            <span class="mtp-badge">MTP</span>
             <i class="fas fa-video"></i>
+        </button>
+        <button type="button" class="mtp-video-info-btn" title="Informacion sobre videos" aria-label="Ayuda de video">
+            <i class="fas fa-info-circle"></i>
         </button>
 
         <div class="mtp-divider"></div>
@@ -488,8 +543,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
     <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
     <!-- Import the image selector module before the main editor script -->
-    <script src="{% static 'blog/js/blog_editor/image-selector.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
+    <script src="{% static 'blog/js/blog_editor/image-selector.js' %}"></script>
+    <script src="{% static 'blog/js/blog_editor/video-widget.js' %}"></script>
   <script>
     // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)
     var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';

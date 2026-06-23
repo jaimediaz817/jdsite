@@ -97,6 +97,17 @@ function insertMtpTemplate(action) {
         return;
     }
 
+    if (action === 'video') {
+        console.log('[blog_editor][mtp-toolbar] accion video -> modal');
+        if (typeof window.openVideoModal === 'function') {
+            window.openVideoModal();
+        } else {
+            console.warn('[blog_editor][mtp-toolbar] openVideoModal no disponible, usando template estatico');
+        }
+        console.log('[blog_editor][mtp-toolbar] insertMtpTemplate finalizado', { action });
+        return;
+    }
+
     const template = MTP_TEMPLATES[action];
     if (!template) {
         console.warn(`[blog_editor][mtp-toolbar] Template desconocido: ${action}`);
@@ -168,8 +179,8 @@ function initMtpToolbar() {
         return;
     }
 
-    const imageBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"]');
-    imageBtns.forEach(function(btn) {
+    const migratedBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"], .mtp-btn[data-mtp="video"]');
+    migratedBtns.forEach(function(btn) {
         btn.classList.add('mtp-migrated');
     });
 
@@ -182,7 +193,8 @@ function initMtpToolbar() {
     // Esto garantiza que en el entorno de desarrollo solo esos dos estén activos.
     allBtns.forEach(function(btn) {
         const action = btn.dataset.mtp;
-        if (action !== 'image' && action !== 'minimize') {
+        // Mantener 'image', 'minimize' y 'video' habilitados
+        if (action !== 'image' && action !== 'minimize' && action !== 'video') {
             // Añadir clase visual y atributo disabled para impedir interacción
             btn.classList.add('mtp-disabled');
             btn.setAttribute('disabled', 'disabled');

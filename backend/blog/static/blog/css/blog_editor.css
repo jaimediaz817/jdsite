@@ -4,9 +4,7 @@
    ====================================================== */
 
 /* Layout principal */
-.editor-wrapper {
-
-}
+.editor-wrapper {}
 
 .editor-wrapper {
     min-height: calc(100vh - 80px);
@@ -74,7 +72,7 @@
 
 .tags-list .badge {
     font-size: 0.85rem;
-    padding: 0.35rem 0.6rem;
+    padding: 0.35rem 0.99rem;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -259,7 +257,7 @@
     border-radius: 8px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    flex-shrink: 0;    
+    flex-shrink: 0;
 }
 
 /* Overlay de controles moderno y sutil */
@@ -588,6 +586,7 @@ button#btn-save {
     button {
         font-size: 0.99rem;
     }
+
     .editor-btn-cancel {
         border: 2px solid #e56873;
         background: #e56873;
@@ -658,6 +657,55 @@ button#btn-save {
     margin: 0;
     font-size: 0.95rem;
     color: #6c757d;
+}
+
+/* ======================================================
+   HU-20-C-V1: YouTube Widget layout horizontal
+   ====================================================== */
+.youtube-widget-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* layout horizontal: thumbnail + controles */
+}
+
+/* Contenedor de controles SIEMPRE visibles a la derecha */
+.youtube-widget-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    /* siempre visibles */
+}
+
+/* Reutilizar estilos de botones del widget MTP para YouTube */
+.youtube-widget-body .img-line-grip-btn,
+.youtube-widget-body .img-line-menu-btn,
+.youtube-widget-body .img-line-help-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #495057;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.youtube-widget-body .img-line-grip-btn:hover,
+.youtube-widget-body .img-line-menu-btn:hover,
+.youtube-widget-body .img-line-help-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -867,6 +915,7 @@ fieldset[disabled] input {
         transform: scale(0);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -1038,7 +1087,7 @@ fieldset[disabled] input {
 }
 
 /* Icono del botón en color azul cuando está migrado */
-.mtp-btn.mtp-migrated > i {
+.mtp-btn.mtp-migrated>i {
     color: #0d6efd;
 }
 
@@ -1055,7 +1104,7 @@ fieldset[disabled] input {
 }
 
 /* Asegurar que el icono del botón bloqueado también se vea afectado */
-.mtp-btn.mtp-disabled > i {
+.mtp-btn.mtp-disabled>i {
     opacity: 0.7;
 }
 
@@ -1391,8 +1440,9 @@ fieldset[disabled] input {
     padding: 4px 10px !important;
     border-radius: 6px !important;
     border: 1px solid rgba(220, 53, 69, 0.35) !important;
-    color: #f85149 !important;
-    background: transparent !important;
+    color: white;
+    /* #f85149 !important; */
+    background: #f85149 !important;
     font-weight: 500 !important;
     cursor: pointer !important;
     line-height: 1.4 !important;
@@ -1404,7 +1454,8 @@ fieldset[disabled] input {
 .autosave-toast-discard-btn:hover {
     background: rgba(248, 81, 73, 0.12) !important;
     border-color: #f85149 !important;
-    color: #f85149 !important;
+    color: white;
+    /* #f85149 !important; */
 }
 
 .autosave-toast-discard-btn:active {
@@ -1493,7 +1544,7 @@ fieldset[disabled] input {
 /* Contenedor PADRE que envuelve CodeMirror-line + CodeMirror-linewidget
    CodeMirror genera: .CodeMirror-code > div[style*="position: relative"]
    que contiene tanto <pre class="CodeMirror-line"> como el widget */
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) {
     /* position: relative !important;
     display: inline-flex;
     padding: 8px 40px 8px 14px !important;
@@ -1520,21 +1571,22 @@ fieldset[disabled] input {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     animation: mtpWidgetFadeIn 0.35s ease !important;
     min-height: auto;
-    width: auto;  
-    
+    width: auto;
+
     .CodeMirror-line {
         display: inline-flex;
         align-items: center;
     }
 
-    span, pre {
+    span,
+    pre {
         font-size: 0.85rem !important;
     }
 
 }
 
 /* El .CodeMirror-linewidget hijo — sin estilos extra, ocupa su flujo natural */
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded) > .CodeMirror-linewidget {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded)>.CodeMirror-linewidget {
     padding: 0 !important;
     border: none !important;
     background: none !important;
@@ -1544,7 +1596,7 @@ fieldset[disabled] input {
 }
 
 /* Badge "MTP" — sello en la esquina superior derecha del contenedor PADRE */
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded)::before {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded)::before {
     content: "MTP" !important;
     position: absolute !important;
     top: -8px !important;
@@ -1565,13 +1617,13 @@ fieldset[disabled] input {
 }
 
 /* Hover: intensificar el contorno del contenedor padre */
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover {
     border-color: rgba(13, 110, 253, 0.40) !important;
     background: rgba(13, 110, 253, 0.05) !important;
     box-shadow: 0 2px 12px rgba(13, 110, 253, 0.08) !important;
 }
 
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover::before {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover::before {
     background: #0b5ed7 !important;
     box-shadow: 0 1px 8px rgba(13, 110, 253, 0.50) !important;
 }
@@ -1588,7 +1640,7 @@ fieldset[disabled] input {
 }
 
 /* Asegurar que el hover del contenedor padre NO muestre el botón del menú */
-.CodeMirror-code > div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover .img-line-menu-btn {
+.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded):hover .img-line-menu-btn {
     opacity: 0.4 !important;
 }
 
@@ -1597,10 +1649,12 @@ fieldset[disabled] input {
     transform: translateZ(0);
     will-change: auto;
 }
+
 .CodeMirror-cursor {
     z-index: 1000 !important;
     vertical-align: baseline !important;
 }
+
 .CodeMirror-line {
     animation: none !important;
     transition: none !important;
@@ -1612,6 +1666,7 @@ fieldset[disabled] input {
         opacity: 0;
         transform: translateY(-2px) scale(0.96);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1715,6 +1770,19 @@ fieldset[disabled] input {
     background-color: rgba(0, 0, 0, 0.15) !important;
 }
 
+
+/* ======================================================
+   HU-20_C_V1: cursor arrastrable para widget de video MTP en el editor
+   ====================================================== */
+.video-widget-mtp,
+.video-widget-mtp * {
+    cursor: grab !important;
+}
+
+.video-widget-mtp:active,
+.video-widget-mtp:active * {
+    cursor: grabbing !important;
+}
 
 /* ======================================================
     HU-017: Modal de confirmación descartar
@@ -2409,6 +2477,7 @@ h2 i,
             position: relative;
         }
     }
+
     .editor-actions .d-flex {
         flex-direction: row;
         gap: 10px;
@@ -2428,8 +2497,8 @@ h2 i,
         gap: 10px;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        padding: 3px;        
-    }    
+        padding: 3px;
+    }
 
     .editor-sidebar {
         position: sticky;
@@ -2481,7 +2550,7 @@ h2 i,
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 10px;
         padding: 12px;
-    }    
+    }
 }
 
 @media (max-width: 576px) {
@@ -2489,7 +2558,7 @@ h2 i,
         flex-direction: row;
         gap: 10px;
         align-items: stretch;
-    }    
+    }
 
     .image-preview-modal-body {
         min-height: 200px !important;
@@ -2524,16 +2593,17 @@ h2 i,
 
 @media (max-width: 480px) {
 
-    
+
     .editor-actions .d-flex {
         flex-direction: row;
         gap: 10px;
         align-items: stretch;
     }
+
     .uploaded-controls {
         width: 98%;
         justify-content: space-between !important;
-    }    
+    }
 
     .uploaded-item {
         /* max-width: 100%;
@@ -2543,7 +2613,7 @@ h2 i,
 
 
         height: 152px;
-        flex-direction: column;        
+        flex-direction: column;
     }
 
     .uploaded-item>.uploaded-image,
@@ -2551,11 +2621,11 @@ h2 i,
         /* width: 80px;
         height: 80px;
         max-height: 80px; */
-   
+
         width: 100%;
         height: 80%;
         max-height: fit-content;
-        object-fit: cover;        
+        object-fit: cover;
     }
 
     .editor-actions .btn-lg {
@@ -2565,12 +2635,201 @@ h2 i,
         font-size: 0.85rem;
         flex-direction: column;
         padding: 9px 0px;
-    }    
+    }
 
     .uploaded-filename {
         text-align: left;
         margin-left: 10px;
     }
+}
+
+/* ======================================================
+   HU-20-C-V1: Video Widget Styles
+   ====================================================== */
+
+/* Contenedor del mosaico de video YouTube con borde MTP */
+.video-widget {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 8px 0;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-widget:hover {
+    border-color: rgba(13, 110, 253, 0.40);
+    box-shadow: 0 2px 12px rgba(13, 110, 253, 0.08);
+}
+
+/* Sello MTP en la esquina superior derecha del video widget */
+.video-widget::before {
+    content: "MTP";
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
+    background: #0d6efd;
+    border-radius: 4px;
+    padding: 1px 6px;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    z-index: 15;
+    text-transform: uppercase;
+    box-shadow: 0 1px 5px rgba(13, 110, 253, 0.35);
+    white-space: nowrap;
+}
+
+/* Botón menú ⋮ dentro del video widget */
+.video-widget-menu {
+    position: absolute !important;
+    top: 4px;
+    right: 4px;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #495057 !important;
+    cursor: pointer !important;
+    opacity: 0.4 !important;
+    transition: opacity 0.2s ease !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10;
+}
+
+.video-widget:hover .video-widget-menu {
+    opacity: 1 !important;
+}
+
+.video-widget-menu:hover,
+.video-widget-menu:focus {
+    opacity: 1 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Dropdown del menú video */
+.video-widget-dropdown {
+    display: none !important;
+    position: fixed !important;
+    min-width: 200px !important;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    font-size: 0.875rem !important;
+    color: #212529 !important;
+    text-align: left !important;
+    list-style: none !important;
+    background-color: #fff !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+    z-index: 99999 !important;
+}
+
+.video-widget-dropdown.show {
+    display: block !important;
+}
+
+.video-widget-dropdown .dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 8px 16px !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #212529 !important;
+    font-size: 0.875rem !important;
+    text-align: inherit !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    white-space: nowrap !important;
+}
+
+.video-widget-dropdown .dropdown-item:hover {
+    background-color: #f8f9fa !important;
+    color: #0d6efd !important;
+}
+
+/* Video local (etiqueta <video> estándar) */
+.video-widget-local {
+    display: block;
+    max-width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin: 8px 0;
+}
+
+/* Estado drag-over para el botón video */
+.mtp-btn[data-mtp="video"].drag-over {
+    background: rgba(13, 110, 253, 0.20) !important;
+    border: 2px dashed #0d6efd !important;
+    transform: scale(1.12);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* Cursor grab/move en el botón video (indica arrastrable) */
+.mtp-btn[data-mtp="video"] {
+    cursor: grab;
+}
+
+.mtp-btn[data-mtp="video"]:active {
+    cursor: grabbing;
+}
+
+/* Botón info video */
+.mtp-video-info-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(13, 110, 253, 0.25);
+    background: #fff;
+    color: #0d6efd;
+    font-size: 9px;
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    margin: 2px auto;
+}
+
+.mtp-video-info-btn:hover,
+.mtp-video-info-btn:focus {
+    opacity: 1;
+    background: #e8f0fe;
+    border-color: #0d6efd;
+    outline: none;
+}
+
+.mtp-video-info-btn i {
+    font-size: 9px;
+    pointer-events: none;
+}
+
+/* Estado blocked para video widget */
+.video-widget.blocked {
+    opacity: 0.4;
+    filter: grayscale(80%);
+    pointer-events: none;
 }
 
 /* ======================================================
@@ -2638,8 +2897,9 @@ h2 i,
     line-height: 1 !important;
     margin-left: 12px !important;
     vertical-align: middle !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;    
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
+
 .img-line-help-btn:hover,
 .img-line-help-btn:focus {
     opacity: 1 !important;
@@ -2648,6 +2908,7 @@ h2 i,
     border-color: #0d6efd !important;
     outline: none !important;
 }
+
 .img-line-help-btn i {
     font-size: 18px !important;
     pointer-events: none !important;

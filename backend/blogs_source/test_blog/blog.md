@@ -1,45 +1,73 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-21"
+date: "2026-06-23"
 draft: false
 image: "image-1.png"
 author: "Jaime Diaz"
 author_email: "jdsolutions817@gmail.com"
 author_provider: "github"
-category: "categoraiNuevaMacho"
-tags: ["UI", "UX", "Diseño Web", "Legibilidad", "Blog"]
+category: "UI/UX"
+tags: ["UI", "UX", "Legibilidad", "Blog"]
 meta_title: "Mejoras de UI/UX que aumentaron el tiempo de lectura"
 meta_description: "Los cambios concretos y medibles que implementamos para mejorar la experiencia de lectura del blog sin tocar ni una sola linea de backend"
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
-tiempo_lectura: 2
+tiempo_lectura: 3
 author_id: 15
-cover_image: "/static/blogs/test_blog/image-1.png"
+cover_image: "/static/blogs/test_blog/Captura de pantalla 2025-10-27 174411_1323be1b.png"
 ---
 
 
 
+viedo test:
+otro video test:
+![Captura de pantalla 2025-11-12 155136_f84cc7b2.png](./Captura de pantalla 2025-11-12 155136_f84cc7b2.png)
 
-![Captura de pantalla 2025-11-10 164914_c3defa9f.png](./Captura de pantalla 2025-11-10 164914_c3defa9f.png)
+imagen:
+dwdwddd
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+imagen:
+![Captura de pantalla (2)_20aaf632.png](./Captura de pantalla (2)_20aaf632.png)
 
-![Captura de pantalla 2025-11-12 155136_d277be6d.png](./Captura de pantalla 2025-11-12 155136_d277be6d.png)
+_20aaf632.png)
 
-![Captura de pantalla 2025-11-12 155136_00e2d5af.png](./Captura de pantalla 2025-11-12 155136_00e2d5af.png)
+_20aaf632.png)
 
-![image_5f2daeb7.png](./image_5f2daeb7.png)
-![IMG_20260501_181947.jpg](./IMG_20260501_181947.jpg)
-
-![Captura de pantalla 2025-11-06 154128.png](./Captura de pantalla 2025-11-06 154128.png)
-
-## Introduccion1
+wswwwwwwwww
+## Intwsdroduccion1
 Este es el primer renglon de mi parrafo.
-Este es el segundo renglon del mismo parrafo.
+Este es el segundo rasdasdenglon del mismo parrafo.
 Este es el tercer renglon.
 Y este es el cuarto renglon.
+asdasdasdasd
 
-Nuevo parrafo aqui.
+<div class="youtube-mosaic compact video-widget" data-video-id="p2WA672HrdI" onclick="window.open('https://www.youtube.com/watch?v=p2WA672HrdI', '_blank')">
+  <img src="https://img.youtube.com/vi/p2WA672HrdI/0.jpg" alt="Miniatura del video" loading="lazy" decoding="async" />
+  <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
+  <div class="caption">Ver video en YouTube</div>
+  <button type="button" class="video-widget-menu btn btn-sm" aria-label="Opciones de video" title="Opciones">
+    <i class="fas fa-ellipsis-v"></i>
+  </button>
+  <div class="video-widget-dropdown dropdown-menu">
+    <button type="button" class="dropdown-item" data-action="block">Bloquear en artículo</button>
+    <button type="button" class="dropdown-item" data-action="delete">Eliminar video</button>
+  </div>
+</div>
 
-![cover](image-1.png)
+un video ahora mismo:
+
+<div class="youtube-mosaic compact" onclick="window.open('https://www.youtube.com/watch?v=ydvR27eZEj4', '_blank')">
+  <img src="https://img.youtube.com/vi/ydvR27eZEj4/0.jpg" alt="Miniatura del video" loading="lazy" decoding="async" />
+  <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
+  <div class="caption">Ver video en YouTube</div>
+</div>
+
+Nuevo parrafo aquasdasdi.
+asdasdasdasd
+asdasdasdasdasd
+asdasdasdasdasdasdasdasdas
+
+sdasdasdasd
 
 ## Introduccion
 
@@ -47,7 +75,7 @@ Hace 3 dias decidimos que el blog necesitaba un lavado de cara. No por que se vi
 
 **✅ Antes:**
 
-- Tiempo medio permanencia: 1 minuto 52 segundos
+- Tiempo medio permanencia: 1 miSDnuto 52 segundos
 - Tasa finalización lectura: 42%
 - Tasa de rebote: 67%
 
@@ -64,7 +92,7 @@ Asi que nos pusimos manos a la obra y en 4 horas de trabajo conseguimos estos re
 Y lo mejor de todo: **no tocamos ni una sola linea de backend.** Solo CSS.
 
 ---
-
+sdasd
 ## El principio fundamental
 
 Todo lo que hicimos se resume en una sola frase:
@@ -108,9 +136,8 @@ Antes teniamos 1.5rem de margen por debajo de TODO. Ahora tenemos un patron:
 El cerebro detecta este patron sin darse cuenta y entiende la jerarquia automaticamente.
 
 ### 3. Barra lateral flotante de reacciones
-
+asdas
 :::slides
-![Disposición responsive|En móviles la barra se oculta y las reacciones aparecen al final del artículo, manteniendo la experiencia limpia.](image-1.png)
 :::
 
 Esta fue la mejora con mayor impacto.
@@ -132,9 +159,8 @@ Todo tiene una razon de ser. Todo cumple una funcion.
 ## El error mas comun que cometen todos
 
 Todo el mundo piensa que un buen diseño es el que no se ve bonito.
-
+asdasd
 Esto es falso.
-
 :::callout:warning
 Un buen diseño es el que nadie comenta. Nadie entra en tu articulo y piensa "guau que diseño mas bonito". Nadie se da cuenta de nada. Simplemente leen. Y leen. Y terminan de leer.
 :::

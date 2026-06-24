@@ -418,6 +418,61 @@
         </div>
     </div>
 
+    <!-- HU-20_C_V1: Modal unificado Slides / Popup Gallery -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" role="dialog" aria-labelledby="galleryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content selector-modal-content">
+                <div class="modal-header selector-modal-header">
+                    <h5 class="modal-title" id="galleryModalLabel">
+                        <i class="fas fa-images me-2"></i> Crear slide / gallery
+                    </h5>
+                    <span id="gallery-mode-badge" class="badge bg-warning ms-2 selector-mode-badge">📊 Dentro de :::slides</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body selector-modal-body">
+                    <!-- Toggle pills superior -->
+                    <div class="btn-group btn-group-sm mb-3" role="group" aria-label="Modo slide/gallery">
+                        <button type="button" class="btn btn-outline-primary active" id="gallery-toggle-slides">
+                            <i class="fas fa-layer-group me-1"></i> Slides
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="gallery-toggle-gallery">
+                            <i class="fas fa-images me-1"></i> Popup Gallery
+                        </button>
+                    </div>
+
+                    <!-- Grid de imágenes existentes -->
+                    <div id="gallery-existing-images" class="selector-thumb-grid mb-3"></div>
+                    <div id="gallery-empty-state" class="d-none text-center text-muted py-4 selector-empty-state">
+                        <div class="selector-empty-icon-wrapper mb-2">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1">No hay imágenes subidas</h6>
+                        <p class="mb-0 small">Sube una imagen desde tu PC para comenzar.</p>
+                    </div>
+
+                    <!-- Botón subir desde PC -->
+                    <div class="selector-upload-wrapper mb-3">
+                        <button type="button" id="gallery-upload-btn" class="btn selector-upload-btn">
+                            <i class="fas fa-upload me-2"></i> Subir imagen desde PC
+                        </button>
+                    </div>
+
+                    <!-- Panel dinámico: una fila por imagen seleccionada -->
+                    <div id="gallery-no-selection" class="text-muted small mb-2">Selecciona imágenes y asígnales título/descripción.</div>
+                    <div id="gallery-selected-list"></div>
+                </div>
+                <div class="modal-footer selector-modal-footer">
+                    <button type="button" class="btn btn-cancel-grad btn-sm selector-btn-cancel" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="gallery-create-btn" class="btn btn-primary btn-sm selector-btn-select" disabled>
+                        <i class="fas fa-check me-1"></i> Crear slide
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- HU-20-C-Parent: Modal Help/Info MTP (único, reusable) -->
     <div class="modal fade" id="mtpHelpModal" tabindex="-1" role="dialog" aria-labelledby="mtpHelpModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -486,14 +541,10 @@
             <span class="mtp-badge">MTP</span>
             <i class="fas fa-video"></i>
         </button>
-        <button type="button" class="mtp-video-info-btn" title="Informacion sobre videos" aria-label="Ayuda de video">
-            <i class="fas fa-info-circle"></i>
-        </button>
-
-        <div class="mtp-divider"></div>
 
         <!-- Grupo: Bloques MTP -->
         <button type="button" class="mtp-btn" data-mtp="slides" data-tip="Slides ::slides">
+            <span class="mtp-badge">MTP</span>
             <i class="fas fa-layer-group"></i>
         </button>
         <button type="button" class="mtp-btn" data-mtp="callout-info" data-tip="Callout info ℹ️">
@@ -546,6 +597,7 @@
     <script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/image-selector.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/video-widget.js' %}"></script>
+    <script src="{% static 'blog/js/blog_editor/slide-widget.js' %}"></script>
   <script>
     // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)
     var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';

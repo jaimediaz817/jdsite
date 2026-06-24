@@ -179,7 +179,7 @@ function initMtpToolbar() {
         return;
     }
 
-    const migratedBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"], .mtp-btn[data-mtp="video"]');
+    const migratedBtns = toolbar.querySelectorAll('.mtp-btn[data-mtp="image"], .mtp-btn[data-mtp="video"], .mtp-btn[data-mtp="slides"]');
     migratedBtns.forEach(function(btn) {
         btn.classList.add('mtp-migrated');
     });
@@ -189,12 +189,12 @@ function initMtpToolbar() {
     // before importing this module, so only the image and minimize buttons stay enabled.
     // In development (MTP_PRODUCTION = false) we want to disable all buttons except image and minimize.
     // In production (MTP_PRODUCTION = true) the toolbar should be fully functional.
-    // Desactivar todos los botones excepto "image" y "minimize".
-    // Esto garantiza que en el entorno de desarrollo solo esos dos estén activos.
+    // Desactivar todos los botones excepto "image", "minimize", "video" y "slides".
+    // Esto garantiza que en el entorno de desarrollo solo esos estén activos.
     allBtns.forEach(function(btn) {
         const action = btn.dataset.mtp;
-        // Mantener 'image', 'minimize' y 'video' habilitados
-        if (action !== 'image' && action !== 'minimize' && action !== 'video') {
+        // Mantener 'image', 'minimize', 'video' y 'slides' habilitados
+        if (action !== 'image' && action !== 'minimize' && action !== 'video' && action !== 'slides') {
             // Añadir clase visual y atributo disabled para impedir interacción
             btn.classList.add('mtp-disabled');
             btn.setAttribute('disabled', 'disabled');

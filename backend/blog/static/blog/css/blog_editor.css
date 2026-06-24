@@ -1560,7 +1560,7 @@ fieldset[disabled] input {
 
     position: relative !important;
     display: inline-flex;
-    /* padding: 2px 40px 2px 14px !important; */
+    padding: 2px 40px 2px 14px !important;
     /* height: 9px !important; */
     margin: 0 !important;
     border: 1.5px solid rgba(13, 110, 253, 0.18) !important;
@@ -2944,4 +2944,54 @@ h2 i,
 
 .img-line-draggable:hover .img-line-grip-btn {
     opacity: 1;
+}
+
+/* ======================================================
+   HU-20_C_V1: Estilos específicos del modal Gallery/Slides
+   ====================================================== */
+
+/* Toggle pills superior */
+#gallery-toggle-slides,
+#gallery-toggle-gallery {
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+#gallery-toggle-slides.active,
+#gallery-toggle-gallery.active {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.35);
+}
+
+/* Lista dinámica de imágenes seleccionadas */
+.gallery-selected-row {
+    background: #f8f9fa;
+    border-left: 3px solid #0d6efd;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.gallery-selected-filename {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gallery-selected-row input,
+.gallery-selected-row textarea {
+    font-size: 0.85rem;
+}
+
+.gallery-selected-row textarea {
+    resize: vertical;
+    min-height: 38px;
 }

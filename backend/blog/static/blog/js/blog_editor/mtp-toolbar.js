@@ -108,6 +108,25 @@ function insertMtpTemplate(action) {
         return;
     }
 
+    // -----------------------------------------------------
+    // Acción "slides": abrir el modal de galería en lugar de
+    // insertar el bloque de plantilla estático. El bloque
+    // se inserta después de que el usuario confirma la selección
+    // en el modal, evitando la duplicación que ocurría al
+    // insertar tanto la plantilla como el bloque generado por
+    // slide-widget.
+    // -----------------------------------------------------
+    if (action === 'slides') {
+        console.log('[blog_editor][mtp-toolbar] accion slides -> abrir modal');
+        if (typeof openGalleryModal === 'function') {
+            openGalleryModal('slides');
+        } else {
+            console.warn('[blog_editor][mtp-toolbar] openGalleryModal no disponible');
+        }
+        console.log('[blog_editor][mtp-toolbar] insertMtpTemplate finalizado', { action });
+        return;
+    }
+
     const template = MTP_TEMPLATES[action];
     if (!template) {
         console.warn(`[blog_editor][mtp-toolbar] Template desconocido: ${action}`);

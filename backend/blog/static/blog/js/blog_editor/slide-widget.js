@@ -41,45 +41,35 @@ function openGalleryModal(presetMode) {
     if (!easyMDE) return;
 
     const mode = presetMode || 'slides';
-    currentGalleryMode = mode;
-    selectedGalleryImages = [];
-
-    // Detect if we are inside an existing block (slides or popup:gallery)
-    const ctx = (typeof detectImageContext === 'function') ? detectImageContext() : { mode: 'normal' };
+    // Detect if we are inside an existing block (slides or popup:gallery).
+    // The image‑selector module already provides a reliable context detector.
+    const ctx = (typeof detectImageContext === 'function') ? detectImageContext() : { mode: 'normal', startLine: null };
     if (ctx.mode === 'slides' || ctx.mode === 'popup:gallery') {
         currentGalleryMode = ctx.mode;
-        // Use the startLine provided by detectImageContext (if any) to know where
-        // the existing block begins. This allows us to replace the whole block
-        // instead of inserting a duplicate.
-        if (typeof ctx.startLine === 'number') {
-            window._galleryEditStartLine = ctx.startLine;
-        } else {
-            // Fallback: try to locate the opening tag manually (same heuristic as before).
-            if (easyMDE && easyMDE.codemirror) {
-                const cm = easyMDE.codemirror;
-                const doc = cm.getDoc();
-                const cursor = doc.getCursor();
-                let startLine = cursor.line;
-                while (startLine >= 0) {
-                    const lineText = doc.getLine(startLine);
-                    if (lineText && lineText.trim().startsWith(':::')) {
-                        break;
-                    }
-                    startLine--;
-                }
-                window._galleryEditStartLine = startLine;
-            }
-        }
+        // startLine is the line where the opening ::: was found.
+        window._galleryEditStartLine = typeof ctx.startLine === 'number' ? ctx.startLine : undefined;
     } else {
-        // Not editing an existing block
         window._galleryEditStartLine = undefined;
     }
 
     updateGalleryModeUI();
     clearGalleryModalInputs();
     refreshGalleryModalGrid();
+    // Ensure any previous selection visual state is cleared
+    clearGallerySelection();
     renderSelectedGalleryList();
     $('#galleryModal').modal('show');
+}
+
+/**
+ * Remove the "is-selected" class from all thumbnail items in the gallery modal.
+ * This prevents stale selections from persisting when the modal is reopened.
+ */
+function clearGallerySelection() {
+    const grid = document.getElementById('gallery-existing-images');
+    if (!grid) return;
+    const items = grid.querySelectorAll('.selector-thumb-item.is-selected');
+    items.forEach(item => item.classList.remove('is-selected'));
 }
 
 // ======================================================
@@ -149,7 +139,9 @@ function refreshGalleryModalGrid() {
 
             const img = document.createElement('img');
             img.className = 'selector-thumb';
-            img.src = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+            // Encode the source URL to correctly handle filenames with spaces or special characters
+            const rawSrc = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+            img.src = encodeURI(rawSrc);
             img.alt = file.filename;
             img.loading = 'lazy';
             img.onerror = function () { this.src = '/static/blog/images/no-image.png'; };
@@ -270,7 +262,9 @@ function confirmGalleryModal() {
         mode === 'slides' ? ':::slides\n' : ':::popup:gallery\n';
 
     items.forEach(img => {
-        block += `![${img.title}|${img.description}](./${img.filename})\n`;
+        // Encode filename to handle spaces and special characters in URLs
+        const encoded = encodeURIComponent(img.filename);
+        block += `![${img.title}|${img.description}](./${encoded})\n`;
     });
 
     block += ':::';
@@ -279,7 +273,15 @@ function confirmGalleryModal() {
     // Reset state after insertion to avoid residual data on next use
     selectedGalleryImages = [];
     window._galleryEditStartLine = undefined;
+    // Blur any element that might still have focus inside the modal to avoid aria-hidden warnings
+    if (document.activeElement) document.activeElement.blur();
     $('#galleryModal').modal('hide');
+    // Ensure editor regains focus after the modal is fully hidden
+    setTimeout(function() {
+        if (typeof easyMDE !== 'undefined' && easyMDE.codemirror) {
+            easyMDE.codemirror.focus();
+        }
+    }, 200);
 }
 
 // ======================================================

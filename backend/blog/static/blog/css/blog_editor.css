@@ -1558,10 +1558,9 @@ fieldset[disabled] input {
     min-height: 36px !important;
     width: auto;     */
 
-
     position: relative !important;
     display: inline-flex;
-    padding: 2px 40px 2px 14px !important;
+    /* padding: 2px 40px 2px 14px !important; */
     /* height: 9px !important; */
     margin: 0 !important;
     border: 1.5px solid rgba(13, 110, 253, 0.18) !important;
@@ -2895,7 +2894,7 @@ h2 i,
     transition: opacity 0.2s ease, transform 0.2s ease !important;
     font-size: 10px !important;
     line-height: 1 !important;
-    margin-left: 12px !important;
+    /* margin-left: 12px !important; */
     vertical-align: middle !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }

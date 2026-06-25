@@ -150,8 +150,4 @@ El proyecto usa **Bootstrap v4.3.1** (NO Bootstrap 5) con **jQuery 3.2.1 antiguo
     </button>
     ```
     - El cierre del modal se maneja via JS con `bootstrap.Modal.hide()` o manipulación DOM directa.
-
----
-
-## 🟡 CONCLUSIÓN
 Siempre que necesites un componente interactivo de Bootstrap (collapse, modal, dropdown, tooltip), **instáncialo vía JS y controlalo manualmente**. No confíes en `data-bs-*` attributes.

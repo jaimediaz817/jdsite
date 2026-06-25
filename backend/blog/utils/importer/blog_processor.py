@@ -209,12 +209,17 @@ class BlogProcessor:
         blog_static_dir.mkdir(exist_ok=True)
         IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
         VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
+        # Importamos la función de sanitización
+        from .filename_utils import sanitizar_nombre
+
         for archivo in blog_dir.iterdir():
             if archivo.is_file() and archivo.suffix.lower() in (
                 *IMAGE_EXTENSIONS,
                 *VIDEO_EXTENSIONS,
             ):
-                destino = blog_static_dir / archivo.name
+                # Sanitizamos el nombre antes de copiar
+                nombre_sanitizado = sanitizar_nombre(archivo.name)
+                destino = blog_static_dir / nombre_sanitizado
                 shutil.copy2(archivo, destino)
 
     # The following methods are unchanged copies from the original file.

@@ -9,13 +9,11 @@
 // //   "editor.detectIndentation": false,
 // //   "files.trimTrailingWhitespace": true,
 // //   "files.insertFinalNewline": true,
-
 // // //   "ruff.enable": true,
 // //   "ruff.lint.enable": true,
 // //   "ruff.format.enable": false,
 // //   "python.linting.enabled": false,
 // //   "python.linting.flake8Enabled": false,
-
 // // }
 // {
 //   "editor.formatOnSave": true,
@@ -28,27 +26,22 @@
 //   "editor.detectIndentation": false,
 //   "files.trimTrailingWhitespace": true,
 //   "files.insertFinalNewline": true,
-
 //   "ruff.enable": true,
 //   "ruff.lint.enable": true,
 //   "ruff.format.enable": false,
-
 //   "python.linting.enabled": false,
 //   "python.linting.flake8Enabled": false
 // }
-
 {
     // 1. Asocia TODOS los archivos .html de este proyecto con el lenguaje "django-html"
     "files.associations": {
         "**/*.html": "django-html"
     },
-
     // 2. Desactiva CUALQUIER formateador automático para los archivos "django-html"
     "[django-html]": {
         "editor.formatOnSave": false,
         "editor.defaultFormatter": null
     },
-
     // (Opcional) Si quieres mantener el formato en otros lenguajes
     "[python]": {
         "editor.formatOnSave": true,
@@ -68,5 +61,10 @@
         "editor.formatOnSave": true,
         "editor.tabSize": 4,
         "editor.insertSpaces": true
-    }    
+    },
+    "python.testing.pytestArgs": [
+        "backend"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

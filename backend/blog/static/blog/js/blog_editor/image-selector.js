@@ -1,6 +1,12 @@
 // ======================================================
 // HU-20-D: Image Selector - módulo extraído
 // ======================================================
+
+// ======================================================
+// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
+// ======================================================
+console.log('✅ [image-selector.js] jQuery disponible:', typeof jQuery !== 'undefined');
+
 console.log('[blog_editor][image-selector] modulo cargado');
 
 function detectImageContext() {
@@ -98,12 +104,18 @@ function openImageSelectorModal() {
                 
                 const img = document.createElement('img');
                 img.className = 'selector-thumb';
-                img.src = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+                const imgSrc = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+                img.src = encodeURI(imgSrc);
                 img.alt = file.filename;
                 img.loading = 'lazy';
                 
                 img.onerror = function() {
+                    console.warn('[img-sel] Error cargando imagen existente:', imgSrc);
                     this.src = `/static/blog/images/no-image.png`;
+                };
+                
+                img.onload = function() {
+                    console.log('[img-sel] Imagen cargada OK:', imgSrc);
                 };
                 
                 const name = document.createElement('div');
@@ -135,6 +147,7 @@ function openImageSelectorModal() {
     window.selectedImageFilename = null;
     
     $('#imageSelectorModal').modal('show');
+    console.log('[blog_editor][image-selector] Modal mostrado. uploadedFiles.length:', uploadedFiles.length);
     
     if (modeInfo.mode === 'slides' || modeInfo.mode === 'popup:gallery') {
         setTimeout(() => {
@@ -170,7 +183,7 @@ function insertImageInEditor(filename, title, description, mode) {
     
     setTimeout(refreshImageWidgets, 100);
     cm.focus();
-    console.log('[blog_editor][image-selector] insertImageInEditor finalizado', { filename, mode });
+    console.log('[blog_editor][image-selector] insertImageInEditor finalizado');
 }
 
 // ======================================================
@@ -197,19 +210,143 @@ function handleUploadClick() {
         fileInput.accept = 'image/*';
         fileInput.style.display = 'none';
         document.body.appendChild(fileInput);
-        
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                uploadFileToServer(this.files[0]);
-            }
-        });
+        console.log('[img-sel] input CREADO por primera vez');
+    } else {
+        console.log('[img-sel] input YA EXISTIA, reutilizando');
     }
     
-    fileInput.click();
+    // Remover event listeners previos para evitar duplicados
+    const newFileInput = fileInput.cloneNode(true);
+    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    
+    newFileInput.addEventListener('change', function() {
+        console.log('[img-sel] file input CAMBIADO. Archivos:', this.files);
+        if (this.files && this.files.length > 0) {
+            const file = this.files[0];
+            console.log('[img-sel] Upload archivo:', file.name, 'tipo:', file.type);
+            try {
+                console.log('[img-sel] Antes de llamar uploadFileToSelectorServer');
+                uploadFileToSelectorServer(file);
+                console.log('[img-sel] Despues de llamar uploadFileToSelectorServer');
+            } catch (e) {
+                console.error('[img-sel] ERROR en llamada:', e);
+            }
+        }
+    });
+    
+    newFileInput.value = '';
+    newFileInput.click();
 }
 
-async function uploadFileToServer(file) {
-    console.log('[blog_editor][image-selector] uploadFileToServer iniciado', file.name);
+/**
+ * Añade una imagen al grid del modal selector
+ * @param {Object} data - Datos del archivo subido {filename, url, type}
+ */
+function addImageToSelectorGrid(data) {
+    console.log('[img-sel] addImageToSelectorGrid INICIO', data);
+    const grid = document.getElementById('selector-existing-images');
+    const emptyState = document.getElementById('selector-empty-state');
+    console.log('[img-sel] grid exists:', !!grid, 'emptyState exists:', !!emptyState);
+    
+    if (!grid) {
+        console.error('[img-sel] grid NO ENCONTRADO - abortando');
+        return;
+    }
+    
+    // Ocultar estado vacío
+    if (emptyState) emptyState.classList.add('d-none');
+    
+    // Limpiar selección previa
+    grid.querySelectorAll('.selector-thumb-item').forEach(el => {
+        el.classList.remove('is-selected');
+    });
+    
+    // Preferir la URL del backend; fallback a la ruta interna del temp folder
+    const userId = document.body.dataset.userId || '0';
+    const tempUrl = data.url || `/media/blog_editor_temp/${userId}/${data.filename}`;
+    console.log('[img-sel] tempUrl:', tempUrl);
+    
+    // Crear item del grid
+    const item = document.createElement('div');
+    item.className = 'selector-thumb-item';
+    item.dataset.filename = data.filename;
+    console.log('[img-sel] item creado');
+    
+    // Imagen con manejo de errores mejorado
+    const img = document.createElement('img');
+    img.className = 'selector-thumb';
+    const imgSrc = encodeURI(tempUrl);
+    console.log('[img-sel] Asignando img.src:', imgSrc);
+    img.src = imgSrc;
+    img.alt = data.filename;
+    img.loading = 'lazy';
+    
+    img.onerror = function() {
+        console.warn('[img-sel] Error cargando imagen desde:', imgSrc, '-> reintentando ruta local:', tempUrl);
+        // Intentar rutas alternativas
+        const slug = document.getElementById('edit-slug')?.value || '';
+        const alternatives = [
+            `/static/blog/images/no-image.png`,
+            `/static/images/no-image.png`
+        ];
+        
+        let tried = 0;
+        function tryNext() {
+            if (tried >= alternatives.length) return;
+            img.src = alternatives[tried];
+            tried++;
+        }
+        
+        img.onerror = tryNext;
+        tryNext();
+    };
+    
+    img.onload = function() {
+        console.log('[img-sel] Imagen cargada exitosamente en el grid');
+    };
+    
+    // Nombre del archivo
+    const name = document.createElement('div');
+    name.className = 'uploaded-filename';
+    name.textContent = data.filename;
+    name.style.fontSize = '0.65rem';
+    name.style.padding = '4px';
+    
+    item.appendChild(img);
+    item.appendChild(name);
+    console.log('[img-sel] item completo, añadiendo al grid...');
+    
+    // Click handler
+    item.addEventListener('click', function() {
+        grid.querySelectorAll('.selector-thumb-item').forEach(el => {
+            el.classList.remove('is-selected');
+        });
+        this.classList.add('is-selected');
+        
+        window.selectedImageFilename = data.filename;
+        const selectBtn = document.getElementById('selector-select-btn');
+        if (selectBtn) selectBtn.disabled = false;
+    });
+    
+    grid.appendChild(item);
+    console.log('[img-sel] item APLICADO al grid. Hijos totales:', grid.children.length);
+    console.log('[img-sel] Grid HTML:', grid.innerHTML.substring(0, 200));
+    
+    // Auto-seleccionar la imagen recién subida
+    window.selectedImageFilename = data.filename;
+    const selectBtn = document.getElementById('selector-select-btn');
+    if (selectBtn) selectBtn.disabled = false;
+    
+    // Scroll al nuevo item
+    setTimeout(() => {
+        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+    
+    return item;
+}
+
+async function uploadFileToSelectorServer(file) {
+    console.log('[blog_editor][image-selector] uploadFileToSelectorServer iniciado', file.name);
     
     if (!file) return;
     
@@ -228,6 +365,7 @@ async function uploadFileToServer(file) {
     }
     
     try {
+        console.log('[img-sel] Enviando fetch a /blog/api/upload-file/');
         const response = await fetch('/blog/api/upload-file/', {
             method: 'POST',
             headers: {
@@ -236,74 +374,27 @@ async function uploadFileToServer(file) {
             body: formData
         });
         
+        console.log('[img-sel] Response status:', response.status);
+        
         if (!response.ok) {
             throw new Error(`Error del servidor: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('[blog_editor][image-selector] Archivo subido exitosamente:', data);
+        console.log('[img-sel] Archivo subido exitosamente:', data);
         
+        // Actualizar array global
         uploadedFiles.push(data);
-        renderUploadedFile(data);
         
+        // Solo renderizar en el grid del modal si está abierto
+        console.log('[img-sel] window.imageSelectorOpen:', window.imageSelectorOpen);
         if (window.imageSelectorOpen) {
-            const grid = document.getElementById('selector-existing-images');
-            const emptyState = document.getElementById('selector-empty-state');
-            
-            if (grid) {
-                if (emptyState) emptyState.classList.add('d-none');
-                
-                const item = document.createElement('div');
-                item.className = 'selector-thumb-item';
-                item.dataset.filename = data.filename;
-                
-                const img = document.createElement('img');
-                img.className = 'selector-thumb';
-                img.src = data.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${data.filename}`;
-                img.alt = data.filename;
-                img.loading = 'lazy';
-                
-                img.onerror = function() {
-                    this.src = `/static/blog/images/no-image.png`;
-                };
-                
-                const name = document.createElement('div');
-                name.className = 'uploaded-filename';
-                name.textContent = data.filename;
-                name.style.fontSize = '0.65rem';
-                name.style.padding = '4px';
-                
-                item.appendChild(img);
-                item.appendChild(name);
-                
-                item.addEventListener('click', function() {
-                    grid.querySelectorAll('.selector-thumb-item').forEach(el => {
-                        el.classList.remove('is-selected');
-                    });
-                    this.classList.add('is-selected');
-                    
-                    window.selectedImageFilename = data.filename;
-                    const selectBtn = document.getElementById('selector-select-btn');
-                    if (selectBtn) selectBtn.disabled = false;
-                });
-                
-                grid.appendChild(item);
-            }
-            
-            window.selectedImageFilename = data.filename;
-            const selectBtn = document.getElementById('selector-select-btn');
-            if (selectBtn) selectBtn.disabled = false;
-            
-            if (grid) {
-                const items = grid.querySelectorAll('.selector-thumb-item');
-                items.forEach(item => {
-                    if (item.dataset.filename === data.filename) {
-                        item.classList.add('is-selected');
-                    } else {
-                        item.classList.remove('is-selected');
-                    }
-                });
-            }
+            console.log('[img-sel] Llamando a addImageToSelectorGrid...');
+            setTimeout(() => addImageToSelectorGrid(data), 300);
+        } else {
+            // Si el modal no está abierto, renderizar solo en el grid principal
+            console.log('[img-sel] Modal NO abierto, renderizando en grid principal');
+            renderUploadedFile(data);
         }
         
     } catch (error) {
@@ -344,7 +435,29 @@ function handleSelectClick() {
     const description = document.getElementById('selector-description')?.value || '';
     const mode = window.selectedImageMode || 'normal';
 
+    // Asegurar que la imagen esté en uploadedFiles y tener el objeto listo
+    let fileData = uploadedFiles.find(f => f.filename === filename);
+    if (!fileData) {
+        fileData = {
+            filename: filename,
+            url: `/media/blog_editor_temp/${document.body.dataset.userId || '0'}/${filename}`,
+            type: 'image'
+        };
+        uploadedFiles.push(fileData);
+        console.log('[img-sel] Imagen agregada a uploadedFiles para el grid principal');
+    }
+
+    // Insertar markdown en el editor
     insertImageInEditor(filename, title, description, mode);
+    
+    // Refrescar el grid principal: miniatura + widgets MTP
+    console.log('[img-sel] Refrescando grid principal de imágenes...');
+    setTimeout(() => {
+        renderUploadedFile(fileData);
+        refreshImageWidgets();
+        console.log('[img-sel] Grid principal actualizado');
+    }, 250);
+    
     $('#imageSelectorModal').modal('hide');
 }
 
@@ -367,3 +480,6 @@ window.openImageSelectorModal = openImageSelectorModal;
 window.insertImageInEditor = insertImageInEditor;
 window.initImageSelector = initImageSelector;
 window.initUploadButton = initUploadButton;
+
+window.refreshImageWidgets = refreshImageWidgets;
+window.renderUploadedFile = renderUploadedFile;

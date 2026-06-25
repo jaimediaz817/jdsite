@@ -7,6 +7,12 @@
 // - [x] Abrir modal al hacer clic en botón video
 // - [x] Validar URL de YouTube y archivos locales
 // - [x] Implementar drag-and-drop para videos
+
+// ======================================================
+// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
+// ======================================================
+console.log('✅ [video-widget.js] jQuery disponible:', typeof jQuery !== 'undefined');
+
 console.log('[video-widget] modulo cargado');
 
 // ======================================================

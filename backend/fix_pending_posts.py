@@ -1,6 +1,7 @@
 """
 Script de reparación para artículos existentes con estados inconsistentes.
 # TODO: ¿?
+
 Problemas que corrige:
 1. Artículos con is_published=True pero moderation_status="pending"
    → Causa: el bug de services.py guardaba draft=is_published (False) en vez de draft=not is_published (True)

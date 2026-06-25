@@ -7,9 +7,14 @@
    TODO LIST (progress tracking)
    - [x] Verificar que la expresión regular elimina solo la imagen solicitada
    - [x] Implementar borrado completo de recursos desde el Editor (frontend + backend)
-   - [x] Probar la eliminación en el navegador y validar que los contadores y markdown se actualizan
+   - [x] Probar la eliminación en el navegador y validar que los contadores y markdown se actualiza
    - [ ] Documentar la nueva funcionalidad en la HU correspondiente
 */
+
+// ======================================================
+// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
+// ======================================================
+console.log('✅ [index.js] jQuery disponible:', typeof jQuery !== 'undefined');
 
 const uploadedFiles = [];
 // Nombre del archivo que se está a punto de eliminar (usado por el modal de confirmación)
@@ -27,9 +32,8 @@ window.imageSelectorOpen = false;
 window.selectedImageFilename = null;
 window.selectedImageMode = null;
 
-// FASE 5 HU-019: Referencia al contenedor para estado vacío
-const uploadedFilesContainer = document.getElementById('uploaded-files');
-console.log('Contenedor de archivos subidos:', uploadedFilesContainer);
+// FASE 5 HU-019: Referencia al contenedor para estado vacío (se resuelve en renderUploadedFile)
+let uploadedFilesContainer = null;
 // Iconos SVG inline (mejor calidad visual y accesibilidad)
 // Use Font Awesome icons for clearer toggle state (eye / eye-slash)
 const ICON_EYE = '<i class="fas fa-eye"></i>';
@@ -165,8 +169,12 @@ function getDraftAge() {
 function renderUploadedFile(file) {
     console.log('Renderizando archivo subido:', file);
     if (!file || !file.filename) return;
-    const container = uploadedFilesContainer;
-    if (!container) return;
+    const container = uploadedFilesContainer || document.getElementById('uploaded-files');
+    if (!container) {
+        console.warn('[renderUploadedFile] Contenedor uploaded-files no encontrado');
+        return;
+    }
+    uploadedFilesContainer = container;
 
     // FASE 5 HU-019: Ocultar estado vacío si existe
     const emptyState = container.querySelector('.uploaded-files-empty');
@@ -645,6 +653,8 @@ const easyMDE = new EasyMDE({
 });
 
 window.easyMDE = easyMDE;
+window.refreshImageWidgets = refreshImageWidgets;
+window.renderUploadedFile = renderUploadedFile;
 
 // ======================================================
 // 1b. Asegurar que cada imagen/video insertado (paste/drag) quede en su propia línea

@@ -1,4 +1,4 @@
-import pytest
+import pytest  # type: ignore
 
 # Importamos la función que hemos creado para sanitizar nombres de archivo
 from blog.utils.importer.filename_utils import sanitizar_nombre

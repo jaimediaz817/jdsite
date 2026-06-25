@@ -9,6 +9,7 @@ import yaml
 import re
 
 from .models import BlogComment, BlogPost
+from .utils.importer.filename_utils import sanitizar_nombre
 
 
 def are_admin_notifications_enabled():
@@ -256,7 +257,6 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management import call_command
 from django.utils.text import slugify
-from allauth.socialaccount.models import SocialAccount
 
 
 def save_blog_to_source(data, user):
@@ -355,15 +355,25 @@ def save_blog_to_source(data, user):
     temp_dir = Path(settings.MEDIA_ROOT) / "blog_editor_temp" / str(user.id)
     image_filename = ""
 
+    # Mapeo nombre_original -> nombre_sanitizado para actualizar rutas en el markdown
+    moved_sanitized = {}
+
     # Primero mover todos los archivos
     for f in files_list:
         filename = f.get("filename", "")
         filetype = f.get("type", "image")
         src = temp_dir / filename
         if src.exists():
-            shutil.move(str(src), str(target_dir / filename))
+            safe_name = sanitizar_nombre(filename)
+            if safe_name != filename:
+                # Renombrar para eliminar espacios/caracteres conflictivos
+                destino = target_dir / safe_name
+                shutil.move(str(src), str(destino))
+                moved_sanitized[filename] = safe_name
+            else:
+                shutil.move(str(src), str(target_dir / filename))
             if filetype == "image" and not image_filename:
-                image_filename = filename
+                image_filename = safe_name if safe_name else filename
 
     # 4.1. HU-011.4 Fase 4: cover_filename del editor tiene PRIORIDAD ABSOLUTA
     # Después de mover todos los archivos, si el usuario especificó una portada,
@@ -473,6 +483,13 @@ def save_blog_to_source(data, user):
     new_fm["author_email"] = author_email
     new_fm["author_provider"] = author_provider
     new_fm["author_id"] = user.id
+
+    # 4.3. Si se sanitizó algún nombre, actualizar las rutas en el markdown
+    # para que apunten al nombre real en disco (sin espacios).
+    if moved_sanitized:
+        for original, safe_name in moved_sanitized.items():
+            # Reemplazar todas las ocurrencias del nombre original (con o sin ruta previa)
+            content_md = content_md.replace(original, safe_name)
 
     # Construir el archivo final y guardarlo
     blog_path = target_dir / "blog.md"

@@ -338,31 +338,53 @@ class BlogProcessor:
     def process_images(
         self, html_content: str, blog_dir: Path, blog_static_dir: Path, slug: str
     ) -> str:
-        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
+        """Procesa las imágenes del HTML.
+
+        - Copia la imagen al directorio estático del blog usando un nombre sanitizado.
+        - Actualiza el atributo ``src`` para que apunte a ``/static/blogs/<slug>/...``.
+        - Añade ``loading="lazy"``.
+        - Genera un atributo ``alt`` legible si falta.
+        - Ignora archivos de video (se manejan en ``process_videos``).
+        """
+        from .filename_utils import sanitizar_nombre
+
         soup = BeautifulSoup(html_content, "html.parser")
+        VIDEO_EXTENSIONS = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogv")
+
         for img in soup.find_all("img"):
             img_src = img["src"]
-            # Skip video files - they are processed in process_videos()
+            # Skip video files – handled elsewhere
             src_lower = img_src.lower()
             if any(src_lower.endswith(ext) for ext in VIDEO_EXTENSIONS):
                 continue
+
+            # Determine if the src is a local relative path
             if not img_src.startswith(("http://", "https://", "/")):
                 source_img = blog_dir / img_src
                 if source_img.exists():
-                    target_img = blog_static_dir / source_img.name
+                    # Sanitizamos el nombre antes de copiar
+                    nombre_sanitizado = sanitizar_nombre(source_img.name)
+                    target_img = blog_static_dir / nombre_sanitizado
                     shutil.copy2(source_img, target_img)
-                    img["src"] = f"/static/blogs/{slug}/{source_img.name}"
-                    img["loading"] = "lazy"
-                    if not img.get("alt"):
-                        nombre_limpio = (
-                            source_img.stem.replace("-", " ")
-                            .replace("_", " ")
-                            .title()
-                        )
-                        img["alt"] = nombre_limpio
-                        self.stdout.write(
-                            f"[OK] Atributo alt generado automaticamente: {nombre_limpio}"
-                        )
+                    img["src"] = f"/static/blogs/{slug}/{nombre_sanitizado}"
+                    # Usamos el nombre del archivo para generar alt si es necesario
+                    nombre_base = source_img.stem
+                else:
+                    # Si el archivo no existe, usamos el nombre del src tal cual
+                    nombre_base = Path(img_src).stem
+            else:
+                # URL o ruta absoluta ya válida
+                nombre_base = Path(img_src).stem
+
+            img["loading"] = "lazy"
+            if not img.get("alt"):
+                nombre_limpio = (
+                    nombre_base.replace("-", " ").replace("_", " ").title()
+                )
+                img["alt"] = nombre_limpio
+                self.stdout.write(
+                    f"[OK] Atributo alt generado automaticamente: {nombre_limpio}"
+                )
         return str(soup)
 
     def process_videos(

@@ -1,6 +1,12 @@
 // ======================================================
 // HU-20_C_V1: Slide / Popup Gallery Widget (modal unificado)
 // ======================================================
+
+// ======================================================
+// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
+// ======================================================
+console.log('✅ [slide-widget.js] jQuery disponible:', typeof jQuery !== 'undefined');
+
 console.log('[slide-widget] modulo cargado');
 
 let currentGalleryMode = 'slides'; // 'slides' | 'popup:gallery'

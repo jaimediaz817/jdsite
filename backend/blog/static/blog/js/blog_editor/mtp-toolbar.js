@@ -6,6 +6,12 @@
 // módulo externo "image-selector.js" y se exponen globalmente vía
 // window. Este archivo asume que dicho módulo ya está cargado antes
 // de usar la acción "image" del toolbar.
+
+// ======================================================
+// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
+// ======================================================
+console.log('✅ [mtp-toolbar.js] jQuery disponible:', typeof jQuery !== 'undefined');
+
 console.log('[blog_editor][mtp-toolbar] modulo cargado');
 
 const MTP_TEMPLATES = {

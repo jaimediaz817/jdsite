@@ -589,13 +589,23 @@
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
     
+    <!-- HU-022 Fase 0: Validación jQuery (diagnóstico) -->
+    <script>
+        // Validación temprana: jQuery cargado ANTES de cualquier módulo del editor
+        if (typeof jQuery === 'undefined') {
+            console.error('❌ [BLOG_EDITOR] jQuery NO está cargado. Revisar orden de scripts en blog_editor.html');
+        } else {
+            console.log('✅ [BLOG_EDITOR] jQuery loaded. Version:', jQuery.fn.jquery);
+        }
+    </script>
+     
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
     <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
     <!-- Import the image selector module before the main editor script -->
     <script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
-<script src="{% static 'blog/js/blog_editor/image-selector.js' %}?v=20250624-2"></script>
+    <script src="{% static 'blog/js/blog_editor/image-selector.js' %}?v=20250624-2"></script>
     <script src="{% static 'blog/js/blog_editor/video-widget.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/slide-widget.js' %}"></script>
   <script>

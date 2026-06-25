@@ -1,4 +1,4 @@
-# HU-20-B.5: Estilo visual profesional para widgets de imagen MTP
+minimize# HU-20-B.5: Estilo visual profesional para widgets de imagen MTP
 
 ## 📋 Metadatos
 - **ID:** HU-20-B.5

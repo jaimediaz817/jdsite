@@ -774,6 +774,8 @@ function scheduleDropFix() {
 
 // Almacén de widgets activos (lineNumber -> {widget, node, menuOpen, widgetId})
 let imageWidgets = {};
+// Almacén de bloques slide/gallery (línea de apertura -> {element, lineWidget, endLine})
+let blockWidgets = {};
 let imageWidgetCleanup = null;
 // Contador para IDs únicos de widgets
 let widgetIdCounter = 0;
@@ -1566,47 +1568,62 @@ function refreshImageWidgets() {
         console.warn('[HU-20-B] easyMDE o cm no disponibles');
         return;
     }
-    
+
     var doc = cm.getDoc();
     var totalLines = doc.lineCount();
     console.log('[HU-20-B] refreshImageWidgets: lineas totales =', totalLines);
-    var newWidgets = {};
+    var newImageWidgets = {};
+    var newBlockWidgets = {};
     var foundImages = 0;
-    
+    var insideBlock = null;
+
     for (var i = 0; i < totalLines; i++) {
         var lineText = doc.getLine(i) || '';
         var trimmed = lineText.trim();
-        
-        // Detectar bloques :::slides y :::popup:gallery
+
+        // Detectar apertura de bloque :::slides / :::popup:gallery
         var isSlideBlock = /^:::\s*slides\s*$/.test(trimmed);
         var isGalleryBlock = /^:::\s*popup:gallery\s*$/.test(trimmed);
+        var isBlockOpen = isSlideBlock || isGalleryBlock;
+        // Detectar cierre de bloque especial
+        var isBlockEnd = /^:::\s*$/.test(trimmed);
+
+        // Rastrear estado de bloque para omitir contenido interno
+        if (isBlockOpen) {
+            insideBlock = isSlideBlock ? 'slides' : 'popup:gallery';
+        } else if (isBlockEnd && insideBlock) {
+            insideBlock = null;
+        }
+
         // Detectar imagen markdown, video HTML local, o referencia YouTube [youtube:ID]
         var isImage = /^!\[.*?\]\(.*?\)$/.test(trimmed);
-        var isVideo = /^<video[^>]*src=.*><\/video>$/.test(trimmed);
+        var isVideo = /^<video\b[^>]*src=.*><\/video>$/.test(trimmed);
         var isYouTube = /^\[youtube:[A-Za-z0-9_-]{11}\]$/.test(trimmed);
-        
-        // Procesar bloques :::slides / :::popup:gallery
-        if (isSlideBlock || isGalleryBlock) {
+
+        // -------------------------------------------------
+        // Solo procesar la línea de apertura como widget de bloque
+        // -------------------------------------------------
+        if (isBlockOpen) {
             foundImages++;
             var blockType = isSlideBlock ? 'slides' : 'popup:gallery';
             console.log('[HU-20-B] Linea', i, 'deteccion bloque:', blockType);
-            
-            if (imageWidgets[i]) {
-                newWidgets[i] = imageWidgets[i];
-                delete imageWidgets[i];
+
+            if (blockWidgets[i]) {
+                newBlockWidgets[i] = blockWidgets[i];
+                delete blockWidgets[i];
             } else {
                 try {
                     var lineHandle = doc.getLineHandle(i);
                     var widgetData = createSlideBlockWidget(i, blockType);
                     var widgetNode = widgetData.widgetElement;
                     widgetNode.classList.add('slideblock-widget-mtp');
-                    
+
                     var lineWidget = cm.addLineWidget(lineHandle, widgetNode, {
                         position: 'after',
                         coverGutter: false,
                         noHScroll: true
                     });
-                    
+
                     var widgetEntry = {
                         widget: lineWidget,
                         node: widgetNode,
@@ -1615,9 +1632,75 @@ function refreshImageWidgets() {
                         type: 'slideblock',
                         ref: blockType
                     };
-                    
-                    newWidgets[i] = widgetEntry;
-                    
+                    newBlockWidgets[i] = widgetEntry;
+                } catch (e) {
+                    console.warn('[HU-20-B] Error al añadir widget bloque', i, e);
+                }
+            }
+            continue;
+        }
+
+        // Si estamos dentro de un bloque, saltar líneas individuales
+        if (insideBlock) {
+            continue;
+        }
+
+        // -------------------------------------------------
+        // Imágenes, videos y YouTube (solo fuera de bloques)
+        // -------------------------------------------------
+        if (isImage || isVideo || isYouTube) {
+            foundImages++;
+            console.log('[HU-20-B] Linea', i, 'deteccion:', trimmed.substring(0, 60));
+
+            var filename = '';
+            var videoId = '';
+            if (isImage) {
+                var match = trimmed.match(/\]\(\.?\/?(.*?)\)/);
+                if (match) filename = match[1];
+            } else if (isVideo) {
+                var match = trimmed.match(/src=["']\.?\/?(.*?)["']/);
+                if (match) filename = match[1];
+            } else if (isYouTube) {
+                var match = trimmed.match(/\[youtube:([A-Za-z0-9_-]{11})\]/);
+                if (match) videoId = match[1];
+            }
+
+            if (!filename && !videoId) continue;
+
+            if (imageWidgets[i]) {
+                newImageWidgets[i] = imageWidgets[i];
+                delete imageWidgets[i];
+                console.log('[HU-20-B] Reusando widget en linea', i);
+            } else {
+                try {
+                    var lineHandle = doc.getLineHandle(i);
+                    let widgetData;
+                    if (isYouTube && videoId) {
+                        widgetData = createYouTubeWidget(i, videoId);
+                    } else if (isVideo) {
+                        widgetData = createLocalVideoWidget(i, filename);
+                    } else {
+                        widgetData = createImageWidget(i, filename);
+                    }
+                    var widgetNode = widgetData.widgetElement;
+                    if (isYouTube) widgetNode.classList.add('video-widget-mtp');
+
+                    var lineWidget = cm.addLineWidget(lineHandle, widgetNode, {
+                        position: 'after',
+                        coverGutter: false,
+                        noHScroll: true
+                    });
+
+                    var widgetEntry = {
+                        widget: lineWidget,
+                        node: widgetNode,
+                        menuOpen: false,
+                        widgetId: widgetData.widgetId,
+                        type: isYouTube ? 'youtube' : (isVideo ? 'video' : 'image'),
+                        ref: videoId || filename
+                    };
+                    newImageWidgets[i] = widgetEntry;
+                    // marcar draggable
                     try {
                         widgetNode.classList.add('img-line-draggable');
                         const menuBtn = widgetNode.querySelector('.img-line-menu-btn');
@@ -1627,115 +1710,35 @@ function refreshImageWidgets() {
                                 startImageDrag(i, this);
                             });
                         }
-                    } catch(err) { console.warn('Error marcando draggable bloque', i, err); }
-                } catch(e) {
-                    console.warn('[HU-20-B] Error al añadir widget bloque', i, e);
+                    } catch (err) { console.warn('Error marcando draggable linea', i, err); }
+                } catch (e) {
+                    console.warn('[HU-20-B] Error al añadir widget linea', i, e);
                 }
             }
         }
-        
-            if (isImage || isVideo || isYouTube) {
-            foundImages++;
-            console.log('[HU-20-B] Linea', i, 'deteccion:', trimmed.substring(0, 60));
-            
-                // Para videos locales e imágenes usamos filename; para YouTube usamos videoId como id interno
-                var filename = '';
-                var videoId = '';
-                if (isImage) {
-                    var match = trimmed.match(/\]\(\.?\/?(.*?)\)/);
-                    if (match) filename = match[1];
-                } else if (isVideo) {
-                    var match = trimmed.match(/src=["']\.?\/?(.*?)["']/);
-                    if (match) filename = match[1];
-                } else if (isYouTube) {
-                    var match = trimmed.match(/\[youtube:([A-Za-z0-9_-]{11})\]/);
-                    if (match) videoId = match[1];
-                }
-
-                console.log('[HU-20-B] Referencia detectada:', { isImage, isVideo, isYouTube, filename, videoId });
-
-                if (!filename && !videoId) continue;
-
-                // Si ya existe un widget para esta línea, reusarlo
-                if (imageWidgets[i]) {
-                    newWidgets[i] = imageWidgets[i];
-                    delete imageWidgets[i];
-                    console.log('[HU-20-B] Reusando widget en linea', i);
-                } else {
-                    // Crear nuevo widget
-                    try {
-                        var lineHandle = doc.getLineHandle(i);
-                        console.log('[HU-20-B] LineHandle para', i, ':', lineHandle);
-
-                        // Para videos de YouTube generamos un widget distinto
-                        let widgetData;
-                        if (isYouTube && videoId) {
-                            widgetData = createYouTubeWidget(i, videoId);
-                        } else if (isVideo) {
-                            widgetData = createLocalVideoWidget(i, filename);
-                        } else {
-                            widgetData = createImageWidget(i, filename);
-                        }
-
-                        var widgetNode = widgetData.widgetElement;
-                        console.log('[HU-20-B] Nodo widget creado:', widgetNode.outerHTML.substring(0, 80));
-
-                        // Añadir clase específica para estilos de video (ya incluida en createLocalVideoWidget)
-                        if (isYouTube) {
-                            widgetNode.classList.add('video-widget-mtp');
-                        }
-
-                        var lineWidget = cm.addLineWidget(lineHandle, widgetNode, {
-                            position: 'after',
-                            coverGutter: false,
-                            noHScroll: true
-                        });
-
-                        var widgetEntry = {
-                            widget: lineWidget,
-                            node: widgetNode,
-                            menuOpen: false,
-                            widgetId: widgetData.widgetId,
-                            type: isYouTube ? 'youtube' : (isVideo ? 'video' : 'image'),
-                            ref: videoId || filename
-                        };
-
-                        newWidgets[i] = widgetEntry;
-
-                        // HU-20-C-V1-ADD Fase 3: marcar widget como arrastrable
-                        try {
-                            widgetNode.classList.add('img-line-draggable');
-                            const menuBtn = widgetNode.querySelector('.img-line-menu-btn');
-                            if (menuBtn) {
-                                menuBtn.addEventListener('mousedown', function(e) {
-                                    if (e.button !== 0) return;
-                                    startImageDrag(i, this);
-                                });
-                            }
-                        } catch(err) { console.warn('Error marcando draggable linea', i, err); }
-                        console.log('[HU-20-B] Widget insertado exitosamente en linea', i);
-                    } catch(e) {
-                        console.warn('[HU-20-B] Error al añadir widget linea', i, e);
-                    }
-                }
-        }
     }
-    
+
     console.log('[HU-20-B] Total imagenes detectadas:', foundImages);
-    
-    // Limpiar widgets de líneas que ya no tienen imágenes
+
+    // Limpiar widgets de líneas que ya no existen (imágenes)
     Object.keys(imageWidgets).forEach(function(lineNum) {
         var existing = imageWidgets[lineNum];
         if (existing && existing.widget) {
-            try {
-                existing.widget.clear();
-                console.log('[HU-20-B] Widget limpiado en linea', lineNum);
-            } catch(e) { /* ignore */ }
+            try { existing.widget.clear(); } catch (e) { /* ignore */ }
         }
     });
-    
-    imageWidgets = newWidgets;
-    console.log('[HU-20-B] Estado final de widgets:', Object.keys(imageWidgets));
+    // Limpiar bloques que ya no existen
+    Object.keys(blockWidgets).forEach(function(lineNum) {
+        var existing = blockWidgets[lineNum];
+        if (existing && existing.widget) {
+            try { existing.widget.clear(); } catch (e) { /* ignore */ }
+        }
+    });
+
+    imageWidgets = newImageWidgets;
+    blockWidgets = newBlockWidgets;
+    console.log('[HU-20-B] Estado final de image widgets:', Object.keys(imageWidgets));
+    console.log('[HU-20-B] Estado final de block widgets:', Object.keys(blockWidgets));
 }
 
 // Refrescar widgets al cambiar el contenido del editor
@@ -2734,25 +2737,33 @@ function endBlockDrag(event) {
     const cm = easyMDE ? easyMDE.codemirror : null;
     if (!cm) return;
 
+    // Guardar valores críticos ANTES del cleanup
     const origin = window.blockDragStartLine;
+    const endLine = window.blockDragEndLine;
     const lines = window.blockDragTextLines || [];
     const text = lines.join('\n');
 
-    // Cleanup first
+    // Limpiar estado UI y referencias
     cleanupBlockDragState();
 
-    const pos = cm.coordsChar({ left: 0, top: event.clientY });
+    if (!text || typeof origin !== 'number') return;
+
+    try {
+        const pos = cm.coordsChar({ left: 0, top: event.clientY });
     let destLine = Math.min(pos.line, cm.getDoc().lineCount() - 1);
 
-    if (destLine !== origin && text) {
-        // Remove original block
-        cm.getDoc().replaceRange('', { line: origin, ch: 0 }, { line: window.blockDragEndLine + 1, ch: 0 });
-        // Adjust destination if it was after the removed block
-        if (destLine > origin) destLine = Math.max(0, destLine - (window.blockDragEndLine - origin + 1));
-        // Insert at new location
-        cm.getDoc().replaceRange(text + '\n', { line: destLine, ch: 0 });
-        // Refresh widgets after move
-        setTimeout(refreshImageWidgets, 100);
+        if (destLine !== origin) {
+            // Eliminar bloque original
+            cm.getDoc().replaceRange('', { line: origin, ch: 0 }, { line: (endLine || origin) + 1, ch: 0 });
+            // Ajustar destino según desplazamiento de líneas
+            if (destLine > origin) destLine = Math.max(0, destLine - ((endLine || origin) - origin + 1));
+            // Reinsertar bloque en nueva ubicación
+            cm.getDoc().replaceRange(text + '\n', { line: destLine, ch: 0 });
+            // Refrescar widgets tras mover
+            setTimeout(refreshImageWidgets, 100);
+        }
+    } catch (e) {
+        console.warn('[HU-20-B] Error en endBlockDrag:', e);
     }
 }
 
@@ -2771,13 +2782,27 @@ function cleanupBlockDragState() {
         window.blockDragGuideEl.parentElement.removeChild(window.blockDragGuideEl);
         window.blockDragGuideEl = null;
     }
-    // Remove dragging class from original widget if present
+    // Limpiar widget del bloque original desde CodeMirror + DOM y quitar referencias
     const cm = easyMDE ? easyMDE.codemirror : null;
     if (cm && typeof window.blockDragStartLine === 'number') {
-        const entry = imageWidgets[window.blockDragStartLine];
-        if (entry && entry.node) {
-            entry.node.classList.remove('img-line-dragging');
+        const startLine = window.blockDragStartLine;
+        // Limpiar blockWidgets
+        const blockEntry = blockWidgets[startLine];
+        if (blockEntry) {
+            if (blockEntry.widget) {
+                try { blockEntry.widget.clear(); } catch (e) { /* ignore */ }
+            }
+            if (blockEntry.node && blockEntry.node.parentElement) {
+                try { blockEntry.node.parentElement.removeChild(blockEntry.node); } catch (e) { /* ignore */ }
+            }
+            delete blockWidgets[startLine];
         }
+        // Limpiar imageWidgets y clase dragging
+        const imgEntry = imageWidgets[startLine];
+        if (imgEntry && imgEntry.node) {
+            imgEntry.node.classList.remove('img-line-dragging');
+        }
+        delete imageWidgets[startLine];
     }
     window.blockDragActive = false;
     window.blockDragStartLine = null;
@@ -2982,6 +3007,9 @@ try {
 } catch (e) {
   // Si la importación dinámica no es soportada, el código legacy queda en index.js como fallback
 }
+
+
+
 
 
 

@@ -1,0 +1,16 @@
+DIAGNOSTICO Y PLAN DE CORRECCION
+=================================
+
+ Problema 1: Las imágenes dentro de ::slides se siguen procesando individualmente
+ Causa: En refreshImageWidgets() no existe estado que distinga entre "línea de apertura" y "línea interna del bloque".
+ Solucion: Rastrear un flag insideBlock y saltar el procesamiento individual siempre que insideBlock !== null.
+
+ Problema 2: Al arrastrar un slide se duplica
+ Causa: cleanupBlockDragState() no elimina el widget previo ni sus referencias, y refreshImageWidgets() lo vuelve a crear sin enterarse de que el origen ya fue removido.
+ Solucion: En cleanupBlockDragState() eliminar tambien del objeto blockWidgets/imageWidgets y limpiar su widget CodeMirror + nodo DOM.
+
+ Pasos:
+ 1. Modificar refreshImageWidgets para incluir insideBlock.
+ 2. Modificar cleanupBlockDragState para limpiar referencias del bloque movido.
+ 3. Asegurar que endBlockDrag usa endLine capturado antes del cleanup.
+ 4. Verificar syntax/indent tras cambios.

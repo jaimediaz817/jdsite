@@ -1340,3 +1340,678 @@ FASE 4 (Limpieza final)
    ```
 6. **TODO debe ser reversible**: cada cambio en su propio commit, con mensaje claro
 7. **Probar después de cada commit**: abrir el editor, subir imagen, guardar, cargar artículo existente
+
+---
+
+## 🧩 Diseño de widgets como unidades independientes (solo blog_editor)
+
+Este proyecto tiene una barra lateral `#mtpToolbar` con múltiples botones, pero **solo 3 widgets están activos**. El resto están deshabilitados (`mtp-disabled`). El objetivo es que cada widget activo sea una **unidad independiente, auto-contenida y reutilizable**, sin interferir en el orden de carga.
+
+### Estado actual de la toolbar MTP
+
+```html
+<!-- Líneas 508-581 de blog_editor.html -->
+<aside class="mtp-toolbar" id="mtpToolbar" role="toolbar">
+    <!-- ✅ ACTIVOS (3) -->
+    <button data-mtp="cover-image">  <!-- Portada -->
+    <button data-mtp="image">        <!-- Imagen markdown (MTP badge) -->
+    <button data-mtp="video">        <!-- Video (MTP badge) -->
+
+    <!-- ❌ DESHABILITADOS (mtp-disabled) -->
+    <button data-mtp="slides">       <!-- Slides -->
+    <button data-mtp="callout-info"> <!-- Callout info -->
+    <button data-mtp="callout-warning">
+    <button data-mtp="callout-tip">
+    <button data-mtp="pullquote">
+    <button data-mtp="codefile">
+    <button data-mtp="popup-gallery">
+    <button data-mtp="vl-highlight">
+    <button data-mtp="separator">
+    <button data-mtp="minimize">
+</aside>
+```
+
+### 🔴 Problema actual: widgets acoplados al orden de carga
+
+Cada widget activo depende de servicios que se declaran en `index.js` (el monolito de 2.576 líneas):
+
+| Widget        | Dependencia actual                                       | Archivo que lo implementa          | Problema                                                   |
+| ------------- | -------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------- |
+| `cover-image` | `insertMtpTemplate('cover-image')` → escribe frontmatter | `mtp-toolbar.js` (import dinámico) | Depende de EasyMDE y de `index.js`                         |
+| `image`       | → `openImageSelectorModal()`                             | `image-selector.js` + `index.js`   | Depende de `uploadedFiles[]` (global) y `window.easyMDE`   |
+| `video`       | → `openVideoModal()`                                     | `video-widget.js` + `index.js`     | Depende de `window.easyMDE` y `window.refreshImageWidgets` |
+
+**El problema**: si el orden de carga cambia (ej: `video-widget.js` antes que `index.js`), `window.easyMDE` no existe aún y todo explota.
+
+### ✅ Propuesta: cada widget como unidad independiente con contrato claro
+
+Cada widget debe:
+1. **Declarar sus dependencias** al inicio del archivo (en un comentario)
+2. **Verificar que las dependencias existen** antes de ejecutarse
+3. **No modificar variables globales** de otro widget
+4. **Comunicarse solo via `BlogEditorUtils`** (namespace central)
+
+#### Arquitectura de widgets propuesta (orden de carga crítico)
+
+```
+ORDEN DE CARGA (blog_editor.html)
+═════════════════════════════════════════════════════
+ 1. jQuery                → $, $.fn.modal, etc.
+ 2. Bootstrap JS          → bootstrap.Modal, bootstrap.Collapse
+ 3. blog_editor_utils.js  → BlogEditorUtils (cookie, toast, modal helpers, FileStore)
+ 4. EasyMDE               → window.EasyMDE (librería externa)
+ 5. marked + DOMPurify    → Parseo markdown
+ 6. FilePond              → Upload de archivos
+ ─────────────────────────────────────────────────────
+ 7. index.js              → Core: inicializa EasyMDE, auto-save, 
+ │                          widgets globales (imageWidgets, drag-drop)
+ │                          EXPONE: window.easyMDE
+ │
+ 8. image-selector.js     → Widget IMAGEN (independiente)
+ │   DEPENDE DE: window.easyMDE, BlogEditorUtils.FileStore
+ │   EXPONE: window.openImageSelectorModal
+ │   REQUIERE: BlogEditorUtils (cargado en paso 3)
+ │             window.easyMDE (cargado en paso 7)
+ │
+ 9. video-widget.js       → Widget VIDEO (independiente)
+ │   DEPENDE DE: window.easyMDE, BlogEditorUtils
+ │   EXPONE: window.openVideoModal
+ │   REQUIERE: BlogEditorUtils (paso 3)
+ │
+10. slide-widget.js       → Widget SLIDES/GALLERY (independiente)
+ │   DEPENDE DE: window.easyMDE, BlogEditorUtils, 
+ │              window.detectImageContext (opcional)
+ │   EXPONE: window.openGalleryModal
+ │   REQUIERE: BlogEditorUtils (paso 3)
+ │
+11. mtp-toolbar.js        → Toolbar (orquestador)
+    DEPENDE DE: todos los widgets anteriores
+    EXPONE: window.initMtpToolbar
+    NOTA: Cambiar de import dinámico a <script> estático
+```
+
+### 📐 Plantilla de widget independiente (ejemplo concreto)
+
+Cada widget nuevo o refactorizado debe seguir esta estructura:
+
+```javascript
+// ======================================================
+// HU-022: Widget [NOMBRE] - unidad independiente
+// Dependencias REQUERIDAS (orden de carga):
+//   1. jQuery (window.$)
+//   2. BlogEditorUtils (window.BlogEditorUtils)
+//   3. EasyMDE (window.easyMDE) - si aplica
+// ======================================================
+(function() {
+    'use strict';
+    
+    // === 1. Verificación de dependencias ===
+    if (typeof jQuery === 'undefined') {
+        console.error('❌ [widget-nombre] jQuery requerido');
+        return;
+    }
+    if (typeof window.BlogEditorUtils === 'undefined') {
+        console.error('❌ [widget-nombre] BlogEditorUtils requerido');
+        return;
+    }
+    // Verificar solo si el widget necesita EasyMDE
+    if (typeof window.easyMDE === 'undefined') {
+        console.warn('⚠️ [widget-nombre] EasyMDE no disponible aún');
+        // El widget puede diferir su inicialización
+    }
+    
+    // === 2. Estado interno (ENCAPSULADO, nada en window.*) ===
+    var _state = {
+        initialized: false,
+        someValue: null
+    };
+    
+    // === 3. Funciones del widget (usa BlogEditorUtils + jQuery) ===
+    function openMyWidgetModal() {
+        // Usar jQuery para modales Bootstrap 4
+        BlogEditorUtils.clearModalInputs('myModal', ['input1', 'input2']);
+        BlogEditorUtils.openModal('myModal');
+    }
+    
+    function handleAction() {
+        const $btn = BlogEditorUtils.$('#myButton');
+        if (!$btn) return;
+        $btn.on('click', function() {
+            // Lógica del widget
+        });
+    }
+    
+    // === 4. Inicialización (idempotente) ===
+    function init() {
+        if (_state.initialized) return;
+        _state.initialized = true;
+        console.log('✅ [widget-nombre] inicializado');
+        handleAction();
+    }
+    
+    // === 5. Exposición controlada (solo lo necesario) ===
+    window.openMyWidgetModal = openMyWidgetModal;
+    window.initMyWidget = init;
+    
+    // Auto-inicializar si las dependencias están listas
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init();
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+})();
+```
+
+### 🔄 Ejemplo concreto: cómo quedaría `video-widget.js` refactorizado
+
+**ANTES** (hoy):
+```javascript
+// video-widget.js
+const easyMDE = window.easyMDE || window.top?.easyMDE;
+if (!easyMDE) { ... }
+
+function openVideoModal() {
+    const urlInput = document.getElementById('videoUrlInput');
+    const fileInput = document.getElementById('videoFileInput');
+    const errorDiv = document.getElementById('videoModalError');
+    if (urlInput) urlInput.value = '';
+    if (fileInput) fileInput.value = '';
+    if (errorDiv) {
+        errorDiv.classList.add('d-none');
+        errorDiv.textContent = '';
+    }
+    $('#videoModal').modal('show');
+}
+
+function confirmVideoModal() { ... }  // 90 líneas de lógica
+function insertVideoTemplate() { ... }
+function attachVideoWidgetHandlers() { ... }
+function initVideoDragDrop() { ... }
+
+window.openVideoModal = openVideoModal;
+window.confirmVideoModal = confirmVideoModal;
+window.insertVideoTemplate = insertVideoTemplate;
+window.attachVideoWidgetHandlers = attachVideoWidgetHandlers;
+```
+
+**DESPUÉS** (widget independiente):
+```javascript
+// ======================================================
+// HU-022: Widget VIDEO - unidad independiente
+// Dependencias REQUERIDAS:
+//   1. jQuery (window.$)
+//   2. BlogEditorUtils (window.BlogEditorUtils)
+//   3. EasyMDE (window.easyMDE) - necesario para insertar
+// ======================================================
+(function() {
+    'use strict';
+    
+    if (typeof jQuery === 'undefined') {
+        console.error('❌ [widget-video] jQuery requerido');
+        return;
+    }
+    if (typeof window.BlogEditorUtils === 'undefined') {
+        console.error('❌ [widget-video] BlogEditorUtils requerido');
+        return;
+    }
+    
+    var _initialized = false;
+    
+    function openVideoModal() {
+        BlogEditorUtils.clearModalInputs('videoModal', 
+            ['videoUrlInput', 'videoFileInput']);
+        $('#videoModalError').addClass('d-none').empty();
+        BlogEditorUtils.openModal('videoModal');
+    }
+    
+    function confirmVideoModal() {
+        // Misma lógica pero usando BlogEditorUtils.getCsrfToken()
+        // y reset de inputs vía BlogEditorUtils
+    }
+    
+    function init() {
+        if (_initialized) return;
+        _initialized = true;
+        
+        // Vincular botón del modal una sola vez
+        $('#videoInsertBtn').on('click', confirmVideoModal);
+        $('#videoUrlInput').on('keydown', function(e) {
+            if (e.key === 'Enter') confirmVideoModal();
+        });
+        
+        // Vincular drag-drop (con jQuery event delegation)
+        $('.mtp-btn[data-mtp="video"]').on('dragover dragenter', function(e) {
+            e.preventDefault();
+            $(this).addClass('drag-over');
+        }).on('dragleave', function(e) {
+            $(this).removeClass('drag-over');
+        }).on('drop', function(e) {
+            e.preventDefault();
+            $(this).removeClass('drag-over');
+            // Procesar archivos de video
+        });
+        
+        console.log('✅ [widget-video] inicializado');
+    }
+    
+    // Exponer solo lo que se necesita
+    window.openVideoModal = openVideoModal;
+    window.confirmVideoModal = confirmVideoModal;
+    
+    // Auto-init
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init();
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+})();
+```
+
+### 📋 Checklist de verificación para cada widget
+
+Antes de declarar un widget como "migrado", debe cumplir:
+
+- [ ] **Encapsulado**: usa `(function() { ... })()` — no contaminar el scope global
+- [ ] **Verifica dependencias**: chequea `BlogEditorUtils`, `jQuery`, `window.easyMDE` antes de ejecutar
+- [ ] **Usa BlogEditorUtils**: `getCookie`, `getCsrfToken`, `openModal`, `clearModalInputs`, `FileStore`
+- [ ] **Usa jQuery**: selectores, eventos, manipulación DOM, modales
+- [ ] **No duplica getCookie()**: usa `BlogEditorUtils.getCookie()` o `BlogEditorUtils.getCsrfToken()`
+- [ ] **Expone solo lo necesario**: `window.openWidgetX`, `window.initWidgetX`
+- [ ] **No modifica variables globales** de otros widgets: no tocar `uploadedFiles` directamente (usar `FileStore`)
+- [ ] **Inicialización idempotente**: se puede llamar `init()` múltiples veces sin efectos secundarios
+- [ ] **Declara dependencias**: comentario al inicio del archivo con el orden de carga requerido
+- [ ] **Prueba manual**: abrir editor, activar widget, cerrar, recargar, activar otra vez
+
+### 📌 Diagnóstico adicional: Modal de ayuda `#mtpHelpModal` — un cuello de botella
+
+Actualmente hay **UN SOLO modal** `#mtpHelpModal` en `blog_editor.html` que se reutiliza para TODOS los widgets. El contenido se inyecta dinámicamente via `openWidgetHelpModal(type)`.
+
+#### 🔴 Problema actual
+
+```html
+<!-- blog_editor.html líneas 476-525 -->
+<div class="modal fade" id="mtpHelpModal">
+    <div class="modal-body">
+        <!-- SECCIONES GENÉRICAS (siempre las mismas) -->
+        <div id="mtpHelpTitle">—</div>          <!-- título -->
+        <p id="mtpHelpDesc">—</p>                <!-- descripción -->
+        <div id="mtpHelpUsage">—</div>           <!-- cómo se usa -->
+        <div id="mtpHelpStepsWrap" class="d-none">...</div>  <!-- pasos (ocultos) -->
+        <div id="mtpHelpScreenshotWrap" class="d-none">...</div>  <!-- screenshot (oculto) -->
+    </div>
+</div>
+```
+
+```javascript
+// mtp-toolbar.js — función única que maneja TODOS los tipos
+function openWidgetHelpModal(type) {
+    // type puede ser: 'image-widget', 'youtube-widget', etc.
+    var title = '';
+    var desc = '';
+    var usage = '';
+    if (type === 'image-widget') {
+        title = 'Widget de imagen MTP';
+        // ...
+    } else {
+        title = 'Ayuda';
+        // ...
+    }
+    // Setear DOM
+    document.getElementById('mtpHelpTitle').textContent = title;
+    document.getElementById('mtpHelpDesc').textContent = desc;
+    document.getElementById('mtpHelpUsage').innerHTML = usage;
+    
+    $('#mtpHelpModal').modal('show');
+}
+```
+
+#### Problemas identificados
+
+| #   | Problema                                                           | Impacto                                                                                                                              |
+| --- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Un solo modal en HTML** para todos los widgets                   | El HTML tiene 5 secciones ocultas que nunca se usan (pasos, screenshot). Son 50 líneas de HTML muerto                                |
+| 2   | **`openWidgetHelpModal(type)` centralizado en mtp-toolbar.js**     | Si un nuevo widget necesita ayuda, HAY que modificar mtp-toolbar.js (alto acoplamiento)                                              |
+| 3   | **video-widget.js tiene su PROPIA función `openVideoHelpModal()`** | Duplica el patrón. Hay 2 formas de abrir ayuda que hacen lo mismo pero no están sincronizadas                                        |
+| 4   | **Contenido quemado en JS**                                        | El texto explicativo está hardcodeado dentro de la función. Para cambiar el texto de ayuda de un widget, hay que modificar código JS |
+| 5   | **Las secciones "pasos" y "screenshot" NUNCA se usan**             | Están en el HTML con clase `d-none` y ningún widget las activa. Es código muerto                                                     |
+
+#### ✅ Propuesta: Cada widget con su PROPIO modal de ayuda (isla autónoma)
+
+En lugar de un modal compartido, cada widget puede tener su propio bloque de ayuda en el HTML, **adyacente a su propio modal funcional**. Esto hace que:
+
+1. Cada widget sea una isla completa: HTML + JS + datos de ayuda
+2. No haya acoplamiento entre widgets para la ayuda
+3. Se pueda eliminar código muerto (pasos, screenshot)
+
+**ANTES** (hoy):
+```
+blog_editor.html
+├── mtpHelpModal (único, compartido)
+├── videoModal (sin ayuda propia)
+└── galleryModal (sin ayuda propia)
+
+mtp-toolbar.js
+└── openWidgetHelpModal(type)  ← controla TODO
+    ├── type='image-widget' → contenido imagen
+    ├── type='youtube-widget' → contenido video
+    └── etc.
+
+video-widget.js
+└── openVideoHelpModal()  ← DUPLICADO
+```
+
+**DESPUÉS** (propuesto):
+```
+blog_editor.html
+├── mtpHelpModal (se elimina, ya no existe)
+├── videoModal
+│   └── videoHelpInline (bloque .d-none dentro del mismo modal)
+├── galleryModal
+│   └── galleryHelpInline (bloque .d-none dentro del mismo modal)
+└── imageSelectorModal
+    └── imageHelpInline (bloque .d-none dentro del mismo modal)
+
+image-selector.js
+└── openHelp()  ← abre su propio help inline
+
+video-widget.js
+└── openHelp()  ← abre su propio help inline
+
+slide-widget.js
+└── openHelp()  ← abre su propio help inline
+```
+
+#### 🔄 Ejemplo concreto: cómo quedaría para video-widget.js
+
+**ANTES** — modal de ayuda compartido:
+```javascript
+// mtp-toolbar.js (archivo externo al widget)
+function openWidgetHelpModal(type) {
+    if (type === 'youtube-widget') {
+        document.getElementById('mtpHelpTitle').textContent = 'Widget de video MTP';
+        document.getElementById('mtpHelpDesc').textContent = 'Inserta videos...';
+        document.getElementById('mtpHelpUsage').innerHTML = 'Pasos: 1. ...';
+    }
+    $('#mtpHelpModal').modal('show');
+}
+
+// video-widget.js (función alternativa duplicada)
+function openVideoHelpModal() {
+    // Misma lógica pero con otro nombre
+    document.getElementById('mtpHelpTitle').textContent = 'Widget de video MTP';
+    // ...
+    $('#mtpHelpModal').modal('show');
+}
+```
+
+**DESPUÉS** — cada widget con su propio help inline:
+```html
+<!-- videoModal con help inline DENTRO del mismo modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- ... contenido normal del modal ... -->
+            
+            <!-- Help inline (colapsable/expandible) -->
+            <div class="modal-body" id="videoHelpSection" style="display:none;">
+                <h6><i class="fas fa-info-circle"></i> Ayuda: Insertar video</h6>
+                <p>Pega una URL de YouTube o sube un archivo de video.</p>
+                <ol>
+                    <li>Haz clic en "Subir archivo de video" y selecciona MP4/WebM</li>
+                    <li>O pega la URL de YouTube en el campo correspondiente</li>
+                    <li>Haz clic en "Insertar"</li>
+                </ol>
+                <button type="button" class="btn btn-sm btn-link" id="videoHelpBackBtn">
+                    ← Volver
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+```javascript
+// video-widget.js — autónomo
+(function() {
+    'use strict';
+    
+    function toggleVideoHelp() {
+        $('#videoHelpSection').toggle();
+        // Mostrar/ocultar contenido principal
+        $('#videoUrlInput, #videoFileInput, #videoInsertBtn').closest('.modal-body')
+            .children().not('#videoHelpSection').toggle();
+    }
+    
+    function init() {
+        // Botón de ayuda dentro del widget
+        $('.mtp-btn[data-mtp="video"]').on('click', function() {
+            // Ya existe, abre el modal normal
+        });
+        
+        // Botón de ayuda (?) dentro del modal
+        $(document).on('click', '#videoHelpBtn', toggleVideoHelp);
+        $(document).on('click', '#videoHelpBackBtn', toggleVideoHelp);
+    }
+    
+    window.openVideoModal = openVideoModal;
+})();
+```
+
+#### Ventajas de esta propuesta:
+
+| Beneficio                                | Explicación                                                                                      |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ✅ **Cada widget es autónomo**            | Su HTML + JS + contenido de ayuda están en un mismo lugar                                        |
+| ✅ **Sin acoplamiento**                   | No necesitas modificar `mtp-toolbar.js` para cambiar la ayuda de un widget                       |
+| ✅ **Código muerto eliminado**            | Las secciones "pasos" y "screenshot" se eliminan al migrar cada widget                           |
+| ✅ **Dos funciones de ayuda se fusionan** | `openWidgetHelpModal` + `openVideoHelpModal` dejan de existir como funciones separadas           |
+| ✅ **Menos JS inline**                    | El contenido de ayuda está en HTML (más fácil de editar) en lugar de estar quemado en JS         |
+| ✅ **Extensible**                         | Si mañana agregas un widget "callout", su ayuda va dentro de su propio modal, sin tocar nada más |
+
+#### ⚠️ Nota importante: migrar gradualmente
+
+No eliminar `#mtpHelpModal` de golpe. El plan es:
+
+1. **Fase actual**: Mantener `#mtpHelpModal` funcionando (no rompe nada)
+2. **Por cada widget migrado**: Agregar su help inline DENTRO de su propio modal HTML, y desactivar la llamada a `openWidgetHelpModal()` desde ese widget
+3. **Al final**: Cuando todos los widgets tengan su help inline, eliminar `#mtpHelpModal` y la función `openWidgetHelpModal()` de `mtp-toolbar.js`
+
+---
+
+### 🗺️ Orden de carga final en `blog_editor.html` (propuesto)
+
+```html
+<!-- Capa 1: Infraestructura base -->
+<script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
+
+<!-- HU-022: Utilidades compartidas del blog_editor -->
+<script src="{% static 'blog/js/blog_editor/blog_editor_utils.js' %}"></script>
+
+<!-- Capa 2: Librerías externas -->
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+
+<!-- Capa 3: Core del editor (dependencia de todos los widgets) -->
+<script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
+
+<!-- Capa 4: Widgets independientes (orden NO importa entre sí) -->
+<script src="{% static 'blog/js/blog_editor/image-selector.js' %}"></script>
+<script src="{% static 'blog/js/blog_editor/video-widget.js' %}"></script>
+<script src="{% static 'blog/js/blog_editor/slide-widget.js' %}"></script>
+
+<!-- Capa 5: Orquestador (toolbar, depende de todos los widgets) -->
+<script src="{% static 'blog/js/blog_editor/mtp-toolbar.js' %}"></script>
+
+<!-- Config global -->
+<script>
+    var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';
+</script>
+```
+
+**Ventajas de este orden**:
+1. **Capas claras**: infraestructura → librerías → core → widgets → orquestador
+2. **Widgets intercambiables**: `image-selector.js`, `video-widget.js` y `slide-widget.js` pueden cargarse en cualquier orden entre sí porque todos dependen solo de las capas 1-3
+3. **Toolbar al final**: `mtp-toolbar.js` se cambia de import dinámico a `<script>` estático, cargando después de que todos los widgets existen
+4. **`blog_editor_utils.js` temprano**: disponible para cualquier widget desde el momento en que se carga
+5. **Sin dependencias circulares**: ningún widget depende de otro widget
+
+### ⚠️ Regla estricta para el orden de carga
+
+> **Cada capa SOLO puede depender de capas anteriores (números más bajos).**
+> 
+> - Capa 4 (widgets) → puede usar Capas 1, 2, 3
+> - Capa 5 (toolbar) → puede usar Capas 1, 2, 3, 4
+> - Capa 3 (core) → puede usar Capas 1, 2
+> - **NUNCA** una capa superior debe ser requerida por una capa inferior
+
+Esta regla garantiza que **no importa el orden entre widgets de la misma capa**: todos funcionan porque sus dependencias (Capas 1, 2, 3) ya están cargadas.
+
+---
+
+## 🧹 Principios de buenas prácticas (no compliquemos)
+
+La meta es **simplificar, no sobreingenierizar**. Aquí van los principios que deben guiar CADA decisión de refactor:
+
+### 1. YAGNI — "You Aren't Gonna Need It"
+
+**No agregues abstracción "por si acaso".** Cada wrapper, helper o función debe resolver un problema REAL, no potencial.
+
+| ❌ Mal (sobre-abstracción)                                    | ✅ Bien (simple)                                                             |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `BlogEditorUtils.clearModalInputs('videoModal', ['a','b'])`  | `$('#videoUrlInput, #videoFileInput').val('')` — jQuery ya lo hace simple   |
+| `BlogEditorUtils.getCsrfToken()`                             | `BlogEditorUtils.getCookie('csrftoken')` — un alias innecesario             |
+| `BlogEditorUtils.$('#btn')`                                  | `$('#btn')` — un wrapper que no agrega valor                                |
+| `FileStore` con observer pattern + `onChange()` + `notify()` | `FileStore.add()` / `remove()` / `findByFilename()` — solo lo que se usa    |
+| `openModal('videoModal')`                                    | `$('#videoModal').modal('show')` — 3 caracteres más, pero directo y legible |
+
+**Regla**: Si jQuery ya lo hace en 1 línea, **no lo envuelvas**. Si son 3+ líneas (como `getCookie`), entonces sí vale la pena.
+
+### 2. Nombres de archivos consistentes
+
+Actualmente hay inconsistencia en los nombres. Propongo estandarizar:
+
+| Archivo actual      | Propuesto                | Razón                                          |
+| ------------------- | ------------------------ | ---------------------------------------------- |
+| `index.js`          | `blog-editor-core.js`    | Describe su rol: el núcleo del editor          |
+| `image-selector.js` | `blog-editor-image.js`   | Prefijo `blog-editor-` + widget que implementa |
+| `video-widget.js`   | `blog-editor-video.js`   | Consistencia con el de imágenes                |
+| `slide-widget.js`   | `blog-editor-slides.js`  | Sin guión innecesario                          |
+| `mtp-toolbar.js`    | `blog-editor-toolbar.js` | Sin siglas MTP (no aportan claridad)           |
+| (nuevo)             | `blog-editor-utils.js`   | Prefijo consistente                            |
+
+**Ventaja**: Con solo ver el nombre sabes qué hace y que pertenece al blog editor.
+
+### 3. Estado compartido mínimo
+
+**No centralices lo que no necesita ser centralizado.** La regla es simple:
+
+- ¿Una variable es usada por 2+ archivos? → Centralizarla en `BlogEditorUtils.FileStore`
+- ¿Una variable es usada por 1 solo archivo? → Dejarla como `let` local, no tocarla
+
+Ejemplos concretos:
+
+| Variable             | Usada por              | ¿Centralizar?                                 |
+| -------------------- | ---------------------- | --------------------------------------------- |
+| `uploadedFiles`      | 3 archivos             | ✅ Sí, en `FileStore`                          |
+| `imageWidgets`       | Solo `index.js`        | ❌ No, se queda local                          |
+| `currentGalleryMode` | Solo `slide-widget.js` | ❌ No, se queda local                          |
+| `window.easyMDE`     | 5 archivos             | ✅ Sí, pero no se migra (es demasiado crítico) |
+| `tags`               | Solo `index.js`        | ❌ No, se queda local                          |
+
+### 4. Consistencia: todo jQuery o todo Vanilla, no mezclar
+
+Cuando refactorices una función, **mígrarla COMPLETA** a jQuery. No dejes mitad Vanilla, mitad jQuery:
+
+```javascript
+// ❌ MAL: mezclado
+function handleClick() {
+    const container = document.getElementById('uploaded-files');  // Vanilla
+    $(container).addClass('is-active');                          // jQuery
+    container.querySelector('.btn').remove();                     // Vanilla otra vez
+}
+
+// ✅ BIEN: todo jQuery
+function handleClick() {
+    $('#uploaded-files').addClass('is-active');
+    $('#uploaded-files .btn').remove();
+}
+
+// ✅ BIEN: todo Vanilla (si la función es simple y no justifica jQuery)
+function handleClick() {
+    const container = document.getElementById('uploaded-files');
+    container.classList.add('is-active');
+    container.querySelector('.btn')?.remove();
+}
+```
+
+### 5. No tocar EasyMDE / CodeMirror
+
+El editor EasyMDE y su integración con CodeMirror son **la parte más crítica y frágil** del blog_editor. **No refactorizar**:
+
+- ❌ No reemplazar `easyMDE.codemirror` por jQuery
+- ❌ No tocar `cm.on('change')`, `cm.getDoc()`, `cm.replaceRange()`
+- ❌ No tocar `easyMDE.value()`, `easyMDE.codemirror`
+- ✅ Sí refactorizar: la UI alrededor del editor (modales, toolbar, uploaded files grid)
+
+### 6. Cada archivo debe tener UNA responsabilidad clara
+
+| Archivo                  | Responsabilidad                                           |
+| ------------------------ | --------------------------------------------------------- |
+| `blog-editor-utils.js`   | Utilidades compartidas (cookie, toast) + FileStore        |
+| `blog-editor-core.js`    | EasyMDE + FilePond + auto-save + imageWidgets + drag-drop |
+| `blog-editor-image.js`   | Selector de imágenes existentes                           |
+| `blog-editor-video.js`   | Modal de video + YouTube + drag-drop de videos            |
+| `blog-editor-slides.js`  | Modal de slides / popup gallery                           |
+| `blog-editor-toolbar.js` | Orquestación de la barra de herramientas MTP              |
+
+**Si un archivo hace más de una cosa, debe dividirse.** Si dos archivos hacen lo mismo, deben unificarse.
+
+### 7. Preferir código declarativo sobre imperativo
+
+| ❌ Imperativo                                                                   | ✅ Declarativo                                          |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| `if (condition) { el.classList.add('x'); } else { el.classList.remove('x'); }` | `$el.toggleClass('x', condition)`                      |
+| `const el = document.getElementById('x'); if (el) el.style.display = 'block';` | `$('#x').show()` (o `$('#x').css('display', 'block')`) |
+| `items.forEach(item => { item.addEventListener('click', fn); })`               | `$(parent).on('click', '.item', fn)`                   |
+
+### 8. No mezclar el refactor con nuevas funcionalidades
+
+Si mientras refactorizas encuentras un bug o quieres agregar una feature, **no lo hagas en el mismo cambio**. Cada commit debe:
+
+1. O refactorizar (sin cambiar comportamiento)
+2. O agregar funcionalidad (sin refactorizar)
+
+Nunca ambos en el mismo commit. Esto permite revertir sin perder features.
+
+### 9. Preferir convención sobre configuración
+
+Usa convenciones consistentes en lugar de dejar cada archivo a su criterio:
+
+```javascript
+// ✅ Convención para nombres de funciones expuestas en window
+window.open[Widget]Modal     → window.openImageSelectorModal
+window.confirm[Widget]Modal  → window.confirmVideoModal
+window.init[Widget]          → window.initGalleryToolbar
+
+// ✅ Convención para IDs de modales en HTML
+[widget]Modal                → videoModal, galleryModal, imageSelectorModal
+
+// ✅ Convención para data-mtp en toolbar
+data-mtp="[widget-name]"     → data-mtp="image", data-mtp="video", data-mtp="cover-image"
+```
+
+### 10. Resumen: qué SÍ y qué NO hacer
+
+| ✅ HACER                                                                 | ❌ NO HACER                                           |
+| ----------------------------------------------------------------------- | ---------------------------------------------------- |
+| Usar jQuery para manipulación DOM (selectores, clases, eventos)         | Usar `$.ajax()` — mantener `fetch()` nativo          |
+| Centralizar solo las variables COMPARTIDAS entre archivos               | Centralizar TODO "por si acaso"                      |
+| Encapsular widgets en IIFE `(function(){...})()`                        | Crear clases/objetos complejos para 3 widgets        |
+| Usar `BlogEditorUtils.getCookie()` (elimina duplicación)                | Crear `BlogEditorUtils.$()` (no agrega valor)        |
+| Migrar funciones COMPLETAS a jQuery                                     | Mezclar Vanilla + jQuery en la misma función         |
+| Mantener `window.easyMDE` como está                                     | Tocar la integración con EasyMDE/CodeMirror          |
+| Orden de carga por capas (infra → librerías → core → widgets → toolbar) | Dependencias circulares o imports dinámicos frágiles |
+| Un commit = refactor O feature (nunca ambos)                            | Hacer mil cosas en un solo commit                    |

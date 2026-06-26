@@ -1,4 +1,4 @@
-# HU-20_C_V2: Slides — envolver líneas internas en el contenedor del widget macho
+# HU-20_C_V2: Slides — envolver líneas internas en contenedor del widget macho
 
 ## Objetivo
 
@@ -13,54 +13,54 @@ Lograr que el `position: relative` del widget macho de `:::slides` / `:::popup:g
 - [ ] No se duplican widgets al arrastrar un slide.
 - [ ] El botón de ayuda del widget macho abre el modal explicativo sin errores.
 
-## Pasos de implementación (granulares)
-
-### Fase 1: Estado `insideBlock` en `refreshImageWidgets`
-- Modificar `refreshImageWidgets()` en `backend/blog/static/blog/js/blog_editor/index.js`.
-- Agregar variable `var insideBlock = null;`.
-- En el bucle de líneas:
-  - Detectar apertura `:::slides` / `:::popup:gallery` → activar `insideBlock`.
-  - Detectar cierre `:::` con `insideBlock` activo → desactivar `insideBlock`.
-  - Si `insideBlock` está activo, saltar el procesamiento individual de imágenes/video/YouTube.
-  - Si `insideBlock` es `null` y se detecta imagen/video/YouTube, crear el widget individual como se hace hoy.
-
-### Fase 2: Envolver las líneas del bloque
-- **Opción recomendada**: ajustar la lógica de `createSlideBlockWidget` para que el widget macho use un wrapper de bloque que se inyecte en el DOM antes de la línea de apertura y se cierre después de la línea de cierre.
-- El wrapper debe ser un `<div style="position: relative;">` que contenga:
-  - La línea `:::slides` (o `:::popup:gallery`).
-  - Las líneas de imágenes/videos (sin `CodeMirror-linewidget` propio).
-  - La línea de cierre `:::`.
-- **Alternativa**: si el wrapper nativo de CodeMirror no lo permite de forma estable, implementar una superposición absoluta que se posicione según la altura del bloque, medida desde la línea de apertura hasta el cierre. Esta alternativa es más frágil y debe quedar documentada como última opción.
-
-### Fase 3: Verificar no regresión
-- Abrir editor con bloques normales (fuera de `:::slides`) y confirmar que imágenes/videos siguen mostrando su widget individual.
-- Abrir editor con bloques `:::slides` y `:::popup:gallery` y confirmar que:
-  - Solo se crea el widget macho en la línea de apertura.
-  - Las líneas internas no tienen `CodeMirror-linewidget`.
-  - El wrapper agrupa todo el bloque.
-- Probar arrastrar un slide y confirmar que no se duplica.
-- Probar el botón de ayuda del widget macho y confirmar que abre el modal.
-
-## Puntos de código relevantes
-
-- `backend/blog/static/blog/js/blog_editor/index.js`:
-  - `refreshImageWidgets()` (líneas ~1566-1742).
-  - `createSlideBlockWidget()` (líneas ~1450-1533).
-  - `deleteSlideBlock()` (líneas ~1539-1560).
-- `backend/blog/static/blog/js/blog_editor/slide-widget.js`:
-  - Orquesta la creación del bloque, pero delega el refresco en `refreshImageWidgets()`.
-- `backend/blog/static/blog/js/blog_editor/image-selector.js`:
-  - Expone `detectImageContext()` (usado por `slide-widget.js`).
-- `backend/blog/static/blog/js/blog_editor/diagnostico_slides.md`:
-  - Diagnóstico detallado del problema y ejemplo de implementación.
-
-## Notas para el implementador
-
-- No modificar `createImageWidget`, `createLocalVideoWidget` ni `createYouTubeWidget`; no son parte del fix.
-- El selector CSS `.CodeMirror-code>div:has(> .CodeMirror-linewidget > .img-line-widget.mtp-branded)` ya marca el contenedor padre del widget macho; confirmar que sigue funcionando tras el wrapper.
-- Si se opta por wrapper manual, tener en cuenta que CodeMirror puede regenerar el DOM de líneas; hay que re-aplicar el wrapper en cada `refreshImageWidgets()` o en eventos de `change`.
-- Si el wrapper manual genera parpadeos o desalineaciones, evaluar la opción de superposición absoluta.
-
 ## Estado
 
-Pendiente de implementación.
+Completada.
+
+## Cambios realizados
+
+- `backend/blog/static/blog/js/blog_editor/index.js` — `refreshImageWidgets()`:
+  - Al inicio: limpieza de `.slideblock-wrapper` huérfanos.
+  - En apertura `:::slides` / `:::popup:gallery`: crea `<div class="slideblock-wrapper widget-container" style="position: relative;">`, inserta el wrapper antes de la línea y mueve la línea de apertura dentro del wrapper.
+  - En cierre `:::`: mueve la línea de cierre dentro del wrapper activo.
+  - Dentro del bloque: sigue activo el salto `insideBlock` para no crear widgets individuales por imagen/video/YouTube.
+  - Después del wrapper: crea el widget macho con `addLineWidget` posicionado en la línea de apertura, que ya está dentro del wrapper.
+
+- `backend/blog/static/blog/js/blog_editor/index.js` — `startBlockDrag()`:
+  - El wrapper del CodeMirror (editorWrapper) también recibe la clase `.widget-container` cuando se inicia un arrastre de bloque.
+
+- `backend/blog/static/blog/css/blog_editor.css`:
+  - Agregada regla `.slideblock-wrapper { position: relative; }`.
+
+- **NUEVO**: Todos los divs envoltorio de widgets (tanto `.slideblock-wrapper` como el editorWrapper de CodeMirror durante arrastres) incluyen ahora la clase `.widget-container` como selector identificador único. Esto permite apuntar a cualquier contenedor de widget sin depender de estilos inline.
+
+## Selector disponible
+
+```css
+.widget-container       /* cualquier div envoltorio de widget (slides, gallery, drag) */
+.slideblock-wrapper     /* específicamente el wrapper de bloques :::slides / :::popup:gallery */
+```
+
+## Resultado DOM esperado
+
+```html
+<div class="slideblock-wrapper widget-container" style="position: relative;">
+  <pre class="CodeMirror-line">:::slides</pre>
+  <div class="CodeMirror-linewidget">…widget macho…</div>
+
+  <pre class="CodeMirror-line">![img1](…)</pre>
+  <pre class="CodeMirror-line">![img2](…)</pre>
+
+  <pre class="CodeMirror-line">:::</pre>
+</div>
+```
+
+> **Nota:** El selector `.widget-container` identifica a cualquier div envoltorio de widget (slides, popup:gallery, y también el wrapper del CodeMirror durante arrastres). Esto permite apuntar a estos contenedores sin depender de estilos inline como `position: relative`.
+
+## Validación manual recomendada
+
+1. Abrir el editor con un bloque `:::slides` y confirmar que solo se muestra el widget macho.
+2. Confirmar que las imágenes del bloque no tienen `CodeMirror-linewidget` propio.
+3. Confirmar que fuera de `:::slides` las imágenes/videos/YouTube siguen mostrando su widget individual.
+4. Probar arrastrar el slide y validar que no se duplican widgets.
+5. Probar el botón de ayuda del widget macho y confirmar que abre el modal.

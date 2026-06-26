@@ -660,6 +660,15 @@ button#btn-save {
 }
 
 /* ======================================================
+   HU-20-C-V2: Wrapper fluido para bloques :::slides / :::popup:gallery
+   ====================================================== */
+.slideblock-wrapper {
+    position: relative;
+    /* NO usar position:absolute ni float - es un wrapper fluido normal */
+    /* El widget macho (addLineWidget) se inserta dentro de este wrapper */
+}
+
+/* ======================================================
    HU-20-C-V1: YouTube Widget layout horizontal
    ====================================================== */
 .youtube-widget-body {

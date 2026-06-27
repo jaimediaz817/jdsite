@@ -1,4 +1,4 @@
-o/**
+/**
  * ✨ JAVASCRIPT ESPECIFICO BLOG DETAIL
  * Archivo separado responsablemente
  * 

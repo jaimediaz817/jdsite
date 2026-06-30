@@ -42,6 +42,11 @@ function prevSlide() { setActiveSlide(getActiveIndex() - 1); }
 function nextSlide() { setActiveSlide(getActiveIndex() + 1); }
 function goToSlide(dot, idx) { setActiveSlide(idx); }
 
+// Exponer funciones del carrusel globalmente para uso desde onclick en el HTML
+window.prevSlide = prevSlide;
+window.nextSlide = nextSlide;
+window.goToSlide = goToSlide;
+
 document.addEventListener('DOMContentLoaded', function() {
     var slides = getSlides();
     if (slides.length) setActiveSlide(0);
@@ -416,36 +421,35 @@ window.submitReplyForm = function(commentId) {
 };
 
 // ===== MODO LECTURA (Alpine Component) =====
-document.addEventListener('alpine:init', function() {
-    Alpine.data('readingMode', function() {
-        return {
-            mode: localStorage.getItem('jd-reading-mode') || 'normal',
-            init: function() {
-                this.applyMode(this.mode);
-            },
-            toggle: function() {
-                var modes = ['normal', 'sepia', 'dark'];
-                var idx = modes.indexOf(this.mode);
-                this.mode = modes[(idx + 1) % modes.length];
-                this.applyMode(this.mode);
-                localStorage.setItem('jd-reading-mode', this.mode);
-            },
-            applyMode: function(mode) {
-                document.documentElement.setAttribute('data-reading-mode', mode);
-            },
-            // Icono usando FontAwesome: devuelve el HTML del icono
-            getIcon: function() {
-                var icons = {
-                    normal: '<i class="fas fa-sun"></i>',
-                    sepia: '<i class="fas fa-book"></i>',
-                    dark: '<i class="fas fa-moon"></i>'
-                };
-                return icons[this.mode] || '';
-            },
-            getLabel: function() {
-                var labels = { normal: 'Normal', sepia: 'Sepia', dark: 'Oscuro' };
-                return labels[this.mode] || 'Normal';
-            }
-        };
-    });
-});
+// Exponer globalmente para que x-data="readingMode()" funcione sin depender del evento alpine:init
+window.readingMode = function() {
+    return {
+        mode: localStorage.getItem('jd-reading-mode') || 'normal',
+        init: function() {
+            this.applyMode(this.mode);
+        },
+        toggle: function() {
+            var modes = ['normal', 'sepia', 'dark'];
+            var idx = modes.indexOf(this.mode);
+            this.mode = modes[(idx + 1) % modes.length];
+            this.applyMode(this.mode);
+            localStorage.setItem('jd-reading-mode', this.mode);
+        },
+        applyMode: function(mode) {
+            document.documentElement.setAttribute('data-reading-mode', mode);
+        },
+        // Icono usando FontAwesome: devuelve el HTML del icono
+        getIcon: function() {
+            var icons = {
+                normal: '<i class="fas fa-sun"></i>',
+                sepia: '<i class="fas fa-book"></i>',
+                dark: '<i class="fas fa-moon"></i>'
+            };
+            return icons[this.mode] || '';
+        },
+        getLabel: function() {
+            var labels = { normal: 'Normal', sepia: 'Sepia', dark: 'Oscuro' };
+            return labels[this.mode] || 'Normal';
+        }
+    };
+};

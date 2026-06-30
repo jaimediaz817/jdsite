@@ -770,7 +770,7 @@
     </script>
 
     <!-- ✨ JAVASCRIPT ESPECIFICO BLOG -->
-    <script src="{% static 'blog/js/blog_detail.js' %}"></script>
+    <script src="{% static 'blog/js/blog_detail.js' %}?v=3"></script>
 
     <!-- Zeppelin volador animación -->
     <script src="{% static 'blog/js/zeppelin.js' %}"></script>
@@ -826,8 +826,8 @@
     <script src="{% static 'blog/js/comments_handler.js' %}"></script>
 
     <!-- ALPINE.JS CDN - El plugin collapse DEBE cargar ANTES que el core -->
-    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js" defer></script>
 
     <!-- ✨ MODAL DE CONFIRMACIÓN PARA ELIMINAR COMENTARIOS -->
     <dialog id="jd-confirm-delete-modal">

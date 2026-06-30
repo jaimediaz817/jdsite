@@ -18,6 +18,11 @@
     
     <link rel="stylesheet" href="{% static 'blog/css/blog_editor.css' %}">
     
+    <!-- Custom footer for blog -->
+    <link rel="stylesheet" href="{% static 'blog/css/footer.css' %}">
+    <!-- Zeppelin volador footer -->
+    <link rel="stylesheet" href="{% static 'blog/css/zeppelin.css' %}">
+    
     <link rel="icon" type="image/x-icon" href="{% static 'blog/images/favicon/favicon.ico' %}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -152,6 +157,9 @@
                     <h2><i class="fas fa-code"></i> Editor Markdown</h2>
                     <p class="text-muted small">Escribe en markdown o HTML directo. Pega imágenes/videos con <kbd>Ctrl+V</kbd> o arrástralos aquí.</p>
                     
+                    <!-- Mensaje de estado superior -->
+                    <div id="status-message-top" class="mt-3"></div>
+                    
                     <div class="editor-container mb-3">
                         <textarea id="editor"></textarea>
                     </div>
@@ -183,6 +191,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Aside flotante para acciones principales del blog (Guardar/Cancelar) -->
+    <aside class="actions-blog-toolbar" id="actionsBlogToolbar" role="toolbar" aria-label="Acciones del blog">
+        <button type="button" id="btn-save-float" class="actions-blog-btn" title="Guardar Borrador/Blog">
+            <i class="fas fa-save"></i>
+        </button>
+        <button type="button" id="btn-cancel-float" class="actions-blog-btn" title="Cancelar" onclick="window.location.href='{% url 'blog:blog_list' %}'">
+            <i class="fas fa-times"></i>
+        </button>
+    </aside>
 
     <!-- Modal Bootstrap: Recuperar borrador local -->
     <div class="modal fade" id="draftRecoveryModal" tabindex="-1" role="dialog" aria-labelledby="draftRecoveryModalLabel" aria-hidden="true">
@@ -523,11 +541,11 @@
                         <i class="fas fa-check me-1"></i>Entendido
                     </button>
                 </div>
-            </div>
         </div>
     </div>
+</div>
 
-    <!-- HU-011.7: Barra de herramientas MTP (Mark to Post) -->
+<!-- HU-011.7: Barra de herramientas MTP (Mark to Post) -->
     <aside class="mtp-toolbar" id="mtpToolbar" role="toolbar" aria-label="Barra de herramientas MTP">
         <!-- Grupo: Multimedia -->
         <button type="button" class="mtp-btn" data-mtp="cover-image" data-tip="Portada (frontmatter)">
@@ -584,7 +602,7 @@
         <i class="fas fa-pencil-alt"></i>
     </button>
 
-    {% include "partials/_footer.html" %}
+    {% include "blog/partials/_blog_footer.html" %}
 
     <script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/bs/bootstrap.min.js' %}"></script>
@@ -612,5 +630,7 @@
     // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)
     var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';
   </script>
+    <!-- Drone volador animación -->
+    <script src='{% static 'blog/js/zeppelin.js' %}'></script>
 </body>
 </html>

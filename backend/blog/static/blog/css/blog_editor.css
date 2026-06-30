@@ -1264,7 +1264,7 @@ fieldset[disabled] input {
 .draft-indicator .btn-outline-danger {
     font-size: 0.8rem;
     padding: 4px 10px;
-    border-radius: 6px;
+    border-radius: 20px;
 }
 
 /* ======================================================
@@ -1895,7 +1895,7 @@ fieldset[disabled] input {
 .mtp-toolbar {
     position: fixed;
     right: 12px;
-    top: 50%;
+    top: 55%;
     transform: translateY(-50%);
     z-index: 1050;
     display: flex;
@@ -2009,8 +2009,9 @@ fieldset[disabled] input {
 
 .mtp-toggle-btn:hover {
     background: rgba(13, 110, 253, 0.12);
-    color: #0d6efd;
+    color: #ffffff;
     transform: translateY(-50%) scale(1.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 /* Estado minimizado */
@@ -3003,4 +3004,158 @@ h2 i,
 .gallery-selected-row textarea {
     resize: vertical;
     min-height: 38px;
+}
+
+/* ======================================================
+   Actions Blog Toolbar (aside flotante Guardar/Cancelar)
+   ====================================================== */
+.actions-blog-toolbar {
+    position: fixed;
+    top: 12%;
+    right: 12px;
+    transform: translateY(-50%);
+    z-index: 1040;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 6px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.actions-blog-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #fff;
+    color: #495057;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.actions-blog-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.actions-blog-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.actions-blog-btn i {
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+/* Variante específica por acción */
+#btn-save-float {
+    color: #0d6efd;
+}
+
+#btn-cancel-float {
+    color: #e56873;
+}
+
+/* Tooltip estilo MTP para botones del aside flotante */
+.actions-blog-btn {
+    position: relative;
+}
+
+.actions-blog-btn::after {
+    content: attr(title);
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%) translateY(4px);
+    background: rgba(33, 37, 41, 0.95);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 99999;
+}
+
+.actions-blog-btn:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateY(0);
+}
+
+@media (max-width: 575.98px) {
+    .actions-blog-btn::after {
+        display: none;
+    }
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .actions-blog-toolbar {
+        top: auto;
+        bottom: 18px;
+        right: 50%;
+        transform: translateX(50%);
+        flex-direction: row;
+        border-radius: 18px;
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    .actions-blog-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+    }
+
+    .actions-blog-btn i {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .actions-blog-toolbar {
+        right: 50px;
+        bottom: inherit;
+        padding: 3px 5px;
+        gap: 8px;
+        top: 1.5%;
+        border-radius: 8px;
+    }
+
+    .actions-blog-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    }
+}
+
+/* Ocultar en pantallas muy pequeñas para no tapar teclado */
+@media (max-width: 575.98px) {
+    /* .actions-blog-toolbar {
+        right: 50px;
+        bottom: inherit;
+        padding: 3px 5px;
+        gap: 8px;
+        top: 1.5%;
+        border-radius: 8px;
+    }
+
+    .actions-blog-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    } */
 }

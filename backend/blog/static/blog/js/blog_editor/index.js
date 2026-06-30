@@ -1412,10 +1412,12 @@ function removeUploadedFilePreview(filename) {
  */
 function showStatusMessage(msg, type) {
     const el = document.getElementById('status-message');
-    if (!el) return;
+    const elTop = document.getElementById('status-message-top');
+    if (!el && !elTop) return;
     const alertClass = type === 'success' ? 'alert-success' : type === 'danger' ? 'alert-danger' : 'alert-info';
     const html = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button></div>';
-    el.innerHTML = html;
+    if (el) el.innerHTML = html;
+    if (elTop) elTop.innerHTML = html;
 }
 
 /**
@@ -2149,24 +2151,31 @@ window.addEventListener('load', () => {
 // ======================================================
 // 6. Botón "Guardar"
 // ======================================================
+function setStatusMessages(html) {
+    const top = document.getElementById('status-message-top');
+    const bottom = document.getElementById('status-message');
+    if (top) top.innerHTML = html;
+    if (bottom) bottom.innerHTML = html;
+}
+
 document.getElementById('btn-save').addEventListener('click', async () => {
     const data = collectFormData();
     if (!data.title.trim()) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">El título es obligatorio<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        setStatusMessages('<div class="alert alert-danger alert-dismissible fade show" role="alert">El título es obligatorio<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         return;
     }
     if (!data.description.trim()) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">La descripción es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        setStatusMessages('<div class="alert alert-danger alert-dismissible fade show" role="alert"><div class=""><i class=""></div>La descripción es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         return;
     }
     if (!data.category) {
-        document.getElementById('status-message').innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">La categoría es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        setStatusMessages('<div class="alert alert-danger alert-dismissible fade show" role="alert">La categoría es obligatoria<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         return;
     }
     const btn = document.getElementById('btn-save');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
-    document.getElementById('status-message').innerHTML = '';
+    setStatusMessages('');
     try {
         const response = await fetch('/blog/api/save-blog/', {
             method: 'POST',
@@ -2181,22 +2190,34 @@ document.getElementById('btn-save').addEventListener('click', async () => {
             localStorage.removeItem(DRAFT_KEY);
             updateDraftIndicator(false);
             if (result.published) {
-                document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-success alert-dismissible fade show" role="alert">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
+                setStatusMessages(`<div class="alert alert-process-editor__container alert-success alert-dismissible fade show" role="alert">Artículo publicado. <a href="/blog/${result.slug}/" class="alert-process-editor alert-link">Ver artículo</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`);
                 updateStatusBadge('published');
             } else {
-                document.getElementById('status-message').innerHTML = '<div class="alert alert-process-editor__container alert-warning alert-dismissible fade show" role="alert">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                setStatusMessages('<div class="alert alert-process-editor__container alert-warning alert-dismissible fade show" role="alert">Borrador guardado. Pendiente de aprobación. <a href="/blog/" class="alert-process-editor alert-link"><i class="fas fa-list"></i> Ver lista de artículos</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                 updateStatusBadge('pending');
             }
         } else {
-            document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error: ${result.error || 'Error desconocido'}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
+            setStatusMessages(`<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error: ${result.error || 'Error desconocido'}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`);
         }
     } catch (err) {
-        document.getElementById('status-message').innerHTML = `<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error de conexión: ${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`;
+        setStatusMessages(`<div class="alert alert-process-editor__container alert-danger alert-dismissible fade show" role="alert">Error de conexión: ${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`);
     } finally {
         btn.disabled = false;
         btn.innerHTML = document.querySelector('#btn-save').dataset.originalText || 'Guardar';
     }
 });
+
+// Sincronizar botón flotante con la acción de guardado original
+const btnSaveFloat = document.getElementById('btn-save-float');
+if (btnSaveFloat) {
+    btnSaveFloat.addEventListener('click', async () => {
+        const originalBtn = document.getElementById('btn-save');
+        if (originalBtn) {
+            originalBtn.click();
+            originalBtn.focus();
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('btn-save');

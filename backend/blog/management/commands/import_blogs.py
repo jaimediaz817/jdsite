@@ -777,6 +777,11 @@ class Command(BaseCommand):
                             f"✅ Atributo alt generado automaticamente: {nombre_limpio}"
                         )
 
+        # Inyectar clase CSS profesional si el <img> no tiene clases
+        for img in soup.find_all("img"):
+            if not img.get("class"):
+                img["class"] = "img-fluid rounded blog-content-img"
+
         return str(soup)
 
     def process_videos(self, html_content, blog_dir, blog_static_dir, slug):

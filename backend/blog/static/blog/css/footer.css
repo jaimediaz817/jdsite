@@ -97,6 +97,7 @@
 
 /* ---------- 5. Newsletter ---------- */
 .footer-newsletter {
+    position: relative;
     width: 100%;
     max-width: 340px;
     margin-top: 0.25rem;
@@ -157,6 +158,50 @@
 .newsletter-btn:focus-visible {
     outline: 2px solid #6366f1;
     outline-offset: 2px;
+}
+
+/* ---------- 5.5 Newsletter LockedOverlay ---------- */
+.newsletter-locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(11, 13, 16, 0.4);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 8px;
+    z-index: 10;
+    pointer-events: auto;
+    transition: background 0.2s ease, backdrop-filter 0.2s ease;
+}
+
+.locked-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    user-select: none;
+}
+
+.locked-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a5b4fc;
+}
+
+.locked-text {
+    line-height: 1;
 }
 
 /* ---------- 6. Column Titles ---------- */

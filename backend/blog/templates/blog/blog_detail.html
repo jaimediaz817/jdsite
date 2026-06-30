@@ -782,7 +782,14 @@
 
     <!-- Modal nativo HTML5 para zoom de imagenes -->
     <dialog id="image-zoom-modal">
-      <img id="image-zoom-content" src="" alt="" />
+      <div class="modal-lightbox-wrapper">
+        <button type="button" class="modal-lightbox-close" aria-label="Cerrar">&times;</button>
+        <button type="button" class="modal-lightbox-prev" aria-label="Anterior">&lsaquo;</button>
+        <button type="button" class="modal-lightbox-next" aria-label="Siguiente">&rsaquo;</button>
+        <span class="modal-lightbox-counter"></span>
+        <div class="modal-lightbox-spinner"></div>
+        <img id="image-zoom-content" src="" alt="" />
+      </div>
     </dialog>
 
     <!-- ✨ VARIABLE AUTENTICACION PARA JS -->

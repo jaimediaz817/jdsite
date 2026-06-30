@@ -3855,3 +3855,380 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
         height: 110px;
     }
 }
+
+/* ==========================================================================
+   2. BLOG CONTENT IMAGES (widget de imagen del editor)
+   ==========================================================================
+   - .blog-content img  --> selector directo (funciona SIEMPRE, ideal
+                            para artículos legacy ya publicados)
+   - .blog-content-img  --> clase inyectada por process_images para
+                            artículos nuevos o reprocesados
+   ========================================================================== */
+
+/* Capa 1 - Selector directo (NO depende de clase inyectada) */
+.blog-content img {
+    max-width: 85%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Capa 2 - Clase semantica (para personalizacion futura) */
+.blog-content-img {
+    max-width: 85%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ==========================================================================
+   3. BLOG IMAGE GRID (mosaico de imagenes individuales)
+   ==========================================================================
+   Generado por blog_detail.js cuando detecta 2+ <p> con solo <img> consecutivos.
+   ========================================================================== */
+.blog-image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 1.5rem 0;
+}
+
+.blog-image-grid-item {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    aspect-ratio: 4 / 3;
+    background: #f3f4f6;
+    position: relative;
+}
+
+.blog-image-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.blog-image-grid-item:hover img {
+    transform: scale(1.05);
+}
+
+.blog-image-grid[data-count="2"] {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.blog-image-grid[data-count="1"] {
+    grid-template-columns: 1fr;
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .blog-image-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .blog-image-grid[data-count="1"] {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .blog-image-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   5. LIGHTBOX ANIMACIONES (Fase 3)
+   ========================================================================== */
+
+/* Animacion de apertura: fade + scale up */
+#image-zoom-modal[open] {
+    animation: lightbox-fade-in 0.25s ease-out;
+}
+
+#image-zoom-modal[open] .modal-lightbox-wrapper {
+    animation: lightbox-scale-in 0.3s ease-out;
+}
+
+@keyframes lightbox-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes lightbox-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Transicion al cambiar imagen en el modal */
+#image-zoom-content {
+    transition: opacity 0.2s ease;
+}
+
+#image-zoom-content.loading {
+    opacity: 0.4;
+}
+
+/* Spinner de carga mientras se descarga la imagen del modal */
+.modal-lightbox-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: lightbox-spin 0.7s linear infinite;
+    z-index: 99;
+    display: none;
+}
+
+.modal-lightbox-spinner.show {
+    display: block;
+}
+
+@keyframes lightbox-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Transicion hover en grid mejorada */
+.blog-image-grid-item {
+    transition: box-shadow 0.3s ease;
+}
+
+.blog-image-grid-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ==========================================================================
+   4. IMAGE LIGHTBOX MODAL
+   ========================================================================== */
+#image-zoom-modal {
+    border: none !important;
+    outline: none !important;
+    padding: 0;
+    background: transparent;
+    max-width: none;
+    max-height: none;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    border-radius: 12px;
+}
+
+#image-zoom-modal::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.modal-lightbox-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+}
+
+#image-zoom-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.modal-lightbox-close,
+.modal-lightbox-prev,
+.modal-lightbox-next {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    z-index: 100;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-lightbox-close {
+    top: 1rem;
+    right: 1rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.modal-lightbox-close:hover,
+.modal-lightbox-prev:hover,
+.modal-lightbox-next:hover {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.modal-lightbox-close:focus-visible,
+.modal-lightbox-prev:focus-visible,
+.modal-lightbox-next:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 2px;
+}
+
+.modal-lightbox-prev {
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.modal-lightbox-next {
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.modal-lightbox-prev.hidden,
+.modal-lightbox-next.hidden {
+    display: none;
+}
+
+.modal-lightbox-counter {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-family: 'Montserrat', sans-serif;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    display: none;
+}
+
+.modal-lightbox-counter.show {
+    display: block;
+}
+
+.modal-lightbox-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: lightbox-spin 0.7s linear infinite;
+    z-index: 99;
+    display: none;
+}
+
+.modal-lightbox-spinner.show {
+    display: block;
+}/* ==========================================================================
+   5. LIGHTBOX ANIMACIONES (Fase 3)
+   ========================================================================== */
+
+/* Animacion de apertura: fade + scale up */
+#image-zoom-modal[open] {
+    animation: lightbox-fade-in 0.25s ease-out;
+}
+
+#image-zoom-modal[open] .modal-lightbox-wrapper {
+    animation: lightbox-scale-in 0.3s ease-out;
+}
+
+@keyframes lightbox-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes lightbox-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Transicion al cambiar imagen en el modal */
+#image-zoom-content {
+    transition: opacity 0.2s ease;
+}
+
+#image-zoom-content.loading {
+    opacity: 0.4;
+}
+
+/* Spinner de carga mientras se descarga la imagen del modal */
+.modal-lightbox-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: lightbox-spin 0.7s linear infinite;
+    z-index: 99;
+    display: none;
+}
+
+.modal-lightbox-spinner.show {
+    display: block;
+}
+
+@keyframes lightbox-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Transicion hover en grid mejorada */
+.blog-image-grid-item {
+    transition: box-shadow 0.3s ease;
+}
+
+.blog-image-grid-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}

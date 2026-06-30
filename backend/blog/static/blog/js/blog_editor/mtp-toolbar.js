@@ -84,12 +84,16 @@ function insertMtpTemplate(action) {
         const toggleBtn = document.getElementById('mtpToggleBtn');
         if (!toolbar) return;
         const isMinimized = toolbar.classList.toggle('minimized');
+        // También ocultarlo del flujo visual cuando está minimizado
+        toolbar.style.visibility = isMinimized ? 'hidden' : 'visible';
         if (toggleBtn) {
             toggleBtn.style.display = isMinimized ? 'flex' : 'none';
         }
         try {
             localStorage.setItem('mtp_toolbar_minimized', isMinimized ? 'true' : 'false');
         } catch (e) { /* ignore */ }
+        // Sincronizar margen del main inmediatamente
+        syncEditorMargin(toolbar);
         console.log('[blog_editor][mtp-toolbar] minimize finalizado', { isMinimized });
         return;
     }
@@ -196,6 +200,16 @@ function openWidgetHelpModal(type) {
     console.log('[blog_editor][mtp-toolbar] openWidgetHelpModal finalizado', { type });
 }
 
+function syncEditorMargin(toolbar) {
+    const main = document.querySelector('.editor-main');
+    if (!main) return;
+    if (toolbar.classList.contains('minimized')) {
+        main.style.maxWidth = '';
+    } else {
+        main.style.maxWidth = '72%';
+    }
+}
+
 function initMtpToolbar() {
     console.log('[blog_editor][mtp-toolbar] initMtpToolbar iniciado');
     const toolbar = document.getElementById('mtpToolbar');
@@ -250,8 +264,10 @@ function initMtpToolbar() {
             const toolbarEl = document.getElementById('mtpToolbar');
             if (toolbarEl) {
                 toolbarEl.classList.remove('minimized');
+                toolbarEl.style.visibility = 'visible';
                 toggleBtn.style.display = 'none';
                 localStorage.setItem('mtp_toolbar_minimized', 'false');
+                syncEditorMargin(toolbarEl);
             }
         });
     }
@@ -259,7 +275,10 @@ function initMtpToolbar() {
     if (window.innerWidth <= 992) {
         const toolbarEl = document.getElementById('mtpToolbar');
         const toggleBtnEl = document.getElementById('mtpToggleBtn');
-        if (toolbarEl) toolbarEl.classList.remove('minimized');
+        if (toolbarEl) {
+            toolbarEl.classList.remove('minimized');
+            toolbarEl.style.visibility = 'visible';
+        }
         if (toggleBtnEl) toggleBtnEl.style.display = 'none';
         localStorage.setItem('mtp_toolbar_minimized', 'false');
     } else {
@@ -268,11 +287,16 @@ function initMtpToolbar() {
             if (minimized === 'true') {
                 const toolbarEl = document.getElementById('mtpToolbar');
                 const toggleBtnEl = document.getElementById('mtpToggleBtn');
-                if (toolbarEl) toolbarEl.classList.add('minimized');
+                if (toolbarEl) {
+                    toolbarEl.classList.add('minimized');
+                    toolbarEl.style.visibility = 'hidden';
+                }
                 if (toggleBtnEl) toggleBtnEl.style.display = 'flex';
             }
         } catch (e) { /* ignore */ }
     }
+    // Sincronizar margen inicial según estado actual del toolbar
+    syncEditorMargin(toolbar);
     console.log('[blog_editor][mtp-toolbar] initMtpToolbar finalizado');
 }
 

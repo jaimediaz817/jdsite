@@ -36,6 +36,8 @@
 
 .editor-main {
     padding-left: 20px;
+    /* max-width se sincroniza desde JS según estado del toolbar */
+    transition: max-width 0.25s ease;
 }
 
 /* EasyMDE personalización */
@@ -2602,7 +2604,6 @@ h2 i,
 
 @media (max-width: 480px) {
 
-
     .editor-actions .d-flex {
         flex-direction: row;
         gap: 10px;
@@ -2650,6 +2651,14 @@ h2 i,
         text-align: left;
         margin-left: 10px;
     }
+}
+
+/* ======================================================
+   UX FIX: Compensar espacio de barras flotantes en desktop
+   ====================================================== */
+@media (min-width: 992px) {
+    /* El margen ahora se sincroniza vía JS con syncEditorMargin()
+       para garantizar que se aplique y se retire al minimizar. */
 }
 
 /* ======================================================

@@ -262,6 +262,12 @@
     }
 }
 
+@media (max-width: 991px) {
+    #navigation-menu .nav-link-blog {
+        width: 155px;
+    }
+}
+
 // Oculta el elemento solo en mobile (menor a 992px)
 @media (max-width: 768px) {
     .hide-mobile {

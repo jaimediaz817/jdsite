@@ -4,22 +4,24 @@
 // SLIDES
 .swiper-container {
     .swiper-slide {
-        
+
         &.img {
             background-size: cover;
             background-position: center center;
             text-align: center;
             top: -1px;
         }
+
         &.image1 {
             background-image:
-            url('../images/slides/slide_boilerplate.jpg');
+                url('../images/slides/slide_boilerplate.jpg');
         }
+
         &.image2 {
             background-image:
-            url('../images/slides/slide_pc_desktop.jpg');
+                url('../images/slides/slide_pc_desktop.jpg');
         }
-    
+
         // Opacity
         // Overlay para slides de imagen/víedo
         &.img:before,
@@ -31,8 +33,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: -1;  
-            background: rgba(vars.$grey_dark, 0.89);          
+            z-index: -1;
+            background: rgba(vars.$grey_dark, 0.89);
         }
 
         // Overlay para slide de video
@@ -47,6 +49,7 @@
             // background: rgba(vars.$grey_dark, 0.70);
             background: linear-gradient(135deg, rgba(vars.$grey_dark, 0.64) 0%, rgba(vars.$grey_dark, 0.85) 100%);
         }
+
         // CLASE NUEVA PARA EL VIDEO
         &.video-slide {
             overflow: hidden; // Importante para que el video no se salga
@@ -68,10 +71,11 @@
                 z-index: -1; // El velo está en -1, el video en -2. ¡Perfecto!
             }
         }
-    } 
+    }
 
     // Pagination
-    .swiper-button-prev, .swiper-button-next {
+    .swiper-button-prev,
+    .swiper-button-next {
         width: 3rem;
         height: 3rem;
         display: flex;
@@ -91,15 +95,16 @@
             border: 2px solid rgba(vars.$white, 0.1);
         }
     }
+
     .swiper-button-prev:before {
         font-family: "Font Awesome 5 Free";
-        font-weight: 900;        
+        font-weight: 900;
         content: "\f053";
     }
 
     .swiper-button-next:before {
         font-family: "Font Awesome 5 Free";
-        font-weight: 900;        
+        font-weight: 900;
         content: "\f054";
     }
 
@@ -110,13 +115,14 @@
             height: 1.25rem;
             margin: 0 0.5rem;
             background: rgba(vars.$primary, 0.9);
-            border:2px solid rgba(vars.$white, 0.2);
+            border: 2px solid rgba(vars.$white, 0.2);
         }
     }
 }
 
 
 @media(min-width: 0) {
+
     // SLIDES
     .swiper-container {
         .swiper-slide {
@@ -124,24 +130,26 @@
             Font base = 13px;   450px height.
             rem= 450px / 13px = 34
             */
-            height: 38rem;
+            height: 40rem;
 
             .container {
                 h2 {
                     // font-size: 2.5rem;                    
                 }
+
                 .text-left {
                     text-align: left;
                 }
+
                 // Solo para móvil
                 @media (max-width: 767.98px) {
-                .text-mobile-small {
-                    font-size: 1.75rem !important;
-                    line-height: 1.3;
-                }
+                    .text-mobile-small {
+                        font-size: 1.75rem !important;
+                        line-height: 1.3;
+                    }
                 }
             }
-        }    
+        }
 
         &:after {
             content: "";
@@ -154,42 +162,47 @@
             background: url(../images/jd_firma.png) no-repeat center;
             background-size: contain;
             z-index: 999;
-        }   
-    }    
+        }
+    }
 }
 
 
 
 @media(min-width: 1200px) {
+
     // SLIDES
     .swiper-container {
         .swiper-slide {
             height: 44rem;
-        }    
+        }
     }
+
     .hero-logo-jd {
         left: calc((100% - var(--jd-container-max-md)) / 2);
-    }    
+    }
 }
 
 @media(min-width: 768px) {
+
     // SLIDES
     .swiper-container {
         .swiper-slide {
             height: 37.5rem; // 600px / 16px origin
         }
-    }    
+    }
 }
 
 @media(min-width: 1450px) {}
 
 
 @media(min-width: 992px) {
+
     // SLIDES
     .swiper-container {
         .swiper-slide {
             height: 37.5rem;
         }
+
         &:after {
             content: "";
             position: absolute;
@@ -200,21 +213,20 @@
             background: url(../images/jd_firma.png) no-repeat center;
             background-size: contain;
             z-index: 999;
-        }        
+        }
     }
 }
 
 
-@media(min-width: 576px) {
-    
-}
+@media(min-width: 576px) {}
 
 
 
 
 /* === Logo flotante sobre el hero === */
 #headerSlider {
-    position: relative; /* necesario para posicionar elementos absolutos dentro */
+    position: relative;
+    /* necesario para posicionar elementos absolutos dentro */
 }
 
 
@@ -222,9 +234,9 @@
     position: absolute;
     top: 1.5rem;
     // left: 5.5vw;
-   /* lo importante: lo alineamos al borde izquierdo del container */
+    /* lo importante: lo alineamos al borde izquierdo del container */
     // left: calc((100% - var(--jd-container-max)) / 2);
-    /* ajústalo según la altura que quieras */   
+    /* ajústalo según la altura que quieras */
     z-index: 6;
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
@@ -240,9 +252,9 @@
 
         @media (max-width: 768px) {
             width: 45px;
-        }        
+        }
     }
-    
+
     &::before {
         content: "";
         position: absolute;
@@ -251,7 +263,7 @@
         height: 93px;
         /* background: red; */
         border-radius: 50%;
-        border: 1.5px solid rgba(255,255,255,0.32); // Más transparente
+        border: 1.5px solid rgba(255, 255, 255, 0.32); // Más transparente
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
@@ -273,7 +285,7 @@
         left: 50%;
         transform: translateX(-50%);
         padding: 0.25rem 0.7rem;
-        
+
     }
 
 }
@@ -308,7 +320,7 @@
     flex-direction: column;
     gap: 0.75rem;
     z-index: 5;
-   
+
 }
 
 /* Botón base: pill, borde blanco, glassy */
@@ -329,8 +341,7 @@
     text-decoration: none;
     backdrop-filter: blur(14px);
     box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
-    transition: all 0.18s 
-ease-out;
+    transition: all 0.18s ease-out;
     white-space: nowrap;
 
     @media (max-width: 575.98px) {
@@ -348,7 +359,7 @@ ease-out;
         font-size: 1.18rem;
         font-weight: 600;
         letter-spacing: 0.5px;
-        border: 2px solid rgba(255,255,255,0.25);
+        border: 2px solid rgba(255, 255, 255, 0.25);
         border-radius: 2rem;
         padding: 0.75rem 1.7rem;
         // margin-right: 0.5rem;
@@ -358,9 +369,11 @@ ease-out;
         @media (max-width: 575.98px) {
             font-size: 0.92rem;
             padding: 0.42rem 1rem;
-        }   
-        &:hover, &:focus {
-            background: rgba(255,255,255,0.10);
+        }
+
+        &:hover,
+        &:focus {
+            background: rgba(255, 255, 255, 0.10);
             color: #fff;
             border-color: #fff;
             text-decoration: none;
@@ -379,8 +392,8 @@ ease-out;
 .hero-stack-chips span {
     padding: 0.25rem 0.7rem;
     border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.25);
     font-size: 1rem;
     color: #fff;
 }
@@ -395,7 +408,7 @@ ease-out;
     color: #ffffff;
     background: rgba(255, 255, 255, 0.14);
     transform: translateY(-1px);
-    box-shadow: 0 20px 55px rgba(0,0,0,0.7);
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.7);
 }
 
 /* Variante outline (Descargar CV): se queda casi transparente */
@@ -481,49 +494,54 @@ ease-out;
     }
 
     // Responsive: menos padding y radio en mobile
-    @media (max-width: 767.98px) {
-
-    }
+    @media (max-width: 767.98px) {}
 }
 
 
 .flip-logo-jd {
-  perspective: 900px;
-  cursor: pointer;
-  outline: none;
-  overflow: visible;
-  .flip-inner {
-    position: relative;
-    width: 72px;
-    height: 72px;
-    transition: transform 0.7s cubic-bezier(.4,2,.3,1);
-    transform-style: preserve-3d;
+    perspective: 900px;
+    cursor: pointer;
+    outline: none;
     overflow: visible;
-  }
-  .flip-front, .flip-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 50%;
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .flip-front img, .flip-back img {
-    // width: 100%;
-    // height: 100%;
-    object-fit: cover;
-  }
-  .flip-back {
-    overflow: hidden;
-    transform: rotateY(180deg);
-    background: #fff;
-  }
-  &.flipped .flip-inner {
-    transform: rotateY(180deg);
-  }
+
+    .flip-inner {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        transition: transform 0.7s cubic-bezier(.4, 2, .3, 1);
+        transform-style: preserve-3d;
+        overflow: visible;
+    }
+
+    .flip-front,
+    .flip-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flip-front img,
+    .flip-back img {
+        // width: 100%;
+        // height: 100%;
+        object-fit: cover;
+    }
+
+    .flip-back {
+        overflow: hidden;
+        transform: rotateY(180deg);
+        background: #fff;
+    }
+
+    &.flipped .flip-inner {
+        transform: rotateY(180deg);
+    }
 }
 
 @media (max-width: 768px) {
@@ -537,18 +555,19 @@ ease-out;
     .header-slider-cta {
         // bottom: 55px;
         gap: 0.55rem;
-        display:flex;        
-    }  
+        display: flex;
+    }
 }
 
 
 // AQUÍ AGREGA TU MEDIA QUERY PERSONALIZADA:
 @media (min-width: 770px) and (max-width: 980px) {
-  .text-slide-container {
-    top: 1rem;
-  }
-  .text-slide-container::before {
-    content: "";
-    width: 90%;
-  }
+    .text-slide-container {
+        top: 1rem;
+    }
+
+    .text-slide-container::before {
+        content: "";
+        width: 90%;
+    }
 }

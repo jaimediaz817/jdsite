@@ -16,7 +16,7 @@
     <div class="card-body">
         <!-- Enlace volver atrás -->
         <div class="mb-3">
-            <a href="{{ request.META.HTTP_REFERER|default:'/blog/' }}" class="btn-back-link">
+            <a href="{% url 'blog:blog_list' %}" class="btn-back-link">
                 <i class="fas fa-arrow-left"></i>
                 <span>Volver a la página anterior</span>
             </a>

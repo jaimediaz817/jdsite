@@ -1,7 +1,7 @@
 ---
 title: "Las mejoras de UI/UX que hicieron que la gente se quedara un 40% más tiempo en el blog"
 description: "Como pasamos de una tasa de finalización de lectura del 42% al 68% cambiando solamente CSS y siguiendo principios de legibilidad profesional"
-date: "2026-06-26"
+date: "2026-06-30"
 draft: false
 image: "image-1.png"
 author: "Jaime Diaz"
@@ -14,8 +14,10 @@ meta_description: "Los cambios concretos y medibles que implementamos para mejor
 keywords: "diseño ui, experiencia usuario, legibilidad texto, mejora blog, velocidad lectura"
 tiempo_lectura: 3
 author_id: 15
-cover_image: "/static/blogs/test_blog/captura_de_pantalla_2025-11-06_154412_a8cd8338.png"
+cover_image: "/static/blogs/test_blog/img_20260501_181947_474178e1.jpg"
 ---
+
+
 
 
 slieds ejemplo1:

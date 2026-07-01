@@ -3,7 +3,7 @@
 <nav id="navigation-menu" class="jd-section navbar navbar-dark navbar-expand-lg sticky-top">
   <div class="container section-menu-cta-buttons">
     <!-- Botón toggler (izquierda) -->
-    <button type="button" class="navbar-toggler bu" data-toggle="collapse" data-target="#navbarNav" aria-expanded="false" aria-label="Menú principal" style="order: -1 !important;">
+    <button type="button" class="navbar-toggler bu" id="mobileMenuToggle" aria-expanded="false" aria-label="Menú principal" aria-controls="navbarNav" style="order: -1 !important;">
       <span class="icon-menu-custom"></span>
     </button>
 
@@ -30,7 +30,7 @@
         {% if user.is_authenticated %}
           <ul class="navbar-nav d-flex align-items-center mb-2 mb-lg-0">
             <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-expanded="false" style="display: flex; align-items: center;">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" aria-expanded="false" style="display: flex; align-items: center; cursor: pointer;">
                 <div class="user-profile d-flex align-items-center gap-2">
                   <div class="user-avatar">
                     {% if user.socialaccount_set.exists %}
@@ -450,5 +450,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Script para el modal de registro eliminado - no se usa actualmente
     // El formulario de registro ahora está en /blog/accounts/signup/
+
+    // ✅ Control manual del menú hamburguesa (evita conflicto jQuery/Bootstrap antiguo)
+    var mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    var navbarCollapse = document.getElementById('navbarNav');
+    if (mobileMenuToggle && navbarCollapse) {
+      mobileMenuToggle.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // ✅ Control manual del dropdown de usuario
+    var userDropdown = document.getElementById('userDropdown');
+    var dropdownMenu = null;
+    if (userDropdown) {
+      dropdownMenu = userDropdown.nextElementSibling;
+      userDropdown.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (dropdownMenu) {
+          dropdownMenu.classList.toggle('show');
+        }
+      });
+    }
+
+    // Cerrar menús al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (navbarCollapse && !e.target.closest('#navigation-menu')) {
+        navbarCollapse.classList.remove('show');
+      }
+      if (dropdownMenu && !e.target.closest('#userDropdown')) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
 });
 </script>

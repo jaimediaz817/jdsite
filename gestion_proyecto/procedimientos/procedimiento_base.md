@@ -143,6 +143,32 @@ git push (local)
 git fetch --all && git reset --hard origin/main (VPS)
 
 source env/bin/activate
+
+--------------------------------------------------------------------------------------------
+IMPORTANTE! PARA PRODUCCION:
+# 1) Ir a la raíz del proyecto en el servidor
+cd /var/www/jdiaz.tipsterbyte.com/app
+
+# 2) Activar entorno virtual
+source env/bin/activate
+
+# 3) Asegurar dependencias
+pip install -r requirements.txt
+
+# 4) Migrar por si hay cambios pendientes
+cd backend
+python manage.py migrate --run-syncdb
+
+# 5) Recolectar estáticos (por si algo nuevo se haya agregado)
+python manage.py collectstatic --noinput --clear
+
+# 6) Reiniciar servicio Gunicorn
+sudo systemctl restart jdiaz_gunicorn.service
+
+# 7) Verificar que levantó
+sudo systemctl status jdiaz_gunicorn.service --no-pager
+--------------------------------------------------------------------------------------------
+
 pip install -r backend/requirements.txt
 
 python manage.py migrate

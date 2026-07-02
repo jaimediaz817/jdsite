@@ -30,6 +30,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 if DJANGO_ENV == "production":
     DEBUG = False
     ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "jdiaz.tipsterbyte.com").split(",")
+    # CSRF/HTTPS security settings for production
+    CSRF_TRUSTED_ORIGINS = [
+        "https://jaimediaz.dev",
+        "https://www.jaimediaz.dev",
+        "https://jdiaz.tipsterbyte.com",
+    ]
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 else:
     DEBUG = True
     ALLOWED_HOSTS = ["*"]
@@ -110,7 +119,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "reactions.middleware.RateLimitMiddleware",
+    # "reactions.middleware.RateLimitMiddleware",
 ]
 
 ROOT_URLCONF = "jdsite.urls"

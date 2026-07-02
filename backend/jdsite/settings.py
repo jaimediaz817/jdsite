@@ -35,10 +35,13 @@ if DJANGO_ENV == "production":
         "https://jaimediaz.dev",
         "https://www.jaimediaz.dev",
         "https://jdiaz.tipsterbyte.com",
+        "https://localhost",
     ]
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
 else:
     DEBUG = True
     ALLOWED_HOSTS = ["*"]

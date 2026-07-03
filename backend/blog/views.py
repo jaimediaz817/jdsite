@@ -37,6 +37,7 @@ from blog.models import (
     BlogModeration,
     BlogEmailConfig,
 )
+from core.models import UserProfile
 
 from blog.services import (
     create_comment,
@@ -969,6 +970,11 @@ def quick_signup(request):
         # Si no hay errores críticos, procesar registro
         if form.is_valid():
             user = form.save()
+            # HU-023: Asignar fuente de registro
+            UserProfile.objects.get_or_create(
+                user=user,
+                defaults={"registration_source": "basic"},
+            )
             user.backend = "django.contrib.auth.backends.ModelBackend"
             login(request, user)
             return JsonResponse({"success": True, "redirect": "/blog/"})

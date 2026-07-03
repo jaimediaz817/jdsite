@@ -65,7 +65,7 @@ urlpatterns = [
     path("me/logout/", custom_logout, name="logout"),
     path("inq/", include(("inquiries.urls", "inquiries"), namespace="inquiries")),
     # ... otras URLs
-    path("api/", include("core.urls")),
+    path("api/", include(("core.urls", "core"), namespace="core")),
     path("", include("soap_service.urls")),
     path("cv/", descargar_cv, name="descargar_cv"),
     path("cv-file/", descargar_cv_real, name="descargar_cv_real"),

@@ -1,0 +1,29 @@
+# 🔥 AGREGAR CSRF MANUALMENTE AL SETTINGS.PY (EN VIVO)
+
+## Ejecuta esto DIRECTAMENTE en tu VPS:
+
+```bash
+# Agregar CSRF_TRUSTED_ORIGINS y configuraciones HTTPS al settings.py
+sudo tee -a /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/settings.py << 'EOF'
+
+# ============================================
+# CONFIGURACIÓN CSRF PARA PRODUCCIÓN (FIX URGENTE)
+# ============================================
+CSRF_TRUSTED_ORIGINS = [
+    "https://jaimediaz.dev",
+    "https://www.jaimediaz.dev",
+]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+EOF
+
+# Reiniciar Gunicorn
+sudo systemctl restart jdiaz_gunicorn.service
+sleep 3
+
+# Recargar nginx
+sudo systemctl reload nginx
+
+# Verificar que funciona
+curl -I https://jaimediaz.dev

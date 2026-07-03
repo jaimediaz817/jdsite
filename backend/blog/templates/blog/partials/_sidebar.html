@@ -51,20 +51,16 @@ Shared between blog_list.html and blog_detail.html{% endcomment %}
     <i class="fas fa-chevron-down arrow" :class="{'rotate-180': open}" style="float: right;"></i>
   </h2>
   <ul class="list-unstyled" x-show="open" x-collapse x-transition>
-    <li class="order-item">
-      <a href="{% url 'blog:blog_editor' %}" class="order-link">
-        <span class="order-link-content">
-          <i class="fas fa-pen-fancy order-icon" style="color: #ff7e5f;"></i>
-          <span class="order-label">Escribir artículo</span>
-        </span>
+    <li class="order-item" style="margin-bottom: 6px;">
+      <a href="{% url 'blog:blog_editor' %}" class="blog-write-btn">
+        <i class="fas fa-pen-fancy"></i>
+        <span>Escribir artículo</span>
       </a>
     </li>
-    <li class="order-item">
-      <a href="{% url 'blog:dashboard' %}" class="order-link">
-        <span class="order-link-content">
-          <i class="fas fa-gavel order-icon" style="color: #6f42c1;"></i>
-          <span class="order-label">Moderación</span>
-        </span>
+    <li class="order-item" style="margin-bottom: 6px;">
+      <a href="{% url 'blog:dashboard' %}" class="blog-moderation-btn">
+        <i class="fas fa-gavel"></i>
+        <span>Moderación</span>
       </a>
     </li>
   </ul>

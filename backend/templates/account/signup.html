@@ -34,8 +34,11 @@
             <small>o crea una cuenta con tu correo</small>
         </div>
 
+        <!-- Alert container for errors -->
+        <div id="signup-alert" class="alert alert-danger d-none" role="alert"></div>
+
         <!-- Formulario de registro -->
-        <form method="post" action="/accounts/signup/">
+        <form method="post" id="signup-form">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -50,26 +53,22 @@
                     <label for="id_username" class="form-label">Nombre de usuario</label>
                     <input type="text"
                            name="username"
-                           class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                           class="form-control"
                            id="id_username"
                            placeholder="ej. jdiaz2024"
                            required
                            value="{{ form.username.value|default:'' }}">
-                    {% for error in form.username.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-username"></div>
                 </div>
                 <div class="col-12">
                     <label for="id_email" class="form-label">Correo electrónico</label>
                     <input type="email"
                            name="email"
-                           class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                           class="form-control"
                            id="id_email"
                            placeholder="tu@email.com"
                            value="{{ form.email.value|default:'' }}">
-                    {% for error in form.email.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-email"></div>
                 </div>
             </div>
 
@@ -78,27 +77,23 @@
                     <label for="id_first_name" class="form-label">Nombre</label>
                     <input type="text" 
                            name="first_name" 
-                           class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_first_name" 
                            placeholder="Tu nombre"
                            required
                            value="{{ form.first_name.value|default:'' }}">
-                    {% for error in form.first_name.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-first_name"></div>
                 </div>
                 <div class="col-md-6">
                     <label for="id_last_name" class="form-label">Apellido</label>
                     <input type="text" 
                            name="last_name" 
-                           class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_last_name" 
                            placeholder="Tu apellido"
                            required
                            value="{{ form.last_name.value|default:'' }}">
-                    {% for error in form.last_name.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-last_name"></div>
                 </div>
             </div>
 
@@ -107,13 +102,11 @@
                     <label for="id_password1" class="form-label">Contraseña</label>
                     <input type="password" 
                            name="password1" 
-                           class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_password1" 
                            placeholder="Mínimo 8 caracteres"
                            required>
-                    {% for error in form.password1.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-password1"></div>
                     <small class="form-text text-muted">
                         La contraseña debe tener al menos 8 caracteres.
                     </small>
@@ -122,13 +115,11 @@
                     <label for="id_password2" class="form-label">Confirmar contraseña</label>
                     <input type="password" 
                            name="password2" 
-                           class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                           class="form-control" 
                            id="id_password2" 
                            placeholder="Repite la contraseña"
                            required>
-                    {% for error in form.password2.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    <div class="invalid-feedback d-block" id="error-password2"></div>
                 </div>
             </div>
 
@@ -215,18 +206,142 @@
 {% endblock %}
 
 {% block extra_js %}
+{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
+<script src="{% static 'js/jquery-plugins/jquery-3.2.1.min.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var form = document.querySelector('form');
-    var btn = document.getElementById('signup-btn');
-    var spinner = document.getElementById('signup-spinner');
-    var btnText = document.getElementById('signup-btn-text');
-    if (form) {
-        form.addEventListener('submit', function () {
-            if (btn) { btn.disabled = true; }
-            if (spinner) { spinner.classList.remove('d-none'); }
-            if (btnText) { btnText.textContent = 'Registrando...'; }
+$(document).ready(function() {
+    var $form = $('#signup-form');
+    var $btn = $('#signup-btn');
+    var $spinner = $('#signup-spinner');
+    var $btnText = $('#signup-btn-text');
+    var $alert = $('#signup-alert');
+
+    // Debug info
+    console.log('[AJAX SIGNUP] CSRF cookie:', document.cookie);
+    console.log('[AJAX SIGNUP] Current URL:', window.location.href);
+    console.log('[AJAX SIGNUP] Referrer:', document.referrer);
+    console.log('[AJAX SIGNUP] Form action:', "{% url 'core:ajax_signup' %}");
+
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        
+        // Limpiar errores previos
+        $alert.addClass('d-none').empty();
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').empty();
+
+        $btn.prop('disabled', true);
+        $spinner.removeClass('d-none');
+        $btnText.text('Registrando...');
+
+        // Obtener el token CSRF de la cookie
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrfToken = getCookie('csrftoken');
+        
+        // Construir FormData con el token CSRF
+        var formData = new FormData();
+        formData.append('username', $('#id_username').val());
+        formData.append('email', $('#id_email').val());
+        formData.append('first_name', $('#id_first_name').val());
+        formData.append('last_name', $('#id_last_name').val());
+        formData.append('password1', $('#id_password1').val());
+        formData.append('password2', $('#id_password2').val());
+
+            $.ajax({
+                url: "{% url 'core:ajax_signup' %}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+                },
+                statusCode: {
+                    400: function(xhr) {
+                        // Manejar errores de validación (status 400) como success
+                        var response = xhr.responseJSON || JSON.parse(xhr.responseText);
+                        showErrors(response.errors, response.debug_info);
+                    },
+                    500: function(xhr) {
+                        // Error interno del servidor
+                        var response = xhr.responseJSON || {};
+                        console.error('[AJAX SIGNUP] Server error:', response);
+                        $alert.removeClass('d-none').text('Error interno del servidor');
+                        resetButton();
+                    }
+                },
+                success: function(response) {
+                    console.log('[AJAX SIGNUP] Success:', response);
+                    if (response.success) {
+                        resetButton();
+                        var userName = response.user.username || 'Usuario';
+                        var welcomeHtml = `
+                            <div class="alert alert-success alert-dismissible fade show" role="alert" id="signup-success-alert">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <strong>¡Registro exitoso!</strong> Bienvenido/a <strong>${userName}</strong>.
+                                <p class="mb-0 mt-2">¿Quieres ir al blog ahora o seguir explorando?</p>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-primary btn-sm me-2" onclick="window.location.href='${response.redirect}'">
+                                        <i class="fas fa-blog mr-1"></i> Ir al blog ahora
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        $alert.removeClass('alert-danger').addClass('alert-success').removeClass('d-none').html(welcomeHtml);
+                    } else {
+                        showErrors(response.errors, response.debug_info);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('[AJAX SIGNUP] Error:', xhr.status, error);
+                    console.log('[AJAX SIGNUP] Response:', xhr.responseText);
+                    $alert.removeClass('d-none').text('Error del servidor: ' + xhr.status);
+                    resetButton();
+                }
+            });
+    });
+
+    function showErrors(errors, debug_info) {
+        resetButton();
+        $alert.removeClass('d-none');
+        
+        // Mostrar errores por campo
+        $.each(errors, function(field, messages) {
+            var $field = $('#id_' + field);
+            if ($field.length) {
+                $field.addClass('is-invalid');
+                $('#error-' + field).text(messages.join(' '));
+            }
+            $alert.append('<div>' + field + ': ' + messages.join(' - ') + '</div>');
         });
+
+        // Debug info si existe
+        if (debug_info) {
+            console.log('[AJAX SIGNUP] Debug info:', debug_info);
+        }
+    }
+
+    function resetButton() {
+        $btn.prop('disabled', false);
+        $spinner.addClass('d-none');
+        $btnText.text('Crear cuenta');
     }
 });
 </script>

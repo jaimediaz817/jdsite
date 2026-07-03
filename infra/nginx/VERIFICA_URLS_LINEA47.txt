@@ -1,0 +1,16 @@
+# 🔍 VERIFICA ESTO EN TU VPS:
+
+grep -n "accounts" /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/urls.py
+
+# Debería devolver:
+# path("accounts/", include("allauth.urls")),
+
+# Si NO está, agrega la línea:
+sudo sed -i '47i path("accounts/", include("allauth.urls")),' /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/urls.py
+
+# O si está comentada (#), descoméntala:
+sudo sed -i 's/# path("accounts\/", include("allauth.urls"))/path("accounts\/", include("allauth.urls"))/' /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/urls.py
+
+# Reinicia:
+sudo systemctl restart jdiaz_gunicorn.service
+sudo systemctl reload nginx

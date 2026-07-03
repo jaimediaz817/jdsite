@@ -2211,17 +2211,11 @@
             window.JD_API = {
                 // submit: "/ask/api/submit/",
                 // blogs:  "/api/blogs/"
-                blogs: null
-            };
-        </script>
-        <script>
-            window.JD_API = {
-                // ... otros APIS ...
                 blogs: null,
                 // AÑADE ESTA LÍNEA CLAVE:
-                GITHUB_REPOS_URL: "{% url 'github_repos_api' %}" 
+                GITHUB_REPOS_URL: "{% url 'core:github_repos_api' %}"
             };
-        </script>        
+        </script>
 
         <script>
             AOS.init({

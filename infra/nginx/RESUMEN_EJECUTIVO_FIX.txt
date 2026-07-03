@@ -1,0 +1,22 @@
+================================================================================
+🔥 COMANDOS DEFINITIVOS PARA EJECUTAR EN TU VPS AHORA
+================================================================================
+
+1. VER DOMINIOS EN SITES-ENABLED:
+   ls -la /etc/nginx/sites-enabled/
+
+2. VER .ENV REAL:
+   cat /var/www/jdiaz.tipsterbyte.com/app/backend/.env | grep -E "DJANGO_ENV|DEBUG|ALLOWED_HOSTS"
+
+3. CORREGIR ESPACIO EN ALLOWED_HOSTS (ejecutar SI ves ", www.jaimediaz.dev"):
+   sed -i 's/, www\.jaimediaz\.dev/,www.jaimediaz.dev/g' /var/www/jdiaz.tipsterbyte.com/app/backend/.env
+
+4. VERIFICAR QUE DJANGO VE EL .ENV (con ruta correcta del venv):
+   DJANGO_SETTINGS_MODULE=jdsite.settings /app/env/bin/python -c "from django.conf import settings; print('ENV:', settings.DJANGO_ENV, 'DEBUG:', settings.DEBUG, 'ALLOWED_HOSTS:', settings.ALLOWED_HOSTS)"
+
+5. REINICIAR SERVICIOS:
+   sudo systemctl restart jdiaz_gunicorn.service
+   sleep 2
+   sudo systemctl reload nginx
+
+================================================================================

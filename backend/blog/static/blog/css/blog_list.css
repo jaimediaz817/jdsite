@@ -817,7 +817,7 @@
     margin: 0;
     border-radius: 10px;
     display: inline-flex;
-    align-items: center;  
+    align-items: center;
 }
 
 .section-title::after {
@@ -1847,5 +1847,32 @@ span.author-name {
         width: 2.4rem;
         height: 2.4rem;
         font-size: 1rem;
+    }
+}
+
+/* ============================================
+   🔧 BOTÓN TOGGLE FILTROS MÓVIL - Fijo/Sticky
+   ============================================ */
+.sidebar-header-toggle {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin: 8px 8px 0 auto;
+}
+
+/* En móvil el botón siempre visible */
+@media (max-width: 767px) {
+    .sidebar-header-toggle {
+        position: fixed;
+        top: 10px;
+        right: 8px;
+        z-index: 9999;
+        margin: 0;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border: none;
+    }
+
+    .sidebar-header-toggle:hover {
+        background: linear-gradient(135deg, #5a0fb0, #1e5edc);
     }
 }

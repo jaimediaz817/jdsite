@@ -1,0 +1,31 @@
+# 🔥 FIX ULTRA-DEFINITIVO - CSRF SIN CONDICIONALES
+
+# Ejecuta esto EN TU VPS al final del settings.py:
+
+```bash
+sudo tee -a /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/settings.py << 'EOF'
+
+# ===============================
+# CSRF PARA PRODUCCIÓN (SIEMPRE ACTIVO)
+# ===============================
+CSRF_TRUSTED_ORIGINS = [
+    "https://jaimediaz.dev",
+    "https://www.jaimediaz.dev",
+]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+EOF
+
+# Reinicia
+sudo systemctl restart jdiaz_gunicorn.service
+sleep 3
+sudo systemctl reload nginx
+```
+
+# Si aún falla, verifica:
+cat /var/www/jdiaz.tipsterbyte.com/app/backend/.env | grep DJANGO_ENV
+# DEBE DECIR: DJANGO_ENV=production
+
+# Si dice "development", cámbialo:
+sed -i 's/DJANGO_ENV=.*/DJANGO_ENV=production/' /var/www/jdiaz.tipsterbyte.com/app/backend/.env

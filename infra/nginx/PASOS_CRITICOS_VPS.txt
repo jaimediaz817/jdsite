@@ -1,0 +1,43 @@
+================================================================================
+PASOS CRÍTICOS PARA ARREGLAR EL 403 CSRF EN TU VPS
+================================================================================
+
+EJECUTA EN ORDEN:
+
+# 1. Verifica que el código está actualizado (debe mostrar commit reciente)
+cd /var/www/jdiaz.tipsterbyte.com/app
+git log -1 --oneline
+
+# 2. Si NO está actualizado, haz git pull
+git pull origin main
+
+# 3. Verifica que settings.py tiene CSRF_TRUSTED_ORIGINS (busca esto):
+grep "CSRF_TRUSTED_ORIGINS" /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/settings.py
+
+# Si NO devuelve nada, agrega manualmente:
+cat >> /var/www/jdiaz.tipsterbyte.com/app/backend/jdsite/settings.py << 'EOF'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://jaimediaz.dev",
+    "https://www.jaimediaz.dev",
+]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+EOF
+
+# 4. Reinicia Gunicorn
+sudo systemctl restart jdiaz_gunicorn.service
+sleep 3
+
+# 5. Recarga nginx
+sudo systemctl reload nginx
+
+================================================================================
+VERIFICACIÓN FINAL:
+curl -I https://jaimediaz.dev
+curl -X POST https://jaimediaz.dev/accounts/signup/ \
+  -d "username=testuser&password1=Testpass123&password2=Testpass123" \
+  -H "Referer: https://jaimediaz.dev/accounts/signup/" \
+  -w "HTTP_CODE: %{http_code}\n"
+================================================================================

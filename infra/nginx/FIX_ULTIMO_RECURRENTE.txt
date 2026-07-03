@@ -1,0 +1,16 @@
+# 🔥 AÑADE ESTO AL FINAL DEL settings.py EN TU VPS
+
+# Agrega esto con sudo tee -a (sin condicionales):
+EOF
+
+CORS_ALLOW_ALL_ORIGINS = True  # TEMPORAL para debug
+CSRF_TRUSTED_ORIGINS = [
+    "https://jaimediaz.dev",
+    "https://www.jaimediaz.dev",
+]
+CSRF_COOKIE_SECURE = False  # Temporal: permite HTTP y HTTPS
+SESSION_COOKIE_SECURE = False
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# También asegura ALLOWED_HOSTS:
+ALLOWED_HOSTS = ["*", "jaimediaz.dev", "www.jaimediaz.dev", "localhost"]

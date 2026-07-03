@@ -345,6 +345,7 @@ html body #navigation-menu {
 
     #navigation-menu .navbar-collapse.show {
         display: flex !important;
+        margin-top: 9px;
     }
 
     #navigation-menu .navbar-nav {
@@ -360,7 +361,7 @@ html body #navigation-menu {
     }
 
     #navigation-menu .navbar-nav .nav-item .nav-link {
-        padding: 0.8rem 1rem;
+        padding: 0.5rem 1rem;
         width: 100%;
         border-radius: 0.5rem;
     }

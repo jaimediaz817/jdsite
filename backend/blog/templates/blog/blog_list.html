@@ -304,9 +304,8 @@
 
                     <div class="articles-list__container blog-grid px-0 px-md-3 pt-md-3">
                             
-                            {% comment %} {% for post in posts %} {% endcomment %}
-                            {% comment %} {% for post in posts %} {% endcomment %}
-                            {% for post in posts|slice:":0" %}
+                            {% for post in posts %}
+                            {% comment %} {% for post in posts|slice:":0" %} {% endcomment %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
                                 <div class="blog-card-image position-relative">
                                     {% with post|blog_thumbnail as thumb_url %}

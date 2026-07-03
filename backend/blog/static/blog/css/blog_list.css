@@ -1851,8 +1851,39 @@ span.author-name {
 }
 
 /* ============================================
-   🔧 BOTÓN TOGGLE FILTROS MÓVIL - Fijo/Sticky
-   ============================================ */
+    🚀 EMPTY STATE - Sin artículos
+    ============================================ */
+.empty-state-container {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.empty-state-icon i {
+    opacity: 0.3;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.empty-state-actions .btn-lg {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+    🔧 BOTÓN TOGGLE FILTROS MÓVIL - Fijo/Sticky
+    ============================================ */
 .sidebar-header-toggle {
     position: sticky;
     top: 0;

@@ -303,7 +303,9 @@
                     </div>
 
                     <div class="articles-list__container blog-grid px-0 px-md-3 pt-md-3">
-                            {% for post in posts %}
+                            
+                            {% comment %} {% for post in posts %} {% endcomment %}
+                            {% for post in posts|slice:":0" %}
                             <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
                                 <div class="blog-card-image position-relative">
                                     {% with post|blog_thumbnail as thumb_url %}
@@ -425,26 +427,30 @@
                                 <a href="{{ post.get_absolute_url }}" class="stretched-link" aria-label="Leer artículo {{ post.title }}"></a>
                             </article>
                             {% empty %}
-                            <div class="text-center py-5">
-                                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                                <h5 class="text-muted">No hay artículos publicados todavía</h5>
-                                <p class="text-muted mb-4">Para ver el contenido completo es necesario estar registrado.<br>Podés usar tu cuenta de <strong>Google</strong> o <strong>GitHub</strong> en un solo clic, o registrarte manualmente (pasos simples).</p>
+                            <div class="empty-state-container d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+                                <div class="empty-state-icon mb-4">
+                                    <i class="fas fa-rocket fa-4x text-muted"></i>
+                                </div>
+                                <h3 class="display-5 font-weight-bold text-dark mb-3">¡Tu primer artículo te espera!</h3>
+                                <p class="lead text-muted mb-4 mx-auto" style="max-width: 500px;">
+                                    El blog está listo para tus ideas técnicas. Escribe en Markdown, pega imágenes y publica en minutos.<br>
+                                    Regístrate con <strong>Google</strong> o <strong>GitHub</strong> en un clic.
+                                </p>
 
                                 {% if user.is_authenticated %}
-                                    <!-- Ya está logueado: ofrecer ir al editor o dashboard -->
-                                    <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                        <a href="{% url 'blog:blog_editor' %}" class="btn btn-primary btn-lg">
-                                            <i class="fas fa-pen-fancy me-2"></i>Escribir primer artículo
+                                    <div class="empty-state-actions d-flex gap-3 flex-wrap justify-content-center mt-3">
+                                        <a href="{% url 'blog:blog_editor' %}" class="btn blog-write-btn btn-lg">
+                                            <i class="fas fa-pen-fancy me-2"></i>Escribe tu primer artículo
                                         </a>
-                                        <a href="{% url 'blog:dashboard' %}" class="btn btn-outline-secondary btn-lg">
+                                        <a href="{% url 'blog:dashboard' %}" class="btn blog-moderation-btn btn-lg">
                                             <i class="fas fa-th-large me-2"></i>Ir al dashboard
                                         </a>
                                     </div>
                                 {% else %}
-                                    <div class="alert alert-info text-center" role="alert">
-                                        <strong>Para comentar:</strong>
-                                        ingresá con Google/GitHub desde el ícono de usuario del menú,
-                                        o registrate manualmente en pocos pasos completando el formulario.
+                                    <div class="alert alert-info d-inline-block mx-auto mb-0" role="alert" style="max-width: 400px;">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        <strong>Para comentar:</strong> ingresá con Google/GitHub desde el ícono de usuario del menú,
+                                        o registrate manualmente en pocos pasos.
                                     </div>
                                 {% endif %}
                             </div>

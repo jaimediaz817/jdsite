@@ -1881,6 +1881,65 @@ span.author-name {
     font-size: 0.95rem;
 }
 
+/* Desktop: botones más separados horizontalmente */
+@media (min-width: 768px) {
+    .empty-state-actions {
+        gap: 1.5rem !important;
+        margin-top: 2rem !important;
+    }
+}
+
+/* Mobile: botones apilados verticalmente con separación */
+@media (max-width: 767px) {
+    .empty-state-actions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        gap: 1rem !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .empty-state-actions .btn.blog-write-btn,
+    .empty-state-actions .btn.blog-moderation-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        display: flex !important;
+    }
+
+    .empty-state-actions .btn i {
+        margin-right: 0.5rem;
+    }
+}
+
+/* ============================================
+   🎯 ANIMACIÓN PROFESIONAL - Foco en botón escribir
+   ============================================ */
+.empty-state-actions .btn.blog-write-btn {
+    animation: pulseCall 3s ease-in-out infinite;
+}
+
+@keyframes pulseCall {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(255, 126, 95, 0.2);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(255, 126, 95, 0.35);
+    }
+}
+
+/* Hover: detiene la animación y refuerza el efecto */
+.empty-state-actions .btn.blog-write-btn:hover {
+    animation: none;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 126, 95, 0.4) !important;
+}
+
 /* ============================================
     🔧 BOTÓN TOGGLE FILTROS MÓVIL - Fijo/Sticky
     ============================================ */

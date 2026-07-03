@@ -40,6 +40,14 @@
     transition: max-width 0.25s ease;
 }
 
+/* Mobile: editor a ancho completo */
+@media (max-width: 767px) {
+    .editor-main {
+        max-width: 100% !important;
+        padding-left: 15px;
+    }
+}
+
 /* EasyMDE personalización */
 .editor-container .CodeMirror {
     min-height: 400px;
@@ -2413,6 +2421,12 @@ h2 i,
 @media (max-width: 992px) {
     body {
         padding-bottom: 80px;
+    }
+
+    .editor-wrapper {
+        .editor-sidebar {
+            top: 0;
+        }
     }
 
     .uploaded-files-grid {

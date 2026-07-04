@@ -9,11 +9,8 @@ backend/db.sqlite3
 backend/staticfiles/
 *.pyc
 __pycache__/
-backend/.env
-.env
 backend/static/blogs/
 
 # Ignore temporary files and directories
 backend/media/blog_editor_temp/
 backend/blogs_source/
-backend/static/blogs/

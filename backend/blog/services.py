@@ -298,10 +298,23 @@ def save_blog_to_source(data, user):
     # 2. Determinar carpeta y leer frontmatter previo si es edición
     source_dir = Path(settings.BASE_DIR) / "blogs_source"
     target_dir = None
-    is_published = is_admin
     existing_fm = {}  # frontmatter del .md original (vacío si es nuevo)
 
+    # Por defecto, un artículo NUEVO es borrador (no publicado)
+    is_published = is_admin
+
+    # Si es edición, verificar si el artículo ya existe y está publicado
     if is_edit:
+        # Buscar en BD primero para preservar estado publicado
+        try:
+            existing_post = BlogPost.objects.get(slug=existing_slug)
+            is_published = (
+                existing_post.is_published
+                and existing_post.moderation_status == "approved"
+            )
+        except BlogPost.DoesNotExist:
+            pass
+
         for folder in source_dir.iterdir():
             if folder.is_dir():
                 if (
@@ -316,9 +329,9 @@ def save_blog_to_source(data, user):
                     break
 
         if not target_dir:
-            raise ValueError(
-                f"No se encontró la carpeta del artículo con slug: {existing_slug}"
-            )
+            # Crear la carpeta si no existe (artículo recién creado o import_blogs no ejecutó)
+            target_dir = source_dir / existing_slug
+            target_dir.mkdir(parents=True, exist_ok=True)
 
         # Leer frontmatter existente para hacer merge
         blog_file = target_dir / "blog.md"
@@ -329,9 +342,9 @@ def save_blog_to_source(data, user):
             except Exception:
                 pass
 
-            # Preservar estado draft si existe
+            # Preservar estado draft del frontmatter (pero solo si no está ya publicado en BD)
             draft_val = existing_fm.get("draft")
-            if draft_val is not None:
+            if draft_val is not None and not is_published:
                 is_published = str(draft_val).lower() != "true"
 
     # 3. Generar slug

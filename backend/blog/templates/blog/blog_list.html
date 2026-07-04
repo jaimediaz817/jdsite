@@ -418,11 +418,11 @@
                                 {% if user.is_authenticated %}
                                     {% if user.is_superuser or post.author == user %}
                                         <div class="edit-btn-wrapper d-flex gap-2">
-                                            <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary edit-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
+                                            <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary blog-write-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
                                                 <i class="fas fa-edit me-1"></i> Editar
                                             </a>
                                             <!-- Botón de moderación de comentarios para el autor o staff -->
-                                        <a href="{% url 'blog:dashboard_post_comments' post.slug %}" class="btn btn-sm btn-warning moderate-btn" title="Moderar comentarios" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:dashboard_post_comments' post.slug %}';">
+                                        <a href="{% url 'blog:dashboard_post_comments' post.slug %}" class="btn btn-sm btn-warning blog-moderation-btn" title="Moderar comentarios" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:dashboard_post_comments' post.slug %}';">
                                             <i class="fas fa-comments me-1"></i> Moderar
                                         </a>
                                         </div>

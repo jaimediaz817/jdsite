@@ -138,7 +138,7 @@ pip install requests
 
 
 
-Resumen rápido
+Resumen rápido+9
 git push (local)
 git fetch --all && git reset --hard origin/main (VPS)
 
@@ -146,6 +146,8 @@ source env/bin/activate
 
 --------------------------------------------------------------------------------------------
 IMPORTANTE! PARA PRODUCCION:
+--------------------------------------------------------------------------------------------
+
 # 1) Ir a la raíz del proyecto en el servidor
 cd /var/www/jdiaz.tipsterbyte.com/app
 
@@ -158,6 +160,7 @@ pip install -r requirements.txt
 # 4) Migrar por si hay cambios pendientes
 cd backend
 python manage.py migrate --run-syncdb
+python manage.py migrate --run-syncdb  # --run-syncdb asegura tablas de terceros
 
 # 5) Recolectar estáticos (por si algo nuevo se haya agregado)
 python manage.py collectstatic --noinput --clear
@@ -214,3 +217,48 @@ http://localhost:8000/blog/
 - NUNCA sobrescribe nada sin cambios
 - Se puede ejecutar las veces que quieras
 - Si algo falla vuelves a ejecutar y se arregla solo
+
+
+
+
+
+
+
+
+
+
+
+# 1. Deshabilitar los symlinks conflictivos (NO se borran los archivos)
+sudo rm /etc/nginx/sites-enabled/tipsterbyte.com
+sudo rm /etc/nginx/sites-enabled/test.tipsterbyte.com
+sudo rm /etc/nginx/sites-enabled/jdiaz.tipsterbyte.com
+
+
+
+sudo ln -s /etc/nginx/sites-available/tipsterbyte.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/test.tipsterbyte.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/jdiaz.tipsterbyte.com /etc/nginx/sites-enabled/
+sudo systemctl reload nginx
+
+
+# 2. Mantenimiento: eliminar imagenes:
+### Comando para PRODUCCIÓN (VPS):
+
+Conéctate por SSH y ejecuta:
+
+# 1. Activar entorno virtual
+cd /ruta/a/jdsite
+source .venv/bin/activate
+
+# 2. Ver qué hay antes de borrar
+ls -la backend/media/blog_editor_temp/
+
+# 3. Eliminar carpetas de IDs (15, 4, etc.)
+rm -rf backend/media/blog_editor_temp/15
+rm -rf backend/media/blog_editor_temp/4
+
+# 4. Verificar que quedó limpio
+ls -la backend/media/blog_editor_temp/
+
+- o en un solo comando!:
+rm -rf backend/media/blog_editor_temp/15 backend/media/blog_editor_temp/4 && echo "✅ Limpieza producción completada"

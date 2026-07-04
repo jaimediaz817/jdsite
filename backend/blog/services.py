@@ -540,6 +540,7 @@ def save_blog_to_source(data, user):
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         )
         # HU-011.85: Solo enviar si las notificaciones admin están habilitadas
+        # TEMPORAL: 2026-07-04 - Resend API key restringida, deshabilitado hasta nuevo key
         if are_admin_notifications_enabled():
             send_mail(
                 subject=admin_subject,

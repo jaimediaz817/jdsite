@@ -14,7 +14,7 @@
 
 /* Fieldset: contenedor visual "Filtros de búsqueda" */
 .search-filters {
-    border: 1px solid #e2e8f0;
+    border: 2px solid #e2e8f0;
     border-radius: 12px;
     padding: 18px 20px 16px;
     margin: 0;
@@ -544,24 +544,22 @@
 
 .reactions-info {
     left: 12px;
+}
 
-    .reactions-icon {
-        &.like-reaction {
-            color: #fff;
-        }
+.reactions-info .reactions-icon.like-reaction {
+    color: #fff;
+}
 
-        &.love-reaction {
-            color: #e84a5f;
-        }
+.reactions-info .reactions-icon.love-reaction {
+    color: #e84a5f;
+}
 
-        &.idea-reaction {
-            color: #f59e0b;
-        }
+.reactions-info .reactions-icon.idea-reaction {
+    color: #f59e0b;
+}
 
-        &.fire-reaction {
-            color: #f97316;
-        }
-    }
+.reactions-info .reactions-icon.fire-reaction {
+    color: #f97316;
 }
 
 .header-slogan {
@@ -1258,6 +1256,7 @@ body.home-p {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #ff6a45, #fd9e66);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .blog-write-btn:active {
@@ -1424,10 +1423,10 @@ body.home-p {
     letter-spacing: 0.02em;
     transition: background 0.2s ease;
     align-self: flex-start;
+}
 
-    &:nth-child(1) {
-        align-self: flex-start;
-    }
+.float-meta-item:nth-child(1) {
+    align-self: flex-start;
 }
 
 .blog-card:hover .float-meta-item {
@@ -1919,6 +1918,18 @@ span.author-name {
     animation: pulseCall 3s ease-in-out infinite;
 }
 
+.empty-state-actions .btn.blog-write-btn,
+.empty-state-actions .btn.blog-write-btn.btn-lg {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.empty-state-actions .btn.blog-write-btn:hover,
+.empty-state-actions .btn.blog-write-btn.btn-lg:hover {
+    animation: none;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 126, 95, 0.4) !important;
+}
+
 @keyframes pulseCall {
 
     0%,
@@ -1931,13 +1942,6 @@ span.author-name {
         transform: scale(1.02);
         box-shadow: 0 6px 20px rgba(255, 126, 95, 0.35);
     }
-}
-
-/* Hover: detiene la animación y refuerza el efecto */
-.empty-state-actions .btn.blog-write-btn:hover {
-    animation: none;
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255, 126, 95, 0.4) !important;
 }
 
 /* ============================================

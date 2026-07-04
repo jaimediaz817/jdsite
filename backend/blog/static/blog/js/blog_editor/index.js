@@ -193,31 +193,48 @@ function renderUploadedFile(file) {
         element.setAttribute('alt', file.filename);
         element.className = 'uploaded-image';
     }
-    // Fallback: si la carga falla (por ejemplo, el archivo ya fue movido a la carpeta definitiva), intentamos la ruta estática basada en el slug del artículo.
+    // Fallback: si la carga falla, intentamos rutas alternativas basadas en slug o user_id
     element.onerror = function () {
         // Evitamos bucles infinitos marcando que ya intentamos el fallback.
         if (this.dataset.tried) return;
         this.dataset.tried = '1';
-        // 1️⃣ Intentar ruta genérica bajo /static/blogs/ (por si el archivo está allí sin slug)
-        const genericFallback = `/static/blogs/${file.filename}`;
-        this.setAttribute('src', genericFallback);
-        // 2️⃣ Si falla, intentar con slug bajo /static/blogs/
+        
+        // Obtener slug de múltiples fuentes
+        const slug = document.getElementById('edit-slug')?.value || '';
+        
+        // 1️⃣ Intentar con slug bajo /static/blogs/ (path: /static/blogs/{slug}/{filename})
+        // Este es el caso más común cuando el artículo ya fue guardado
         this.onerror = function () {
             if (this.dataset.triedSlug) return;
             this.dataset.triedSlug = '1';
-            const slug = document.getElementById('edit-slug').value || '';
             if (slug) {
                 const slugFallback = `/static/blogs/${slug}/${file.filename}`;
                 this.setAttribute('src', slugFallback);
             }
         };
-        // 3️⃣ Si aún falla, intentar la ruta de media donde se guardan los blogs fuente
+        // 2️⃣ Intentar en blogs_source (path: /static/blogs_source/{slug}/{filename})
+        this.onerror = function () {
+            if (this.dataset.triedSource) return;
+            this.dataset.triedSource = '1';
+            if (slug) {
+                const sourceFallback = `/static/blogs_source/${slug}/${file.filename}`;
+                this.setAttribute('src', sourceFallback);
+            }
+        };
+        // 3️⃣ Ruta genérica sin slug (path: /static/blogs/{filename})
+        this.onerror = function () {
+            if (this.dataset.triedGeneric) return;
+            this.dataset.triedGeneric = '1';
+            const genericFallback = `/static/blogs/${file.filename}`;
+            this.setAttribute('src', genericFallback);
+        };
+        // 4️⃣ Ruta de media temporal (path: /media/blog_editor_temp/{user_id}/{filename})
         this.onerror = function () {
             if (this.dataset.triedMedia) return;
             this.dataset.triedMedia = '1';
-            const slug = document.getElementById('edit-slug').value || '';
-            if (slug) {
-                const mediaFallback = `/static/blogs_source/${slug}/${file.filename}`;
+            const userId = document.body.dataset.userId || '';
+            if (userId) {
+                const mediaFallback = `/media/blog_editor_temp/${userId}/${file.filename}`;
                 this.setAttribute('src', mediaFallback);
             }
         };
@@ -2043,9 +2060,23 @@ function executeDeleteFile() {
 }
 
 function restoreDraft(data) {
-    // Si el borrador incluye slug (artículo ya creado previamente), lo asignamos para que el fallback de imágenes funcione.
-    if (data.slug) {
-        document.getElementById('edit-slug').value = data.slug;
+    // Si el borrador incluye slug (artículo ya creado previamente), lo asignamos
+    // Esto debe hacerse ANTES de procesar archivos para que el fallback funcione
+    const slugFromUrl = data.slug || '';
+    if (slugFromUrl) {
+        document.getElementById('edit-slug').value = slugFromUrl;
+    }
+    // Si NO hay slug en el draft pero sí hay título, intentar buscar slug existente
+    // (por ejemplo, si el usuario abrió el editor de un artículo, editó, y luego recupera el borrador)
+    if (!slugFromUrl) {
+        // Verificar si la URL del editor incluye un slug (modo edición)
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        if (pathParts.length >= 3 && pathParts[0] === 'blog' && pathParts[1] === 'editor') {
+            const urlSlug = pathParts[2];
+            if (urlSlug) {
+                document.getElementById('edit-slug').value = urlSlug;
+            }
+        }
     }
     document.getElementById('title').value = data.title || '';
     document.getElementById('description').value = data.description || '';
@@ -2088,9 +2119,15 @@ function restoreDraft(data) {
     easyMDE.value(data.content_md || '');
     if (data.files && data.files.length > 0) {
         data.files.forEach(f => {
+            // Construir URL correcta para imágenes desde drafts: /static/blogs/<slug>/<filename>
+            const slug = data.slug || '';
+            f.url = f.url || `/static/blogs/${slug}/${f.filename}`;
             uploadedFiles.push(f);
             renderUploadedFile(f);
         });
+    }
+    if (data.cover_filename) {
+        document.getElementById('cover_image').value = data.cover_filename;
     }
     document.getElementById('status-message').innerHTML =
         '<div class="alert alert-info alert-dismissible fade show" role="alert">📝 Borrador recuperado de localStorage<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';

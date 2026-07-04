@@ -1749,7 +1749,19 @@ def save_blog_api(request):
         result = save_blog_to_source(data, request.user)
         return JsonResponse({"status": "ok", **result})
     except Exception as e:
-        return JsonResponse({"status": "error", "error": str(e)}, status=400)
+        import traceback
+
+        return JsonResponse(
+            {
+                "status": "error",
+                "error": str(e),
+                "type": type(e).__name__,
+                "traceback": traceback.format_exc().splitlines()[
+                    -5:
+                ],  # Últimas 5 líneas
+            },
+            status=500,
+        )
 
 
 @csrf_exempt  # Allow FilePond uploads without CSRF token issues

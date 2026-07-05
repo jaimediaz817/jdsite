@@ -5,6 +5,12 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from .views import custom_logout, CustomLoginView
+from inquiries.views_threads import (
+    descargar_certificaciones_real,
+    descargar_cv,
+    descargar_cv_real,
+    home_view,
+)
 from django.contrib.sitemaps import Sitemap
 from django.views.static import serve
 from django.urls import include, path, reverse

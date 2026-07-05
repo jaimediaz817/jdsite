@@ -2,25 +2,21 @@ from django.contrib import admin
 import os
 from django.conf import settings
 from django.conf.urls.static import static
-
-# from django.views.generic import TemplateView
+from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from .views import custom_logout, CustomLoginView
-from .views import custom_logout
 from django.contrib.sitemaps import Sitemap
 from django.views.static import serve
+from django.urls import include, path, reverse
 
 # IMPORTACIONES SEO
 from django.contrib.sitemaps.views import sitemap
 from blog.sitemaps import BlogPostSitemap
-from django.urls import include, path, reverse
-from django.views.generic import TemplateView
-from inquiries.views_threads import (
-    descargar_certificaciones_real,
-    descargar_cv,
-    descargar_cv_real,
-    home_view,
-)
+
+# Handler 404 personalizado
+from blog.views_404 import custom_404_view
+
+handler404 = "blog.views_404.custom_404_view"
 
 
 # 1. Definir la clase Sitemap para tu Home

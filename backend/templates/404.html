@@ -41,16 +41,15 @@
             isolation: isolate;
         }
 
-        /* Gradientes orbitales animados */
+        /* Gradientes orbitales animados — sutiles */
         .error-scene::before {
             content: '';
             position: absolute;
             inset: -80px;
             background:
-                radial-gradient(ellipse 600px 500px at 15% 30%, rgba(106,17,203,.25) 0%, transparent 70%),
-                radial-gradient(ellipse 500px 400px at 80% 70%, rgba(255,126,95,.18) 0%, transparent 70%),
-                radial-gradient(ellipse 400px 300px at 50% 10%, rgba(254,180,123,.10) 0%, transparent 60%);
-            animation: orbitGlow 12s ease-in-out infinite alternate;
+                radial-gradient(ellipse 500px 400px at 20% 30%, rgba(106,17,203,.12) 0%, transparent 70%),
+                radial-gradient(ellipse 400px 300px at 75% 70%, rgba(255,126,95,.08) 0%, transparent 70%);
+            animation: orbitGlow 16s ease-in-out infinite alternate;
             z-index: 0;
         }
 
@@ -90,14 +89,15 @@
         }
         .error-code-number {
             font-family: 'Space Grotesk', monospace;
-            font-size: clamp(5rem, 14vw, 8rem);
-            font-weight: 800;
+            font-size: clamp(4.5rem, 12vw, 7rem);
+            font-weight: 700;
             line-height: 1;
-            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 40%, #ff7e5f 80%);
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 60%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 8px 24px rgba(124,58,237,.35));
+            filter: drop-shadow(0 6px 16px rgba(139,92,246,.2));
+
             animation: floatDigit 4s ease-in-out infinite;
         }
         @keyframes floatDigit {

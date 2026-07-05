@@ -376,3 +376,7 @@ LOGGING = {
         },
     },
 }
+
+# Handlers de errores personalizados
+HANDLER404 = "404"
+HANDLER500 = "500"

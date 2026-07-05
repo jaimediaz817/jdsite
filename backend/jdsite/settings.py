@@ -43,7 +43,7 @@ if DJANGO_ENV == "production":
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
 else:
-    DEBUG = True
+    DEBUG = False
     ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [

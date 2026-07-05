@@ -2119,6 +2119,11 @@ function restoreDraft(data) {
     easyMDE.value(data.content_md || '');
     if (data.files && data.files.length > 0) {
         data.files.forEach(f => {
+            // Evitar duplicados: solo agregar si no existe ya
+            if (uploadedFiles.find(existing => existing.filename === f.filename)) {
+                console.log('[restoreDraft] Archivo ya existe, saltando:', f.filename);
+                return;
+            }
             // Usar URL apropiada según el estado del artículo
             // - Si hay slug: usar ruta permanente /static/blogs/{slug}/
             // - Si no hay slug (artículo nuevo): usar ruta temporal /media/blog_editor_temp/{user_id}/

@@ -136,10 +136,6 @@ urlpatterns = [
     ),
 ]
 
-# Handlers personalizados para errores (deben ir fuera de urlpatterns)
-handler404 = "404"
-handler500 = "500"
-
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

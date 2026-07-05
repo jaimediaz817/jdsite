@@ -2119,9 +2119,10 @@ function restoreDraft(data) {
     easyMDE.value(data.content_md || '');
     if (data.files && data.files.length > 0) {
         data.files.forEach(f => {
-            // Construir URL correcta para imágenes desde drafts: /static/blogs/<slug>/<filename>
+            // SIEMPRE usar la URL permanente del artículo, sin importar si venía con URL temporal
+            // Esto corrige el bug donde se recuperaba la ruta /media/blog_editor_temp/...
             const slug = data.slug || '';
-            f.url = f.url || `/static/blogs/${slug}/${f.filename}`;
+            f.url = `/static/blogs/${slug}/${f.filename}`;
             uploadedFiles.push(f);
             renderUploadedFile(f);
         });

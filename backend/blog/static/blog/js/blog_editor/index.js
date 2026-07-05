@@ -2119,10 +2119,18 @@ function restoreDraft(data) {
     easyMDE.value(data.content_md || '');
     if (data.files && data.files.length > 0) {
         data.files.forEach(f => {
-            // SIEMPRE usar la URL permanente del artículo, sin importar si venía con URL temporal
-            // Esto corrige el bug donde se recuperaba la ruta /media/blog_editor_temp/...
+            // Usar URL apropiada según el estado del artículo
+            // - Si hay slug: usar ruta permanente /static/blogs/{slug}/
+            // - Si no hay slug (artículo nuevo): usar ruta temporal /media/blog_editor_temp/{user_id}/
+            const userId = document.body.dataset.userId || '0';
             const slug = data.slug || '';
-            f.url = `/static/blogs/${slug}/${f.filename}`;
+            if (slug) {
+                // Artículo existente: usar URL permanente
+                f.url = `/static/blogs/${slug}/${f.filename}`;
+            } else {
+                // Artículo nuevo: usar URL temporal
+                f.url = `/media/blog_editor_temp/${userId}/${f.filename}`;
+            }
             uploadedFiles.push(f);
             renderUploadedFile(f);
         });

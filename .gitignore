@@ -16,3 +16,6 @@ backend/media/blog_editor_temp/
 backend/blogs_source/
 backend/blogs_source/*/
 !backend/blogs_source/.gitkeep
+
+# Gunicorn socket (producción)
+run/

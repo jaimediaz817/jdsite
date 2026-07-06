@@ -86,3 +86,25 @@ def get_avatar_initials(name: str) -> str:
         return (parts[0][0] + parts[-1][0]).upper()
     else:
         return name[:2].upper()
+
+
+# ---------------------------------------------------------------------
+# HU-026-B: Email propietario configurable desde dashboard
+# ---------------------------------------------------------------------
+def get_owner_email() -> str:
+    """Retorna el email propietario para notificaciones.
+
+    Prioridad:
+    1. Busca en AdminConfig el valor con key='owner_email'
+    2. Fallback a settings.OWNER_EMAIL
+
+    Returns:
+        str: Email del propietario o string vacío si no hay configuración
+    """
+    from django.conf import settings
+    from .models import AdminConfig
+
+    config = AdminConfig.objects.filter(key="owner_email").first()
+    if config and config.value:
+        return config.value
+    return getattr(settings, "OWNER_EMAIL", "")

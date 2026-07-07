@@ -43,7 +43,7 @@ if DJANGO_ENV == "production":
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
 else:
-    DEBUG = False
+    DEBUG = True
     ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -156,6 +156,10 @@ STATICFILES_FINDERS = [
 # --- MEDIA (para upload temporal del editor de blogs) ---
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# HU-028: Límite de tamaño de archivos para upload del editor (en MB)
+MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "10"))
+
 # --- EMAIL y SITE_URL ---
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"

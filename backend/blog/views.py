@@ -36,6 +36,7 @@ from blog.models import (
     Tag,
     BlogModeration,
     BlogEmailConfig,
+    AdminConfig,
 )
 from core.models import UserProfile
 
@@ -320,6 +321,15 @@ def dashboard_view(request):
     # HU-011.85: Estado del envío de emails para el indicador visual
     email_config = BlogEmailConfig.get_config()
 
+    # HU-027: Estadísticas de usuarios para el sidebar
+    user_stats = {
+        "total": User.objects.count(),
+        "active": User.objects.filter(is_active=True).count(),
+        "inactive": User.objects.filter(is_active=False).count(),
+        "staff": User.objects.filter(is_staff=True).count(),
+        "superusers": User.objects.filter(is_superuser=True).count(),
+    }
+
     # HU-17.18: Variables para el template
     has_active_filters = bool(
         author_filter
@@ -334,6 +344,7 @@ def dashboard_view(request):
         {
             "page_obj": page_obj,
             "stats": stats,
+            "user_stats": user_stats,
             "is_published_filter": is_published_filter,
             "moderation_filter": moderation_filter,
             "search_query": search_query,
@@ -354,8 +365,9 @@ def dashboard_view(request):
 def blog_email_config_view(request):
     """Página de configuración del interruptor maestro de envío de emails.
 
-    Solo accesible por superadmin. Permite activar/desactivar el envío
-    de correos electrónicos del blog de forma global.
+    Solo accesible por superadmin. Permite:
+    - Configurar email propietario para notificaciones
+    - Activar/desactivar el envío de correos del blog de forma global
 
     HU-011.85 — Protección reforzada:
     - No autenticados → redirigir a login (@login_required)
@@ -372,7 +384,26 @@ def blog_email_config_view(request):
 
     email_config = BlogEmailConfig.get_config()
 
+    # Obtener email propietario actual (HU-026-B)
+    # Prioridad: AdminConfig > settings.OWNER_EMAIL
+    admin_owner_email_obj = AdminConfig.objects.filter(key="owner_email").first()
+    owner_email = (
+        admin_owner_email_obj.value
+        if admin_owner_email_obj
+        else getattr(settings, "OWNER_EMAIL", "")
+    )
+
     if request.method == "POST":
+        # HU-026-B: Guardar email propietario desde el mismo formulario
+        owner_email_value = request.POST.get("owner_email", "").strip()
+        AdminConfig.objects.update_or_create(
+            key="owner_email",
+            defaults={
+                "value": owner_email_value,
+                "description": "Email propietario para notificaciones",
+            },
+        )
+
         # HU-011.85: Leer ambos toggles independientes
         admin_enabled = request.POST.get("admin_notifications") == "on"
         author_enabled = request.POST.get("author_notifications") == "on"
@@ -389,7 +420,10 @@ def blog_email_config_view(request):
     return render(
         request,
         "blog/blog_email_config.html",
-        {"email_config": email_config},
+        {
+            "email_config": email_config,
+            "owner_email": owner_email,
+        },
     )
 
 
@@ -1128,6 +1162,155 @@ def check_comment_status(request, slug, comment_id):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
+# =====================================================================
+# HU-027: Dashboard - Gestión de usuarios (solo superadmin)
+# =====================================================================
+@login_required
+def dashboard_users_view(request):
+    """Vista de gestión de usuarios para el superadmin en el dashboard."""
+    if not request.user.is_superuser:
+        return redirect("blog:dashboard")
+
+    from django.db.models import Count
+
+    # Usuarios con paginación
+    search_query = request.GET.get("q", "").strip()
+    users_qs = User.objects.select_related("profile").annotate(
+        post_count=Count("blog_posts", distinct=True),
+        draft_count=Count(
+            "blog_posts", filter=Q(blog_posts__is_published=False), distinct=True
+        ),
+    )
+
+    if search_query:
+        users_qs = users_qs.filter(
+            Q(username__icontains=search_query)
+            | Q(email__icontains=search_query)
+            | Q(first_name__icontains=search_query)
+            | Q(last_name__icontains=search_query)
+        )
+
+    # Paginación: 20 usuarios por página
+    paginator = Paginator(users_qs, 20)
+    page = request.GET.get("page", 1)
+
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # Estadísticas de usuarios
+    user_stats = {
+        "total": User.objects.count(),
+        "active": User.objects.filter(is_active=True).count(),
+        "inactive": User.objects.filter(is_active=False).count(),
+        "staff": User.objects.filter(is_staff=True).count(),
+        "superusers": User.objects.filter(is_superuser=True).count(),
+    }
+
+    return render(
+        request,
+        "blog/dashboard_users.html",
+        {
+            "page_obj": page_obj,
+            "user_stats": user_stats,
+            "search_query": search_query,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def toggle_user_active(request, user_id):
+    """AJAX: Activar/desactivar usuario (solo superadmin)."""
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."},
+            status=403,
+        )
+
+    try:
+        target_user = User.objects.get(id=user_id)
+        # No permitir auto-desactivación del superadmin actual
+        if target_user.id == request.user.id:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "No puedes desactivar tu propio usuario.",
+                },
+                status=400,
+            )
+
+        target_user.is_active = not target_user.is_active
+        target_user.save()
+
+        return JsonResponse(
+            {
+                "success": True,
+                "is_active": target_user.is_active,
+            }
+        )
+    except User.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Usuario no encontrado."},
+            status=404,
+        )
+
+
+# ---------------------------------------------------------------------
+# HU-026-B: Guardar email propietario vía AJAX
+# ---------------------------------------------------------------------
+# [DESACTIVADO - DUPLICADO] Ahora se gestiona desde blog_email_config.html
+"""
+@csrf_protect
+@require_http_methods(["POST"])
+@login_required
+def save_owner_email_ajax(request):
+    Endpoint AJAX para guardar el email propietario desde el dashboard.
+
+    Solo accesible para superusuarios.
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "No tienes permisos para esta acción."},
+            status=403,
+        )
+
+    from blog.models import AdminConfig
+
+    email = request.POST.get("email", "").strip()
+
+    # Validación básica de email
+    if email and "@" not in email:
+        return JsonResponse(
+            {"success": False, "error": "Email inválido."},
+            status=400,
+        )
+
+    # Crear o actualizar la configuración
+    config, _ = AdminConfig.objects.get_or_create(
+        key="owner_email",
+        defaults={
+            "value": email,
+            "description": "Email propietario para notificaciones",
+        },
+    )
+    if not _:
+        config.value = email
+        config.save()
+
+    return JsonResponse(
+        {
+            "success": True,
+            "message": "Email guardado correctamente.",
+            "email": email,
+        }
+    )
+"""
+
+
 # ---------------------------------------------------------------------
 # HU-011.17: Utilidades y vistas de gestión de recursos
 # ---------------------------------------------------------------------
@@ -1818,10 +2001,16 @@ def upload_file_api(request):
     if not uploaded_file:
         return JsonResponse({"error": "No se envió ningún archivo"}, status=400)
 
+    # HU-028: Manejar errores específicos de save_uploaded_file
     result = save_uploaded_file(uploaded_file, request.user)
-    if result is None:
+    if result is None or not result.get("success", True):
+        error_msg = (
+            result.get("error", "Tipo de archivo no permitido o demasiado grande")
+            if result
+            else "Tipo de archivo no permitido o demasiado grande"
+        )
         return JsonResponse(
-            {"error": "Tipo de archivo no permitido o demasiado grande"},
+            {"success": False, "error": error_msg},
             status=400,
         )
     return JsonResponse(result)

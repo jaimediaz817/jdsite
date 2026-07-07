@@ -334,11 +334,38 @@ body {
     color: #d1d5db;
 }
 
+/* =============================================
+           🔔 Toast profesional - Bootstrap 4
+           ============================================= */
 .toast-container {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 9999;
+}
+
+.toast {
+    min-width: 280px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.toast .toast-body {
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.toast .close {
+    opacity: 0.8;
+    font-size: 1.1rem;
+    padding: 0 8px;
+}
+
+.toast .close:hover {
+    opacity: 1;
 }
 
 .btn-action-wrap,
@@ -898,4 +925,46 @@ span.input-group-text.blog-search-icon {
         padding: .5rem .4rem;
         font-size: .8rem;
     }
+}
+
+/* =============================================
+    🟣 HU-026-B: Config Sidebar Styles
+    ============================================= */
+.config-section {
+    padding: 0.75rem 0;
+}
+
+.config-label {
+    color: #374151;
+    font-weight: 500;
+}
+
+.config-input {
+    font-size: .8rem;
+    padding: 0.4rem 0.75rem;
+}
+
+.config-help {
+    color: #6b7280;
+    font-size: .7rem;
+}
+
+/* =============================================
+   🟣 HU-027: User Stats Sidebar Styles
+   ============================================= */
+.user-stats-sidebar {
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+}
+
+.user-stats-sidebar small {
+    font-size: 0.78rem;
+}
+
+.user-stats-sidebar .text-success {
+    color: #16a34a !important;
+}
+
+.user-stats-sidebar .text-info {
+    color: #0891b2 !important;
 }

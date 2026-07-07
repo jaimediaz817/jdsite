@@ -420,3 +420,28 @@ class BlogModeration(models.Model):
 
     def __str__(self):
         return f"{self.blog_post.title} - {self.get_action_display()}"
+
+
+# ---------------------------------------------------------------------
+# HU-026-B: Configuración de email propietario (singleton)
+# ---------------------------------------------------------------------
+class AdminConfig(models.Model):
+    """Parámetros de configuración del admin del blog.
+
+    Usa key único para almacenar configuraciones como 'owner_email'.
+    Sólo el superadmin puede modificar estos valores.
+    """
+
+    key = models.CharField(max_length=100, unique=True)
+    value = models.EmailField(null=True, blank=True)
+    description = models.CharField(max_length=200, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Configuración del admin"
+        verbose_name_plural = "Configuraciones del admin"
+
+    def __str__(self):
+        return f"{self.key}: {self.value or 'sin valor'}"

@@ -24,6 +24,8 @@ from blog.views import (
     api_authors_autocomplete,
     delete_resource_file_ajax,
     dashboard_resources_view,
+    dashboard_users_view,
+    toggle_user_active,
 )
 
 app_name = "blog"
@@ -92,6 +94,23 @@ urlpatterns = [
         "dashboard/moderate/<slug:slug>/",
         change_moderation_status,
         name="change_moderation",
+    ),
+    # HU-026-B: [DESACTIVADO - DUPLICADO] Endpoint AJAX para guardar email propietario
+    # path(
+    #     "dashboard/config/owner-email/",
+    #     save_owner_email_ajax,
+    #     name="save_owner_email",
+    # ),
+    # HU-027: Gestión de usuarios en dashboard (solo superadmin)
+    path(
+        "dashboard/users/",
+        dashboard_users_view,
+        name="dashboard_users",
+    ),
+    path(
+        "dashboard/users/toggle/<int:user_id>/",
+        toggle_user_active,
+        name="toggle_user_active",
     ),
     path("<slug:slug>/", BlogDetailView.as_view(), name="blog_detail"),
     path("<slug:slug>/comment/", post_comment, name="post_comment"),

@@ -114,7 +114,7 @@ source venv/bin/activate
 > ✅ Verificar activación: `which python` debe mostrar `.../venv/bin/python`
 
 ---
-
+cd backend
 ### 🟠 PASO 5: Instalar dependencias nuevas (si existen)
 ```bash
 pip install -r requirements.txt

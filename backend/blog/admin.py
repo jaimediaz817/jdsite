@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import BlogPost, BlogComment
+from blog.models import BlogPost, BlogComment, AdminConfig
 
 
 @admin.register(BlogPost)
@@ -30,3 +30,10 @@ class BlogCommentAdmin(admin.ModelAdmin):
         queryset.update(status="rejected")
 
     reject_comments.short_description = "Rechazar comentarios seleccionados"
+
+
+@admin.register(AdminConfig)
+class AdminConfigAdmin(admin.ModelAdmin):
+    list_display = ("key", "value", "description", "updated_at")
+    readonly_fields = ("created_at", "updated_at")
+    search_fields = ("key", "value")

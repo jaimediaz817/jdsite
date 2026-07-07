@@ -309,9 +309,16 @@
                     </div>
 
                     <div class="articles-list__container blog-grid px-0 px-md-3 pt-md-3">
-                        {% for post in posts %}
-                        {% comment %} {% for post in posts|slice:":0" %} {% endcomment %}
-                        <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow{% if post.id in pending_post_ids %} article_pending{% endif %}">
+{% for post in posts %}
+{% comment %} {% for post in posts|slice:":0" %} {% endcomment %}
+{% comment %} 👑 Clase article_superadmin: borde azul claro para posts del superadmin (auto-publicados) {% endcomment %}
+{% if user.is_superuser and post.moderation_status == 'approved' and post.author == user %}
+    <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow article_superadmin">
+{% elif post.id in pending_post_ids %}
+    <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow article_pending">
+{% else %}
+    <article class="blog-card card h-100 overflow-hidden rounded-3 position-relative shadow-sm hover-shadow">
+{% endif %}
                             <div class="blog-card-image position-relative">
                                 {% with post|blog_thumbnail as thumb_url %}
                                 {% if thumb_url %}

@@ -5,3 +5,5 @@ curl -X POST https://jaimediaz.dev/accounts/signup/ \
   -d "username=testuser&password1=Testpass123&password2=Testpass123" \
   -H "Referer: https://jaimediaz.dev/accounts/signup/" \
   -w "HTTP_CODE: %{http_code}\n"
+
+  

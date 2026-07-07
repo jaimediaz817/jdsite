@@ -436,6 +436,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 })();
 
+// =============================================
+// HU-27: Toggle sidebar en móvil
+// =============================================
+document.addEventListener('DOMContentLoaded', function () {
+    var sidebar = document.querySelector('.absolute-sidebar');
+    var toggleButtons = document.querySelectorAll('.sidebar-toggle, .sidebar-float-toggle, .sidebar-header-toggle');
+    if (sidebar && toggleButtons.length) {
+        toggleButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        });
+    }
+});
+
 // ============================================================
 // Botón "📂 Recursos" — Verificación de permisos (SOLO superadmin)
 // Si el usuario NO es superadmin, mostrar toast en lugar de redirigir
@@ -457,6 +472,48 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
+ 
 
+// =============================================
+// HU-026-B: Guardar email propietario vía AJAX
+// [DESACTIVADO - DUPLICADO] Ahora se gestiona desde blog_email_config.html
+// =============================================
+/*
+(function() {
+    var btnSave = document.getElementById('btn-save-owner-email');
+    if (!btnSave) return;
 
+    btnSave.addEventListener('click', function() {
+        var email = document.getElementById('owner-email-input').value.trim();
+        var csrf = getCookie('csrftoken');
+        var btn = this;
 
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
+
+        fetch('/blog/dashboard/config/owner-email/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrf,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i>Guardar';
+            if (data.success) {
+                showToast('✅ Email propietario guardado correctamente', 'success');
+            } else {
+                showToast('❌ ' + (data.error || 'Error al guardar'), 'error');
+            }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i>Guardar';
+            showToast('❌ Error de red', 'error');
+        });
+    });
+})();
+*/

@@ -209,3 +209,17 @@ html[data-reading-mode="dark"] .empty-state-container .text-dark {
 html[data-reading-mode="dark"] .empty-state-container .text-muted {
     color: #94a3b8 !important;
 }
+
+/* ============================================
+    👑 ARTÍCULOS DEL SUPERADMIN - Borde azul claro
+    ============================================ */
+.article_superadmin {
+    border: 2px solid #87CEEB !important;
+    border-style: dashed !important;
+    border-radius: 8px !important;
+}
+
+/* Dark mode para superadmin */
+html[data-reading-mode="dark"] .article_superadmin {
+    border-color: #60a5fa !important;
+}

@@ -381,7 +381,12 @@ async function uploadFileToSelectorServer(file) {
         }
         
         const data = await response.json();
-        console.log('[img-sel] Archivo subido exitosamente:', data);
+        console.log('[img-sel] Respuesta del servidor:', data);
+
+        // HU-028: Manejar errores específicos de validación (tamaño, tipo)
+        if (data.success === false) {
+            throw new Error(data.error || "Error de validación");
+        }
         
         // Actualizar array global
         uploadedFiles.push(data);

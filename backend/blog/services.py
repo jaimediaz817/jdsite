@@ -2,6 +2,8 @@ from django.utils.html import escape
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
+
+from .utils import get_owner_email
 from datetime import timedelta
 from django.db.models import Prefetch
 
@@ -130,7 +132,7 @@ Este comentario esta actualmente PENDIENTE y no es visible publicamente hasta qu
             subject=email_subject,
             message=email_body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.OWNER_EMAIL],
+            recipient_list=[get_owner_email()],
             fail_silently=True,
         )
 
@@ -513,6 +515,12 @@ def save_blog_to_source(data, user):
     # 7. Ejecutar import_blogs para actualizar la base de datos y generar token si es borrador
     call_command("import_blogs")
 
+    # HU-026: Si el autor es superadmin, actualizar moderation_status a "approved"
+    # El import_blogs deja moderation_status="pending" por default del modelo,
+    # pero para el superadmin debe ser "approved" automáticamente.
+    if is_admin:
+        BlogPost.objects.filter(slug=slug).update(moderation_status="approved")
+
     # 8. Notificar al administrador si el artículo quedó como borrador (draft)
     if not is_published:
         # Obtener el objeto BlogPost recién creado/actualizado para obtener el token
@@ -559,7 +567,7 @@ def save_blog_to_source(data, user):
                 subject=admin_subject,
                 message=admin_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.OWNER_EMAIL],
+                recipient_list=[get_owner_email()],
                 fail_silently=True,
             )
 
@@ -699,10 +707,13 @@ def save_uploaded_file(uploaded_file, user):
     if ext not in valid_ext:
         return None
 
-    # Validar tamaño (100MB máximo)
-    max_size = 100 * 1024 * 1024
+    # HU-028: Validar tamaño con mensaje de error parametrizado
+    max_size = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
     if uploaded_file.size > max_size:
-        return None
+        return {
+            "success": False,
+            "error": f"Archivo demasiado pesado (máximo: {settings.MAX_UPLOAD_SIZE_MB}MB)",
+        }
 
     # Generar un nombre único siempre, independientemente de colisiones.
     # Utilizamos el nombre original como base y le añadimos un sufijo corto de UUID

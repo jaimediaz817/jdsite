@@ -168,6 +168,9 @@ python manage.py collectstatic --noinput --clear
 # 6) Reiniciar servicio Gunicorn
 sudo systemctl restart jdiaz_gunicorn.service
 
+sudo journalctl -u jdiaz_gunicorn.service -f
+journalctl -u jdiaz_gunicorn.service
+
 # 7) Verificar que levantó
 sudo systemctl status jdiaz_gunicorn.service --no-pager
 --------------------------------------------------------------------------------------------
@@ -262,3 +265,223 @@ ls -la backend/media/blog_editor_temp/
 
 - o en un solo comando!:
 rm -rf backend/media/blog_editor_temp/15 backend/media/blog_editor_temp/4 && echo "✅ Limpieza producción completada"
+
+
+# Agregar las reglas faltantes al .gitignore existente
+cat >> .gitignore << 'EOF'
+backend/media/blog_editor_temp/
+backend/blogs_source/
+EOF
+
+# Agregar al commit existente (sin crear nuevo commit)
+git add .gitignore
+git commit --amend --no-edit
+
+# Ahora sí puedes push sin problemas
+git push origin main
+
+
+-----------------------------------------------------------------------------
+PRODUCCION
+SUPERADMIN:
+jdiaz
+18402120
+
+
+
+
+
+
+## RESOLUCIÓN COMPLETA - Flujo + Git
+
+### 1. Flujo de validación (tu pregunta original):
+
+__El diagnóstico `DIAG-ERROR_SAVE_BLOG.md` YA está implementado.__ El backend devuelve `is_published` y `moderation_status` al editor, y el JavaScript los usa para mostrar el badge correcto. Las imágenes EXISTING se cargan correctamente.
+
+### 2. Git en VPS - Solución inmediata:
+
+En la VPS ejecuta estos comandos:
+# 1. Quita blogs_source del tracking (NO borra físicamente):
+git rm --cached -r backend/blogs_source/
+
+# 2. Aplica el .gitignore actualizado:
+git add .gitignore
+git commit -m "chore: exclude blogs_source from git tracking"
+
+# 3. Ahora puedes hacer pull limpio:
+git pull origin main
+
+# 4. Ejecuta el fix de posts:
+python manage.py fix_pending_posts
+
+He actualizado `.gitignore`:
+
+backend/blogs_source/
+backend/blogs_source/*/
+!backend/blogs_source/.gitkeep
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1. Ver el estado actual de .gitignore para ver el conflicto
+git status
+
+# 2. Ver el contenido con conflictos
+cat .gitignore
+
+# 3. Opción más sencilla: abortar el merge y volver a empezar limpio
+git merge --abort
+
+# 4. Ahora traer cambios remotos SIN fusión automática (solo actualizar)
+git fetch origin
+git rebase origin/main
+
+# 5. Si hay conflictos en .gitignore, usar la versión del servidor (remota)
+git checkout --theirs .gitignore
+
+# 6. Marcar como resuelto
+git add .gitignore
+
+# 7. Continuar rebase
+git rebase --continue
+
+# 8. Ahora sí, crear el symlink y recargar nginx
+cd /var/www/jdiaz.tipsterbyte.com/app/backend
+sudo ln -s static/blogs staticfiles/blogs
+sudo systemctl reload nginx
+
+# 9. Verificar
+curl -I http://localhost/static/blogs/2026-07-04_primer-articulo/jd_marca_personal_d189772f.jpg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Estás en medio de un rebase con conflictos. Sal del rebase y aplica el fix de producción con estos comandos exactos:
+
+```bash
+# 1. Abortar el rebase
+git rebase --abort
+
+# 2. Alinear con el repositorio
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+
+# 3. Verificar que no hay conflictos
+git status
+# Debe decir: "Your branch is up to date with 'origin/main'."
+
+# 4. Crear el symlink que soluciona el problema de imágenes
+cd /var/www/jdiaz.tipsterbyte.com/app/backend
+sudo ln -s static/blogs staticfiles/blogs
+
+# 5. Verificar que se creó
+ls -la staticfiles/ | grep blogs
+# Debe mostrar: blogs -> static/blogs
+
+# 6. Recargar nginx
+sudo systemctl reload nginx
+
+# 7. Verificar que nginx sirve la imagen
+curl -I http://localhost/static/blogs/2026-07-04_primer-articulo/jd_marca_personal_d189772f.jpg
+# Debe responder: HTTP/1.1 200 OK
+```
+
+Con eso:
+- El repo queda limpio, sin conflictos.
+- El symlink hace que nginx encuentre las imágenes en `static/blogs/`.
+- El fix frontend ya está en `origin/main` y se aplicó en la VPS.
+
+Pega la salida del paso 3 y del paso 7 para confirmar.
+
+
+
+
+
+venga macho! corrijamos de paso algo en producion vale? resulta que comparto un link de un blog publicado y perefcto! todo en orden! pero desde l adminsitrador en produccion elimino el blog por x motivo, cuando el link lo vuelvo a abrir me sale esto:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Ver qué procesos corren en los puertos del backend
+sudo lsof -i :8000
+sudo lsof -i :8001
+
+# Ver el status del servicio (el más común para Gunicorn)
+sudo systemctl status jdiaz_gunicorn
+
+# Ver logs de error recientes
+sudo tail -n 50 /var/log/jdiaz_gunicorn/error.log 2>/dev/null
+sudo tail -n 50 /var/log/nginx/error.log | grep -i upstream
+
+# Reiniciar el backend (¡esto suele arreglar el 502!)
+sudo systemctl restart jdiaz_gunicorn
+
+
+
+
+
+
+
+
+
+
+
+
+# Recrear directorio run con permisos correctos
+sudo mkdir -p /var/www/jdiaz.tipsterbyte.com/app/run
+sudo chown -R jdiaz:jdiaz /var/www/jdiaz.tipsterbyte.com/app/run
+sudo chmod 755 /var/www/jdiaz.tipsterbyte.com/app/run
+
+# Reiniciar Gunicorn (crea el socket jdiaz.sock automáticamente)
+sudo systemctl restart jdiaz_gunicorn
+
+# Verificar
+ls -la /var/www/jdiaz.tipsterbyte.com/app/run/  # Debe mostrar jdiaz.sock
+curl -I http://localhost:8000/                  # Debe mostrar HTTP/1.1 200 OK
+
+
+
+sudo chmod 777 /var/www/jdiaz.tipsterbyte.com/app/run
+sudo systemctl restart jdiaz_gunicorn
+ls -la /var/www/jdiaz.tipsterbyte.com/app/run/
+curl -I http://localhost:8000/ 2>/dev/null | head -1

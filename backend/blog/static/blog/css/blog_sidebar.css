@@ -45,14 +45,36 @@
 }
 
 /* Flex container that holds the sidebar and main content */
-/* Flex container that holds the sidebar and main content */
 .blog-wrapper {
     display: flex;
     flex-wrap: nowrap;
-    /* Align items to the start so the sidebar can shrink/expand with its content */
     align-items: flex-start;
     gap: 1rem;
 }
+
+/* Cuando no hay sidebar (usuarios no superadmin), el wrapper ajusta el contenido al ancho completo */
+.blog-wrapper--no-sidebar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 0;
+}
+
+/* Cuando el blog-wrapper no tiene sidebar, el contenido ocupa todo el ancho */
+.blog-wrapper:not(:has(.blog-sidebar)) .blog-main,
+.blog-wrapper:not(:has(.absolute-sidebar)) .blog-main {
+    flex: 1 1 100%;
+    max-width: 100%;
+}
+
+/* Para navegadores que no soportan :has(), usamos clase utility */
+.no-sidebar .blog-main {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 
 /* Responsividad: en pantallas pequeñas el sidebar deja de ser fijo y el contenido vuelve a ocupar todo el ancho */
 @media (max-width: 767px) {

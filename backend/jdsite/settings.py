@@ -19,7 +19,7 @@ except Exception:
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-key")
 # DEBUG = os.getenv("DEBUG", "True") == "True"
-DEBUG = True
+
 # Detecta entorno
 DJANGO_ENV = os.getenv("DJANGO_ENV", "development").lower()
 
@@ -152,6 +152,10 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
+# --- Handler 404 personalizado ---
+# HU-031: Usar template 404 personalizado con estilos inline
+handler404 = "blog.views_404.custom_404_view"
 
 # --- MEDIA (para upload temporal del editor de blogs) ---
 MEDIA_URL = "/media/"

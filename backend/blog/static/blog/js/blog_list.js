@@ -209,3 +209,55 @@ document.addEventListener('DOMContentLoaded', function () {
         if (nextEl2) observer2.observe(nextEl2);
     }
 })();
+
+// =============================================
+// HU-031: Interceptar clicks en artículos no accesibles
+// Muestra toast y evita navegación a 404
+// =============================================
+(function() {
+    // Interceptor global para clicks en artículos
+    var pendingRedirect = null;
+
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a.article-link, a.stretched-link, .title-article-content a');
+        if (!link) return;
+
+        var href = link.getAttribute('href');
+        if (!href || !href.match(/^\/blog\/[^/]+\/?$/)) return;
+
+        var slug = href.split('/blog/')[1].replace(/\/$/, '');
+
+        // Cancelar cualquier redirección pendiente previa
+        if (pendingRedirect) {
+            clearTimeout(pendingRedirect);
+            pendingRedirect = null;
+        }
+
+        // Prevenir navegación inmediata
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Verificar accesibilidad vía AJAX
+        fetch('/blog/api/post-can-view/' + slug + '/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.can_view) {
+                    // Navegar normalmente después de verificar
+                    window.location.href = href;
+                } else if (data.exists) {
+                    // Mostrar toast premium y permanecer en blog_list
+                    var msg = 'Este artículo no está disponible.<br><small>Estado: <em>' + (data.reason || 'Pendiente de aprobación') + '</em></small>';
+                    window.showBlogToast(msg, 'warning');
+                } else {
+                    // Artículo no existe, mostrar toast premium de error
+                    var msg = '<strong>@"' + slug + '"</strong> no fue encontrado. El artículo puede haber sido eliminado o la URL es incorrecta.';
+                    window.showBlogToast(msg, 'danger');
+                }
+            })
+            .catch(function() {
+                // En caso de error, permitir navegación normal
+                console.warn('No se pudo verificar disponibilidad del artículo:', slug);
+                window.location.href = href;
+            });
+    });
+})();

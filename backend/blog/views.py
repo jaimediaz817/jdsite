@@ -15,7 +15,8 @@ from pathlib import Path
 import shutil
 
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
+from django.http import Http404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic import ListView, DetailView
@@ -863,14 +864,17 @@ class BlogDetailView(DetailView):
     def get_queryset(self):
         """Permite que el autor y los superusuarios vean borradores.
 
-        - Usuarios anónimos solo ven artículos publicados.
+        - Usuarios anónimos solo ven artículos publicados (approved).
         - El autor del artículo (incluso si está en borrador) siempre lo puede ver.
-        - Superusuarios y staff también pueden ver borradores.
+        - Superusuarios y staff pueden ver cualquier artículo (pending/rejected).
         """
         qs = super().get_queryset()
         user = self.request.user
 
         if user.is_authenticated:
+            if user.is_staff or user.is_superuser:
+                # Staff/superuser pueden ver TODO sin restricciones
+                return qs  # noqa: SIM102
             # El autor siempre puede ver su propio artículo (incluso borrador)
             return qs.filter(
                 Q(is_published=True)
@@ -880,6 +884,71 @@ class BlogDetailView(DetailView):
         else:
             # Usuarios anónimos solo ven publicados
             return qs.filter(is_published=True)
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        HU-031: Manejar 404 con redirección a blog_list + toast.
+
+        Cuando el artículo no existe o no es accesible, en lugar de mostrar
+        el template 404 estándar, redirigimos a blog_list con parámetros
+        que activarán un toast informativo.
+        """
+        slug = self.kwargs.get(self.slug_url_kwarg)
+
+        # Primero verificar si el artículo existe en la base de datos
+        try:
+            post = BlogPost.objects.get(slug=slug)
+        except BlogPost.DoesNotExist:
+            # Artículo no existe - redirigir con mensaje de "no encontrado"
+            from django.urls import reverse
+
+            blog_list_url = reverse("blog:blog_list")
+            return redirect(f"{blog_list_url}?error=not_found&slug={slug}")
+
+        # Verificar si el usuario actual puede ver el artículo
+        user = request.user
+        can_view = False
+        reason = None
+
+        if user.is_authenticated:
+            if user.is_staff or user.is_superuser:
+                # Staff/superuser pueden ver TODO excepto rechazados
+                if post.moderation_status == "rejected":
+                    can_view = False
+                    reason = "rejected"
+                else:
+                    can_view = True
+            elif post.author == user:
+                # El autor puede ver su propio artículo
+                can_view = True
+            elif post.is_published:
+                can_view = True
+            else:
+                can_view = False
+                reason = (
+                    "pending"
+                    if post.moderation_status == "pending"
+                    else "unavailable"
+                )
+        else:
+            # Usuarios anónimos solo pueden ver publicados y aprobados
+            if post.is_published and post.moderation_status == "approved":
+                can_view = True
+            else:
+                can_view = False
+                reason = "unavailable"
+
+        if not can_view:
+            # Artículo no accesible - redirigir con mensaje de toast
+            from django.urls import reverse
+
+            blog_list_url = reverse("blog:blog_list")
+            return redirect(
+                f"{blog_list_url}?error=unavailable&reason={reason}&slug={slug}"
+            )
+
+        # El artículo es accesible, continuar con el flujo normal
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Enriquece el contexto del detalle del post."""
@@ -910,8 +979,6 @@ class BlogDetailView(DetailView):
         context["comment_form"] = CommentForm()
         # Return the enriched context
         return context
-
-    # NOTE: The previous duplicate implementation of `delete_resource_file_ajax` (which handled comments) was erroneous and has been removed.
 
 
 # ---------------------------------------------------------------------
@@ -1112,7 +1179,8 @@ def post_comment(request, slug):
     - Sólo acepta peticiones POST.
     - Utiliza ``create_comment`` del módulo ``services`` para crear el
       comentario, pasando la IP del cliente y los datos del formulario.
-    - Redirige al detalle del post anclando al comentario recién creado.
+    - Si la petición es AJAX (X-Requested-With: XMLHttpRequest), devuelve JsonResponse.
+    - De lo contrario, redirige al detalle del post anclando al comentario recién creado.
     """
     # Obtener el post o lanzar 404
     post = get_object_or_404(BlogPost, slug=slug)
@@ -1141,6 +1209,10 @@ def post_comment(request, slug):
         provider=provider,
         provider_uid=provider_uid,
     )
+
+    # Soporte AJAX: devolver JsonResponse si es petición AJAX
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return JsonResponse({"success": True, "comment_id": comment.id})
 
     # Redirigir al detalle del post, anclando al nuevo comentario
     return redirect(f"{post.get_absolute_url()}#comment-{comment.id}")
@@ -1721,6 +1793,82 @@ def delete_blog_view(request, post_id):
             },
             status=500,
         )
+
+
+# ======================================================
+# HU-031: Verificar si un artículo es accesible para el usuario
+# ======================================================
+@require_http_methods(["GET"])
+def post_can_view(request, slug):
+    """
+    Endpoint AJAX para verificar si un artículo puede ser visto por el usuario actual.
+
+    Retorna JSON con:
+    - exists: bool - si el artículo existe en la BD
+    - can_view: bool - si el usuario actual puede ver el artículo
+    - reason: str (opcional) - razón por la que no se puede ver
+
+    Estados que NO permiten ver:
+    - moderation_status="rejected" (artículo rechazado)
+    - is_published=False y no eres el autor ni staff (artículo pendiente)
+    """
+    from blog.models import BlogPost
+
+    user = request.user
+
+    try:
+        post = BlogPost.objects.get(slug=slug)
+    except BlogPost.DoesNotExist:
+        return JsonResponse(
+            {
+                "exists": False,
+                "can_view": False,
+                "reason": "Artículo no encontrado",
+            }
+        )
+
+    # Verificar si el usuario puede ver el artículo
+    can_view = False
+    reason = None
+
+    if user.is_authenticated:
+        if user.is_staff or user.is_superuser:
+            # Staff/superuser pueden ver TODO excepto rechazados
+            if post.moderation_status == "rejected":
+                can_view = False
+                reason = "Artículo rechazado - no puede ser visualizado"
+            else:
+                can_view = True
+                reason = None
+        elif post.author == user:
+            # El autor puede ver su propio artículo (incluso si está pendiente)
+            can_view = True
+        elif post.is_published:
+            # Usuarios autenticados pueden ver artículos publicados
+            can_view = True
+        else:
+            can_view = False
+            if post.moderation_status == "pending":
+                reason = "Pendiente de aprobación"
+            else:
+                reason = "Artículo no disponible"
+    else:
+        # Usuarios anónimos solo pueden ver publicados y aprobados
+        if post.is_published and post.moderation_status == "approved":
+            can_view = True
+        else:
+            can_view = False
+            reason = "Artículo no disponible para usuarios anónimos"
+
+    return JsonResponse(
+        {
+            "exists": True,
+            "can_view": can_view,
+            "reason": reason,
+            "is_published": post.is_published,
+            "moderation_status": post.moderation_status,
+        }
+    )
 
 
 # ======================================================

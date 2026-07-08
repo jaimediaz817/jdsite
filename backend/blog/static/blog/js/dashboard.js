@@ -20,7 +20,13 @@ function showToast(msg, type) {
     // Crear elemento toast sin innerHTML para evitar conflictos con Bootstrap
     var toast = document.createElement('div');
     toast.style.cssText = 'min-width:280px;padding:12px 48px 12px 16px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);color:#fff;font-size:.875rem;font-weight:500;position:relative;line-height:1.4;margin-bottom:8px;';
-    toast.style.background = type === 'success' ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#ef4444,#dc2626)';
+    if (type === 'success') {
+        toast.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+    } else if (type === 'warning') {
+        toast.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
+    } else {
+        toast.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+    }
     // Texto del mensaje como nodo texto (seguro)
     toast.appendChild(document.createTextNode(msg));
     // Botón close construido desde cero con SVG inline blanco
@@ -452,6 +458,52 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ============================================================
+// HU-031: Interceptar click en "Ver artículo" del dashboard
+// Verificar accesibilidad antes de navegar y mostrar toast si no es posible
+// ============================================================
+(function() {
+    // Los botones de "Ver artículo" tienen clase .article-link
+    var viewButtons = document.querySelectorAll('.article-link');
+    if (!viewButtons.length) return;
+
+    viewButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            // Usar data-slug del atributo (más confiable que parsear href)
+            var slug = this.getAttribute('data-slug');
+            if (!slug) {
+                // Fallback: parsear del href
+                var href = this.getAttribute('href');
+                if (href) {
+                    slug = href.split('/').filter(function(s) { return s; }).pop();
+                }
+            }
+            if (!slug) return;
+
+            // Guardar la URL original para navegar después
+            var targetUrl = this.getAttribute('href');
+
+            // Verificar accesibilidad vía AJAX
+            fetch('/blog/api/post-can-view/' + encodeURIComponent(slug) + '/')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.can_view) {
+                        // Evitar navegación
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Mostrar toast informativo
+                        showToast('🔍 ' + (data.reason || 'Este artículo no está disponible para visualizar.'), 'warning');
+                    }
+                    // Si can_view es true, el navegación continúa normalmente
+                })
+                .catch(function() {
+                    // En caso de error, permitir navegación (fail-open)
+                });
+        });
+    });
+})();
+
+
+// ============================================================
 // Botón "📂 Recursos" — Verificación de permisos (SOLO superadmin)
 // Si el usuario NO es superadmin, mostrar toast en lugar de redirigir
 // ============================================================
@@ -472,8 +524,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
- 
-
 // =============================================
 // HU-026-B: Guardar email propietario vía AJAX
 // [DESACTIVADO - DUPLICADO] Ahora se gestiona desde blog_email_config.html

@@ -264,11 +264,17 @@ window.submitMainCommentForm = async function(form) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
     
     try {
+        // Get CSRF token from the form
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
         const response = await fetch(form.action, {
             method: 'POST',
             body: new FormData(form),
             credentials: 'same-origin',
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest', 
+                'Accept': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
         });
         if (!response.ok) {
             // Intentar extraer errores de validación del body en 400
@@ -357,7 +363,18 @@ window.submitReplyForm = function(commentId) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Enviando...';
 
-    fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+    // Get CSRF token from the form
+    const csrfTokenReply = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    fetch(form.action, { 
+        method: 'POST', 
+        body: new FormData(form), 
+        credentials: 'same-origin', 
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest', 
+            'Accept': 'application/json',
+            'X-CSRFToken': csrfTokenReply
+        } 
+    })
     .then(function(r) {
         if (!r.ok) {
             // Intentar extraer errores de validación del body en 400

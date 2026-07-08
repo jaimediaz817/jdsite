@@ -26,7 +26,11 @@ from blog.views import (
     dashboard_resources_view,
     dashboard_users_view,
     toggle_user_active,
+    post_can_view,
 )
+
+# HU-031: Importar vista de prueba 404
+from blog.views_404 import test_404_page
 
 app_name = "blog"
 
@@ -45,6 +49,12 @@ urlpatterns = [
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
     # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
     path("dashboard/", dashboard_view, name="dashboard"),
+    # HU-031: Endpoint AJAX para verificar si un artículo es accesible (ANTES de <slug>)
+    path(
+        "api/post-can-view/<slug:slug>/",
+        post_can_view,
+        name="api_post_can_view",
+    ),
     # HU-17.18: Endpoint AJAX autocomplete de autores (ANTES de <slug>)
     path(
         "api/authors/autocomplete/",
@@ -112,6 +122,8 @@ urlpatterns = [
         toggle_user_active,
         name="toggle_user_active",
     ),
+    # HU-031: Vista de prueba del template 404 (solo en desarrollo)
+    path("test-404/", test_404_page, name="test_404"),
     path("<slug:slug>/", BlogDetailView.as_view(), name="blog_detail"),
     path("<slug:slug>/comment/", post_comment, name="post_comment"),
     path(

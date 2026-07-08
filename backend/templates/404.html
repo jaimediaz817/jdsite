@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,11 +6,6 @@
     <title>404 · Página no encontrada · Jaime Díaz</title>
     <meta name="robots" content="noindex, nofollow">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'css/fawesome/all.min.css' %}">
-    
     <style>
         /* ============================================
            404 PAGE — JAIME DÍAZ BLOG
@@ -23,7 +17,7 @@
 
         html, body {
             height: 100%;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: #0c0f1c;
             color: #e2e8f0;
             overflow: hidden;
@@ -326,18 +320,18 @@
         <div class="error-actions">
             <div class="btn-group-row">
                 <a href="{% url 'blog:blog_list' %}" class="btn-404 btn-404-primary">
-                    <i class="fas fa-newspaper"></i>
+                    📰
                     Ver artículos
                 </a>
                 <a href="{% url 'home' %}" class="btn-404 btn-404-secondary">
-                    <i class="fas fa-home"></i>
+                    🏠
                     Ir al inicio
                 </a>
             </div>
         </div>
 
         <a href="{% url 'home' %}" class="error-brand">
-            <i class="fas fa-arrow-left"></i>
+            ←
             Jaime Díaz · Desarrollo & Estrategia
         </a>
     </div>

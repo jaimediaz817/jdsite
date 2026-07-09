@@ -257,22 +257,39 @@
                   </ol>
                 </nav>
 
-                <!-- ═══════════════════════════════════════
-                     HEADER DEL ARTÍCULO
-                ═══════════════════════════════════════ -->
+                    <!-- ═══════════════════════════════════════
+                         HEADER DEL ARTÍCULO
+                   ═══════════════════════════════════════ -->
                     <header class="jd-article-header mb-5">
-                        <h1 class="jd-article-title">{{ post.title }}</h1>
-                        <!-- Categoría del artículo (si existe) -->
-                        {% if post.category %}
-                        <div class="category-badge mb-3">
-                            <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="badge category-link" title="Ver más artículos de {{ post.category.name }}">
-                                <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
-                            </a>
+                        <div class="jd-article-header-flex">
+                            <div class="jd-article-header-main">
+                                <h1 class="jd-article-title">{{ post.title }}</h1>
+                                <!-- Categoría del artículo (si existe) -->
+                                {% if post.category %}
+                                <div class="category-badge mb-3">
+                                    <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="badge category-link" title="Ver más artículos de {{ post.category.name }}">
+                                        <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <!-- QR Code (si existe) -->
+                            {% with qr=post.qr_codes.first %}
+                            {% if qr %}
+                            <div class="jd-article-qr-container">
+                                <div class="jd-article-qr-wrapper" data-qr-slug="{{ qr.slug }}" title="Ver código QR de este artículo">
+                                    <img src="{{ qr.image_url }}" alt="QR {{ qr.name }}" class="jd-article-qr-image" />
+                                    <div class="jd-article-qr-overlay">
+                                        <i class="fas fa-qrcode"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
                         </div>
-                        {% endif %}
 
-                  <!-- Meta row -->
-                  <div class="jd-article-meta">
+                      <!-- Meta row -->
+                      <div class="jd-article-meta">
                     <div class="jd-meta-item jd-meta-author">
                       <div class="jd-author-avatar">JD</div>
                       <div>
@@ -848,6 +865,53 @@
         </div>
       </div>
     </dialog>
+
+    <!-- ✨ QR MODAL -->
+    <dialog id="qr-modal">
+      <div id="qr-modal-content">
+        <button type="button" class="close" id="qr-modal-close" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <img id="qr-modal-image" src="" alt="Código QR ampliado" />
+      </div>
+    </dialog>
+
+    <script>
+    // Función para mostrar el QR en modal
+    window.showQrModal = function(element) {
+        var qrSlug = element.getAttribute('data-qr-slug');
+        var modal = document.getElementById('qr-modal');
+        var img = document.getElementById('qr-modal-image');
+        var closeBtn = document.getElementById('qr-modal-close');
+        
+        // Usar la imagen del QR
+        var qrImg = element.querySelector('img');
+        if (qrImg) {
+            img.src = qrImg.src;
+        }
+        
+        // Mostrar modal manualmente (Bootstrap 4 compatible)
+        modal.classList.add('visible');
+        
+        // Cerrar al hacer click en X o fuera del modal
+        closeBtn.onclick = function() {
+            modal.classList.remove('visible');
+        };
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('visible');
+            }
+        };
+        
+        // Cerrar con ESC
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                modal.classList.remove('visible');
+                document.removeEventListener('keydown', escHandler);
+            }
+        });
+    };
+    </script>
 
     <style>
 

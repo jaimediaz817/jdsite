@@ -1,0 +1,367 @@
+{% extends "blog/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}QR sin vincular - {{ qr_code.name }} | JD Blog{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="h2 text-dark mb-3">Código QR sin artículo asociado</h1>
+                {% if request.user.is_staff %}
+                <p class="lead text-muted">
+                    QR: <strong>{{ qr_code.name }}</strong> - <span class="badge badge-warning">Modo Staff</span>
+                </p>
+                {% else %}
+                <p class="lead text-muted">
+                    El QR <strong>{{ qr_code.name }}</strong> aún no está vinculado a contenido específico
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Vista previa del QR -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-qrcode"></i> Vista previa</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ qr_image_url }}" alt="QR Preview" class="img-fluid" style="max-width: 220px;">
+                    <p class="small text-muted mt-2 mb-0">QR: {{ qr_code.slug }}</p>
+                </div>
+            </div>
+
+            {% if request.user.is_staff %}
+            <!-- Buscador de artículos (solo para staff) -->
+            <div class="card shadow-sm mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-link"></i> Vincular artículo a este QR</h5>
+                </div>
+                <div class="card-body">
+                    <div class="position-relative">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <label class="form-label small text-muted mb-2">BUSCAR ARTÍCULO PUBLICADO PARA VINCULAR</label>
+                        <div class="input-group input-group-lg">
+                            <input type="text" class="form-control rounded-pill" id="qrArticleSearch" 
+                                   placeholder="Escribe el título o slug..." autocomplete="off"
+                                   style="border-right: none;">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-white border-left-0 rounded-pill qr-article-clear" 
+                                      id="qrArticleClear" title="Quitar selección" 
+                                      style="display: none; cursor: pointer; border: 1px solid #ced4da; border-left: none;">
+                                    <i class="fas fa-times text-muted"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <select class="form-control" id="qrBlogPostSelect" name="blog_post_id" style="display:none;">
+                            {% for post in published_posts %}
+                            <option value="{{ post.id }}">{{ post.title }} ({{ post.slug }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="qr-article-dropdown border rounded" id="qrArticleDropdown"></div>
+                    </div>
+
+                    <div id="selectedPostInfo" class="mt-3 p-3 bg-light rounded" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1 text-success"><i class="fas fa-check-circle"></i> Artículo seleccionado</h6>
+                                <p class="mb-0 font-weight-bold text-dark" id="selectedPostTitle"></p>
+                                <code class="text-muted small" id="selectedPostSlug"></code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success btn-lg w-100 mt-3" id="linkArticleBtn" onclick="showLinkModal()" disabled>
+                        <i class="fas fa-link"></i> Vincular artículo al QR
+                    </button>
+
+                    <!-- Mensaje de resultado -->
+                    <div id="linkResult" class="mt-3"></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Artículos destacados -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-book-reader"></i> Explora nuestros artículos</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_posts %}
+                    <div class="list-group">
+                        {% for post in recent_posts %}
+                        <a href="{% url 'blog:blog_detail' post.slug %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ post.title }}</h6>
+                                    <small class="text-muted">
+                                        {{ post.publish_date|date:"d M Y" }}
+                                        {% if post.category %} • {{ post.category.name }}{% endif %}
+                                    </small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-th-large"></i> Ver todos los artículos
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-folder-open text-muted mb-3" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mb-3">Aún no hay artículos publicados</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Ir al inicio
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if request.user.is_staff %}
+            <div class="text-center mt-4">
+                <a href="{% url 'blog:dashboard_qr' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al QR Dashboard
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="linkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmar vinculación
+                </h5>
+                <button type="button" class="close" aria-label="Close" id="closeLinkModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">¿Vincular este artículo al QR <strong>{{ qr_code.name }}</strong>?</p>
+                <p class="fw-bold text-primary mb-2" id="linkModalTitle"></p>
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    El QR redirigirá automáticamente a este artículo cuando se escanee.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="cancelLinkBtn">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-success" id="confirmLinkBtn">
+                    <i class="fas fa-link me-1"></i>Vincular ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.qr-article-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 1060;
+    background: #fff;
+    border: 2px solid #28a745;
+    border-radius: .5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+.qr-article-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all .2s ease;
+    margin: 0;
+}
+.qr-article-option:last-child { border-bottom: none; border-radius: 0 0 .5rem .5rem; }
+.qr-article-option:first-child { border-radius: .5rem .5rem 0 0; }
+.qr-article-option:hover { 
+    background: linear-gradient(90deg, #e8f5e9 0%, #ffffff 100%);
+    transform: translateX(4px);
+}
+.qr-article-option .qr-article-slug {
+    color: #8a9ba8;
+    font-size: .75rem;
+    margin-top: 2px;
+}
+.qr-article-empty {
+    padding: 16px;
+    color: #8a9ba8;
+    font-style: italic;
+    text-align: center;
+}
+</style>
+
+<script>
+(function() {
+    var select = document.getElementById('qrBlogPostSelect');
+    var search = document.getElementById('qrArticleSearch');
+    var dropdown = document.getElementById('qrArticleDropdown');
+    var clearBtn = document.getElementById('qrArticleClear');
+    var linkBtn = document.getElementById('linkArticleBtn');
+    
+    // Solo ejecutar si existe (es decir, si el usuario es staff)
+    if (!select || !search) return;
+    
+    function buildOptions(filter) {
+        dropdown.innerHTML = '';
+        var opts = [];
+        Array.prototype.forEach.call(select.options, function(opt) {
+            var val = opt.value;
+            var text = opt.text;
+            if (val === '') return;
+            if (!filter || text.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
+                opts.push({ val: val, text: text });
+            }
+        });
+
+        if (opts.length === 0) {
+            var msg = filter ? 'Sin resultados para "' + filter + '".' : 'No hay artículos publicados.';
+            var empty = document.createElement('div');
+            empty.className = 'qr-article-empty';
+            empty.textContent = msg;
+            dropdown.appendChild(empty);
+        } else {
+            opts.forEach(function(o) {
+                var title = o.text.replace(/\s*\([^)]*\)\s*$/, '');
+                var slugMatch = o.text.match(/\(([^)]+)\)/);
+                var optEl = document.createElement('div');
+                optEl.className = 'qr-article-option';
+                optEl.setAttribute('data-val', o.val);
+                optEl.innerHTML = '<div>' + title + '</div>' + 
+                    (slugMatch ? '<div class="qr-article-slug">' + slugMatch[1] + '</div>' : '');
+                dropdown.appendChild(optEl);
+            });
+        }
+    }
+
+    window.selectOption = function(val) {
+        selectedPostId = val;
+        if (val === '') {
+            search.value = '';
+            clearBtn.style.display = 'none';
+            linkBtn.disabled = true;
+            document.getElementById('selectedPostInfo').style.display = 'none';
+        } else {
+            var opt = dropdown.querySelector('.qr-article-option[data-val="' + val + '"]');
+            var title = opt.querySelector('div').textContent;
+            var slug = opt.querySelector('.qr-article-slug')?.textContent || '';
+            document.getElementById('selectedPostTitle').textContent = title;
+            document.getElementById('selectedPostSlug').textContent = slug;
+            document.getElementById('selectedPostInfo').style.display = 'block';
+            clearBtn.style.display = 'block';
+            linkBtn.disabled = false;
+        }
+        dropdown.style.display = 'none';
+    };
+
+    search.addEventListener('focus', function() {
+        buildOptions(search.value);
+        dropdown.style.display = 'block';
+    });
+    search.addEventListener('input', function() {
+        buildOptions(search.value);
+        dropdown.style.display = 'block';
+    });
+    dropdown.addEventListener('click', function(e) {
+        var opt = e.target.closest('.qr-article-option');
+        if (opt) selectOption(opt.getAttribute('data-val'));
+    });
+    clearBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectOption('');
+        search.focus();
+    });
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.position-relative')) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    buildOptions('');
+    dropdown.style.display = 'none';
+})();
+
+var selectedPostId = null;
+
+function showLinkModal() {
+    if (!selectedPostId) return;
+    
+    var title = document.getElementById('selectedPostTitle').textContent;
+    document.getElementById('linkModalTitle').textContent = title;
+    
+    var modalEl = document.getElementById('linkModal');
+    modalEl.classList.add('show');
+    modalEl.style.display = 'block';
+    modalEl.setAttribute('aria-modal', 'true');
+    document.body.classList.add('modal-open');
+    
+    if (!document.getElementById('linkModalBackdrop')) {
+        var backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        backdrop.id = 'linkModalBackdrop';
+        document.body.appendChild(backdrop);
+    }
+}
+
+function hideLinkModal() {
+    var modalEl = document.getElementById('linkModal');
+    modalEl.classList.remove('show');
+    modalEl.style.display = 'none';
+    modalEl.removeAttribute('aria-modal');
+    document.body.classList.remove('modal-open');
+    var backdrop = document.getElementById('linkModalBackdrop');
+    if (backdrop) backdrop.remove();
+}
+
+document.getElementById('closeLinkModal').addEventListener('click', hideLinkModal);
+document.getElementById('cancelLinkBtn').addEventListener('click', hideLinkModal);
+document.getElementById('confirmLinkBtn').addEventListener('click', function() {
+    var postId = selectedPostId;
+    var qrSlug = '{{ qr_code.slug }}';
+    var resultDiv = document.getElementById('linkResult');
+    var generateQrUrl = "{% url 'blog:generate_qr' %}";
+    
+    hideLinkModal();
+    resultDiv.innerHTML = '<div class="alert alert-info">Vinculando artículo...</div>';
+
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value || '{{ csrf_token }}';
+    var formData = new FormData();
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    formData.append('name', '{{ qr_code.name }}');
+    formData.append('slogan', '{{ qr_code.slogan }}');
+    formData.append('blog_post_id', postId);
+
+    fetch(generateQrUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {'X-CSRFToken': csrfToken}
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        if (data.success) {
+            resultDiv.innerHTML = '<div class="alert alert-success">¡Artículo vinculado! Redirigiendo al dashboard...</div>';
+            setTimeout(function() {
+                window.location.href = "{% url 'blog:dashboard_qr' %}";
+            }, 1500);
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.error || 'Error al vincular') + '</div>';
+        }
+    })
+    .catch(function(err) {
+        resultDiv.innerHTML = '<div class="alert alert-danger">Error: ' + err.message + '</div>';
+    });
+});
+</script>
+{% endblock %}

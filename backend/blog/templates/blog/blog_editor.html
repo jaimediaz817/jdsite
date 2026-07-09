@@ -18,6 +18,9 @@
     
     <link rel="stylesheet" href="{% static 'blog/css/blog_editor.css' %}">
     
+    <!-- HU-036: Estilos responsive toast/modales -->
+    <link rel="stylesheet" href="{% static 'blog/css/blog_editor_responsive.css' %}">
+    
     <!-- Custom footer for blog -->
     <link rel="stylesheet" href="{% static 'blog/css/footer.css' %}">
     <!-- Zeppelin volador footer -->
@@ -331,7 +334,7 @@
                     <div id="selector-existing-images" class="selector-thumb-grid mb-3">
                         <!-- Se puebla dinámicamente con JS -->
                     </div>
-                    <div id="selector-empty-state" class="d-none text-center text-muted py-5 selector-empty-state">
+                    <div id="selector-empty-state" class="d-none text-center text-muted py-0 py-md-5 selector-empty-state">
                         <div class="selector-empty-icon-wrapper mb-3">
                             <i class="fas fa-cloud-upload-alt"></i>
                         </div>
@@ -399,28 +402,28 @@
                 </div>
                 <div class="modal-body selector-modal-body">
                     <!-- Opción 1: Subir archivo local -->
-                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
+                    <div class="p-3 mb-0 mb-md-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fas fa-upload text-primary me-2"></i>Subir archivo de video
                         </h6>
-                        <p class="small text-muted mb-2">Selecciona un archivo MP4, WebM u otro formato soportado desde tu computadora.</p>
+                        <p class="text-info-video small text-muted mb-2">Selecciona un archivo MP4, WebM u otro formato soportado desde tu computadora.</p>
                         <input type="file" id="videoFileInput" accept="video/*" class="form-control form-control-sm" aria-describedby="videoFileHelp">
-                        <div id="videoFileHelp" class="form-text mt-1">El archivo debe estar guardado localmente antes de subirlo.</div>
+                        <div id="videoFileHelp" class="text-info-video form-text mt-1">El archivo debe estar guardado localmente antes de subirlo.</div>
                     </div>
 
                     <!-- Separador -->
-                    <div class="text-center mb-3">
+                    <div class="text-center mb-0 mb-md-3">
                         <span class="badge bg-secondary">O</span>
                     </div>
 
                     <!-- Opción 2: URL de YouTube -->
-                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #dc3545;">
+                    <div class="panel-yt-container p-3 mb-3 mb-0 mb-md-3 rounded" style="background:#f8f9fa; border-left:3px solid #dc3545;">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fab fa-youtube text-danger me-2"></i>Video de YouTube
                         </h6>
-                        <p class="small text-muted mb-2">Pega la URL del video de YouTube que deseas insertar.</p>
+                        <p class="text-info-video small text-muted mb-2">Pega la URL del video de YouTube que deseas insertar.</p>
                         <input type="url" id="videoUrlInput" class="form-control form-control-sm" placeholder="https://www.youtube.com/watch?v=..." aria-describedby="videoUrlHelp">
-                        <div id="videoUrlHelp" class="form-text mt-1">Ejemplo: https://www.youtube.com/watch?v=ydvR27eZEj4</div>
+                        <div id="videoUrlHelp" class="text-info-video form-text mt-1">Ejemplo: https://www.youtube.com/watch?v=ydvR27eZEj4</div>
                     </div>
 
                     <!-- Mensaje de error/validación -->
@@ -451,7 +454,7 @@
                 </div>
                 <div class="modal-body selector-modal-body">
                     <!-- Toggle pills superior -->
-                    <div class="btn-group btn-group-sm mb-3" role="group" aria-label="Modo slide/gallery">
+                    <div class="btn-group btn-group-sm mb-0 mb-md-3" role="group" aria-label="Modo slide/gallery">
                         <button type="button" class="btn btn-outline-primary active" id="gallery-toggle-slides">
                             <i class="fas fa-layer-group me-1"></i> Slides
                         </button>
@@ -462,7 +465,7 @@
 
                     <!-- Grid de imágenes existentes -->
                     <div id="gallery-existing-images" class="selector-thumb-grid mb-3"></div>
-                    <div id="gallery-empty-state" class="d-none text-center text-muted py-4 selector-empty-state">
+                    <div id="gallery-empty-state" class="d-none py-0 text-center text-muted py-md-4 selector-empty-state">
                         <div class="selector-empty-icon-wrapper mb-2">
                             <i class="fas fa-cloud-upload-alt"></i>
                         </div>
@@ -507,28 +510,28 @@
                 </div>
                 <div class="modal-body" style="max-height:65vh; overflow-y:auto; padding:1.25rem;">
                     <!-- Sección: Descripción -->
-                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
+                    <div class="text-explicacion-panel-container p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fas fa-book-open text-primary me-2"></i>Descripción
                         </h6>
                         <p id="mtpHelpDesc" class="mb-0 small" style="line-height:1.6; color:#495057;">—</p>
                     </div>
                     <!-- Sección: Cómo se usa -->
-                    <div class="p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
+                    <div class="text-explicacion-panel-container p-3 mb-3 rounded" style="background:#f8f9fa; border-left:3px solid #0d6efd;">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fas fa-tools text-primary me-2"></i>¿Cómo se usa?
                         </h6>
                         <div id="mtpHelpUsage" class="small" style="line-height:1.6; color:#495057;">—</div>
                     </div>
                     <!-- Sección: Pasos (oculto por defecto) -->
-                    <div class="p-3 mb-3 rounded d-none" style="background:#f8f9fa; border-left:3px solid #0d6efd;" id="mtpHelpStepsWrap">
+                    <div class="text-explicacion-panel-container p-3 mb-3 rounded d-none" style="background:#f8f9fa; border-left:3px solid #0d6efd;" id="mtpHelpStepsWrap">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fas fa-list-ol text-primary me-2"></i>Pasos
                         </h6>
                         <ol id="mtpHelpStepsList" class="mb-0 small" style="line-height:1.6; color:#495057; padding-left:1.25rem;"></ol>
                     </div>
                     <!-- Sección: Screenshot (oculto por defecto) -->
-                    <div class="p-3 mb-3 rounded d-none text-center" style="background:#f8f9fa; border-left:3px solid #0d6efd;" id="mtpHelpScreenshotWrap">
+                    <div class="text-explicacion-panel-container p-3 mb-3 rounded d-none text-center" style="background:#f8f9fa; border-left:3px solid #0d6efd;" id="mtpHelpScreenshotWrap">
                         <h6 class="fw-bold" style="font-size:0.9rem;">
                             <i class="fas fa-image text-primary me-2"></i>Ejemplo visual
                         </h6>
@@ -565,27 +568,27 @@
             <span class="mtp-badge">MTP</span>
             <i class="fas fa-layer-group"></i>
         </button>
-        <button type="button" class="mtp-btn" data-mtp="callout-info" data-tip="Callout info ℹ️">
+        {% comment %} <button type="button" class="mtp-btn" data-mtp="callout-info" data-tip="Callout info ℹ️">
             <i class="fas fa-info-circle"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="callout-warning" data-tip="Callout warning ⚠️">
+        </button> {% endcomment %}
+        {% comment %} <button type="button" class="mtp-btn" data-mtp="callout-warning" data-tip="Callout warning ⚠️">
             <i class="fas fa-exclamation-triangle"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="callout-tip" data-tip="Callout tip 💡">
+        </button> {% endcomment %}
+        {% comment %} <button type="button" class="mtp-btn" data-mtp="callout-tip" data-tip="Callout tip 💡">
             <i class="fas fa-lightbulb"></i>
-        </button>
-        <button type="button" class="mtp-btn" data-mtp="pullquote" data-tip="Pullquote 💬">
+        </button> {% endcomment %}
+        {% comment %} <button type="button" class="mtp-btn" data-mtp="pullquote" data-tip="Pullquote 💬">
             <i class="fas fa-quote-right"></i>
-        </button>
+        </button> {% endcomment %}
         <button type="button" class="mtp-btn" data-mtp="codefile" data-tip="Bloque código 📄">
             <i class="fas fa-file-code"></i>
         </button>
         <button type="button" class="mtp-btn" data-mtp="popup-gallery" data-tip="Galería popup 🖼️">
             <i class="fas fa-images"></i>
         </button>
-        <button type="button" class="mtp-btn" data-mtp="vl-highlight" data-tip="Layout highlight [vl]">
+        {% comment %} <button type="button" class="mtp-btn" data-mtp="vl-highlight" data-tip="Layout highlight [vl]">
             <i class="fas fa-palette"></i>
-        </button>
+        </button> {% endcomment %}
 
         <div class="mtp-divider"></div>
 

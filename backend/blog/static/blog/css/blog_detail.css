@@ -3936,6 +3936,7 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
     .blog-image-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
     .blog-image-grid[data-count="1"] {
         max-width: 100%;
     }
@@ -3961,8 +3962,13 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 }
 
 @keyframes lightbox-fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes lightbox-scale-in {
@@ -3970,6 +3976,7 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
         opacity: 0;
         transform: scale(0.92);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -4006,7 +4013,9 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 }
 
 @keyframes lightbox-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Transicion hover en grid mejorada */
@@ -4016,6 +4025,140 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 
 .blog-image-grid-item:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* ==========================================================================
+   6. QR CODE EN HEADER DEL ARTÍCULO (HU-029)
+   ========================================================================== */
+.jd-article-header-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.jd-article-header-main {
+    flex: 1;
+}
+
+.jd-article-qr-container {
+    flex-shrink: 0;
+}
+
+.jd-article-qr-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f3f4f6;
+    background: #fff;
+}
+
+.jd-article-qr-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(111, 66, 193, 0.2);
+    border-color: #6f42c1;
+}
+
+.jd-article-qr-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.jd-article-qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(111, 66, 193, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.jd-article-qr-wrapper:hover .jd-article-qr-overlay {
+    opacity: 1;
+}
+
+/* Responsive: QR debajo del título en móvil */
+@media (max-width: 767.98px) {
+    .jd-article-header-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .jd-article-qr-container {
+        align-self: flex-start;
+        margin-top: 1rem;
+    }
+
+    .jd-article-qr-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* QR Modal */
+#qr-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+}
+
+#qr-modal.visible {
+    display: flex;
+}
+
+#qr-modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+}
+
+#qr-modal-image {
+    max-width: 100%;
+    max-height: 70vh;
+}
+
+#qr-modal-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #6f42c1;
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
@@ -4162,7 +4305,9 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 
 .modal-lightbox-spinner.show {
     display: block;
-}/* ==========================================================================
+}
+
+/* ==========================================================================
    5. LIGHTBOX ANIMACIONES (Fase 3)
    ========================================================================== */
 
@@ -4176,8 +4321,13 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 }
 
 @keyframes lightbox-fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes lightbox-scale-in {
@@ -4185,6 +4335,7 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
         opacity: 0;
         transform: scale(0.92);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -4221,7 +4372,9 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
 }
 
 @keyframes lightbox-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Transicion hover en grid mejorada */

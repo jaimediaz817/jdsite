@@ -985,6 +985,141 @@ body.home-p {
     gap: 2rem 1.5rem;
 }
 
+/* Responsive: 2 artículos por fila en móviles pequeños (≤540px) */
+@media (max-width: 540px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .blog-card {
+        border-radius: 13px;
+    }
+
+    /* Imagen ultra baja para reducir altura */
+    .blog-card-image {
+        aspect-ratio: 16/11;
+    }
+
+    .articles-list__container {
+        article {
+            .float-meta-item {
+                gap: 2px;
+                font-size: 0.58rem;
+                padding: 3px 8px;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 300;
+                letter-spacing: 0.025em;
+                position: relative;
+                top: -0.52rem;
+                left: -0.75rem;
+            }
+
+            .card-body {
+                padding: 0.25rem !important;
+            }
+
+            /* .comment-info,
+            .reactions-info {
+                bottom: 12px;
+                gap: 5px;
+                padding: 6px 10px;
+                font-size: 0.72rem;
+                backdrop-filter: blur(2px);
+                letter-spacing: 0.025em;
+            } */
+        }
+    }
+
+
+    .blog-card .card-body {
+        padding: 0.35rem;
+    }
+
+    .title-article-content {
+        font-size: 0.7rem;
+        line-height: 1.1;
+        padding: 0.1rem 0.25rem;
+        margin-bottom: 0.1rem;
+        background: transparent;
+        border: none;
+    }
+
+    .title-article-content a {
+        font-size: 0.7rem;
+    }
+
+    .title-article-content h6 {
+        font-size: 0.7rem;
+        margin-bottom: 0.1rem;
+    }
+
+    /* Ocultar excerpt en móvil para ahorrar altura */
+    .blog-post-content_container {
+        display: none !important;
+    }
+
+    .blog-card-floating-meta {
+        font-size: 0.55rem;
+        padding: 2px 5px;
+        gap: 3px;
+    }
+
+    .float-meta-item {
+        font-size: 0.55rem;
+    }
+
+    .author-category__container {
+        font-size: 0.6rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .blog-card-image__placeholder-icon {
+        font-size: 1.3rem;
+    }
+
+    .blog-card-image__placeholder-text {
+        font-size: 0.6rem;
+    }
+
+    .comment-info,
+    .reactions-info {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+        gap: 2px;
+        bottom: 6px;
+    }
+
+    .reactions-info {
+        left: 0;
+    }
+
+    .comment-info {
+        right: 0;
+    }
+
+    .blog-tags-list {
+        font-size: 0.6rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .blog-tags-list .blog-tag {
+        font-size: 0.6rem;
+        padding: 1px 5px;
+    }
+
+    .blog-tags-list.blog-tags-container.blog-tags-empty {
+        min-height: 1.7rem;
+        font-size: 0.6rem;
+    }
+
+    .edit-btn-wrapper .btn {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
 .jd-section {
     position: relative;
 
@@ -1497,6 +1632,35 @@ span.author-name {
     animation: badgePulse 2s ease-in-out infinite;
 }
 
+/* Marca de QR asociado - esquina superior derecha */
+.qr-badge-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.qr-badge-overlay i {
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+.blog-card:hover .qr-badge-overlay {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.75);
+}
+
 .pending-badge-overlay .badge {
     font-size: 0.7rem;
     padding: 4px 10px;
@@ -1806,16 +1970,16 @@ span.author-name {
     }
 }
 
-/* 1 columna en móviles pequeños (hasta 567px) */
-@media (max-width: 567px) {
-    .blog-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* media query: 1 columna en móviles (hasta 575px) */
 /* Responsive: mobile */
 @media (max-width: 576px) {
+
+    .qr-badge-overlay {
+        top: 2px;
+        right: 2px;
+        /* width: 32px;
+        height: 32px; */
+    }
+
     .blog-search-form {
         max-width: 100%;
     }

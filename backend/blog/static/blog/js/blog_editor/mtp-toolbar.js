@@ -79,7 +79,7 @@ function insertMtpTemplate(action) {
 
     if (action === 'minimize') {
         console.log('[blog_editor][mtp-toolbar] accion minimize');
-        if (window.innerWidth <= 992) return;
+        // La minimización funciona en responsive, el toggle aparecerá en bottom-right
         const toolbar = document.getElementById('mtpToolbar');
         const toggleBtn = document.getElementById('mtpToggleBtn');
         if (!toolbar) return;
@@ -272,29 +272,22 @@ function initMtpToolbar() {
         });
     }
 
-    if (window.innerWidth <= 992) {
-        const toolbarEl = document.getElementById('mtpToolbar');
-        const toggleBtnEl = document.getElementById('mtpToggleBtn');
-        if (toolbarEl) {
-            toolbarEl.classList.remove('minimized');
-            toolbarEl.style.visibility = 'visible';
-        }
-        if (toggleBtnEl) toggleBtnEl.style.display = 'none';
-        localStorage.setItem('mtp_toolbar_minimized', 'false');
-    } else {
-        try {
-            const minimized = localStorage.getItem('mtp_toolbar_minimized');
-            if (minimized === 'true') {
-                const toolbarEl = document.getElementById('mtpToolbar');
-                const toggleBtnEl = document.getElementById('mtpToggleBtn');
-                if (toolbarEl) {
-                    toolbarEl.classList.add('minimized');
-                    toolbarEl.style.visibility = 'hidden';
-                }
-                if (toggleBtnEl) toggleBtnEl.style.display = 'flex';
+    // MODIFICADO: Permitir minimización en responsive (mobile)
+    // El toggle button ahora aparecerá en bottom-right cuando la barra esté minimizada
+    try {
+        const minimized = localStorage.getItem('mtp_toolbar_minimized');
+        if (minimized === 'true') {
+            const toolbarEl = document.getElementById('mtpToolbar');
+            const toggleBtnEl = document.getElementById('mtpToggleBtn');
+            if (toolbarEl) {
+                toolbarEl.classList.add('minimized');
+                toolbarEl.style.visibility = 'hidden';
             }
-        } catch (e) { /* ignore */ }
-    }
+            // El toggle button será visible gracias a los estilos CSS responsive
+            if (toggleBtnEl) toggleBtnEl.style.display = 'flex';
+        }
+    } catch (e) { /* ignore */ }
+    
     // Sincronizar margen inicial según estado actual del toolbar
     syncEditorMargin(toolbar);
     console.log('[blog_editor][mtp-toolbar] initMtpToolbar finalizado');

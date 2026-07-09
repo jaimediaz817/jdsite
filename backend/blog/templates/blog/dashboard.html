@@ -381,7 +381,9 @@
                                             <a href="{% url 'blog:approve_blog' post.approval_token %}" class="btn-icon btn-icon-aprobar" title="Aprobar"><i class="fas fa-check"></i></a>
                                             {% endif %}
                                             {% if user.is_superuser %}
-                                            <button type="button" class="btn-icon btn-icon-eliminar" title="Eliminar permanentemente" data-post-id="{{ post.id }}" data-post-slug="{{ post.slug }}" data-post-title="{{ post.title|escapejs }}" onclick="confirmDelete(this)"><i class="fas fa-trash"></i></button>
+                                            {% with qr_code=post.qr_codes.first %}
+                                            <button type="button" class="btn-icon btn-icon-eliminar" title="Eliminar permanentemente" data-post-id="{{ post.id }}" data-post-slug="{{ post.slug }}" data-post-title="{{ post.title|escapejs }}" data-qr-name="{{ qr_code.name|default:'' }}" onclick="confirmDelete(this)"><i class="fas fa-trash"></i></button>
+                                            {% endwith %}
                                             {% endif %}
                                         </div>
                                     </td>
@@ -588,6 +590,16 @@
                         <i class="fas fa-info-circle me-1"></i>
                         Esta acción eliminará el artículo de la base de datos y todos sus archivos asociados (imágenes, videos, etc.). <strong>No se puede deshacer.</strong>
                     </p>
+                    <!-- HU-036: Advertencia sobre desvinculación de QR -->
+                    <div id="qrUnlinkWarning" class="mt-3 p-2" style="background:#fff3cd;border:1px solid #ffc107;border-radius:6px;display:none;">
+                        <p class="mb-1 small text-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <strong>QR asociado:</strong> Este artículo tiene un QR vinculado.
+                        </p>
+                        <p class="mb-0 small text-muted">
+                            Al eliminar el artículo, el QR <strong id="qrUnlinkName"></strong> se desvinculará y quedará disponible para reasignarlo a otro artículo. El QR no se eliminará.
+                        </p>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>

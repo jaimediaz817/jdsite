@@ -1,0 +1,974 @@
+{% extends "blog/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Gestión de QR - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-qrcode" style="color: #1a1a1a;"></i>
+            Gestión de Códigos QR
+        </h2>
+        <a href="{% url 'blog:dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+
+    <!-- Formulario de creación de QR -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-plus-circle"></i> Generar Nuevo QR
+            </h5>
+        </div>
+        <div class="card-body">
+            <form id="qrForm">
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Nombre del QR -->
+                    <div class="col-md-6 mb-3">
+                        <label for="qrName" class="form-label">Nombre del QR <span class="text-danger">*</span></label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="qrName"
+                            name="name"
+                            placeholder="Ej: Calistenia Cancha - Poste Norte"
+                            required
+                        >
+                        <div class="form-text">
+                            Nombre descriptivo para identificar el QR
+                        </div>
+                    </div>
+
+                    <!-- Artículo asociado (select nativo - funciona sin problemas) -->
+                    <div class="col-md-6 mb-3">
+                        <label for="qrBlogPost" class="form-label">Artículo (opcional)</label>
+                        <select class="form-control" id="qrBlogPost" name="blog_post_id">
+                            <option value="">-- Sin artículo asociado --</option>
+                            {% for post in published_posts %}
+                            <option value="{{ post.id }}">
+                                {{ post.title }} ({{ post.slug }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            Solo se pueden asociar artículos publicados y aprobados
+                        </div>
+                    </div>
+
+                    <!-- Eslogan -->
+                    <div class="col-md-12 mb-3">
+                        <label for="qrSlogan" class="form-label">Eslogan / Descripción</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="qrSlogan"
+                            name="slogan"
+                            placeholder="Ej: Mira rutinas, retos y estadísticas..."
+                            maxlength="200"
+                        >
+                        <div class="form-text">
+                            Texto descriptivo de la campaña (opcional)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de generación -->
+                <button
+                    type="submit"
+                    id="qrSubmitBtn"
+                    class="btn btn-primary"
+                    disabled
+                >
+                    <i id="qrSubmitIcon" class="fas fa-qrcode"></i>
+                    <span id="qrSubmitText">Generar QR</span>
+                </button>
+
+                <!-- Mensaje de error -->
+                <div id="qrError" class="alert alert-danger mt-3" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview del QR generado -->
+    <div id="qrPreviewCard" class="card mb-4" style="display: none;">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-check-circle"></i> QR Generado Exitosamente
+            </h5>
+        </div>
+        <div class="card-body text-center">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <img id="qrImage" alt="QR Code" class="img-fluid rounded shadow" style="max-width: 300px;">
+                    <div class="mt-3">
+                        <h5 id="qrPreviewName"></h5>
+                        <p id="qrPreviewSlogan" class="text-muted" style="display: none;"></p>
+                        <p id="qrPreviewArticle" class="small" style="display: none;">
+                            Artículo: <code id="qrPreviewArticleSlug"></code>
+                        </p>
+                    </div>
+                    <div class="mt-3">
+                        <a id="qrDownloadLink" class="btn btn-success me-2">
+                            <i class="fas fa-download"></i> Descargar PNG
+                        </a>
+                        <button id="qrResetBtn" class="btn btn-outline-secondary">
+                            <i class="fas fa-plus"></i> Generar Otro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros QR -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <span class="text-muted small mr-2">
+                    <i class="fas fa-filter"></i> Filtrar por estado:
+                </span>
+                <a href="{% url 'blog:dashboard_qr' %}"
+                   class="btn btn-sm rounded-pill px-3 {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+                   style="font-size:.82rem;">
+                    🔄 Todos
+                </a>
+                <a href="?status=active"
+                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'active' %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                   style="font-size:.82rem;">
+                    ✅ Activos
+                </a>
+                <a href="?status=inactive"
+                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'inactive' %}btn-warning{% else %}btn-outline-secondary{% endif %}"
+                   style="font-size:.82rem;">
+                    ⚠️ Inactivos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de QRs -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> Códigos QR Generados
+                <span class="badge badge-secondary ml-2">{{ page_obj.paginator.count }}</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Slug</th>
+                            <th>Eslogan</th>
+                            <th>Artículo</th>
+                            <th>Estado</th>
+                            <th>Creado por</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for qr in page_obj %}
+                        <tr>
+                            <td><strong>{{ qr.name }}</strong></td>
+                            <td><code>{{ qr.slug }}</code></td>
+                            <td>{{ qr.slogan|truncatechars:50 }}</td>
+                            <td>
+                                {% if qr.blog_post %}
+                                <a href="{% url 'blog:blog_detail' qr.blog_post.slug %}" target="_blank">
+                                    {{ qr.blog_post.title|truncatechars:30 }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">Sin artículo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if qr.is_active and qr.blog_post %}
+                                <span class="qr-status-badge qr-status-linked">
+                                    <i class="fas fa-link mr-1"></i> Vinculado
+                                </span>
+                                {% elif qr.is_active %}
+                                <span class="qr-status-badge qr-status-active">
+                                    <i class="fas fa-bullseye mr-1"></i> Disponible
+                                </span>
+                                {% else %}
+                                <span class="qr-status-badge qr-status-inactive">
+                                    <i class="fas fa-pause mr-1"></i> Inactivo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ qr.created_by.username|default:"Sistema" }}</td>
+                            <td>{{ qr.created_at|date:"d/m/Y H:i" }}</td>
+                             <td>
+                                 <div class="btn-action-wrap justify-content-center">
+                                     <button
+                                         type="button"
+                                         class="btn-icon btn-icon-ver"
+                                         onclick="showQrPreview('{{ qr.slug }}', '{{ qr.name|escapejs }}')"
+                                         title="Ver preview"
+                                     >
+                                         <i class="fas fa-eye"></i>
+                                     </button>
+                                     <a
+                                         href="{% url 'blog:download_qr' qr.slug %}"
+                                         class="btn-icon btn-icon-descargar"
+                                         title="Descargar PNG"
+                                     >
+                                         <i class="fas fa-download"></i>
+                                     </a>
+                                     {% if qr.blog_post %}
+                                     <button
+                                         type="button"
+                                         class="btn-icon btn-icon-desvincular"
+                                         onclick="unlinkQr('{{ qr.slug }}', '{{ qr.name|escapejs }}', '{{ qr.blog_post.title|escapejs }}')"
+                                         title="Desvincular artículo (para reusar)"
+                                     >
+                                         <i class="fas fa-unlink"></i>
+                                     </button>
+                                     {% else %}
+                                     <a
+                                         href="{% url 'blog:qr_no_article' qr.slug %}"
+                                         class="btn-icon btn-icon-editar"
+                                         title="Editar QR y asociar artículo"
+                                     >
+                                         <i class="fas fa-edit"></i>
+                                     </a>
+                                     {% endif %}
+                                     <button
+                                         type="button"
+                                         class="btn-icon btn-icon-copiar"
+                                         onclick="copyUrl('{% url 'blog:qr_redirect' qr.slug %}')"
+                                         title="Copiar URL pública"
+                                     >
+                                         <i class="fas fa-link"></i>
+                                     </button>
+                                     <button
+                                         type="button"
+                                         class="btn-icon btn-icon-eliminar"
+                                         onclick="deleteQr('{{ qr.slug }}', '{{ qr.name|escapejs }}')"
+                                         title="Eliminar QR"
+                                     >
+                                         <i class="fas fa-trash"></i>
+                                     </button>
+                                 </div>
+                             </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                No hay códigos QR generados aún. Usa el formulario superior para crear el primero.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Paginación QR -->
+{% if page_obj and page_obj.has_other_pages %}
+<div class="card-footer bg-white">
+    <nav aria-label="Paginación QR">
+        <ul class="pagination justify-content-center mb-0">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<!-- Modal de preview -->
+<div class="modal fade" id="qrPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview QR</h5>
+                <button type="button" class="close" aria-label="Close" id="qrPreviewModalCloseBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="qrPreviewImage" src="" alt="QR Preview" class="img-fluid" style="max-width: 250px;">
+                <p id="qrPreviewNameModal" class="mt-2 font-weight-bold"></p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary btn-sm" id="qrPreviewDownloadBtn">
+                    <i class="fas fa-download"></i> Descargar PNG
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="qrPreviewCloseBtn">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" id="qrPreviewBackdrop"></div>
+
+<!-- Modal de confirmación para Desvincular QR -->
+<div class="modal fade" id="unlinkQrModal" tabindex="-1" aria-hidden="true" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-unlink me-2"></i>Confirmar desvinculación
+                </h5>
+                <button type="button" class="close" aria-label="Close" id="closeUnlinkQrModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">¿Desvincular el QR <strong id="unlinkQrModalName"></strong> del artículo <strong id="unlinkQrModalArticle"></strong>?</p>
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    El QR quedará activo y disponible para asociar a otro artículo.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="cancelUnlinkBtn">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-warning-custom" id="confirmUnlinkBtn">
+                    <i class="fas fa-unlink me-1"></i>Desvincular ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" id="unlinkQrBackdrop"></div>
+
+<!-- Modal de confirmación para Eliminar QR -->
+<div class="modal fade" id="deleteQrModal" tabindex="-1" aria-hidden="true" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-custom">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmar eliminación
+                </h5>
+                <button type="button" class="close" aria-label="Close" id="closeDeleteQrModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">¿Eliminar el QR <strong id="deleteQrModalName"></strong> permanentemente?</p>
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Esta acción no se puede deshacer. El QR dejará de existir y no podrá recuperarse.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="cancelDeleteQrBtn">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-danger-custom" id="confirmDeleteQrBtn">
+                    <i class="fas fa-trash me-1"></i>Eliminar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" id="deleteQrBackdrop"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// HU-037: Asegurar que no haya modales ni backdrops activos al cargar
+(function() {
+    // Limpiar estado de modales por si quedaron activos de recargas anteriores
+    document.body.classList.remove('modal-open');
+    var backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(function(bd) {
+        bd.classList.remove('show');
+        bd.style.display = 'none';
+    });
+    var modals = document.querySelectorAll('.modal');
+    modals.forEach(function(m) {
+        m.classList.remove('show');
+        m.style.display = 'none';
+    });
+
+    var form = document.getElementById('qrForm');
+    var nameInput = document.getElementById('qrName');
+    var sloganInput = document.getElementById('qrSlogan');
+    var blogPostSelect = document.getElementById('qrBlogPost');
+    var submitBtn = document.getElementById('qrSubmitBtn');
+    var submitIcon = document.getElementById('qrSubmitIcon');
+    var submitText = document.getElementById('qrSubmitText');
+    var errorDiv = document.getElementById('qrError');
+
+    var previewCard = document.getElementById('qrPreviewCard');
+    var previewImage = document.getElementById('qrImage');
+    var previewName = document.getElementById('qrPreviewName');
+    var previewSlogan = document.getElementById('qrPreviewSlogan');
+    var previewArticle = document.getElementById('qrPreviewArticle');
+    var previewArticleSlug = document.getElementById('qrPreviewArticleSlug');
+    var downloadLink = document.getElementById('qrDownloadLink');
+    var resetBtn = document.getElementById('qrResetBtn');
+
+    var loading = false;
+    var currentQrSlug = '';
+
+    // Habilitar/deshabilitar el botón según el nombre
+    function updateSubmitState() {
+        submitBtn.disabled = loading || nameInput.value.trim() === '';
+    }
+
+    nameInput.addEventListener('input', function() {
+        if (previewCard.style.display !== 'none') {
+            resetForm();
+        }
+        updateSubmitState();
+    });
+
+    function resetForm() {
+        previewCard.style.display = 'none';
+        previewImage.removeAttribute('src');
+        previewName.textContent = '';
+        previewSlogan.style.display = 'none';
+        previewSlogan.textContent = '';
+        previewArticle.style.display = 'none';
+        previewArticleSlug.textContent = '';
+        downloadLink.removeAttribute('href');
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetForm);
+    }
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var name = nameInput.value.trim();
+        if (!name || loading) return;
+
+        loading = true;
+        updateSubmitState();
+        submitIcon.classList.add('fa-spin');
+        submitText.textContent = 'Generando...';
+        errorDiv.style.display = 'none';
+
+        var formData = new FormData();
+        formData.append('name', name);
+        formData.append('slogan', sloganInput.value);
+        formData.append('blog_post_id', blogPostSelect.value);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'blog:generate_qr' %}", {
+            method: 'POST',
+            body: formData,
+        })
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            if (data.success) {
+                previewCard.style.display = 'block';
+                previewImage.src = data.image_url;
+                previewName.textContent = data.name;
+                if (data.slogan) {
+                    previewSlogan.textContent = data.slogan;
+                    previewSlogan.style.display = 'block';
+                } else {
+                    previewSlogan.style.display = 'none';
+                }
+                if (data.blog_post_slug) {
+                    previewArticleSlug.textContent = data.blog_post_slug;
+                    previewArticle.style.display = 'block';
+                } else {
+                    previewArticle.style.display = 'none';
+                }
+                downloadLink.href = "{% url 'blog:download_qr' '__slug__' %}".replace('__slug__', data.slug);
+                window.scrollTo({ top: 200, behavior: 'smooth' });
+                
+                // Mostrar toast y recargar lista automáticamente
+                if (window.showToast) {
+                    showToast('success', 'QR generado exitosamente. Actualizando lista...');
+                }
+                // Esperar 10 segundos para que el usuario pueda leer el toast
+                setTimeout(function() {
+                    location.reload();
+                }, 10000);
+            } else {
+                errorDiv.textContent = data.error || 'Error al generar el QR';
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(function(err) {
+            errorDiv.textContent = 'Error de conexión: ' + err.message;
+            errorDiv.style.display = 'block';
+        })
+        .finally(function() {
+            loading = false;
+            updateSubmitState();
+            submitIcon.classList.remove('fa-spin');
+            submitText.textContent = 'Generar QR';
+        });
+    });
+
+    // --- Modal Preview QR ---
+    function openQrModal() {
+        var modalEl = document.getElementById('qrPreviewModal');
+        var backdropEl = document.getElementById('qrPreviewBackdrop');
+        if (modalEl) {
+            modalEl.classList.add('show');
+            modalEl.style.display = 'block';
+        }
+        if (backdropEl) {
+            backdropEl.classList.add('show');
+            backdropEl.style.display = 'block';
+        }
+        document.body.classList.add('modal-open');
+    }
+
+    function closeQrModal() {
+        var modalEl = document.getElementById('qrPreviewModal');
+        var backdropEl = document.getElementById('qrPreviewBackdrop');
+        if (modalEl) {
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+        }
+        if (backdropEl) {
+            backdropEl.classList.remove('show');
+            backdropEl.style.display = 'none';
+        }
+        if (!document.querySelector('.modal.show')) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    window.showQrPreview = function(slug, name) {
+        currentQrSlug = slug;
+        var imageEl = document.getElementById('qrPreviewImage');
+        var nameEl = document.getElementById('qrPreviewNameModal');
+        if (imageEl) {
+            imageEl.src = '{% url "blog:download_qr" "__slug__" %}?preview=1'.replace('__slug__', slug);
+        }
+        if (nameEl) {
+            nameEl.textContent = name;
+        }
+        openQrModal();
+    };
+
+    var downloadBtn = document.getElementById('qrPreviewDownloadBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            if (currentQrSlug) {
+                var downloadUrl = '{% url "blog:download_qr" "__slug__" %}'.replace('__slug__', currentQrSlug);
+                var a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = currentQrSlug + '.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+    }
+
+    var closeBtn = document.getElementById('qrPreviewCloseBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeQrModal);
+    }
+
+    var closeBtnHeader = document.getElementById('qrPreviewModalCloseBtn');
+    if (closeBtnHeader) {
+        closeBtnHeader.addEventListener('click', closeQrModal);
+    }
+
+    var backdropEl = document.getElementById('qrPreviewBackdrop');
+    if (backdropEl) {
+        backdropEl.addEventListener('click', closeQrModal);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            var modalEl = document.getElementById('qrPreviewModal');
+            if (modalEl && modalEl.classList.contains('show')) {
+                closeQrModal();
+            }
+        }
+    });
+
+    // Modal de confirmación para desvincular QR
+    var unlinkQrModalEl = document.getElementById('unlinkQrModal');
+    var unlinkQrBackdropEl = document.getElementById('unlinkQrBackdrop');
+    var unlinkQrSlug = '';
+    var unlinkQrName = '';
+    var unlinkQrArticle = '';
+    
+    function openUnlinkQrModal() {
+        if (unlinkQrModalEl) {
+            unlinkQrModalEl.classList.add('show');
+            unlinkQrModalEl.style.display = 'block';
+        }
+        if (unlinkQrBackdropEl) {
+            unlinkQrBackdropEl.classList.add('show');
+            unlinkQrBackdropEl.style.display = 'block';
+        }
+        document.body.classList.add('modal-open');
+    }
+    
+    function closeUnlinkQrModal() {
+        if (unlinkQrModalEl) {
+            unlinkQrModalEl.classList.remove('show');
+            unlinkQrModalEl.style.display = 'none';
+        }
+        if (unlinkQrBackdropEl) {
+            unlinkQrBackdropEl.classList.remove('show');
+            unlinkQrBackdropEl.style.display = 'none';
+        }
+        if (!document.querySelector('.modal.show')) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+    
+    var confirmUnlinkBtn = document.getElementById('confirmUnlinkBtn');
+    if (confirmUnlinkBtn) {
+        confirmUnlinkBtn.addEventListener('click', function() {
+            var formData = new FormData();
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            
+            fetch("{% url 'blog:unlink_qr' '__slug__' %}".replace('__slug__', unlinkQrSlug), {
+                method: 'POST',
+                body: formData,
+            })
+            .then(function(r) { 
+                return r.json().then(function(data) {
+                    console.log('Respuesta desvinculación:', data);
+                    return data;
+                }); 
+            })
+            .then(function(data) {
+                // Cerrar modal después de recibir respuesta
+                closeUnlinkQrModal();
+                
+                if (data.success) {
+                    // Mostrar toast de éxito SIEMPRE (sin depender de window.showToast)
+                    var mensaje = data.message || 'QR desvinculado exitosamente.';
+                    
+                    // Intentar usar el toast global, si no existe crear uno temporal
+                    if (typeof showToast !== 'undefined') {
+                        showToast('success', mensaje);
+                    } else {
+                        // Crear un toast temporal
+                        var toastDiv = document.createElement('div');
+                        toastDiv.className = 'alert alert-success alert-dismissible fade show';
+                        toastDiv.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;min-width:300px;';
+                        toastDiv.innerHTML = mensaje + '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+                        document.body.appendChild(toastDiv);
+                        setTimeout(function() { toastDiv.remove(); }, 10000);
+                    }
+                    
+                    // Recargar después de 10 segundos
+                    setTimeout(function() { location.reload(); }, 10000);
+                } else {
+                    var error = data.error || 'No se pudo desvincular';
+                    if (typeof showToast !== 'undefined') {
+                        showToast('error', 'Error: ' + error);
+                    } else {
+                        alert('Error: ' + error);
+                    }
+                }
+            })
+            .catch(function(err) {
+                console.error('Error en desvinculación:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        });
+    }
+    
+    var cancelUnlinkBtn = document.getElementById('cancelUnlinkBtn');
+    if (cancelUnlinkBtn) {
+        cancelUnlinkBtn.addEventListener('click', closeUnlinkQrModal);
+    }
+    
+    var closeUnlinkQrModalBtn = document.getElementById('closeUnlinkQrModal');
+    if (closeUnlinkQrModalBtn) {
+        closeUnlinkQrModalBtn.addEventListener('click', closeUnlinkQrModal);
+    }
+    
+    if (unlinkQrBackdropEl) {
+        unlinkQrBackdropEl.addEventListener('click', closeUnlinkQrModal);
+    }
+    
+    window.unlinkQr = function(slug, name, articleName) {
+        unlinkQrSlug = slug;
+        unlinkQrName = name;
+        unlinkQrArticle = articleName;
+        
+        document.getElementById('unlinkQrModalName').textContent = name;
+        document.getElementById('unlinkQrModalArticle').textContent = articleName;
+        
+        openUnlinkQrModal();
+    };
+
+    // Modal de confirmación para eliminar QR
+    var deleteQrModalEl = document.getElementById('deleteQrModal');
+    var deleteQrBackdropEl = document.getElementById('deleteQrBackdrop');
+    var deleteQrSlug = '';
+    
+    function openDeleteQrModal() {
+        if (deleteQrModalEl) {
+            deleteQrModalEl.classList.add('show');
+            deleteQrModalEl.style.display = 'block';
+        }
+        if (deleteQrBackdropEl) {
+            deleteQrBackdropEl.classList.add('show');
+            deleteQrBackdropEl.style.display = 'block';
+        }
+        document.body.classList.add('modal-open');
+    }
+    
+    function closeDeleteQrModal() {
+        if (deleteQrModalEl) {
+            deleteQrModalEl.classList.remove('show');
+            deleteQrModalEl.style.display = 'none';
+        }
+        if (deleteQrBackdropEl) {
+            deleteQrBackdropEl.classList.remove('show');
+            deleteQrBackdropEl.style.display = 'none';
+        }
+        if (!document.querySelector('.modal.show')) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+    
+    var confirmDeleteQrBtn = document.getElementById('confirmDeleteQrBtn');
+    if (confirmDeleteQrBtn) {
+        confirmDeleteQrBtn.addEventListener('click', function() {
+            var formData = new FormData();
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            fetch("{% url 'blog:delete_qr' '__slug__' %}".replace('__slug__', deleteQrSlug), {
+                method: 'POST',
+                body: formData,
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    if (window.showToast) {
+                        showToast('error', data.error || 'No se pudo eliminar');
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo eliminar'));
+                    }
+                }
+            })
+            .catch(function(err) {
+                if (window.showToast) {
+                    showToast('error', 'Error de conexión: ' + err.message);
+                } else {
+                    alert('Error de conexión: ' + err.message);
+                }
+            });
+            closeDeleteQrModal();
+        });
+    }
+    
+    var cancelDeleteQrBtn = document.getElementById('cancelDeleteQrBtn');
+    if (cancelDeleteQrBtn) {
+        cancelDeleteQrBtn.addEventListener('click', closeDeleteQrModal);
+    }
+    
+    var closeDeleteQrModalBtn = document.getElementById('closeDeleteQrModal');
+    if (closeDeleteQrModalBtn) {
+        closeDeleteQrModalBtn.addEventListener('click', closeDeleteQrModal);
+    }
+    
+    if (deleteQrBackdropEl) {
+        deleteQrBackdropEl.addEventListener('click', closeDeleteQrModal);
+    }
+    
+    window.deleteQr = function(slug, name) {
+        deleteQrSlug = slug;
+        var nameEl = document.getElementById('deleteQrModalName');
+        if (nameEl) {
+            nameEl.textContent = name;
+        }
+        openDeleteQrModal();
+    };
+
+    window.editQr = function(slug, name, slogan) {
+        // Cargar datos del QR en el formulario para editar/asociar artículo
+        nameInput.value = name;
+        sloganInput.value = slogan || '';
+
+        // Actualizar texto del botón para indicar que es edición
+        submitText.textContent = 'Actualizar QR';
+        updateSubmitState();
+
+        // Scroll al formulario
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Mostrar mensaje temporal
+        errorDiv.className = 'alert alert-info mt-3';
+        errorDiv.textContent = 'Editando QR "' + name + '". Seleccione un artículo y haga click en "Actualizar QR" para asociarlo.';
+        errorDiv.style.display = 'block';
+    };
+
+    window.copyUrl = function(url) {
+        var fullUrl = window.location.origin + url;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullUrl).then(function() {
+                alert('URL copiada al portapapeles: ' + fullUrl);
+            });
+        } else {
+            alert('URL: ' + fullUrl);
+        }
+    };
+
+    // HU-037: Agregar QR a la tabla dinámicamente sin recargar página
+    function appendQrToTable(data) {
+        var tbody = document.querySelector('.table tbody');
+        if (!tbody) return;
+
+        // Actualizar contador de QRs
+        var badge = document.querySelector('.badge.badge-secondary');
+        if (badge) {
+            var currentCount = parseInt(badge.textContent) || 0;
+            badge.textContent = currentCount + 1;
+        }
+
+        // Obtener la fecha actual formateada
+        var now = new Date();
+        var dateStr = ('0' + now.getDate()).slice(-2) + '/' + 
+                      ('0' + (now.getMonth() + 1)).slice(-2) + '/' + 
+                      now.getFullYear() + ' ' +
+                      ('0' + now.getHours()).slice(-2) + ':' + 
+                      ('0' + now.getMinutes()).slice(-2);
+
+        // Determinar el estado y clase CSS
+        var statusHtml, statusClass;
+        if (data.blog_post_slug) {
+            statusHtml = '<i class="fas fa-link mr-1"></i> Vinculado';
+            statusClass = 'qr-status-linked';
+        } else {
+            statusHtml = '<i class="fas fa-bullseye mr-1"></i> Disponible';
+            statusClass = 'qr-status-active';
+        }
+
+        // Crear la nueva fila
+        var tr = document.createElement('tr');
+        tr.setAttribute('data-slug', data.slug);
+    tr.innerHTML = 
+        '<td><strong>' + (data.name || '') + '</strong></td>' +
+        '<td><code>' + data.slug + '</code></td>' +
+        '<td>' + (data.slogan ? data.slogan.substring(0, 50) : '') + '</td>' +
+        '<td>' + (data.blog_post_slug ? '<a href="/blog/' + data.blog_post_slug + '" target="_blank">' + (data.blog_post_title || data.blog_post_slug).substring(0, 30) + '</a>' : '<span class="text-muted">Sin artículo</span>') + '</td>' +
+        '<td><span class="qr-status-badge ' + statusClass + '">' + statusHtml + '</span></td>' +
+        '<td>' + (data.created_by || 'Sistema') + '</td>' +
+        '<td>' + dateStr + '</td>' +
+        '<td>' +
+        '<div class="btn-action-wrap justify-content-center">' +
+        '<button type="button" class="btn-icon btn-icon-ver" onclick="showQrPreview(\'' + data.slug + '\', \'' + (data.name || '').replace(/'/g, "\\'") + '\')" title="Ver preview">' +
+        '<i class="fas fa-eye"></i></button>' +
+        '<a href="/blog/dashboard/qr/' + data.slug + '/download/" class="btn-icon btn-icon-descargar" title="Descargar PNG">' +
+        '<i class="fas fa-download"></i></a>' +
+        '<a href="/blog/dashboard/qr/' + data.slug + '/associate/" class="btn-icon btn-icon-editar" title="Editar QR y asociar artículo">' +
+        '<i class="fas fa-edit"></i></a>' +
+        '<button type="button" class="btn-icon btn-icon-copiar" onclick="copyUrl(\'/blog/qr/' + data.slug + '/\')" title="Copiar URL pública">' +
+        '<i class="fas fa-link"></i></button>' +
+        '<button type="button" class="btn-icon btn-icon-eliminar" onclick="deleteQr(\'' + data.slug + '\', \'' + (data.name || '').replace(/'/g, "\\'") + '\')" title="Eliminar QR">' +
+        '<i class="fas fa-trash"></i></button>' +
+        '</div></td>';
+        
+        tbody.insertBefore(tr, tbody.firstChild);
+        
+        // Mostrar toast de éxito
+        if (window.showToast) {
+            showToast('success', 'QR "' + data.name + '" agregado a la lista');
+        }
+    }
+})();
+</script>
+<style>
+/* Badges de estado QR con contraste y estilo profesional */
+.qr-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.675rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.qr-status-badge i {
+    font-size: 0.9rem;
+    margin-right: 6px;
+}
+
+/* QR Vinculado - Azul vibrante (artículo asociado) */
+.qr-status-linked {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff !important;
+}
+
+/* QR Disponible - Verde esmeralda (activo pero sin artículo) */
+.qr-status-active {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff !important;
+}
+
+/* QR Inactivo - Gris neutro */
+.qr-status-inactive {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: #ffffff !important;
+}
+
+/* Botón personalizado para modal de desvinculación */
+.btn-warning-custom {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.btn-warning-custom:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-warning-custom:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

@@ -85,6 +85,17 @@ function confirmDelete(btn) {
     deletePostSlug = btn.dataset.postSlug;
     document.getElementById('deleteModalTitle').textContent = deletePostTitle;
 
+    // HU-036: Mostrar advertencia de desvinculación de QR si existe
+    var qrName = btn.getAttribute('data-qr-name') || '';
+    var warningEl = document.getElementById('qrUnlinkWarning');
+    var qrNameEl = document.getElementById('qrUnlinkName');
+    if (qrName && warningEl && qrNameEl) {
+        qrNameEl.textContent = qrName;
+        warningEl.style.display = 'block';
+    } else if (warningEl) {
+        warningEl.style.display = 'none';
+    }
+
     // Usar Bootstrap 5 nativo: crear instancia del modal y mostrar
     var modalEl = document.getElementById('deleteModal');
     if (!deleteModalInstance) {

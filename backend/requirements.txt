@@ -1,0 +1,51 @@
+# Core Django
+Django>=4.2,<5.0
+django-allauth>=0.63.0
+python-dotenv>=1.0.0
+
+# Database
+pymysql>=1.1.0
+
+# Image handling
+Pillow>=10.0.0
+
+# QR Code generation (HU-029)
+qrcode>=8.0
+
+# Markdown and HTML parsing (blog import/processing)
+Markdown>=3.4.1
+beautifulsoup4>=4.12.0
+
+# YAML parsing (services, config)
+PyYAML>=6.0
+
+# HTTP requests (API calls, email backend, GitHub utils)
+requests>=2.31.0
+
+# AWS/S3 (production storage)
+boto3>=1.28.0
+s3transfer>=0.7.0
+
+# Email (AWS SES backend)
+django-ses>=3.5.0
+
+# SOAP service (spyne)
+spyne>=2.14.0
+
+# Auth/JWT
+PyJWT>=2.8.0
+
+# Production server
+gunicorn>=21.2.0
+
+# Development and testing
+pytest>=7.4.0
+
+# Code quality (optional IDE support)
+# ruff>=0.1.0
+# black>=23.0.0
+# isort>=5.12.0
+
+# Utils
+colorama>=0.4.6
+cryptography>=41.0.0

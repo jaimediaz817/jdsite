@@ -445,3 +445,94 @@ class AdminConfig(models.Model):
 
     def __str__(self):
         return f"{self.key}: {self.value or 'sin valor'}"
+
+
+# ---------------------------------------------------------------------
+# HU-029: Sistema de Códigos QR para Artículos del Blog
+# ---------------------------------------------------------------------
+class QRCode(models.Model):
+    """
+    Código QR asociado a un artículo del blog.
+    El superadmin puede generar QR para compartir artículos físicamente.
+    """
+
+    name = models.CharField(
+        max_length=100,
+        help_text="Nombre descriptivo del QR (ej: 'Calistenia - Cancha')",
+    )
+    slug = models.SlugField(
+        max_length=100,
+        unique=True,
+        help_text="Slug único para identificar el QR",
+    )
+    slogan = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Eslogan o texto descriptivo de la campaña",
+    )
+    blog_post = models.ForeignKey(
+        BlogPost,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="qr_codes",
+        help_text="Artículo al que redirige el QR",
+    )
+    # Ruta donde se guarda la imagen generada
+    image_path = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="Ruta relativa de la imagen QR guardada",
+    )
+    # Timestamp de creación
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Usuario que creó el QR",
+    )
+    # Campo para reasignación única: al crear nuevo QR, el anterior se desvincula
+    is_active = models.BooleanField(
+        default=True, help_text="QR activo actualmente"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Código QR"
+        verbose_name_plural = "Códigos QR"
+
+    def __str__(self):
+        if self.blog_post:
+            return f"{self.name} → /{self.blog_post.slug}"
+        return f"{self.name} → (sin artículo)"
+
+    def get_absolute_qr_url(self):
+        """URL pública del QR para escaneos"""
+        from django.urls import reverse
+
+        return reverse("blog:qr_redirect", args=[self.slug])
+
+    @property
+    def image_url(self):
+        """URL pública de la imagen del QR"""
+        if self.image_path:
+            return f"/media/{self.image_path}"
+        return "/static/images/qr_placeholder.png"
+
+    def save(self, *args, **kwargs):
+        """Al guardar:
+        1. Genera slug desde name si está vacío
+        2. Si es QR activo, desvincula otros QR del mismo artículo
+        """
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+        # Si este QR es activo y tiene artículo, desactivar otros del mismo artículo
+        if self.is_active and self.blog_post:
+            QRCode.objects.filter(
+                blog_post=self.blog_post, is_active=True
+            ).exclude(pk=self.pk).update(is_active=False)
+
+        super().save(*args, **kwargs)

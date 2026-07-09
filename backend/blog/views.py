@@ -15,8 +15,9 @@ from pathlib import Path
 import shutil
 
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
+from django.utils.text import slugify
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic import ListView, DetailView
@@ -38,9 +39,15 @@ from blog.models import (
     BlogModeration,
     BlogEmailConfig,
     AdminConfig,
+    QRCode,
 )
 from core.models import UserProfile
-
+from blog.utils.qr_generator import (
+    generate_qr_with_logo,
+    get_qr_full_path,
+    get_qr_media_path,
+)
+import os
 from blog.services import (
     create_comment,
     delete_resource_file,
@@ -1234,6 +1241,425 @@ def check_comment_status(request, slug, comment_id):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
+# ============================================================
+# HU-029: Sistema de Códigos QR para Artículos del Blog
+# ============================================================
+@login_required
+def dashboard_qr_view(request):
+    """Vista principal del dashboard QR (lista + formulario).
+
+    Solo accesible para superadmin/staff.
+    Muestra todos los QRs generados con paginación (20 por página) y formulario para crear nuevos.
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("blog:dashboard")
+
+    qr_list = QRCode.objects.select_related("blog_post", "created_by").all()
+
+    status_filter = request.GET.get("status", "")
+    if status_filter == "active":
+        qr_list = qr_list.filter(is_active=True)
+    elif status_filter == "inactive":
+        qr_list = qr_list.filter(is_active=False)
+
+    # HU-037: Excluir artículos que ya tienen un QR asignado (único por artículo)
+    published_posts = (
+        BlogPost.objects.filter(is_published=True, moderation_status="approved")
+        .filter(qr_codes__isnull=True)
+        .order_by("-publish_date")
+    )
+
+    # Paginación: 20 QRs por página
+    paginator = Paginator(qr_list, 20)
+    page = request.GET.get("page", 1)
+    try:
+        page_obj = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
+
+    # Query string para paginación
+    query = request.GET.copy()
+    if "page" in query:
+        del query["page"]
+    query_string = query.urlencode()
+
+    context = {
+        "qr_list": qr_list,
+        "page_obj": page_obj,
+        "published_posts": published_posts,
+        "status_filter": status_filter,
+        "query_string": query_string,
+    }
+
+    return render(request, "blog/dashboard_qr.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def generate_qr_view(request):
+    """Endpoint AJAX para generar un nuevo QR."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    name = request.POST.get("name", "").strip()
+    slogan = request.POST.get("slogan", "").strip()
+    blog_post_id = request.POST.get("blog_post_id", "").strip()
+
+    if not name:
+        return JsonResponse(
+            {"success": False, "error": "El nombre del QR es obligatorio."},
+            status=400,
+        )
+
+    blog_post = None
+    if blog_post_id:
+        try:
+            blog_post = BlogPost.objects.get(id=int(blog_post_id))
+            if (
+                not blog_post.is_published
+                or blog_post.moderation_status != "approved"
+            ):
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "El artículo debe estar publicado y aprobado.",
+                    },
+                    status=400,
+                )
+            # HU-037: Verificar que el artículo no tenga ya un QR activo asignado
+            if QRCode.objects.filter(
+                blog_post=blog_post, is_active=True
+            ).exists():
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "Este artículo ya está vinculado a otro QR activo.",
+                    },
+                    status=400,
+                )
+        except (BlogPost.DoesNotExist, ValueError):
+            return JsonResponse(
+                {"success": False, "error": "Artículo no encontrado."}, status=404
+            )
+
+    base_slug = slugify(name)
+    slug = base_slug
+    counter = 1
+    while QRCode.objects.filter(slug=slug).exists():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+
+    qr_code = QRCode.objects.create(
+        name=name,
+        slug=slug,
+        slogan=slogan,
+        blog_post=blog_post,
+        created_by=request.user,
+        is_active=bool(blog_post),
+    )
+
+    qr_url = request.build_absolute_uri(reverse("blog:qr_redirect", args=[slug]))
+
+    output_path = get_qr_full_path(slug)
+
+    try:
+        generate_qr_with_logo(qr_url, output_path, text=name)
+        qr_code.image_path = get_qr_media_path(slug)
+        qr_code.save(update_fields=["image_path"])
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "error": f"Error al generar imagen QR: {str(e)}"},
+            status=500,
+        )
+
+    return JsonResponse(
+        {
+            "success": True,
+            "qr_id": qr_code.id,
+            "slug": qr_code.slug,
+            "name": qr_code.name,
+            "slogan": qr_code.slogan,
+            "blog_post_slug": blog_post.slug if blog_post else None,
+            "blog_post_title": blog_post.title if blog_post else None,
+            "is_active": qr_code.is_active,
+            "created_by": request.user.username,
+            "created_at": qr_code.created_at.strftime("%d/%m/%Y %H:%M"),
+            "image_url": (
+                f"{settings.MEDIA_URL}{qr_code.image_path}"
+                if qr_code.image_path
+                else None
+            ),
+            "qr_url": qr_url,
+        }
+    )
+
+
+@require_http_methods(["GET"])
+def qr_redirect_view(request, slug):
+    """Vista pública que redirige al artículo asociado."""
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        raise Http404("Código QR no encontrado.")
+
+    if not qr_code.blog_post:
+        # HU-037: Pasar artículos SIN QR ya vinculado (para vincular desde esta página)
+        published_posts = (
+            BlogPost.objects.filter(
+                is_published=True, moderation_status="approved"
+            )
+            .filter(qr_codes__isnull=True)
+            .order_by("-publish_date")
+        )
+        # Artículos destacados para mostrar al público no-staff
+        recent_posts = BlogPost.objects.filter(
+            is_published=True, moderation_status="approved"
+        ).order_by("-publish_date")[:6]
+        qr_image_url = None
+        if qr_code.image_path:
+            qr_image_url = f"{settings.MEDIA_URL}{qr_code.image_path}"
+        return render(
+            request,
+            "blog/qr_no_article.html",
+            {
+                "qr_code": qr_code,
+                "published_posts": published_posts,
+                "recent_posts": recent_posts,
+                "qr_image_url": qr_image_url,
+            },
+        )
+
+    blog_post = qr_code.blog_post
+
+    if not blog_post.is_published or blog_post.moderation_status != "approved":
+        raise Http404(
+            "El artículo asociado a este QR no está disponible actualmente."
+        )
+
+    return redirect(blog_post.get_absolute_url(), permanent=False)
+
+
+@login_required
+def qr_no_article_view(request, slug):
+    """Vista para staff que permite asociar artículo a QR sin vincular."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("blog:dashboard")
+
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        raise Http404("Código QR no encontrado.")
+
+    if qr_code.blog_post:
+        return redirect(qr_code.blog_post.get_absolute_url())
+
+    # HU-037: Excluir artículos que ya tienen un QR asignado (único por artículo)
+    published_posts = (
+        BlogPost.objects.filter(is_published=True, moderation_status="approved")
+        .filter(qr_codes__isnull=True)
+        .order_by("-publish_date")
+    )
+
+    qr_image_url = None
+    if qr_code.image_path:
+        qr_image_url = f"{settings.MEDIA_URL}{qr_code.image_path}"
+
+    return render(
+        request,
+        "blog/qr_assign_article.html",
+        {
+            "qr_code": qr_code,
+            "published_posts": published_posts,
+            "qr_image_url": qr_image_url,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def update_qr_view(request, slug):
+    """Actualiza un QR existente (nombre, slogan, artículo). Solo staff/superadmin."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "QR no encontrado."}, status=404
+        )
+
+    name = request.POST.get("name", "").strip()
+    slogan = request.POST.get("slogan", "").strip()
+    blog_post_id = request.POST.get("blog_post_id", "").strip()
+
+    if not name:
+        return JsonResponse(
+            {"success": False, "error": "El nombre es obligatorio."}, status=400
+        )
+
+    blog_post = None
+    if blog_post_id:
+        try:
+            blog_post = BlogPost.objects.get(id=int(blog_post_id))
+            if (
+                not blog_post.is_published
+                or blog_post.moderation_status != "approved"
+            ):
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "El artículo debe estar publicado y aprobado.",
+                    },
+                    status=400,
+                )
+            # Si el artículo ya tiene otro QR activo, no permitir
+            if (
+                QRCode.objects.filter(blog_post=blog_post, is_active=True)
+                .exclude(id=qr_code.id)
+                .exists()
+            ):
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "Este artículo ya está vinculado a otro QR activo.",
+                    },
+                    status=400,
+                )
+        except (BlogPost.DoesNotExist, ValueError):
+            return JsonResponse(
+                {"success": False, "error": "Artículo no encontrado."}, status=404
+            )
+
+    qr_code.name = name
+    qr_code.slogan = slogan
+    qr_code.blog_post = blog_post
+    qr_code.is_active = bool(blog_post)
+    qr_code.save()
+
+    return JsonResponse(
+        {
+            "success": True,
+            "slug": qr_code.slug,
+            "name": qr_code.name,
+            "slogan": qr_code.slogan,
+            "blog_post_slug": blog_post.slug if blog_post else None,
+            "blog_post_title": blog_post.title if blog_post else None,
+            "is_active": qr_code.is_active,
+        }
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def unlink_qr_view(request, slug):
+    """Desvincula un QR del artículo sin eliminarlo (solo superadmin/staff).
+
+    El QR pasa a estado activo pero sin artículo asociado,
+    listo para ser reutilizado con otro artículo.
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "QR no encontrado."}, status=404
+        )
+
+    # Guardar info antes de desvincular
+    qr_name = qr_code.name
+
+    # Desvincular el artículo
+    qr_code.blog_post = None
+    qr_code.is_active = True
+    qr_code.save()
+
+    return JsonResponse(
+        {
+            "success": True,
+            "message": f"QR '{qr_name}' desvinculado correctamente.",
+            "qr_slug": slug,
+        }
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def delete_qr_view(request, slug):
+    """Elimina un QR y su archivo de imagen (solo superadmin/staff)."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse(
+            {"success": False, "error": "Permiso denegado."}, status=403
+        )
+
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "QR no encontrado."}, status=404
+        )
+
+    try:
+        file_path = get_qr_full_path(slug)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    except Exception:
+        pass
+
+    qr_code.delete()
+
+    return JsonResponse(
+        {"success": True, "message": f"QR '{qr_code.name}' eliminado."}
+    )
+
+
+@login_required
+@require_http_methods(["GET"])
+def download_qr_view(request, slug):
+    """Descarga o muestra la imagen PNG del QR."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return HttpResponseForbidden("Permiso denegado.")
+
+    try:
+        qr_code = QRCode.objects.get(slug=slug)
+    except QRCode.DoesNotExist:
+        raise Http404("Código QR no encontrado.")
+
+    if not qr_code.image_path:
+        return JsonResponse(
+            {"error": "Este QR no tiene imagen generada."}, status=404
+        )
+
+    file_path = get_qr_full_path(qr_code.slug)
+
+    if not os.path.exists(file_path):
+        return JsonResponse(
+            {"error": "Archivo de imagen no encontrado."}, status=404
+        )
+
+    is_preview = request.GET.get("preview") == "1"
+
+    with open(file_path, "rb") as f:
+        response = HttpResponse(f.read(), content_type="image/png")
+        if not is_preview:
+            response["Content-Disposition"] = (
+                f'attachment; filename="{qr_code.slug}.png"'
+            )
+        return response
+
+
 # =====================================================================
 # HU-027: Dashboard - Gestión de usuarios (solo superadmin)
 # =====================================================================
@@ -1713,6 +2139,9 @@ def dashboard_resources_view(request):
 def delete_blog_view(request, post_id):
     """Elimina un artículo permanentemente (HU-011.9).
 
+    Si el artículo tiene un QR asociado, lo desvincula (no elimina el QR,
+    solo lo deja disponible para reasignación).
+
     Solo accesible para superadmin. Elimina el registro de la base de datos,
     los registros de BlogModeration asociados, y la carpeta física del
     artículo en ``blogs_source/<slug>/``.
@@ -1734,12 +2163,25 @@ def delete_blog_view(request, post_id):
             status=404,
         )
 
+    # Si el artículo tiene un QR asociado, lo desvinculamos (no eliminamos el QR)
+    qr_unlinked = None
+    qr_codes = QRCode.objects.filter(blog_post=post)
+    if qr_codes.exists():
+        qr_code = qr_codes.first()
+        qr_code.blog_post = None
+        qr_code.is_active = True
+        qr_code.save()
+        qr_unlinked = qr_code
+
     result = delete_post_permanently(post)
 
     if result["success"]:
+        msg = f"🗑️ Artículo '{result['title']}' eliminado permanentemente."
+        if qr_unlinked:
+            msg += f" QR '{qr_unlinked.name}' desvinculado y disponible para reasignación."
         messages.success(
             request,
-            f"🗑️ Artículo '{result['title']}' eliminado permanentemente.",
+            msg,
         )
         # NOTE: Calculamos los stats actualizados después de la eliminación para refrescar el frontend
         # Se reutiliza la misma lógica que dashboard_view para obtener contadores actualizados
@@ -1773,10 +2215,13 @@ def delete_blog_view(request, post_id):
                     moderation_status="rejected"
                 ).count(),
             }
+        msg = f"Artículo '{result['title']}' eliminado permanentemente."
+        if qr_unlinked:
+            msg += f" QR '{qr_unlinked.name}' desvinculado y disponible para reasignación."
         return JsonResponse(
             {
                 "success": True,
-                "message": f"Artículo '{result['title']}' eliminado permanentemente.",
+                "message": msg,
                 # NOTE: Se incluyen los stats actualizados para que el frontend actualice los contadores
                 "stats": updated_stats,
             }

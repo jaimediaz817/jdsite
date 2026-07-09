@@ -27,6 +27,14 @@ from blog.views import (
     dashboard_users_view,
     toggle_user_active,
     post_can_view,
+    dashboard_qr_view,
+    generate_qr_view,
+    qr_redirect_view,
+    download_qr_view,
+    delete_qr_view,
+    qr_no_article_view,
+    unlink_qr_view,
+    update_qr_view,
 )
 
 # HU-031: Importar vista de prueba 404
@@ -36,32 +44,25 @@ app_name = "blog"
 
 urlpatterns = [
     path("", BlogListView.as_view(), name="blog_list"),
-    # Rutas específicas ANTES de las rutas con <slug>
     path("quick-signup/", quick_signup, name="quick_signup"),
-    # HU-012: Feed RSS/Atom
     path("feed/rss/", BlogRSSFeed(), name="blog_rss"),
     path("feed/atom/", BlogAtomFeed(), name="blog_atom"),
-    # HU-011: Editor Online (DEBE ir ANTES de <slug> para no ser capturado)
     path("editor/", blog_editor_view, name="blog_editor"),
     path("editor/<slug:slug>/", blog_editor_view, name="blog_editor_edit"),
     path("api/save-blog/", save_blog_api, name="api_save_blog"),
     path("api/upload-file/", upload_file_api, name="api_upload_file"),
     path("api/get-blog/<slug:slug>/", get_blog_for_edit, name="api_get_blog"),
-    # Dashboard y acciones de moderación deben ir antes del patrón <slug:slug>
     path("dashboard/", dashboard_view, name="dashboard"),
-    # HU-031: Endpoint AJAX para verificar si un artículo es accesible (ANTES de <slug>)
     path(
         "api/post-can-view/<slug:slug>/",
         post_can_view,
         name="api_post_can_view",
     ),
-    # HU-17.18: Endpoint AJAX autocomplete de autores (ANTES de <slug>)
     path(
         "api/authors/autocomplete/",
         api_authors_autocomplete,
         name="api_authors_autocomplete",
     ),
-    # HU-011.85: Configuración de envío de emails (ANTES de <slug>)
     path("email-config/", blog_email_config_view, name="blog_email_config"),
     path(
         "dashboard/comments/<slug:slug>/",
@@ -77,19 +78,16 @@ urlpatterns = [
         "dashboard/approve/<slug:token>/", approve_blog_view, name="approve_blog"
     ),
     path("dashboard/reject/<slug:token>/", reject_blog_view, name="reject_blog"),
-    # HU-011.9: Eliminación permanente de artículos (ANTES de <slug>)
     path(
         "dashboard/delete/<int:post_id>/",
         delete_blog_view,
         name="delete_blog",
     ),
-    # HU-011.17: Eliminar archivo individual de recursos (AJAX)
     path(
         "dashboard/delete-file/",
         delete_resource_file_ajax,
         name="delete_resource_file",
     ),
-    # HU-011.17: Página de gestión de recursos (separada del dashboard home)
     path(
         "dashboard/recursos/blogs/",
         dashboard_resources_view,
@@ -105,13 +103,6 @@ urlpatterns = [
         change_moderation_status,
         name="change_moderation",
     ),
-    # HU-026-B: [DESACTIVADO - DUPLICADO] Endpoint AJAX para guardar email propietario
-    # path(
-    #     "dashboard/config/owner-email/",
-    #     save_owner_email_ajax,
-    #     name="save_owner_email",
-    # ),
-    # HU-027: Gestión de usuarios en dashboard (solo superadmin)
     path(
         "dashboard/users/",
         dashboard_users_view,
@@ -122,8 +113,39 @@ urlpatterns = [
         toggle_user_active,
         name="toggle_user_active",
     ),
-    # HU-031: Vista de prueba del template 404 (solo en desarrollo)
     path("test-404/", test_404_page, name="test_404"),
+    path("dashboard/qr/", dashboard_qr_view, name="dashboard_qr"),
+    path(
+        "dashboard/qr/generate/",
+        generate_qr_view,
+        name="generate_qr",
+    ),
+    path(
+        "dashboard/qr/<slug:slug>/download/",
+        download_qr_view,
+        name="download_qr",
+    ),
+    path(
+        "dashboard/qr/<slug:slug>/delete/",
+        delete_qr_view,
+        name="delete_qr",
+    ),
+    path(
+        "dashboard/qr/<slug:slug>/unlink/",
+        unlink_qr_view,
+        name="unlink_qr",
+    ),
+    path(
+        "dashboard/qr/<slug:slug>/update/",
+        update_qr_view,
+        name="update_qr",
+    ),
+    path("qr/<slug:slug>/", qr_redirect_view, name="qr_redirect"),
+    path(
+        "dashboard/qr/<slug:slug>/associate/",
+        qr_no_article_view,
+        name="qr_no_article",
+    ),
     path("<slug:slug>/", BlogDetailView.as_view(), name="blog_detail"),
     path("<slug:slug>/comment/", post_comment, name="post_comment"),
     path(

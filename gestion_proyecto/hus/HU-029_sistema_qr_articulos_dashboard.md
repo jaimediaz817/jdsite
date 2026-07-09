@@ -55,10 +55,10 @@ Si el QR apunta directamente a `/blog/calistenia-rutina/`, **no podrás cambiar 
 
 ### Mecanismo RECOMENDADO (Opción B)
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
-│  QR IMPRESO     │  →  │  /qr/{slug}/       │  →  │  /blog/{slug}/        │
-│  (inmutable)    │     │  (ruta intermedia) │     │  (URL del artículo)   │
-└─────────────────┘     └──────────────────┘     └────────────────────┘
+┌─────────────────┐     ┌────────────────────┐   ┌───────────────────────┐
+│  QR IMPRESO     │  →  │  /qr/{slug}/       │  →│  /blog/{slug}/        │
+│  (inmutable)    │     │  (ruta intermedia) │   │  (URL del artículo)   │
+└─────────────────┘     └────────────────────┘   └───────────────────────┘
                               ↑
                          Puedes cambiar
                          esta relación

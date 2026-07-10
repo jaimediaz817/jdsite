@@ -85,26 +85,23 @@
 
 .btn-expandir-contraer {
     width: 35%;
+}
 
-    i {
-        margin-right: 0.5rem;
-    }
+.btn-expandir-contraer i {
+    margin-right: 0.5rem;
 }
 
 /* -----------------------------------------------------------------
    Botón flotante "Ir arriba"
    ----------------------------------------------------------------- */
 .go-top-btn {
-    /* Posicionamiento fijo sobre el contenido */
     position: fixed;
     bottom: 80px;
     right: 20px;
     z-index: 100000;
-    /* Tamaño circular */
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    /* Gradiente con colores del blog (azul y verde) */
     background: linear-gradient(45deg, #007bff, #28a745);
     color: #fff;
     border: none;
@@ -130,13 +127,130 @@
     pointer-events: none;
 }
 
-#filesModal {
-    button.btn.btn-sm.btn-danger {
-        padding: 0.1rem 1.5rem;
-        border-radius: 0.5rem;
-        line-height: 1.5;
-        margin-left: 0.5rem;
-    }
+#filesModal button.btn.btn-sm.btn-danger {
+    padding: 0.1rem 1.5rem;
+    border-radius: 0.5rem;
+    line-height: 1.5;
+    margin-left: 0.5rem;
+}
+
+/* =============================================
+   🎨 Botones de Acción QR - Estilo Premium Rediseñado
+   ============================================= */
+.btn-action-wrap {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-icon {
+    min-width: 32px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-icon i {
+    font-size: 1rem;
+    transition: transform 0.25s ease;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-icon:hover i {
+    transform: scale(1.15);
+}
+
+.btn-icon:active {
+    transform: translateY(0);
+}
+
+/* Botón Ver (eye) - Azul info */
+.btn-icon-ver {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+}
+
+.btn-icon-ver:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+}
+
+/* Botón Descargar (download) - Verde success */
+.btn-icon-descargar {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+}
+
+.btn-icon-descargar:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff;
+}
+
+/* Botón Editar (edit) - Púrpura principal (blog) */
+.btn-icon-editar {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: #ffffff;
+}
+
+.btn-icon-editar:hover {
+    background: linear-gradient(135deg, #5a33a0, #4c2a85);
+    color: #ffffff;
+}
+
+/* Botón Copiar (copy) - Cian */
+.btn-icon-copiar {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: #ffffff;
+}
+
+.btn-icon-copiar:hover {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+    color: #ffffff;
+}
+
+/* Botón Desvincular (unlink) - Naranja advertencia */
+.btn-icon-desvincular {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+}
+
+.btn-icon-desvincular:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff;
+}
+
+/* Botón Eliminar (trash) - Rojo danger */
+.btn-icon-eliminar {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+}
+
+.btn-icon-eliminar:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #ffffff;
+}
+
+/* Dark mode support for buttons */
+html[data-reading-mode="dark"] .btn-icon {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+html[data-reading-mode="dark"] .btn-icon:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* =============================================
@@ -154,8 +268,6 @@
 
 /* ≈≤767px Móviles: apilar header, ajustar KPIs, tablas, filtros */
 @media (max-width: 767px) {
-
-    /* Header: apilar verticalmente */
     .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2 {
         flex-direction: column;
         align-items: flex-start !important;
@@ -165,7 +277,6 @@
         margin-top: .5rem;
     }
 
-    /* KPIs: reducir tamaño de fuente */
     .estadisticas-gestion-recursos__container .card-body .fs-1 {
         font-size: 1.3rem;
     }
@@ -174,7 +285,6 @@
         font-size: .65rem;
     }
 
-    /* Filtros: compactar botones */
     .d-flex.flex-wrap.gap-2 .filter-btn {
         font-size: .72rem;
         padding: .3rem .6rem;
@@ -186,7 +296,6 @@
         padding: .3rem .5rem;
     }
 
-    /* Tabla compilación: reducir padding, font-size */
     .table td,
     .table th {
         padding: .4rem .3rem;
@@ -197,19 +306,16 @@
         font-size: .65rem;
     }
 
-    /* Badge estado: tamaño reducido */
     .badge {
         font-size: .65rem;
         padding: .2rem .4rem;
     }
 
-    /* Botón "Ver" archivos: más compacto */
     .view-files-btn {
         font-size: .7rem;
         padding: .2rem .4rem;
     }
 
-    /* Botón expandir: ancho automático */
     .btn-expandir-contraer {
         width: auto;
         min-width: 100px;
@@ -217,7 +323,6 @@
         padding: .25rem .5rem;
     }
 
-    /* Tabla huérfanos: ajustar */
     .table-sm td,
     .table-sm th {
         padding: .3rem .25rem;
@@ -229,7 +334,6 @@
         padding: .15rem .4rem;
     }
 
-    /* Modal archivos: ajustar padding y tamaño */
     #filesModal .modal-dialog {
         margin: .5rem;
         max-width: calc(100% - 1rem);
@@ -247,8 +351,6 @@
 
 /* ≈≤575px Móviles muy pequeños */
 @media (max-width: 575px) {
-
-    /* KPIs: 2 por fila, tamaño compacto */
     .estadisticas-gestion-recursos__container .card-body .fs-1 {
         font-size: 1.1rem;
     }
@@ -257,13 +359,11 @@
         font-size: .6rem;
     }
 
-    /* Filtros: un botón por fila */
     .d-flex.flex-wrap.gap-2 .filter-btn {
         font-size: .68rem;
         padding: .25rem .5rem;
     }
 
-    /* Tabla: fuente más pequeña */
     .table td,
     .table th {
         padding: .35rem .2rem;
@@ -275,7 +375,6 @@
         letter-spacing: .3px;
     }
 
-    /* Go-top-btn: ajustar posición */
     .go-top-btn {
         bottom: 60px;
         right: 10px;
@@ -287,5 +386,121 @@
     .table thead th:first-child,
     .table tbody td:first-child {
         display: table-cell !important;
+    }
+}
+
+/* =============================================
+   🎨 Botón Volver - degradé púrpura del blog
+   ============================================= */
+.btn-back-blog {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.2);
+}
+
+.btn-back-blog:hover {
+    background: linear-gradient(135deg, #5a33a0, #4c2a85);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+/* Headers de cards con degradé púrpura */
+.card-header-qr {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0) !important;
+    color: white !important;
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.card-header-qr h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-header-success {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: white !important;
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.card-header-success h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Botones de filtro QR con colores profesionales */
+.btn-filter-all {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-filter-active {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-filter-inactive {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-filter-all:hover,
+.btn-filter-active:hover,
+.btn-filter-inactive:hover {
+    opacity: 0.9;
+    color: #ffffff;
+}
+
+/* Botón Generar QR - degradé púrpura */
+.btn-generate-qr {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.2);
+}
+
+.btn-generate-qr:hover {
+    background: linear-gradient(135deg, #5a33a0, #4c2a85);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.btn-generate-qr:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive específico para tabla QR - botones siempre en línea */
+@media (max-width: 767px) {
+    .table td:last-child .btn-action-wrap {
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        gap: 4px !important;
+        padding: 2px 0 !important;
+        max-width: 300px;
+    }
+
+    .table td:last-child .btn-icon {
+        flex: 0 0 auto !important;
+        min-width: 36px !important;
+        width: 36px !important;
+        height: 32px !important;
     }
 }

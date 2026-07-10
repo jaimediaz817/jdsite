@@ -8,17 +8,17 @@
     <!-- Header de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>
-            <i class="fas fa-qrcode" style="color: #1a1a1a;"></i>
+            <i class="fas fa-qrcode" style="color: #6f42c1;"></i>
             Gestión de Códigos QR
         </h2>
-        <a href="{% url 'blog:dashboard' %}" class="btn btn-secondary">
+        <a href="{% url 'blog:dashboard' %}" class="btn btn-back-blog">
             <i class="fas fa-arrow-left"></i> Volver al Dashboard
         </a>
     </div>
 
     <!-- Formulario de creación de QR -->
     <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header card-header-qr">
             <h5 class="mb-0">
                 <i class="fas fa-plus-circle"></i> Generar Nuevo QR
             </h5>
@@ -80,7 +80,7 @@
                 <button
                     type="submit"
                     id="qrSubmitBtn"
-                    class="btn btn-primary"
+                    class="btn btn-generate-qr"
                     disabled
                 >
                     <i id="qrSubmitIcon" class="fas fa-qrcode"></i>
@@ -95,7 +95,7 @@
 
     <!-- Preview del QR generado -->
     <div id="qrPreviewCard" class="card mb-4" style="display: none;">
-        <div class="card-header bg-success text-white">
+        <div class="card-header card-header-success">
             <h5 class="mb-0">
                 <i class="fas fa-check-circle"></i> QR Generado Exitosamente
             </h5>
@@ -132,17 +132,17 @@
                     <i class="fas fa-filter"></i> Filtrar por estado:
                 </span>
                 <a href="{% url 'blog:dashboard_qr' %}"
-                   class="btn btn-sm rounded-pill px-3 {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+                   class="btn btn-sm rounded-pill px-3 {% if not status_filter %}btn-filter-all{% else %}btn-outline-secondary{% endif %}"
                    style="font-size:.82rem;">
                     🔄 Todos
                 </a>
                 <a href="?status=active"
-                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'active' %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'active' %}btn-filter-active{% else %}btn-outline-secondary{% endif %}"
                    style="font-size:.82rem;">
                     ✅ Activos
                 </a>
                 <a href="?status=inactive"
-                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'inactive' %}btn-warning{% else %}btn-outline-secondary{% endif %}"
+                   class="btn btn-sm rounded-pill px-3 {% if status_filter == 'inactive' %}btn-filter-inactive{% else %}btn-outline-secondary{% endif %}"
                    style="font-size:.82rem;">
                     ⚠️ Inactivos
                 </a>
@@ -152,7 +152,7 @@
 
     <!-- Lista de QRs -->
     <div class="card">
-        <div class="card-header">
+        <div class="card-header card-header-qr">
             <h5 class="mb-0">
                 <i class="fas fa-list"></i> Códigos QR Generados
                 <span class="badge badge-secondary ml-2">{{ page_obj.paginator.count }}</span>
@@ -206,9 +206,9 @@
                             </td>
                             <td>{{ qr.created_by.username|default:"Sistema" }}</td>
                             <td>{{ qr.created_at|date:"d/m/Y H:i" }}</td>
-                             <td>
-                                 <div class="btn-action-wrap justify-content-center">
-                                     <button
+                            <td>
+                                <div class="btn-action-wrap justify-content-center">
+                                    <button
                                          type="button"
                                          class="btn-icon btn-icon-ver"
                                          onclick="showQrPreview('{{ qr.slug }}', '{{ qr.name|escapejs }}')"
@@ -840,10 +840,18 @@
         var fullUrl = window.location.origin + url;
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(fullUrl).then(function() {
-                alert('URL copiada al portapapeles: ' + fullUrl);
+                if (typeof showBlogToast !== 'undefined') {
+                    showBlogToast('URL copiada al portapapeles', 'success');
+                } else {
+                    alert('URL copiada');
+                }
             });
         } else {
-            alert('URL: ' + fullUrl);
+            if (typeof showBlogToast !== 'undefined') {
+                showBlogToast(fullUrl, 'info');
+            } else {
+                alert('URL: ' + fullUrl);
+            }
         }
     };
 

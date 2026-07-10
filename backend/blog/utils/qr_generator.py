@@ -26,7 +26,7 @@ LOGO_PADDING = (
 TEXT_HEIGHT_RATIO = (
     0.26  # 26% del QR para texto (abajo: línea + título + eslogan)
 )
-TITLE_FONT_RATIO = 0.045  # 4.5% del QR para tamaño de fuente del título
+TITLE_FONT_RATIO = 0.05  # 5% del QR para tamaño de fuente del título (negrita)
 SLOGAN_FONT_RATIO = 0.045  # 4.5% del QR para tamaño de fuente del eslogan
 TEXT_COLOR = "#1a1a1a"  # Texto negro
 LINE_COLOR = "#1a1a1a"  # Color de la línea divisoria
@@ -210,13 +210,17 @@ def _add_text(qr_img, text, text_height, slogan=None):
 
     title_font_size = int(width * TITLE_FONT_RATIO)
 
-    # Cargar fuente
+    # Cargar fuente BOLD para el título
     title_font = None
     for font_path in [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
-        "C:/Windows/Fonts/arial.ttf",
-        "/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",  # Linux bold
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux fallback
+        "/System/Library/Fonts/Helvetica-Bold.ttc",  # Mac bold
+        "/System/Library/Fonts/Helvetica.ttc",  # Mac fallback
+        "C:/Windows/Fonts/arialbd.ttf",  # Windows bold
+        "C:/Windows/Fonts/arial.ttf",  # Windows fallback
+        "/Library/Fonts/Arial Bold.ttf",  # Mac alternativo bold
+        "/Library/Fonts/Arial.ttf",  # Mac alternativo fallback
     ]:
         try:
             title_font = ImageFont.truetype(font_path, title_font_size)
@@ -263,13 +267,16 @@ def _add_text(qr_img, text, text_height, slogan=None):
         slogan_y = title_y + title_total_h + slogan_gap
         slogan_total_h = len(slogan_lines) * slogan_font_size
 
-    # Calcular altura final
-    final_text_bottom = (
-        slogan_y + slogan_total_h + gap
-        if slogan_lines
-        else title_y + title_total_h + gap
-    )
-    final_height = qr_bottom + int(text_height * 0.05) + final_text_bottom
+    # Calcular altura final - con pequeño margen después del eslogan para impresión
+    # ~10px = 1mm aproximado (medio cm solicitado)
+    extra_margin = int(width * 0.01)  # ~10px = medio mm aproximado
+
+    if slogan_lines:
+        final_text_bottom = slogan_y + slogan_total_h
+    else:
+        final_text_bottom = title_y + title_total_h
+
+    final_height = final_text_bottom + gap + extra_margin
 
     # Crear imagen final
     new_img = Image.new("RGB", (width, final_height), "white")

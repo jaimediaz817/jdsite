@@ -3,8 +3,10 @@
  * HU-036: Sistema de notificaciones reutilizable
  * 
  * Uso:
- *   showBlogToast('mensaje', 'danger');  // Error
+ *   showBlogToast('mensaje', 'success'); // Éxito
  *   showBlogToast('mensaje', 'warning'); // Advertencia
+ *   showBlogToast('mensaje', 'danger');  // Error
+ *   showBlogToast('mensaje', 'info');    // Información
  * 
  * Características:
  * - Diseño premium Instagram/Facebook
@@ -81,14 +83,26 @@
                 border: 2.5px solid rgba(255,255,255,0.3);\
             }\
 \
-            #post-access-toast-container .post-access-toast.toast-danger .toast-badge {\
-                background: linear-gradient(135deg, #ff6b7a 0%, #ee5a6f 50%, #d94558 100%);\
+            #post-access-toast-container .post-access-toast.toast-success .toast-badge {\
+                background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);\
+                color: #fff;\
+                text-shadow: 0 1px 3px rgba(0,0,0,0.2);\
+            }\
+\
+            #post-access-toast-container .post-access-toast.toast-info .toast-badge {\
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);\
                 color: #fff;\
                 text-shadow: 0 1px 3px rgba(0,0,0,0.2);\
             }\
 \
             #post-access-toast-container .post-access-toast.toast-warning .toast-badge {\
                 background: linear-gradient(135deg, #ffb84d 0%, #ffa033 50%, #ff8c1a 100%);\
+                color: #fff;\
+                text-shadow: 0 1px 3px rgba(0,0,0,0.2);\
+            }\
+\
+            #post-access-toast-container .post-access-toast.toast-danger .toast-badge {\
+                background: linear-gradient(135deg, #ff6b7a 0%, #ee5a6f 50%, #d94558 100%);\
                 color: #fff;\
                 text-shadow: 0 1px 3px rgba(0,0,0,0.2);\
             }\
@@ -245,9 +259,15 @@
     // ============================================
     // FUNCIÓN PRINCIPAL (API global)
     // ============================================
-    window.showBlogToast = function(message, type) {
+    window.showBlogToast = function(message, type, options) {
         // Inyectar CSS si no existe
         injectToastCSS();
+
+        // Opciones por defecto
+        options = options || {};
+        var title = options.title || (type === 'warning' ? 'Advertencia' : 
+                     type === 'success' ? 'Éxito' : 
+                     type === 'info' ? 'Información' : 'Error');
 
         // Crear contenedor si no existe
         if (!toastContainer) {
@@ -260,12 +280,14 @@
         toastContainer.innerHTML = '';
 
         // Crear toast con diseño premium
-        var iconClass = type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+        var iconClass = type === 'warning' ? 'fa-exclamation-triangle' : 
+                        type === 'success' ? 'fa-check-circle' : 
+                        type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
         var toast = document.createElement('div');
         toast.className = 'post-access-toast toast-' + type;
         toast.innerHTML = 
             '<div class="toast-badge"><i class="fas ' + iconClass + '"></i></div>' +
-            '<div class="toast-header">Artículo no disponible</div>' +
+            '<div class="toast-header">' + title + '</div>' +
             '<div class="toast-body">' + message + '</div>' +
             '<button type="button" class="toast-close" aria-label="Cerrar">' +
             '<span aria-hidden="true">&times;</span>' +

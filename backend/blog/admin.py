@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 from blog.models import (
     Category,
     Tag,
@@ -129,7 +130,9 @@ class QRCodeAdmin(admin.ModelAdmin):
                 )
                 output_path = get_qr_full_path(qr.slug)
                 try:
-                    generate_qr_with_logo(qr_url, output_path)
+                    generate_qr_with_logo(
+                        qr_url, output_path, text=qr.name, slogan=qr.slogan
+                    )
                     qr.image_path = get_qr_media_path(qr.slug)
                     qr.save(update_fields=["image_path"])
                     count += 1

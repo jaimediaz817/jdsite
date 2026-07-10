@@ -3,206 +3,398 @@
 
 {% block title %}QR sin vincular - {{ qr_code.name }} | JD Blog{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ==========================================
+   QR No Article - Consistent with HU-039
+   ========================================== */
+
+/* Card header con gradiente morado del blog */
+.card-header.qr-card-header {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    color: white;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.card-header.qr-card-header h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Card estilo consistente */
+.card.qr-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    margin-bottom: 1rem;
+}
+
+/* Search input con bordes uniformes (igual que qr_assign_article) */
+.qr-search-input-group {
+    border-radius: 24px;
+    border: 2px solid #d8cff5;
+    overflow: hidden;
+    background: #fff;
+}
+
+.qr-search-input-group:focus-within {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.15);
+}
+
+.qr-search-icon {
+    background: white;
+    border: none;
+    border-right: none;
+    border-radius: 24px 0 0 24px;
+    padding: 0.5rem 1rem;
+    color: #6f42c1;
+}
+
+.qr-search-input {
+    border: none;
+    border-left: none;
+    border-right: none;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    height: 40px;
+    box-shadow: none;
+}
+
+.qr-search-input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.qr-clear-btn {
+    background: white;
+    border: none;
+    border-left: none;
+    border-radius: 0 24px 24px 0;
+    padding: 0 1rem;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.qr-clear-btn:hover {
+    color: #dc3545;
+    transform: scale(1.1);
+}
+
+/* Dropdown de opciones */
+.qr-article-dropdown {
+    max-height: 280px;
+    margin-top: 4px;
+}
+
+.qr-article-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all .15s ease;
+    margin: 0;
+    font-size: 0.88rem;
+}
+
+.qr-article-option:last-child {
+    border-bottom: none;
+    border-radius: 0 0 10px 10px;
+}
+
+.qr-article-option:hover {
+    background: #f5f3ff;
+}
+
+.qr-article-slug {
+    color: #8a9ba8;
+    font-size: .7rem;
+    margin-top: 2px;
+}
+
+/* Badge info */
+.qr-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f3f0ff;
+    color: #6f42c1;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 16px;
+    border: 1px solid #d8cff5;
+}
+
+/* Status badge */
+.qr-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.qr-status-unlinked {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* Selected post info */
+#selectedPostInfo {
+    background: #f5f3ff;
+    border: 1px solid #d8cff5;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+}
+
+/* Botones */
+.btn.qr-btn-link {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.88rem;
+    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.2);
+}
+
+.btn.qr-btn-cancel {
+    color: #6b7280;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    font-size: 0.88rem;
+}
+
+/* Modal */
+.modal-header.qr-modal-header {
+    background: linear-gradient(135deg, #6f42c1, #5a33a0);
+    border-bottom: none;
+    padding: 1rem 1.25rem;
+}
+
+.qr-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Form actions */
+.qr-form-actions {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.8rem;
+    margin-top: 0.8rem;
+}
+
+/* Responsive móvil */
+@media (max-width: 575px) {
+    .qr-preview-col .card-body > .d-flex {
+        flex-direction: column !important;
+        text-align: center;
+    }
+    
+    .qr-preview-col .card-body .mr-3 {
+        margin-right: 0 !important;
+        margin-bottom: 0.75rem;
+    }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-md-12">
-            <!-- Header -->
-            <div class="text-center mb-4">
-                <h1 class="h2 text-dark mb-3">Código QR sin artículo asociado</h1>
-                {% if request.user.is_staff %}
-                <p class="lead text-muted">
-                    QR: <strong>{{ qr_code.name }}</strong> - <span class="badge badge-warning">Modo Staff</span>
-                </p>
+<div class="row justify-content-center">
+    <div class="col-lg-12 col-md-12">
+        <!-- Header compacto -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="qr-section-title mb-1" style="color: #1f2937;">
+                    <i class="fas fa-qrcode" style="color: #6f42c1;"></i>
+                    Código QR sin artículo asociado
+                </h2>
+                <span class="qr-info-badge">
+                    <i class="fas fa-qrcode"></i> {{ qr_code.name }}
+                </span>
+            </div>
+            <a href="{% url 'blog:dashboard_qr' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Vista previa del QR -->
+        <div class="card qr-card mb-4">
+            <div class="card-header qr-card-header">
+                <h5 class="mb-0"><i class="fas fa-qrcode"></i> Vista previa</h5>
+            </div>
+            <div class="card-body py-3">
+                <div class="d-flex align-items-start">
+                    <!-- QR a la izquierda -->
+                    <div class="mr-3 flex-shrink-0">
+                        <img src="{{ qr_image_url }}" alt="QR Preview" class="img-fluid" 
+                             style="width: 100px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1);">
+                    </div>
+                    <!-- Descripción a la derecha -->
+                    <div class="flex-grow-1">
+                        <div class="font-weight-semibold text-dark mb-1" style="font-size: 0.9rem;">{{ qr_code.name }}</div>
+                        {% if qr_code.slogan %}
+                        <div class="text-muted small mb-1">{{ qr_code.slogan|truncatechars:50 }}</div>
+                        {% endif %}
+                        <code class="text-muted small d-block mb-2">{{ qr_code.slug }}</code>
+                        <span class="qr-status-badge qr-status-unlinked">
+                            <i class="fas fa-unlink"></i> Sin vincular
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if request.user.is_staff %}
+        <!-- Buscador de artículos (solo para staff) - Estilo consistente con qr_assign_article -->
+        <div class="card qr-card mb-4">
+            <div class="card-header qr-card-header">
+                <h5 class="mb-0"><i class="fas fa-search"></i> Buscar artículo</h5>
+            </div>
+            <div class="card-body py-3">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                
+                <div class="position-relative">
+                    <div class="input-group qr-search-input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text qr-search-icon">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control qr-search-input" id="qrArticleSearch" 
+                               placeholder="Escribe el título o slug..." autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text qr-clear-btn qr-article-clear" 
+                                  id="qrArticleClear" title="Quitar selección" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <select class="form-control" id="qrBlogPostSelect" name="blog_post_id" style="display:none;">
+                        {% for post in published_posts %}
+                        <option value="{{ post.id }}">{{ post.title }} ({{ post.slug }})</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <div class="qr-article-dropdown border rounded" id="qrArticleDropdown" 
+                         style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: #fff; border: 2px solid #6f42c1; border-radius: 10px; max-height: 280px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,.12); display: none;"></div>
+                </div>
+                
+                <div id="selectedPostInfo" class="mt-3" style="display: none;">
+                    <div>
+                        <h6 class="mb-1" style="color: #6f42c1; font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i> Artículo seleccionado
+                        </h6>
+                        <div class="font-weight-medium text-dark mb-1" id="selectedPostTitle" style="font-size: 0.9rem;"></div>
+                        <code class="text-muted small" id="selectedPostSlug"></code>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 qr-form-actions">
+                    <button class="btn qr-btn-cancel" onclick="location.href='{% url 'blog:dashboard_qr' %}'">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn qr-btn-link text-white" id="linkArticleBtn" onclick="showLinkModal()" disabled>
+                        <i class="fas fa-link"></i> Vincular
+                    </button>
+                </div>
+
+                <!-- Mensaje de resultado -->
+                <div id="linkResult" class="mt-3"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Artículos destacados -->
+        <div class="card qr-card mb-4">
+            <div class="card-header qr-card-header">
+                <h5 class="mb-0"><i class="fas fa-book-reader"></i> Explora nuestros artículos</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_posts %}
+                <div class="list-group">
+                    {% for post in recent_posts %}
+                    <a href="{% url 'blog:blog_detail' post.slug %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ post.title }}</h6>
+                                <small class="text-muted">
+                                    {{ post.publish_date|date:"d M Y" }}
+                                    {% if post.category %} • {{ post.category.name }}{% endif %}
+                                </small>
+                            </div>
+                            <i class="fas fa-chevron-right text-muted"></i>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-4">
+                    <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-th-large"></i> Ver todos los artículos
+                    </a>
+                </div>
                 {% else %}
-                <p class="lead text-muted">
-                    El QR <strong>{{ qr_code.name }}</strong> aún no está vinculado a contenido específico
-                </p>
+                <div class="text-center py-4">
+                    <i class="fas fa-folder-open text-muted mb-3" style="font-size: 2rem;"></i>
+                    <p class="text-muted mb-3">Aún no hay artículos publicados</p>
+                    <a href="{% url 'home' %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-home"></i> Ir al inicio
+                    </a>
+                </div>
                 {% endif %}
             </div>
-
-            <!-- Vista previa del QR -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="fas fa-qrcode"></i> Vista previa</h5>
-                </div>
-                <div class="card-body text-center">
-                    <img src="{{ qr_image_url }}" alt="QR Preview" class="img-fluid" style="max-width: 220px;">
-                    <p class="small text-muted mt-2 mb-0">QR: {{ qr_code.slug }}</p>
-                </div>
-            </div>
-
-            {% if request.user.is_staff %}
-            <!-- Buscador de artículos (solo para staff) -->
-            <div class="card shadow-sm mb-4 border-success">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-link"></i> Vincular artículo a este QR</h5>
-                </div>
-                <div class="card-body">
-                    <div class="position-relative">
-                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                        <label class="form-label small text-muted mb-2">BUSCAR ARTÍCULO PUBLICADO PARA VINCULAR</label>
-                        <div class="input-group input-group-lg">
-                            <input type="text" class="form-control rounded-pill" id="qrArticleSearch" 
-                                   placeholder="Escribe el título o slug..." autocomplete="off"
-                                   style="border-right: none;">
-                            <div class="input-group-append">
-                                <span class="input-group-text bg-white border-left-0 rounded-pill qr-article-clear" 
-                                      id="qrArticleClear" title="Quitar selección" 
-                                      style="display: none; cursor: pointer; border: 1px solid #ced4da; border-left: none;">
-                                    <i class="fas fa-times text-muted"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <select class="form-control" id="qrBlogPostSelect" name="blog_post_id" style="display:none;">
-                            {% for post in published_posts %}
-                            <option value="{{ post.id }}">{{ post.title }} ({{ post.slug }})</option>
-                            {% endfor %}
-                        </select>
-                        <div class="qr-article-dropdown border rounded" id="qrArticleDropdown"></div>
-                    </div>
-
-                    <div id="selectedPostInfo" class="mt-3 p-3 bg-light rounded" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="mb-1 text-success"><i class="fas fa-check-circle"></i> Artículo seleccionado</h6>
-                                <p class="mb-0 font-weight-bold text-dark" id="selectedPostTitle"></p>
-                                <code class="text-muted small" id="selectedPostSlug"></code>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-success btn-lg w-100 mt-3" id="linkArticleBtn" onclick="showLinkModal()" disabled>
-                        <i class="fas fa-link"></i> Vincular artículo al QR
-                    </button>
-
-                    <!-- Mensaje de resultado -->
-                    <div id="linkResult" class="mt-3"></div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Artículos destacados -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-book-reader"></i> Explora nuestros artículos</h5>
-                </div>
-                <div class="card-body">
-                    {% if recent_posts %}
-                    <div class="list-group">
-                        {% for post in recent_posts %}
-                        <a href="{% url 'blog:blog_detail' post.slug %}" class="list-group-item list-group-item-action">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">{{ post.title }}</h6>
-                                    <small class="text-muted">
-                                        {{ post.publish_date|date:"d M Y" }}
-                                        {% if post.category %} • {{ post.category.name }}{% endif %}
-                                    </small>
-                                </div>
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    <div class="text-center mt-4">
-                        <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-th-large"></i> Ver todos los artículos
-                        </a>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-folder-open text-muted mb-3" style="font-size: 2.5rem;"></i>
-                        <p class="text-muted mb-3">Aún no hay artículos publicados</p>
-                        <a href="{% url 'home' %}" class="btn btn-primary">
-                            <i class="fas fa-home"></i> Ir al inicio
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            {% if request.user.is_staff %}
-            <div class="text-center mt-4">
-                <a href="{% url 'blog:dashboard_qr' %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver al QR Dashboard
-                </a>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Modal de confirmación -->
+{% if request.user.is_staff %}
 <div class="modal fade" id="linkModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmar vinculación
+            <div class="modal-header qr-modal-header">
+                <h5 class="modal-title fw-bold text-white mb-0">
+                    <i class="fas fa-exclamation-triangle text-warning mr-2"></i>Confirmar vinculación
                 </h5>
-                <button type="button" class="close" aria-label="Close" id="closeLinkModal">
+                <button type="button" class="close text-white" aria-label="Close" id="closeLinkModal">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <p class="mb-2">¿Vincular este artículo al QR <strong>{{ qr_code.name }}</strong>?</p>
-                <p class="fw-bold text-primary mb-2" id="linkModalTitle"></p>
-                <p class="text-muted small mb-0">
-                    <i class="fas fa-info-circle me-1"></i>
+            <div class="modal-body py-3">
+                <p class="mb-2 small">¿Vincular este artículo al QR <strong>{{ qr_code.name }}</strong>?</p>
+                <div class="p-2 bg-light rounded">
+                    <div class="text-primary mb-1" id="linkModalTitle" style="font-weight: 500;"></div>
+                    <code class="text-muted small" id="linkModalSlug"></code>
+                </div>
+                <p class="text-muted small mt-2 mb-0">
+                    <i class="fas fa-info-circle mr-1"></i>
                     El QR redirigirá automáticamente a este artículo cuando se escanee.
                 </p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer py-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="cancelLinkBtn">Cancelar</button>
-                <button type="button" class="btn btn-sm btn-success" id="confirmLinkBtn">
-                    <i class="fas fa-link me-1"></i>Vincular ahora
+                <button type="button" class="btn btn-sm" id="confirmLinkBtn" style="background: linear-gradient(135deg, #16a34a, #15803d); color: white; border-radius: 8px;">
+                    <i class="fas fa-link mr-1"></i>Vincular ahora
                 </button>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
 
-<style>
-.qr-article-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    right: 0;
-    z-index: 1060;
-    background: #fff;
-    border: 2px solid #28a745;
-    border-radius: .5rem;
-    max-height: 320px;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,.15);
-}
-.qr-article-option {
-    padding: 12px 16px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: all .2s ease;
-    margin: 0;
-}
-.qr-article-option:last-child { border-bottom: none; border-radius: 0 0 .5rem .5rem; }
-.qr-article-option:first-child { border-radius: .5rem .5rem 0 0; }
-.qr-article-option:hover { 
-    background: linear-gradient(90deg, #e8f5e9 0%, #ffffff 100%);
-    transform: translateX(4px);
-}
-.qr-article-option .qr-article-slug {
-    color: #8a9ba8;
-    font-size: .75rem;
-    margin-top: 2px;
-}
-.qr-article-empty {
-    padding: 16px;
-    color: #8a9ba8;
-    font-style: italic;
-    text-align: center;
-}
-</style>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 (function() {
     var select = document.getElementById('qrBlogPostSelect');
@@ -214,6 +406,10 @@
     // Solo ejecutar si existe (es decir, si el usuario es staff)
     if (!select || !search) return;
     
+    var selectedPostId = null;
+    var selectedPostSlug = null;
+    var isSearchFocused = false;
+
     function buildOptions(filter) {
         dropdown.innerHTML = '';
         var opts = [];
@@ -230,6 +426,7 @@
             var msg = filter ? 'Sin resultados para "' + filter + '".' : 'No hay artículos publicados.';
             var empty = document.createElement('div');
             empty.className = 'qr-article-empty';
+            empty.style.cssText = 'padding: 12px; color: #8a9ba8; font-style: italic; text-align: center; font-size: 0.88rem;';
             empty.textContent = msg;
             dropdown.appendChild(empty);
         } else {
@@ -248,6 +445,7 @@
 
     window.selectOption = function(val) {
         selectedPostId = val;
+        selectedPostSlug = null;
         if (val === '') {
             search.value = '';
             clearBtn.style.display = 'none';
@@ -257,6 +455,7 @@
             var opt = dropdown.querySelector('.qr-article-option[data-val="' + val + '"]');
             var title = opt.querySelector('div').textContent;
             var slug = opt.querySelector('.qr-article-slug')?.textContent || '';
+            selectedPostSlug = slug;
             document.getElementById('selectedPostTitle').textContent = title;
             document.getElementById('selectedPostSlug').textContent = slug;
             document.getElementById('selectedPostInfo').style.display = 'block';
@@ -266,17 +465,35 @@
         dropdown.style.display = 'none';
     };
 
-    search.addEventListener('focus', function() {
+    search.addEventListener('mousedown', function(e) {
+        e.stopPropagation();
+        isSearchFocused = true;
         buildOptions(search.value);
         dropdown.style.display = 'block';
     });
     search.addEventListener('input', function() {
+        var filter = search.value;
+        buildOptions(filter);
+        if (isSearchFocused || search === document.activeElement) {
+            dropdown.style.display = 'block';
+        }
+    });
+    search.addEventListener('focus', function() {
+        isSearchFocused = true;
         buildOptions(search.value);
         dropdown.style.display = 'block';
+    });
+    search.addEventListener('blur', function() {
+        setTimeout(function() {
+            isSearchFocused = false;
+        }, 200);
     });
     dropdown.addEventListener('click', function(e) {
         var opt = e.target.closest('.qr-article-option');
         if (opt) selectOption(opt.getAttribute('data-val'));
+    });
+    dropdown.addEventListener('mousedown', function(e) {
+        e.stopPropagation();
     });
     clearBtn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -284,28 +501,25 @@
         search.focus();
     });
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.position-relative')) {
+        if (isSearchFocused) return;
+        if (!e.target.closest('.position-relative') && !e.target.closest('.qr-article-dropdown')) {
             dropdown.style.display = 'none';
         }
     });
 
     buildOptions('');
-    dropdown.style.display = 'none';
 })();
 
-var selectedPostId = null;
-
 function showLinkModal() {
-    if (!selectedPostId) return;
-    
     var title = document.getElementById('selectedPostTitle').textContent;
+    var slug = selectedPostSlug || '';
     document.getElementById('linkModalTitle').textContent = title;
+    document.getElementById('linkModalSlug').textContent = slug;
     
     var modalEl = document.getElementById('linkModal');
     modalEl.classList.add('show');
     modalEl.style.display = 'block';
     modalEl.setAttribute('aria-modal', 'true');
-    document.body.classList.add('modal-open');
     
     if (!document.getElementById('linkModalBackdrop')) {
         var backdrop = document.createElement('div');
@@ -320,7 +534,6 @@ function hideLinkModal() {
     modalEl.classList.remove('show');
     modalEl.style.display = 'none';
     modalEl.removeAttribute('aria-modal');
-    document.body.classList.remove('modal-open');
     var backdrop = document.getElementById('linkModalBackdrop');
     if (backdrop) backdrop.remove();
 }
@@ -329,12 +542,10 @@ document.getElementById('closeLinkModal').addEventListener('click', hideLinkModa
 document.getElementById('cancelLinkBtn').addEventListener('click', hideLinkModal);
 document.getElementById('confirmLinkBtn').addEventListener('click', function() {
     var postId = selectedPostId;
-    var qrSlug = '{{ qr_code.slug }}';
     var resultDiv = document.getElementById('linkResult');
-    var generateQrUrl = "{% url 'blog:generate_qr' %}";
     
     hideLinkModal();
-    resultDiv.innerHTML = '<div class="alert alert-info">Vinculando artículo...</div>';
+    resultDiv.innerHTML = '<div class="alert alert-info py-2 small">Vinculando artículo...</div>';
 
     var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value || '{{ csrf_token }}';
     var formData = new FormData();
@@ -343,6 +554,7 @@ document.getElementById('confirmLinkBtn').addEventListener('click', function() {
     formData.append('slogan', '{{ qr_code.slogan }}');
     formData.append('blog_post_id', postId);
 
+    var generateQrUrl = "{% url 'blog:generate_qr' %}";
     fetch(generateQrUrl, {
         method: 'POST',
         body: formData,
@@ -351,16 +563,16 @@ document.getElementById('confirmLinkBtn').addEventListener('click', function() {
     .then(function(response) { return response.json(); })
     .then(function(data) {
         if (data.success) {
-            resultDiv.innerHTML = '<div class="alert alert-success">¡Artículo vinculado! Redirigiendo al dashboard...</div>';
+            resultDiv.innerHTML = '<div class="alert alert-success py-2 small">¡Artículo vinculado correctamente! Redirigiendo...</div>';
             setTimeout(function() {
                 window.location.href = "{% url 'blog:dashboard_qr' %}";
             }, 1500);
         } else {
-            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.error || 'Error al vincular') + '</div>';
+            resultDiv.innerHTML = '<div class="alert alert-danger py-2 small">' + (data.error || 'Error al vincular') + '</div>';
         }
     })
     .catch(function(err) {
-        resultDiv.innerHTML = '<div class="alert alert-danger">Error: ' + err.message + '</div>';
+        resultDiv.innerHTML = '<div class="alert alert-danger py-2 small">Error: ' + err.message + '</div>';
     });
 });
 </script>

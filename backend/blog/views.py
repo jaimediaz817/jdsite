@@ -1270,7 +1270,7 @@ def dashboard_qr_view(request):
     )
 
     # Paginación: 20 QRs por página
-    paginator = Paginator(qr_list, 20)
+    paginator = Paginator(qr_list, 10)
     page = request.GET.get("page", 1)
     try:
         page_obj = paginator.page(page)
@@ -1366,7 +1366,7 @@ def generate_qr_view(request):
     output_path = get_qr_full_path(slug)
 
     try:
-        generate_qr_with_logo(qr_url, output_path, text=name)
+        generate_qr_with_logo(qr_url, output_path, text=name, slogan=slogan)
         qr_code.image_path = get_qr_media_path(slug)
         qr_code.save(update_fields=["image_path"])
     except Exception as e:
@@ -1542,6 +1542,17 @@ def update_qr_view(request, slug):
     qr_code.blog_post = blog_post
     qr_code.is_active = bool(blog_post)
     qr_code.save()
+
+    # Regenerar la imagen QR para reflejar nombre/slogan actualizados
+    try:
+        qr_url = request.build_absolute_uri(
+            reverse("blog:qr_redirect", args=[qr_code.slug])
+        )
+        output_path = get_qr_full_path(qr_code.slug)
+        generate_qr_with_logo(qr_url, output_path, text=name, slogan=slogan)
+    except Exception:
+        # No bloqueamos la actualación si falla la regeneración de imagen
+        pass
 
     return JsonResponse(
         {

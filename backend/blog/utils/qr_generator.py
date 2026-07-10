@@ -23,12 +23,21 @@ LOGO_PADDING = (
 )
 
 # Configuración del texto descriptivo
-TEXT_HEIGHT_RATIO = 0.15  # 15% del QR para texto (abajo)
-FONT_SIZE_RATIO = 0.05  # 5% del QR para tamaño de fuente
+TEXT_HEIGHT_RATIO = (
+    0.26  # 26% del QR para texto (abajo: línea + título + eslogan)
+)
+TITLE_FONT_RATIO = 0.045  # 4.5% del QR para tamaño de fuente del título
+SLOGAN_FONT_RATIO = 0.045  # 4.5% del QR para tamaño de fuente del eslogan
 TEXT_COLOR = "#1a1a1a"  # Texto negro
+LINE_COLOR = "#1a1a1a"  # Color de la línea divisoria
+LINE_MARGIN_RATIO = 0.06  # 6% de margen lateral para la línea y el texto
+TEXT_BOTTOM_GAP_RATIO = 0.025  # gap entre línea y título
+SLOGAN_TOP_GAP_RATIO = 0.02  # gap entre título y eslogan
 
 
-def generate_qr_with_logo(url, output_path, logo_path=None, text=None):
+def generate_qr_with_logo(
+    url, output_path, logo_path=None, text=None, slogan=None
+):
     """
     Genera un código QR con logo MTP centrado y texto descriptivo debajo.
 
@@ -37,6 +46,7 @@ def generate_qr_with_logo(url, output_path, logo_path=None, text=None):
         output_path: Ruta completa donde guardar el PNG (ej: media/qr_codes/mi-qr.png)
         logo_path: Ruta al logo MTP (opcional, usa default si no se especifica)
         text: Texto descriptivo opcional para mostrar debajo del QR (ej: "Calistenia Cancha - Poste Norte")
+        slogan: Eslogan opcional para mostrar debajo del título, alineado a la izquierda
 
     Returns:
         str: Ruta del archivo guardado
@@ -77,7 +87,7 @@ def generate_qr_with_logo(url, output_path, logo_path=None, text=None):
 
     # Añadir texto debajo del QR si se proporciona
     if text:
-        qr_img = _add_text(qr_img, text, text_height)
+        qr_img = _add_text(qr_img, text, text_height, slogan=slogan)
 
     # Guardar imagen
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -139,68 +149,156 @@ def _add_logo(qr_img, logo_path):
     return qr_img
 
 
-def _add_text(qr_img, text, text_height):
+def _wrap_text(text, font, max_width):
     """
-    Añade texto descriptivo debajo del QR.
+    Ajusta texto a múltiples líneas según el ancho máximo disponible.
+
+    Args:
+        text: Texto a ajustar
+        font: Fuente a utilizar para medir
+        max_width: Ancho máximo disponible
+
+    Returns:
+        list: Lista de líneas de texto
+    """
+    words = text.split()
+    lines = []
+    current_line = []
+
+    for word in words:
+        test_line = " ".join(current_line + [word])
+        bbox = font.getbbox(test_line)
+        if bbox[2] <= max_width:
+            current_line.append(word)
+        else:
+            if current_line:
+                lines.append(" ".join(current_line))
+            current_line = [word]
+
+    if current_line:
+        lines.append(" ".join(current_line))
+
+    return lines
+
+
+def _add_text(qr_img, text, text_height, slogan=None):
+    """
+    Añade título (y opcionalmente eslogan) debajo del QR.
+
+    Diseño:
+    - Línea horizontal que divide el QR del bloque de texto.
+    - Título alineado a la izquierda, fuente pequeña y sin negrita.
+    - Eslogan debajo del título, también alineado a la izquierda, fuente aún menor.
+    - Texto ajustado automáticamente a múltiples líneas si es necesario.
 
     Args:
         qr_img: Imagen PIL del QR (cuadrada)
-        text: Texto a mostrar (nombre del QR)
-        text_height: Altura del área de texto
+        text: Texto a mostrar (título del QR)
+        text_height: Altura mínima del área de texto
+        slogan: Eslogan opcional a mostrar debajo del título
 
     Returns:
         Image: Imagen con texto agregado (rectangular)
     """
-    # Anchura total
+    from PIL import ImageFont
+
     width = qr_img.size[0]
-    height = qr_img.size[1] + text_height
+    qr_bottom = qr_img.size[1]
 
-    # Crear imagen más alta
-    new_img = Image.new("RGB", (width, height), "white")
+    margin = int(width * LINE_MARGIN_RATIO)
+    max_text_width = width - (2 * margin)
 
-    # Pegar QR encima
-    new_img.paste(qr_img, (0, 0))
+    title_font_size = int(width * TITLE_FONT_RATIO)
 
-    # Preparar dibujo
-    draw = ImageDraw.Draw(new_img)
+    # Cargar fuente
+    title_font = None
+    for font_path in [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",
+        "C:/Windows/Fonts/arial.ttf",
+        "/Library/Fonts/Arial.ttf",
+    ]:
+        try:
+            title_font = ImageFont.truetype(font_path, title_font_size)
+            break
+        except Exception:
+            continue
+    if title_font is None:
+        title_font = ImageFont.load_default()
 
-    # Calcular tamaño de fuente
-    font_size = int(width * FONT_SIZE_RATIO)
+    # Calcular líneas del título
+    title_lines = _wrap_text(text, title_font, max_text_width)
 
-    # Intentar usar una fuente sans-serif (de sistema)
-    try:
-        from PIL import ImageFont
+    slogan_font = None
+    slogan_lines = []
+    slogan_font_size = 0
 
-        # Intentar con fuentes comunes
-        font = None
+    if slogan:
+        slogan_font_size = int(width * SLOGAN_FONT_RATIO)
         for font_path in [
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux
-            "/System/Library/Fonts/Helvetica.ttc",  # Mac
-            "C:/Windows/Fonts/arial.ttf",  # Windows
-            "/Library/Fonts/Arial.ttf",  # Mac alternativo
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/System/Library/Fonts/Helvetica.ttc",
+            "C:/Windows/Fonts/arial.ttf",
+            "/Library/Fonts/Arial.ttf",
         ]:
             try:
-                font = ImageFont.truetype(font_path, font_size)
+                slogan_font = ImageFont.truetype(font_path, slogan_font_size)
                 break
             except Exception:
                 continue
-        if font is None:
-            font = ImageFont.load_default()
-    except Exception:
-        # Fallback sin fuente
-        font = None
+        if slogan_font is None:
+            slogan_font = ImageFont.load_default()
+        slogan_lines = _wrap_text(slogan, slogan_font, max_text_width)
 
-    # Dibujar texto centrado
-    text_bbox = (
-        draw.textbbox((0, 0), text, font=font)
-        if font
-        else (0, 0, len(text) * font_size, font_size)
+    # Calcular alturas necesarias
+    gap = int(width * TEXT_BOTTOM_GAP_RATIO)
+    line_y = qr_bottom + int(text_height * 0.02)
+    title_y = line_y + gap
+    title_total_h = len(title_lines) * title_font_size
+
+    slogan_total_h = 0
+    slogan_y = 0
+    if slogan_lines:
+        slogan_gap = int(width * SLOGAN_TOP_GAP_RATIO)
+        slogan_y = title_y + title_total_h + slogan_gap
+        slogan_total_h = len(slogan_lines) * slogan_font_size
+
+    # Calcular altura final
+    final_text_bottom = (
+        slogan_y + slogan_total_h + gap
+        if slogan_lines
+        else title_y + title_total_h + gap
     )
-    text_width = text_bbox[2] - text_bbox[0]
-    text_x = (width - text_width) // 2
-    text_y = height - text_height // 2 - (font_size // 2)
+    final_height = qr_bottom + int(text_height * 0.05) + final_text_bottom
 
-    draw.text((text_x, text_y), text, fill=TEXT_COLOR, font=font)
+    # Crear imagen final
+    new_img = Image.new("RGB", (width, final_height), "white")
+    draw = ImageDraw.Draw(new_img)
+
+    # Pegar QR en la parte superior
+    new_img.paste(qr_img, (0, 0))
+
+    # Dibujar línea divisoria (100% ancho)
+    draw.line([(0, line_y), (width, line_y)], fill=LINE_COLOR, width=2)
+
+    # Dibujar título
+    for i, line in enumerate(title_lines):
+        draw.text(
+            (margin, title_y + i * title_font_size),
+            line,
+            fill=TEXT_COLOR,
+            font=title_font,
+        )
+
+    # Dibujar eslogan
+    if slogan_lines:
+        for i, line in enumerate(slogan_lines):
+            draw.text(
+                (margin, slogan_y + i * slogan_font_size),
+                line,
+                fill=TEXT_COLOR,
+                font=slogan_font,
+            )
 
     return new_img
 

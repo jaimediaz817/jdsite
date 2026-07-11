@@ -210,6 +210,13 @@ body {
     background: #fef2f2;
 }
 
+/* Estilo base: botón eliminar SIEMPRE rojo */
+.btn-icon-eliminar {
+    color: #dc2626;
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
 /* Tooltip personalizado para botones QR */
 .btn-icon[title] {
     position: relative;
@@ -338,6 +345,20 @@ body {
     background: #fafaff;
 }
 
+/* Columna acciones QR - ancho generoso para botones en una línea */
+.table .btn-action-wrap {
+    min-width: 210px;
+    width: 100%;
+    flex-wrap: nowrap !important;
+}
+
+/* Evitar que la celda de acciones se estreche */
+.table td:last-child,
+.table th:last-child {
+    white-space: nowrap;
+    min-width: 210px;
+}
+
 /* Badge categoría */
 .cat-badge {
     background: #eef2ff;
@@ -420,12 +441,16 @@ body {
 .btn-action-wrap,
 .dashboard-actions-top-container {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     flex-wrap: wrap;
     /* border: 1px solid red; */
+    align-items: center;
+    justify-content: flex-start;
 
     .btn-icon {
-        flex: 1;
+        flex: 0 0 auto;
+        width: 38px;
+        height: 32px;
     }
 
     .btn-action-dashboard {}
@@ -835,21 +860,19 @@ span.input-group-text.blog-search-icon {
 */
 @media (max-width: 1199px) {}
 
-/* media query: 2 columnas en tablets (hasta 991px) */
+/* media query: Tablets - Botones NO se estiran */
 @media (max-width: 991px) {
 
     .btn-action-wrap,
     .dashboard-actions-top-container {
         .btn-icon {
-            /* 
-                * En móviles, cada botón de acción ocupa el 50% del ancho del contenedor, con un pequeño gap entre ellos.
-            */
-            flex: 1 calc(50% - 5px);
-            /* flex: 0 0 calc(50% - 5px); */
+            flex: 0 0 auto;
+            width: 36px;
+            height: 30px;
         }
 
         .btn-action-dashboard {
-            flex: 1 auto;
+            flex: 0 0 auto;
         }
     }
 }
@@ -895,19 +918,9 @@ span.input-group-text.blog-search-icon {
         text-overflow: ellipsis;
     }
 
-    /* Ocultar columnas: #, Autor, Cat., Com., Fecha, Archivos */
-    .table thead th:nth-child(1),
+    /* Ocultar columna Eslogan (3) en móvil para dar más espacio a acciones */
     .table thead th:nth-child(3),
-    .table thead th:nth-child(4),
-    .table thead th:nth-child(5),
-    .table thead th:nth-child(6),
-    .table thead th:nth-child(9),
-    .table tbody td:nth-child(1),
-    .table tbody td:nth-child(3),
-    .table tbody td:nth-child(4),
-    .table tbody td:nth-child(5),
-    .table tbody td:nth-child(6),
-    .table tbody td:nth-child(9) {
+    .table tbody td:nth-child(3) {
         display: none !important;
     }
 
@@ -918,13 +931,15 @@ span.input-group-text.blog-search-icon {
     }
 
     .btn-icon {
-        width: 30px;
-        height: 30px;
-        font-size: .78rem;
+        width: 32px;
+        height: 32px;
+        font-size: .8rem;
+        flex-shrink: 0 !important;
     }
 
     .btn-action-wrap {
-        gap: 3px;
+        gap: 4px;
+        justify-content: flex-start !important;
     }
 
     .stat-number {

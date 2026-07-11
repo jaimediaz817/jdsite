@@ -169,7 +169,6 @@
                             <th>Eslogan</th>
                             <th>Artículo</th>
                             <th>Estado</th>
-                            <th>Creado por</th>
                             <th>Fecha</th>
                             <th>Acciones</th>
                         </tr>
@@ -204,7 +203,7 @@
                                 </span>
                                 {% endif %}
                             </td>
-                            <td>{{ qr.created_by.username|default:"Sistema" }}</td>
+                            {% comment %} <td>{{ qr.created_by.username|default:"Sistema" }}</td> {% endcomment %}
                             <td>{{ qr.created_at|date:"d/m/Y H:i" }}</td>
                             <td>
                                 <div class="btn-action-wrap justify-content-center">
@@ -329,7 +328,7 @@
                 <img id="qrPreviewImage" src="" alt="QR Preview" class="img-fluid" style="max-width: 250px;">
                 <p id="qrPreviewNameModal" class="mt-2 font-weight-bold"></p>
             </div>
-            <div class="modal-footer justify-content-center">
+            <div class="modal-footer justify-content-center align-items-stretch">
                 <button type="button" class="btn btn-primary btn-sm" id="qrPreviewDownloadBtn">
                     <i class="fas fa-download"></i> Descargar PNG
                 </button>

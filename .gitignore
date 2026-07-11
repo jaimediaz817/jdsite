@@ -14,6 +14,9 @@ backend/static/blogs/
 # Ignore temporary files and directories
 backend/media/blog_editor_temp/
 backend/media/qr_codes/
+
+# blogs_source/ es SOLO para desarrollo local
+# En producción se usa import_blogs y static/blogs/
 backend/blogs_source/
 backend/blogs_source/*/
 !backend/blogs_source/.gitkeep

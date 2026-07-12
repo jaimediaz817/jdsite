@@ -226,7 +226,35 @@ python manage.py migrate
 
 ```bash
 cd /var/www/jdsite/backend
+source ../env/bin/activate
+
+# Si collectstatic falla con PermissionError:
+
+# 1. Identificar archivo problemático
+# El error muestra: PermissionError: '.../staticfiles/blogs/blogs'
+ls -la ../backend/staticfiles/blogs/
+
+# 2. Verificar tipo de archivo (puede ser symlink roto)
+file ../backend/staticfiles/blogs/blogs
+
+# 3. Verificar permisos extendidos
+sudo namei -l ../backend/staticfiles/blogs/blogs
+
+# 4. Verificar si tiene atributos inmutables
+sudo lsattr ../backend/staticfiles/blogs/blogs
+
+# 5. Matar procesos que usen el archivo
+sudo lsof +D ../backend/staticfiles/blogs/ 2>/dev/null | awk 'NR>1 {print $2}' | xargs -r sudo kill -9 2>/dev/null
+
+# 6. Forzar eliminación
+sudo rm -f ../backend/staticfiles/blogs/blogs
+
+# 7. Reintentar collectstatic
 python manage.py collectstatic --noinput
+
+# 8. Restaurar dueño a www-data (producción)
+sudo chown -R www-data:www-data ../backend/staticfiles/
+sudo chown -R www-data:www-data ../backend/media/
 ```
 
 **Verificación:**
@@ -560,6 +588,114 @@ sudo systemctl reload nginx
 | **3. Probar rollback en local primero** | Antes de ejecutar en producción       |
 | **4. Documentar el incidente**          | Anotar qué salió mal y por qué        |
 
+### 7.4 Problema: "Permission denied" en git pull (blogs_source/)
+
+**Síntoma:**
+```bash
+error: unable to unlink old 'backend/blogs_source/...': Permission denied
+fatal: read-tree failed
+```
+
+**Causa:** El usuario `jdiaz` no tiene permisos de escritura en `backend/blogs_source/` (archivos propiedad de `root` o permisos restrictivos).
+
+**Solución rápida:**
+
+```bash
+# 1. Backup de cambios locales (por si acaso)
+mkdir -p /tmp/blogs_source_backup
+cp -r backend/blogs_source/* /tmp/blogs_source_backup/ 2>/dev/null || true
+
+# 2. Forzar sync con origin/main (DESCARTA cambios locales)
+git reset --hard origin/main
+
+# 3. Eliminar blogs_source/ en producción (NO es necesario)
+rm -rf backend/blogs_source/
+
+# 4. Verificar estado limpio
+git status  # Debe mostrar "working tree clean"
+```
+
+**Solución alternativa (si necesitas preservar commits locales):**
+
+```bash
+# 1. Dar permisos temporales
+sudo chown -R jdiaz:jdiaz backend/blogs_source/
+sudo chmod -R u+w backend/blogs_source/
+
+# 2. Stash cambios
+git stash push -m "backup blogs_source producción" backend/blogs_source/
+
+# 3. Pull
+git pull origin main
+
+# 4. Limpiar blogs_source/
+rm -rf backend/blogs_source/
+```
+
+**Escenario: Ya actualicé `.gitignore` en local y subí a main, ¿qué hago en producción?**
+
+**PASO 1: Diagnóstico previo (verificar estado actual)**
+
+```bash
+# Verificar quién es el dueño de blogs_source/
+ls -la backend/ | grep blogs_source
+
+# Verificar permisos específicos
+sudo namei -l backend/blogs_source/
+
+# Verificar usuario actual
+whoami
+id
+
+# Verificar si hay archivos modificados
+git status backend/blogs_source/
+```
+
+**PASO 2: Aplicar permisos correctos (si es necesario)**
+
+```bash
+# Opción A: Si blogs_source/ es de root o usuario incorrecto
+sudo chown -R jdiaz:jdiaz backend/blogs_source/
+
+# Opción B: Si ya no necesitas el contenido, eliminar directamente
+rm -rf backend/blogs_source/
+```
+
+**PASO 3: Traer cambios de git**
+
+```bash
+git fetch --all
+git pull origin main  # Ahora sí debería funcionar sin conflictos
+```
+
+**PASO 4: Limpieza final**
+
+```bash
+# Eliminar blogs_source/ manualmente (si aún existe)
+rm -rf backend/blogs_source/
+
+# Verificar que no quede rastro
+git status
+ls -la backend/ | grep blogs_source  # No debe existir
+```
+
+**Nota:** Si `git pull` falla con "Permission denied", usar la **Solución rápida** de arriba (`git reset --hard origin/main`).
+
+**Nota:** Actualizar `.gitignore` NO elimina archivos existentes en producción. Solo previene que vuelvan a rastrearse. Debés eliminarlos manualmente con `rm -rf`.
+
+**¿Por qué no necesito `blogs_source/` en producción?**
+
+- `blogs_source/` es la **fuente de desarrollo** (markdown + imágenes originales)
+- En producción solo necesitas `backend/static/blogs/` (archivos compilados)
+- La fuente de verdad en producción es la **base de datos**, no los markdowns
+- Si necesitas editar blogs, lo haces en local y luego haces un nuevo deploy
+
+**Prevención definitiva:**
+
+1. Ya está excluido en `.gitignore` (línea 17-19)
+2. Eliminar la carpeta en producción después de cada deploy
+3. No hacer commits de cambios en `blogs_source/` desde la VPS
+
 ---
 
 ## 📊 RESUMEN EJECUTIVO
@@ -631,3 +767,22 @@ sudo systemctl reload nginx
 ---
 
 > 🎯 **OBJETIVO FINAL:** Cualquier desarrollador puede desplegar a producción siguiendo esta checklist, sin necesidad de consultar a Jaime ni adivinar comandos.
+
+
+
+
+
+
+
+cd /var/www/jdiaz.tipsterbyte.com/app/backend
+
+# 1. Permiso temporal a tu usuario
+sudo chown -R jdiaz:jdiaz ../backend/staticfiles/
+
+# 2. Reintentar collectstatic
+source ../env/bin/activate
+python manage.py collectstatic --noinput --clear
+
+# 3. Devolver permisos correctos para producción
+sudo chown -R www-data:www-data ../backend/staticfiles/
+sudo chown -R www-data:www-data ../backend/media/

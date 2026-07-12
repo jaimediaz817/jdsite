@@ -23,3 +23,6 @@ backend/blogs_source/*/
 
 # Gunicorn socket (producción)
 run/
+
+# Script de fix de permisos para producción (solo VPS)
+fix-prod-permissions.sh

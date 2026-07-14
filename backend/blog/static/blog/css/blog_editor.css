@@ -75,6 +75,12 @@
 }
 
 /* Tags (chips) */
+button#btn-add-tag {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: translateY(0);
+}
+
 .tags-list {
     display: flex;
     flex-wrap: wrap;

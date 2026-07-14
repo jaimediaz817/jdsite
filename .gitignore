@@ -25,4 +25,4 @@ backend/blogs_source/*/
 run/
 
 # Script de fix de permisos para producción (solo VPS)
-fix-prod-permissions.sh
+# fix-prod-permissions.sh

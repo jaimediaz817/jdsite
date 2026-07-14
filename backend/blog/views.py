@@ -2605,6 +2605,20 @@ def upload_file_api(request):
     if not uploaded_file:
         return JsonResponse({"error": "No se envió ningún archivo"}, status=400)
 
+    # HU-042: Validación de tamaño ANTES de pasar a save_uploaded_file
+    max_size_mb = getattr(settings, "MAX_UPLOAD_SIZE_MB", 20)
+    max_size_bytes = max_size_mb * 1024 * 1024
+    if uploaded_file.size > max_size_bytes:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": f"El archivo excede el límite de {max_size_mb}MB. "
+                f"Tamaño actual: {uploaded_file.size / (1024*1024):.1f}MB. "
+                f"Por favor comprime la imagen antes de subir.",
+            },
+            status=413,
+        )
+
     # HU-028: Manejar errores específicos de save_uploaded_file
     result = save_uploaded_file(uploaded_file, request.user)
     if result is None or not result.get("success", True):

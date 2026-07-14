@@ -161,8 +161,10 @@ handler404 = "blog.views_404.custom_404_view"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# HU-028: Límite de tamaño de archivos para upload del editor (en MB)
-MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "10"))
+# HU-028 + HU-042: Límite de tamaño de archivos para upload del editor (en MB)
+MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "20"))
+# Asegurar que Django acepte requests de hasta 20MB (fotos móvil pesadas)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 
 # --- EMAIL y SITE_URL ---
 EMAIL_BACKEND = os.getenv(

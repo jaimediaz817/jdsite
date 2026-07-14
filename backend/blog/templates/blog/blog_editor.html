@@ -82,8 +82,13 @@
                         </div>
                         
                          <div class="mb-3">
-                             <label class="form-label" for="tag-input">Tags (máx 5 - Enter para agregar)</label>
-                             <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
+                             <label class="form-label" for="tag-input">Tags (máx 5)</label>
+                             <div class="input-group">
+                                 <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
+                                 <button type="button" id="btn-add-tag" class="btn btn-primary btn-add-tag" title="Agregar tag">
+                                     <i class="fas fa-plus"></i>
+                                 </button>
+                             </div>
                              <div id="tags-list" class="tags-list mt-2"></div>
                          </div>
 

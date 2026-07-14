@@ -1837,19 +1837,29 @@ document.getElementById('apply-suggestion').addEventListener('click', () => {
 // ======================================================
 const tagsList = document.getElementById('tags-list');
 const tagInput = document.getElementById('tag-input');
+const btnAddTag = document.getElementById('btn-add-tag');
 let tags = [];
+
+function addTagFromInput() {
+    const tag = tagInput.value.trim().toLowerCase();
+    if (tag && tags.length < 5 && !tags.includes(tag)) {
+        tags.push(tag);
+        renderTags();
+    }
+    tagInput.value = '';
+    tagInput.focus();
+}
 
 tagInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        const tag = tagInput.value.trim().toLowerCase();
-        if (tag && tags.length < 5 && !tags.includes(tag)) {
-            tags.push(tag);
-            renderTags();
-        }
-        tagInput.value = '';
+        addTagFromInput();
     }
 });
+
+if (btnAddTag) {
+    btnAddTag.addEventListener('click', addTagFromInput);
+}
 
 function renderTags() {
     // tagsList.innerHTML = tags.map(t =>
@@ -1880,6 +1890,9 @@ function removeTag(tag) {
 // 4. FilePond - Upload de imágenes y videos
 // ======================================================
 const pond = FilePond.create(document.getElementById('filepond'), {
+    // HU-042: Limitar a 20MB máximo (fotos móvil pesadas)
+    maxFileSize: '20MB',
+    maxTotalFileSize: '20MB',
     server: {
         process: {
             url: '/blog/api/upload-file/',
@@ -1924,6 +1937,36 @@ const pond = FilePond.create(document.getElementById('filepond'), {
         revert: null,
     },
     allowMultiple: true,
+});
+// HU-042: Listener global para errores HTTP de FilePond (413, 500, etc)
+pond.on('FilePond:error', function(error) {
+    console.warn('[HU-042] FilePond:error event:', error);
+    try {
+        var detail = error && error.detail ? error.detail : null;
+        var statusCode = detail && detail.status ? detail.status : null;
+        var errMsg = detail && detail.body ? detail.body : '';
+        
+        // El 413 llega como HTML de nginx, detectarlo
+        var is413 = statusCode === 413 || errMsg.indexOf('413') !== -1 || errMsg.indexOf('Request Entity Too Large') !== -1;
+        var is500 = statusCode === 500 || errMsg.indexOf('500') !== -1;
+        
+        if (is413 && typeof showBlogToast === 'function') {
+            showBlogToast(
+                'La imagen supera el límite de <strong>20MB</strong>. ' +
+                'Compresa la imagen desde tu móvil o PC antes de subir.',
+                'warning',
+                { title: '📸 Imagen demasiado grande' }
+            );
+        } else if (is500 && typeof showBlogToast === 'function') {
+            showBlogToast(
+                'Error interno del servidor. Intenta con un archivo más pequeño o de otro formato.',
+                'danger',
+                { title: '❌ Error al subir archivo' }
+            );
+        }
+    } catch (e) {
+        console.warn('[HU-042] Error en FilePond:error handler:', e);
+    }
 });
 // HU-20-C-V1: Selector de imágenes existente ha sido extraído a "image-selector.js".
 // Las funciones detectImageContext, openImageSelectorModal, insertImageInEditor y los

@@ -1842,7 +1842,7 @@ let tags = [];
 
 function addTagFromInput() {
     const tag = tagInput.value.trim().toLowerCase();
-    if (tag && tags.length < 5 && !tags.includes(tag)) {
+                         if (tag && tags.length < 20 && !tags.includes(tag)) {
         tags.push(tag);
         renderTags();
     }
@@ -1988,6 +1988,7 @@ function collectFormData() {
         : (document.getElementById('category')?.value?.trim() || '');
     return {
         slug: document.getElementById('edit-slug').value,
+        custom_slug: (document.getElementById('custom-slug')?.value || ''),
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
         category: category,

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+       <!DOCTYPE html>
 {% load static %}
 <html lang="es" class="html-jd">
 <head>
@@ -51,12 +51,18 @@
                         
                          <div class="mb-3">
                              <label class="form-label" for="title">Título *</label>
-                             <input type="text" id="title" class="form-control" required maxlength="60" placeholder="Título del artículo">
+                             <input type="text" id="title" class="form-control" required maxlength="150" placeholder="Título del artículo">
+                         </div>
+                        
+                         <div class="mb-3">
+                             <label class="form-label" for="custom-slug">Slug personalizado <span class="text-muted">(opcional)</span></label>
+                             <input type="text" id="custom-slug" name="custom_slug" class="form-control" placeholder="Dejar vacío para generar desde título" autocomplete="off">
+                             <div class="form-text">Si se escribe texto aquí, se usará para la URL del artículo. Vacío = generar desde título.</div>
                          </div>
                         
                          <div class="mb-3">
                              <label class="form-label" for="description">Descripción *</label>
-                             <textarea id="description" class="form-control" required maxlength="155" rows="2" placeholder="Breve descripción (SEO)"></textarea>
+                             <textarea id="description" class="form-control" required maxlength="350" rows="2" placeholder="Breve descripción (SEO)"></textarea>
                          </div>
                         
                         <div class="mb-3" id="category-select-wrapper">
@@ -82,7 +88,7 @@
                         </div>
                         
                          <div class="mb-3">
-                             <label class="form-label" for="tag-input">Tags (máx 5)</label>
+                         <label class="form-label" for="tag-input">Tags (máx 20)</label>
                              <div class="input-group">
                                  <input type="text" id="tag-input" class="form-control" placeholder="Escribe y presiona Enter">
                                  <button type="button" id="btn-add-tag" class="btn btn-primary btn-add-tag" title="Agregar tag">

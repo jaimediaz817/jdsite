@@ -356,7 +356,11 @@ def save_blog_to_source(data, user):
         slug = existing_slug
         folder_name = target_dir.name
     else:
-        base_slug = slugify(title)[:60] or f"articulo-{uuid.uuid4().hex[:8]}"
+        custom_slug = data.get("custom_slug", "").strip()
+        base_slug = (
+            slugify(custom_slug or title)[:60]
+            or f"articulo-{uuid.uuid4().hex[:8]}"
+        )
         slug = base_slug
         counter = 1
         while list(source_dir.glob(f"*_{slug}")):
@@ -495,6 +499,8 @@ def save_blog_to_source(data, user):
     new_fm["tiempo_lectura"] = tiempo_lectura
     new_fm["palabra_clave_principal"] = palabra_clave_principal
     new_fm["author"] = author_name
+    # HU-045: Guardar slug en frontmatter para que import_blogs lo use
+    new_fm["slug"] = slug
     new_fm["author_email"] = author_email
     new_fm["author_provider"] = author_provider
     new_fm["author_id"] = user.id
@@ -571,11 +577,10 @@ def save_blog_to_source(data, user):
                 fail_silently=True,
             )
 
-    # Nota: ``import_blogs`` almacena ``slugify(folder_name)`` como slug
-    # en la BD, por lo que el enlace del editor debe usar ``folder_name``
-    # para que coincida con el slug real de la tabla ``blog_blogpost``.
+    # Nota: ``import_blogs`` usa ``slug`` (sin prefijo de fecha) como slug en BD
+    # ``folder_name`` es solo para la carpeta fisica con prefijo de fecha.
     return {
-        "slug": folder_name,
+        "slug": slug,
         "folder": folder_name,
         "published": is_published,
         "status": "published" if is_published else "draft",

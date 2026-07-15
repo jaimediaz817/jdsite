@@ -1912,7 +1912,7 @@ fieldset[disabled] input {
 .mtp-toolbar {
     position: fixed;
     right: 12px;
-    top: 55%;
+    top: 50%;
     transform: translateY(-50%);
     z-index: 1050;
     display: flex;
@@ -3041,7 +3041,7 @@ h2 i,
    ====================================================== */
 .actions-blog-toolbar {
     position: fixed;
-    top: 12%;
+    top: 16%;
     right: 12px;
     transform: translateY(-50%);
     z-index: 1040;

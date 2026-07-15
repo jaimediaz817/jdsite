@@ -55,16 +55,13 @@ class BlogProcessor:
             self.stdout.write(f"[!] Saltando {blog_dir.name}: no hay blog.md")
             return slugify(blog_dir.name)
 
-        # Generate a permanent slug
-        slug = slugify(blog_dir.name)
-
         # Compute hash to detect changes
         file_hash = calculate_file_hash(md_file)
 
         # Read markdown content and front-matter
         md_content, frontmatter = read_markdown_file(md_file)
 
-        # [OK] HU-014: Re-leer el .md DIRECTAMENTE y extraer tiempo_lectura
+        # [OK] HU-014: Re-leer el .md DIRECTAMENTELY y extraer tiempo_lectura
         # Bypassea cualquier bug del parser de markdown_utils
         try:
             raw_md = md_file.read_text(encoding="utf-8")
@@ -85,6 +82,13 @@ class BlogProcessor:
                     )
                     if key not in frontmatter or not frontmatter[key]:
                         frontmatter[key] = valor
+
+        # HU-045: Si el frontmatter tiene slug definido (por el editor online),
+        # usarlo preferencialmente. De lo contrario, usar el nombre de la carpeta.
+        if frontmatter and "slug" in frontmatter and frontmatter["slug"]:
+            slug = slugify(str(frontmatter["slug"]).strip())
+        else:
+            slug = slugify(blog_dir.name)
 
         # Extract title
         title, content_md = self.extract_title(md_content, blog_dir)

@@ -512,6 +512,26 @@ def save_blog_to_source(data, user):
             # Reemplazar todas las ocurrencias del nombre original (con o sin ruta previa)
             content_md = content_md.replace(original, safe_name)
 
+    # 4.4. ACTUALIZAR RUTAS TEMPORALES A RUTAS RELATIVAS
+    # El editor inserta URLs como /media/blog_editor_temp/<user_id>/<filename>.
+    # Necesitamos reemplazar por rutas relativas que import_blogs pueda procesar.
+    media_url = getattr(settings, "MEDIA_URL", "/media/")
+    temp_path_pattern = f'{media_url.rstrip("/")}/blog_editor_temp/{user.id}/'
+    if temp_path_pattern in content_md:
+        for f in files_list:
+            filename = f.get("filename", "")
+            if filename:
+                # Determinar el nombre final (sanitizado o original)
+                final_name = (
+                    sanitizar_nombre(filename)
+                    if filename in moved_sanitized
+                    else filename
+                )
+                # Reemplazar la URL temporal completa por ruta relativa
+                content_md = content_md.replace(
+                    f"{temp_path_pattern}{filename}", final_name
+                )
+
     # Construir el archivo final y guardarlo
     blog_path = target_dir / "blog.md"
     blog_path.write_text(
@@ -772,6 +792,10 @@ def get_post_files_info(post_slug):
     Escanea la carpeta ``blogs_source/<slug>/`` y cuenta todos los archivos
     que no sean ``blog.md``, clasificándolos por tipo (imágenes, videos, otros).
 
+    Si no encuentra archivos en la carpeta del slug, busca en TODAS las
+    carpetas de ``blogs_source/`` para detectar archivos huérfanos de
+    artículos que cambiaron de slug.
+
     Retorna:
         dict con claves:
         - ``file_count`` (int): cantidad total de archivos (excluyendo blog.md)
@@ -779,6 +803,7 @@ def get_post_files_info(post_slug):
         - ``total_size_human`` (str): tamaño formateado legiblemente
         - ``files_by_type`` (dict): desglose ``{ 'images': N, 'videos': N, 'others': N }``
         - ``size_by_type`` (dict): desglose de tamaño ``{ 'images': '1.2 MB', ... }``
+        - ``files`` (list): lista detallada de archivos con ``filename``, ``url``, ``type`` y ``folder``
     """
     from django.conf import settings
 
@@ -788,6 +813,7 @@ def get_post_files_info(post_slug):
         "total_size_human": "0 B",
         "files_by_type": {"images": 0, "videos": 0, "others": 0},
         "size_by_type": {"images": "0 B", "videos": "0 B", "others": "0 B"},
+        "files": [],
     }
 
     blogs_source = Path(settings.BASE_DIR) / "blogs_source"
@@ -803,6 +829,7 @@ def get_post_files_info(post_slug):
                 target_dir = d
                 break
         else:
+            # Si no se encuentra ninguna carpeta, devolver vacío
             return empty
 
     image_exts = {
@@ -862,8 +889,32 @@ def get_post_files_info(post_slug):
                     "filename": entry.name,
                     "url": url,
                     "type": ftype,
+                    "folder": target_dir.name,  # ← IMPORTANTE: carpeta real del archivo
                 }
             )
+
+    # Si no se encontraron archivos en la carpeta del slug, buscar en TODAS las carpetas
+    # (para detectar archivos huérfanos de artículos que cambiaron de slug)
+    if not detailed_files:
+        for d in blogs_source.iterdir():
+            if d.is_dir() and d.name.lower() != "blog.md":
+                for entry in d.iterdir():
+                    if entry.is_file() and entry.name.lower() != "blog.md":
+                        ext = Path(entry.name).suffix.lower()
+                        ftype = (
+                            "image"
+                            if ext in image_exts
+                            else ("video" if ext in video_exts else "other")
+                        )
+                        url = f"/static/blogs/{d.name}/{entry.name}"
+                        detailed_files.append(
+                            {
+                                "filename": entry.name,
+                                "url": url,
+                                "type": ftype,
+                                "folder": d.name,  # ← carpeta real del archivo
+                            }
+                        )
 
     return {
         "file_count": file_count,
@@ -884,70 +935,134 @@ def get_post_files_info(post_slug):
 
 
 def delete_resource_file(folder, filename):
-    """Elimina un archivo individual de static/blogs/<folder>/<filename>.
+    """Elimina un archivo individual buscando en múltiples ubicaciones.
+
+    Realiza una búsqueda exhaustiva en:
+    - ``static/blogs/`` y ``static/blogs_source/``
+    - ``blogs_source/`` (incluyendo subcarpetas con prefijo de fecha)
+    - ``media/blog_editor_temp/`` (si se detecta un user_id en la ruta)
+
+    La búsqueda por directorio usa **coincidencia parcial** del slug, por
+    lo que funciona tanto con carpetas ``mi-slug`` como con
+    ``2026-06-08_mi-slug``.
 
     Args:
-        folder: nombre de la carpeta (slug del artículo)
+        folder: slug del artículo o ruta compuesta
         filename: nombre del archivo a eliminar
 
     Returns:
-        dict con claves:
-        - ``success`` (bool): True si se eliminó correctamente
-        - ``message`` (str): mensaje descriptivo
+        dict con ``success`` (bool) y ``message`` (str)
     """
     from django.conf import settings
     from pathlib import Path
 
-    static_blogs = Path(settings.BASE_DIR) / "static" / "blogs"
-    # Seguridad: evitar path traversal
     safe_folder = Path(folder).name
     safe_filename = Path(filename).name
-    file_path = static_blogs / safe_folder / safe_filename
 
-    if not file_path.exists():
+    base = Path(settings.BASE_DIR)
+    blogs_source_root = base / "blogs_source"
+    static_blogs = base / "static" / "blogs"
+    static_blogs_source = base / "static" / "blogs_source"
+
+    candidates = []
+
+    # 1. Coincidencia exacta en static/blogs y static/blogs_source
+    candidates.extend(
+        [
+            static_blogs / safe_folder / safe_filename,
+            static_blogs_source / safe_folder / safe_filename,
+        ]
+    )
+
+    # 2. Búsqueda por coincidencia PARCIAL en blogs_source y static/blogs
+    # Esto maneja el caso de carpetas con prefijo de fecha: "2026-06-08_<slug>"
+    for d in blogs_source_root.iterdir() if blogs_source_root.exists() else []:
+        if d.is_dir() and safe_folder in d.name:
+            candidates.append(d / safe_filename)
+
+    for d in static_blogs.iterdir() if static_blogs.exists() else []:
+        if d.is_dir() and safe_folder in d.name:
+            candidates.append(d / safe_filename)
+
+    # 3. Si el folder incluye un user_id (ruta tipo "blog_editor_temp/<user_id>/"),
+    # también probar la ruta de media temporal.
+    if "blog_editor_temp" in folder or "media" in folder:
+        parts = Path(folder).parts
+        for part in parts:
+            if part.isdigit() and len(part) > 3:
+                candidates.append(
+                    base / "media" / "blog_editor_temp" / part / safe_filename
+                )
+
+    # 4. Probar también con nombre sanitizado (sin espacios/caracteres especiales)
+    sanitized_filename = sanitizar_nombre(safe_filename)
+    if sanitized_filename != safe_filename:
+        candidates.extend(
+            [
+                static_blogs / safe_folder / sanitized_filename,
+                static_blogs_source / safe_folder / sanitized_filename,
+            ]
+        )
+        for d in (
+            blogs_source_root.iterdir() if blogs_source_root.exists() else []
+        ):
+            if d.is_dir() and safe_folder in d.name:
+                candidates.append(d / sanitized_filename)
+        for d in static_blogs.iterdir() if static_blogs.exists() else []:
+            if d.is_dir() and safe_folder in d.name:
+                candidates.append(d / sanitized_filename)
+
+    file_path = None
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file():
+            file_path = candidate
+            break
+
+    # Si no se encontró por coincidencia de carpeta, buscar en TODAS las carpetas
+    # (útil cuando el archivo se subió con un slug anterior y luego cambió el folder)
+    if file_path is None:
+        all_dirs = []
+        if blogs_source_root.exists():
+            all_dirs.extend(blogs_source_root.iterdir())
+        if static_blogs.exists():
+            all_dirs.extend(static_blogs.iterdir())
+
+        for d in all_dirs:
+            if d.is_dir():
+                # Buscar tanto con nombre original como sanitizado
+                for fname in (safe_filename, sanitized_filename):
+                    if fname and (d / fname).exists():
+                        file_path = d / fname
+                        break
+            if file_path:
+                break
+
+    if file_path is None:
         return {
             "success": False,
             "message": f"Archivo {safe_filename} no encontrado en {safe_folder}/",
         }
 
-    if not file_path.is_file():
-        return {
-            "success": False,
-            "message": f"{safe_filename} no es un archivo válido",
-        }
-
     try:
         file_path.unlink()
-        # Además, eliminar la copia en ``blogs_source`` para que los contadores de archivos
-        # (usados por ``get_post_files_info``) reflejen la eliminación.  La carpeta del
-        # artículo en ``blogs_source`` suele incluir un prefijo de fecha
-        # (p.ej. ``2026-06-08_<slug>``), por lo que debemos buscar la carpeta que
-        # contenga el slug recibido en ``folder``.
-        blogs_source_root = Path(settings.BASE_DIR) / "blogs_source"
-        source_dir = None
-        # Intentar coincidencia directa primero
-        possible_path = blogs_source_root / folder
-        if possible_path.is_dir():
-            source_dir = possible_path
-        else:
-            # Buscar por prefijo parcial
-            for d in blogs_source_root.iterdir():
-                if d.is_dir() and folder in d.name:
-                    source_dir = d
-                    break
 
-        if source_dir:
-            source_file_path = source_dir / filename
-            if source_file_path.exists() and source_file_path.is_file():
-                try:
-                    source_file_path.unlink()
-                except OSError:
-                    import logging
+        # Eliminar también en blogs_source si existe
+        for d in (
+            blogs_source_root.iterdir() if blogs_source_root.exists() else []
+        ):
+            if d.is_dir() and safe_folder in d.name:
+                source_file_path = d / safe_filename
+                if source_file_path.exists() and source_file_path.is_file():
+                    try:
+                        source_file_path.unlink()
+                    except OSError:
+                        import logging
 
-                    logger = logging.getLogger(__name__)
-                    logger.exception(
-                        "Error al eliminar archivo fuente %s", source_file_path
-                    )
+                        logger = logging.getLogger(__name__)
+                        logger.exception(
+                            "Error al eliminar archivo fuente %s",
+                            source_file_path,
+                        )
         # ---------------------------------
         # Eliminar referencias a la imagen en los posts
         # ---------------------------------

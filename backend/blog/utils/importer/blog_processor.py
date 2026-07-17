@@ -1,16 +1,4 @@
-﻿"""Utility class to encapsulate the per-blog processing logic.
-
-The original ``import_blogs`` management command contained a large ``process_single_blog``
-method with many helper functions.  To improve modularity and testability we move that
-logic into this dedicated class.  The public API mirrors the previous implementation
-so that the command can delegate to it with minimal changes.
-
-Only the responsibilities directly related to a single blog are included here.  Higher
-level orchestration (iteration over source directories, sequence reset, final summary)
-remains in ``import_blogs.py``.
-"""
-
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 import re
@@ -20,6 +8,7 @@ from typing import Tuple, List
 
 import markdown
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.utils.text import slugify
 
 from blog.models import BlogPost, Category, Tag
@@ -44,9 +33,9 @@ class BlogProcessor:
         self.stdout = command.stdout
         self.STATIC_TARGET = static_target
 
-    # ---------------------------------------------------------------------
+    # -----------------------------------------------------------------
     # Public entry point used by ``import_blogs``
-    # ---------------------------------------------------------------------
+    # -----------------------------------------------------------------
     def process_single_blog(self, blog_dir: Path) -> str:
         """Process a single blog directory and return its slug."""
         md_file = blog_dir / "blog.md"
@@ -174,9 +163,9 @@ class BlogProcessor:
 
         return slug
 
-    # ---------------------------------------------------------------------
+    # -----------------------------------------------------------------
     # Helper methods (mostly copied from the original file)
-    # ---------------------------------------------------------------------
+    # -----------------------------------------------------------------
     def extract_title(self, content_md: str, blog_dir: Path) -> Tuple[str, str]:
         """Extract the title from markdown or fallback to the folder name."""
         lines = content_md.strip().split("\n")
@@ -503,15 +492,49 @@ class BlogProcessor:
         ).format(video_id, video_id, video_id)
 
     def _resolve_video_src(self, video_src, blog_dir, blog_static_dir, slug):
-        """Resolve video source path to the static location."""
+        """Resolve video source path to the static location.
+
+        Maneja tres casos:
+        1. URLs externas (http/https) o rutas estáticas ya válidas
+        2. Rutas de videos subidos desde el editor (/media/blog_editor_temp/...)
+        3. Rutas relativas dentro del directorio del blog
+        """
+        # Case 1: URLs externas o rutas estáticas ya válidas
         if video_src.startswith(("http://", "https://", "/static/")):
             return video_src
+
+        # Case 2: Rutas de videos subidos desde el editor
+        # El video fue subido a /media/blog_editor_temp/<user_id>/<filename>
+        # y fue movido a blogs_source/<slug>/<filename>
+        if "/media/" in video_src:
+            # Extraer el nombre del archivo de la ruta
+            filename = Path(video_src).name
+            # Buscar el archivo en el directorio del blog (ya fue movido por save_blog_to_source)
+            source_video = blog_dir / filename
+            if source_video.exists():
+                # Sanitizar el nombre si es necesario
+                from .filename_utils import sanitizar_nombre
+
+                nombre_sanitizado = sanitizar_nombre(filename)
+                target_video = blog_static_dir / nombre_sanitizado
+                shutil.copy2(source_video, target_video)
+                self.stdout.write(
+                    f"[VIDEO] Video desde editor resuelto: {filename} -> /static/blogs/{slug}/{nombre_sanitizado}"
+                )
+                return f"/static/blogs/{slug}/{nombre_sanitizado}"
+
+        # Case 3: Rutas relativas dentro del directorio del blog
         if not video_src.startswith("/"):
             source_video = blog_dir / video_src
             if source_video.exists():
-                target_video = blog_static_dir / source_video.name
+                from .filename_utils import sanitizar_nombre
+
+                nombre_sanitizado = sanitizar_nombre(source_video.name)
+                target_video = blog_static_dir / nombre_sanitizado
                 shutil.copy2(source_video, target_video)
-                return f"/static/blogs/{slug}/{source_video.name}"
+                return f"/static/blogs/{slug}/{nombre_sanitizado}"
+
+        # Si no se pudo resolver, devolver la ruta original (dejar que el frontend la maneje)
         return video_src
 
     def _build_video_html(self, video_src, video_title=""):

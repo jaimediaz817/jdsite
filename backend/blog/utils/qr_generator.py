@@ -16,11 +16,9 @@ import qrcode
 from qrcode.constants import ERROR_CORRECT_H
 
 # Configuración del QR
-LOGO_SIZE_RATIO = 0.18  # 18% del tamaño del QR (reducido para mejor legibilidad)
+LOGO_SIZE_RATIO = 0.14  # 14% del tamaño del QR (más conservador para legibilidad)
 LOGO_BG_COLOR = "#1a1a1a"  # Fondo negro circular
-LOGO_PADDING = (
-    0.12  # 12% de padding around logo (reducido para mejor legibilidad)
-)
+LOGO_PADDING = 0.03  # 3% de padding around logo (aro negro muy delgado)
 
 # Configuración del texto descriptivo
 TEXT_HEIGHT_RATIO = (
@@ -114,7 +112,7 @@ def _add_logo(qr_img, logo_path):
     if logo.mode != "RGBA":
         logo = logo.convert("RGBA")
 
-    # Calcular tamaño del logo (25% del QR)
+    # Calcular tamaño del logo (18% del QR)
     logo_size = int(qr_img.size[0] * LOGO_SIZE_RATIO)
 
     # Redimensionar logo manteniendo aspecto
@@ -123,6 +121,27 @@ def _add_logo(qr_img, logo_path):
     # Crear fondo negro circular
     padding = int(logo_size * LOGO_PADDING)
     circle_size = logo_size + (padding * 2)
+
+    # Dejar visible el hueco blanco alrededor del logo
+    inner_rim = max(6, int(logo_size * 0.10))
+    clean_circle_size = circle_size + inner_rim
+
+    # Limpiar zona circular en el QR para no tapar datos
+    qr_draw = ImageDraw.Draw(qr_img)
+    qr_center = (qr_img.size[0] // 2, qr_img.size[1] // 2)
+    qr_draw.ellipse(
+        [
+            (
+                qr_center[0] - clean_circle_size // 2,
+                qr_center[1] - clean_circle_size // 2,
+            ),
+            (
+                qr_center[0] + clean_circle_size // 2,
+                qr_center[1] + clean_circle_size // 2,
+            ),
+        ],
+        fill=(255, 255, 255, 255),
+    )
 
     # Imagen circular negra
     circle_bg = Image.new("RGBA", (circle_size, circle_size), (0, 0, 0, 0))
@@ -139,8 +158,8 @@ def _add_logo(qr_img, logo_path):
 
     # Posicionar círculo con logo en el centro del QR
     qr_pos = (
-        (qr_img.size[0] - circle_size) // 2,
-        (qr_img.size[1] - circle_size) // 2,
+        (qr_img.size[0] - circle_size) // 2 - inner_rim // 2,
+        (qr_img.size[1] - circle_size) // 2 - inner_rim // 2,
     )
 
     # Pegar círculo con logo sobre el QR

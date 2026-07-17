@@ -179,6 +179,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.onscroll) window.onscroll();
 });
 
+// ===== IMAGE LAZY LOADING & OPTIMIZATION =====
+// (Movido desde inline script en template - ver blog_detail.html líneas 338-350)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.blog-content img').forEach(function(img) {
+        // Lazy loading nativo
+        if (!img.hasAttribute('loading')) {
+            img.setAttribute('loading', 'lazy');
+        }
+        // Decoding async para mejor rendimiento
+        if (!img.hasAttribute('decoding')) {
+            img.setAttribute('decoding', 'async');
+        }
+        // Alt text fallback (en caso de que el backend no lo provea)
+        if (!img.hasAttribute('alt') || img.alt === '') {
+            img.setAttribute('alt', window.BLOG_TITLE || 'Imagen del artículo');
+        }
+    });
+});
+
 // ===== IMAGE ZOOM =====
 document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById('image-zoom-modal');

@@ -1003,6 +1003,52 @@ function createLocalVideoWidget(lineNumber, filename) {
         '</button>',
     ].join('\n');
 
+    // Toggle menú (⋮) - CRÍTICO: faltaba en createLocalVideoWidget
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var isOpen = dropdown.classList.toggle('is-open');
+        btn.classList.toggle('is-open', isOpen);
+        if (isOpen) {
+            if (dropdown.parentElement !== document.body) document.body.appendChild(dropdown);
+            var btnRect = btn.getBoundingClientRect();
+            dropdown.style.top = (btnRect.bottom + 4) + 'px';
+            dropdown.style.bottom = 'auto';
+            dropdown.style.left = btnRect.left + 'px';
+            dropdown.style.right = 'auto';
+            dropdown.style.position = 'fixed';
+            dropdown.style.zIndex = '99999';
+        } else {
+            if (dropdown.parentElement === document.body && widget.contains(dropdown) === false) widget.appendChild(dropdown);
+            dropdown.style.position = ''; dropdown.style.top = ''; dropdown.style.bottom = ''; dropdown.style.left = ''; dropdown.style.right = ''; dropdown.style.zIndex = '';
+        }
+        document.querySelectorAll('.img-line-dropdown.is-open').forEach(function(d) {
+            if (d !== dropdown) { d.classList.remove('is-open'); var parentBtn = d.parentElement ? d.parentElement.querySelector('.img-line-menu-btn') : null; if (parentBtn) parentBtn.classList.remove('is-open'); if (d.parentElement === document.body) d.style.position = ''; }
+        });
+    });
+
+    // Arrastre desde el icono de agarre (no interfiere con el botón ⋮)
+    gripBtn.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return; // solo click izquierdo
+        startImageDrag(lineNumber, gripBtn);
+    });
+
+    // Acción del dropdown (eliminar) - CRÍTICO: faltaba
+    dropdown.querySelectorAll('.img-line-dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var action = this.dataset.action;
+            if (action === 'delete') {
+                // Solo eliminar la línea markdown del editor (NO borra el archivo físico)
+                deleteImageLineFromEditor(lineNumber, filename);
+                setTimeout(refreshImageWidgets, 50);
+                cleanupImageWidget(lineNumber);
+                showStatusMessage('Referencia eliminada del editor: ' + filename, 'info');
+            }
+            dropdown.classList.remove('is-open');
+            btn.classList.remove('is-open');
+        });
+    });
+
     // Ensamblar widget
     widget.appendChild(gripBtn);
     widget.appendChild(btn);
@@ -1674,11 +1720,11 @@ function refreshImageWidgets() {
             var filename = '';
             var videoId = '';
             if (isImage) {
-                var match = trimmed.match(/\]\(\.?\/?(.*?)\)/);
+                var match = trimmed.match(/\]\(\.?\/?(.+?)\)/);
                 if (match) filename = match[1];
             } else if (isVideo) {
-                var match = trimmed.match(/src=["']\.?\/?(.*?)["']/);
-                if (match) filename = match[1];
+                var match = trimmed.match(/src=["']([^"']+)["']/);
+                if (match) filename = match[1].split('/').pop(); // Extraer solo el nombre del archivo de la URL
             } else if (isYouTube) {
                 var match = trimmed.match(/\[youtube:([A-Za-z0-9_-]{11})\]/);
                 if (match) videoId = match[1];
@@ -1976,6 +2022,49 @@ window.imageSelectorOpen = false;
 window.selectedImageFilename = null;
 // No limpiar _imageSelectorCursor aquí porque si se cerró sin seleccionar,
 // el cursor debe seguir donde estaba
+
+// ======================================================
+// 5. Escanear markdown y poblar uploaded-files para edición
+// ======================================================
+function scanExistingMedia() {
+    if (!easyMDE) return;
+    const content = easyMDE.value();
+    const slug = document.getElementById('edit-slug').value.trim();
+    if (!slug) return;
+
+    // Detectar <video src="..."> (videos locales)
+    const videoRegex = /<video[^>]*src=["'](\.?\/?[^"']+)["'][^>]*>/g;
+    let match;
+    while ((match = videoRegex.exec(content)) !== null) {
+        const filename = match[1].split('/').pop();
+        if (!uploadedFiles.find(f => f.filename === filename)) {
+            // Registrar SIN URL fija; renderUploadedFile() probará todas las rutas posibles.
+            const fileData = {
+                filename: filename,
+                type: 'video',
+                url: ''
+            };
+            uploadedFiles.push(fileData);
+            renderUploadedFile(fileData);
+        }
+    }
+
+    // Detectar ![](filename) (imágenes)
+    const imgRegex = /!\[[^\]]*\]\(\.?\/?([^)]+)\)/g;
+    while ((match = imgRegex.exec(content)) !== null) {
+        const filename = match[1].split('/').pop();
+        if (!uploadedFiles.find(f => f.filename === filename)) {
+            // Registrar SIN URL fija; renderUploadedFile() probará todas las rutas posibles.
+            const fileData = {
+                filename: filename,
+                type: 'image',
+                url: ''
+            };
+            uploadedFiles.push(fileData);
+            renderUploadedFile(fileData);
+        }
+    }
+}
 
 // ======================================================
 // 5. collectFormData + auto-save + restore
@@ -2482,7 +2571,7 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
                 // Deteccion: si el archivo está envuelto en bloques :::no-import:::
                 const hiddenPattern = new RegExp(`:::no-import:::[\\s\\S]*?${file.filename}[\\s\\S]*?:::final-no-import:::`, 'i');
                 file.hidden = hiddenPattern.test(data.content_md);
-                console.log('🐛 [DEBUG] file =', file.filename, 'isCover =', isCover, 'hidden =', file.hidden);
+                console.log('🐛 [DEBUG] file =', file.filename, 'isCover =', isCover, 'hidden =', file.hidden, 'url =', file.url);
                 uploadedFiles.push(file);
                 renderUploadedFile(file);
             });
@@ -2491,7 +2580,9 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
                 setAsCover(resolvedCoverName);
             }
         } else {
-            console.warn('🐛 [DEBUG] data.existing_files está vacío o es null');
+            console.warn('🐛 [DEBUG] data.existing_files está vacío o es null - usando scanExistingMedia como respaldo');
+            // Si no hay archivos existentes, confiar en scanExistingMedia para encontrar archivos en el markdown
+            try { scanExistingMedia(); } catch (e) { console.error('Error en scanExistingMedia:', e); }
         }
         // Sincronizar el campo de portada con la imagen marcada
         const coverInput = document.getElementById('cover_image');
@@ -2501,6 +2592,10 @@ document.getElementById('confirm-discard-btn')?.addEventListener('click', () => 
         }
         document.title = `Editando: ${fm.title || editSlug} | Editor Blog`;
         document.getElementById('status-message').innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">Artículo cargado. Cambios se guardan en la misma carpeta.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        
+        // Escanear markdown para hallar videos/imágenes adicionales que no vinieron en existing_files
+        // y renderizarlos en el grid de archivos subidos.
+        try { scanExistingMedia(); } catch (e) { /* ignore */ }
         
         // Forzar refresco de widgets de imagen/video para que el artículo cargado
         // muestre sus widgets MTP (incluyendo [youtube:ID]) nada más abrir el editor.
@@ -2564,7 +2659,16 @@ function detectImageContext() {
 /** Regex para detectar una línea de imagen (modo normal o slides/gallery). */
 function getImageLineRegex() {
     // Acepta: ![texto](ruta), ![texto|desc](ruta) y variantes con ./ o ruta relativa
+    // NOTA: Los videos locales (<video>) se detectan por separado
     return /^!\[[^\]]*\]\([^)]+\)\s*$/;
+}
+
+/** Detecta si una línea es un video local (<video src="..." controls></video>) */
+function isVideoLine(lineNumber) {
+    const cm = easyMDE ? easyMDE.codemirror : null;
+    if (!cm) return false;
+    const text = cm.getDoc().getLine(lineNumber) || '';
+    return /^\s*<video\b[^>]*src=.*><\/video>\s*$/.test(text.trim());
 }
 
 /** Retorna { lineNumber, text } para cada línea de imagen en el documento. */
@@ -2607,7 +2711,7 @@ function startImageDrag(lineNumber, triggerElement) {
 
     const widgetEntry = imageWidgets[lineNumber];
     const isYouTube = widgetEntry && widgetEntry.type === 'youtube';
-    if (!isImageLine(lineNumber) && !isYouTube) return;
+    if (!isImageLine(lineNumber) && !isYouTube && !isVideoLine(lineNumber)) return;
 
     const text = cm.getDoc().getLine(lineNumber) || '';
     if (!text) return;

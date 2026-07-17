@@ -7,6 +7,7 @@
 // - [x] Abrir modal al hacer clic en botón video
 // - [x] Validar URL de YouTube y archivos locales
 // - [x] Implementar drag-and-drop para videos
+// - [x] Subir archivo de video al servidor antes de insertarlo (FIX)
 
 // ======================================================
 // HU-022 Fase 0: Validación jQuery (solo diagnóstico)
@@ -14,6 +15,27 @@
 console.log('✅ [video-widget.js] jQuery disponible:', typeof jQuery !== 'undefined');
 
 console.log('[video-widget] modulo cargado');
+
+// Función helper para obtener CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ======================================================
+// Trigger del modal para restaurar foco después
+// ======================================================
+let videoModalTrigger = null;
 
 // ======================================================
 // 1. Abrir el modal de video
@@ -47,7 +69,33 @@ function parseYouTubeUrl(url) {
 }
 
 // ======================================================
-// 3. Insertar template de video en el editor (patrón unificado MTP)
+// 3. Subir archivo de video al servidor
+// ======================================================
+async function uploadVideoFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/blog/api/upload-file/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('[video-widget] Error uploading video:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ======================================================
+// 4. Insertar template de video en el editor (patrón unificado MTP)
 // ======================================================
 function insertVideoTemplate(src, isYouTube) {
     const easyMDE = window.easyMDE || window.top?.easyMDE;
@@ -89,9 +137,9 @@ function insertVideoTemplate(src, isYouTube) {
 }
 
 // ======================================================
-// 4. Confirmar inserción desde el modal
+// 5. Confirmar inserción desde el modal
 // ======================================================
-function confirmVideoModal() {
+async function confirmVideoModal() {
     const urlInput = document.getElementById('videoUrlInput');
     const fileInput = document.getElementById('videoFileInput');
     const errorDiv = document.getElementById('videoModalError');
@@ -134,11 +182,59 @@ function confirmVideoModal() {
             }
             return;
         }
-        // Construir ruta temporal
-        const userId = document.body.dataset.userId || 'unknown';
-        const src = `/media/blog_editor_temp/${userId}/${file.name}`;
-        insertVideoTemplate(src, false);
-        $('#videoModal').modal('hide');
+        
+        // ✅ SUBIR EL ARCHIVO AL SERVIDOR ANTES DE INSERTAR
+        console.log('[video-widget] Subiendo video al servidor:', file.name);
+        
+        // Mostrar estado de carga
+        const insertBtn = document.getElementById('videoInsertBtn');
+        const originalBtnText = insertBtn ? insertBtn.innerHTML : '';
+        if (insertBtn) {
+            insertBtn.disabled = true;
+            insertBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Subiendo...';
+        }
+        
+        try {
+            const uploadResult = await uploadVideoFile(file);
+            
+            if (insertBtn) {
+                insertBtn.disabled = false;
+                insertBtn.innerHTML = originalBtnText;
+            }
+            
+            if (!uploadResult || uploadResult.success === false) {
+                if (errorDiv) {
+                    errorDiv.textContent = 'Error al subir el video: ' + (uploadResult?.error || 'Error desconocido');
+                    errorDiv.classList.remove('d-none');
+                }
+                return;
+            }
+            
+            // Usar la URL devuelta por el servidor (ruta real)
+            const serverUrl = uploadResult.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${uploadResult.filename}`;
+            insertVideoTemplate(serverUrl, false);
+            
+            // Renderizar en el grid de archivos subidos (como hace FilePond)
+            if (typeof window.renderUploadedFile === 'function') {
+                window.renderUploadedFile(uploadResult);
+            }
+            if (typeof window.uploadedFiles !== 'undefined' && uploadResult) {
+                window.uploadedFiles.push(uploadResult);
+            }
+            
+            $('#videoModal').modal('hide');
+            console.log('[video-widget] Video subido e insertado correctamente:', uploadResult);
+        } catch (uploadError) {
+            if (insertBtn) {
+                insertBtn.disabled = false;
+                insertBtn.innerHTML = originalBtnText;
+            }
+            if (errorDiv) {
+                errorDiv.textContent = 'Error al subir el video: ' + uploadError.message;
+                errorDiv.classList.remove('d-none');
+            }
+            console.error('[video-widget] Upload failed:', uploadError);
+        }
         return;
     }
 
@@ -159,7 +255,7 @@ function confirmVideoModal() {
 }
 
 // ======================================================
-// 5. Handlers de dropdown del widget video
+// 6. Handlers de dropdown del widget video
 // ======================================================
 function attachVideoWidgetHandlers() {
     // Menu button toggles dropdown (patrón unificado MTP)
@@ -212,9 +308,13 @@ function videoDropdownAction(event) {
             const ytRegex = new RegExp(`^\\[youtube:${videoId}\\]\\s*\\n?`, 'gm');
             newContent = newContent.replace(ytRegex, '');
         }
-        // También eliminar <video src="..."> por si es local
-        const videoLocalRegex = /<video src="[^"]*" controls><\/video>\s*\n?/g;
-        newContent = newContent.replace(videoLocalRegex, '');
+        // También eliminar <video src="..."> por si es local (extraer filename del widget)
+        const filename = widget.dataset.filename;
+        if (filename) {
+            const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const videoLocalRegex = new RegExp('<video[^>]*src="[^"]*' + escapedFilename + '[^"]*"[^>]*>[^<]*</video>', 'gi');
+            newContent = newContent.replace(videoLocalRegex, '');
+        }
 
         doc.setValue(newContent);
         cm.focus();
@@ -242,8 +342,38 @@ document.addEventListener('click', () => {
 });
 
 // ======================================================
-// 6. Drag & drop para archivos de video
+// 7. Drag & drop para archivos de video (con upload)
 // ======================================================
+async function processDroppedVideoFile(file) {
+    // Validar tipo de video permitido
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+    if (!allowedTypes.includes(file.type) && !file.type.startsWith('video/')) {
+        console.warn('[video-widget] Formato de video no soportado:', file.type);
+        return;
+    }
+    
+    console.log('[video-widget] Subiendo video dropado:', file.name);
+    
+    // Subir archivo al servidor
+    const uploadResult = await uploadVideoFile(file);
+    
+    if (uploadResult && uploadResult.success !== false) {
+        const serverUrl = uploadResult.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${uploadResult.filename}`;
+        insertVideoTemplate(serverUrl, false);
+        
+        // Renderizar en el grid de archivos subidos
+        if (typeof window.renderUploadedFile === 'function') {
+            window.renderUploadedFile(uploadResult);
+        }
+        if (typeof window.uploadedFiles !== 'undefined') {
+            window.uploadedFiles.push(uploadResult);
+        }
+        console.log('[video-widget] Video dropado subido e insertado:', uploadResult);
+    } else {
+        console.error('[video-widget] Error subiendo video dropado:', uploadResult?.error);
+    }
+}
+
 function initVideoDragDrop() {
     // El botón video en la barra MTP acepta arrastre
     const videoBtn = document.querySelector('.mtp-btn[data-mtp="video"]');
@@ -280,7 +410,7 @@ function initVideoDragDrop() {
         videoBtn.classList.remove('drag-over');
     });
 
-    videoBtn.addEventListener('drop', (e) => {
+    videoBtn.addEventListener('drop', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         videoBtn.classList.remove('drag-over');
@@ -292,17 +422,15 @@ function initVideoDragDrop() {
         const videoFiles = Array.from(files).filter(f => f.type.startsWith('video/'));
         if (videoFiles.length === 0) return;
 
-        // Procesar cada video
-        videoFiles.forEach(file => {
-            const userId = document.body.dataset.userId || 'unknown';
-            const src = `/media/blog_editor_temp/${userId}/${file.name}`;
-            insertVideoTemplate(src, false);
-        });
+        // Procesar cada video (subir y luego insertar)
+        for (const file of videoFiles) {
+            await processDroppedVideoFile(file);
+        }
     });
 }
 
 // ======================================================
-// 7. Mostrar modal de ayuda para video
+// 8. Mostrar modal de ayuda para video
 // ======================================================
 function openVideoHelpModal() {
     const titleEl = document.getElementById('mtpHelpTitle');
@@ -332,24 +460,102 @@ function openVideoHelpModal() {
 }
 
 // ======================================================
-// 8. Inicialización
+// 9. Inicialización
 // ======================================================
 document.addEventListener('DOMContentLoaded', () => {
     initVideoDragDrop();
 
+    // Fix: Evitar warning "Blocked aria-hidden on an element because its descendant retained focus"
+    // Mover el foco fuera del modal justo después de abrirse, y restaurarlo al cerrar
+    let videoModalTmpBlur = null;
+    $('#videoModal').on('hide.bs.modal', function (event) {
+        videoModalTrigger = event.relatedTarget;
+        const modalEl = this;
+        // Correr después de que Bootstrap siga con su ciclo, para quitar foco del modal/descendientes
+        setTimeout(() => {
+            if (document.activeElement && modalEl.contains(document.activeElement)) {
+                document.activeElement.blur();
+                // Elemento temporal fuera del modal para absorber el foco
+                const dummy = document.createElement('div');
+                dummy.setAttribute('tabindex', '-1');
+                dummy.style.position = 'absolute';
+                dummy.style.width = '1px';
+                dummy.style.height = '1px';
+                dummy.style.overflow = 'hidden';
+                document.body.appendChild(dummy);
+                videoModalTmpBlur = dummy;
+                dummy.focus();
+                setTimeout(() => {
+                    if (videoModalTmpBlur && videoModalTmpBlur.parentNode) {
+                        videoModalTmpBlur.remove();
+                    }
+                    videoModalTmpBlur = null;
+                }, 0);
+            }
+        }, 0);
+    });
+
+    $('#videoModal').on('shown.bs.modal', function () {
+        const modalEl = this;
+        setTimeout(() => {
+            // Si Bootstrap puso foco en el div del modal, quitárselo y enfocar el primer input
+            if (document.activeElement === modalEl || modalEl.contains(document.activeElement)) {
+                modalEl.blur();
+                const firstInput = modalEl.querySelector('input, button, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }
+        }, 0);
+    });
+
+    $('#videoModal').on('hidden.bs.modal', function () {
+        try {
+            if (videoModalTrigger && typeof videoModalTrigger.focus === 'function') {
+                videoModalTrigger.focus();
+            }
+        } catch (e) {
+            // noop
+        }
+        videoModalTrigger = null;
+        if (videoModalTmpBlur && videoModalTmpBlur.parentNode) {
+            videoModalTmpBlur.remove();
+        }
+        videoModalTmpBlur = null;
+        const modalEl = document.getElementById('videoModal');
+        if (modalEl && modalEl === document.activeElement) {
+            modalEl.blur();
+        }
+    });
+
+    // Mostrar nombre de archivo seleccionado en el input file estilizado
+    const videoFileInput = document.getElementById('videoFileInput');
+    const videoFileName = document.getElementById('videoFileName');
+    if (videoFileInput && videoFileName) {
+        videoFileInput.addEventListener('change', () => {
+            if (videoFileInput.files && videoFileInput.files.length > 0) {
+                videoFileName.textContent = videoFileInput.files[0].name;
+            } else {
+                videoFileName.textContent = 'Ningún archivo seleccionado';
+            }
+        });
+    }
+
     // Vincular botón "Insertar" del modal
     const insertBtn = document.getElementById('videoInsertBtn');
     if (insertBtn) {
-        insertBtn.addEventListener('click', confirmVideoModal);
+        insertBtn.addEventListener('click', async () => {
+            await confirmVideoModal();
+        });
     }
 
     // Permitir Enter en campo URL para confirmar
     const urlInput = document.getElementById('videoUrlInput');
     if (urlInput) {
-        urlInput.addEventListener('keydown', (e) => {
+        urlInput.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                confirmVideoModal();
+                await confirmVideoModal();
             }
         });
     }
@@ -365,13 +571,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ======================================================
-// 9. Exponer funciones globalmente
+// 10. Exponer funciones globalmente
 // ======================================================
 window.openVideoModal = openVideoModal;
 window.confirmVideoModal = confirmVideoModal;
 window.insertVideoTemplate = insertVideoTemplate;
 window.attachVideoWidgetHandlers = attachVideoWidgetHandlers;
 window.openVideoHelpModal = openVideoHelpModal;
-
-
-
+window.uploadVideoFile = uploadVideoFile;

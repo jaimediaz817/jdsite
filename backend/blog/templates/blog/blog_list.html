@@ -112,6 +112,12 @@
                     <div class="row mb-5">
                         <div class="col-12">
                             <form method="get" action="{% url 'blog:blog_list' %}" class="blog-search-form" role="search">
+
+                                <!-- 🌙 Botón de modo oscuro (reusado) -->
+                                <button type="button" id="reading-mode-toggle" class="reading-mode-toggle btn btn-sm flex-shrink-0" title="Cambiar modo visual" aria-label="Cambiar modo visual" style="margin-right: 6px;">
+                                    <i class="fas fa-moon"></i>
+                                </button>
+
                                 <fieldset class="search-filters">
                                     <legend class="main-title-filters">Filtros de búsqueda</legend>
 
@@ -221,10 +227,7 @@
 
                                     <!-- 🟡 FILA STICKY: Dark mode al lado izquierdo, luego toggle filtros, luego buscador -->
                                     <div class="blog-search-second-row" id="filters-sticky-row">
-                                        <!-- 🌙 Botón de modo oscuro (reusado) -->
-                                        <button type="button" id="reading-mode-toggle" class="reading-mode-toggle btn btn-sm flex-shrink-0" title="Cambiar modo visual" aria-label="Cambiar modo visual" style="margin-right: 6px;">
-                                            <i class="fas fa-moon"></i>
-                                        </button>
+
 
                                         <!-- Botón toggle para filtros avanzados -->
                                         <button type="button"
@@ -405,9 +408,9 @@
                                         {{ post.title|truncatechars:38 }}
                                     </a>
                                 </h3>
-                                {% with post|blog_excerpt:90 as excerpt %}
+                                {% with post|blog_excerpt:35 as excerpt %}
                                 {% if excerpt %}
-                                <p class="blog-post-content_container text-muted mb-1 small" style="flex-grow: 0; -webkit-line-clamp: 2;">
+                                <p class="blog-post-content_container text-muted mb-1 small" style="flex-grow: 0;">
                                     {{ excerpt }}
                                 </p>
                                 {% endif %}
@@ -439,7 +442,7 @@
 
                                 {% if user.is_authenticated %}
                                     {% if user.is_superuser or post.author == user %}
-                                        <div class="edit-btn-wrapper d-flex gap-2">
+                                        <div class="edit-btn-wrapper d-flex flex-row gap-2">
                                             <a href="{% url 'blog:blog_editor_edit' post.slug %}" class="btn btn-sm btn-outline-primary blog-write-btn" title="Editar artículo" onclick="event.stopPropagation(); event.preventDefault(); window.location.href='{% url 'blog:blog_editor_edit' post.slug %}';">
                                                 <i class="fas fa-edit me-1"></i> Editar
                                             </a>

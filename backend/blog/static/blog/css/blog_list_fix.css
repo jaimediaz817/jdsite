@@ -1,6 +1,116 @@
 /* ============================================
+    🖼️ HU-046: Fase 1 - Card proporcional grid 2 columnas
+    ============================================ */
+
+/* En móvil/tablet: imagen más alta para card menos horizontal */
+@media (max-width: 991px) {
+
+    /* Solo en mobile/tablet: evitar que el card-body corte botones */
+    .blog-card .card-body {
+        overflow: visible;
+    }
+
+    /* Título compacto solo en mobile/tablet */
+    .title-article-content {
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+    }
+
+    .title-article-content a {
+        font-size: 11px !important;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Excerpt compacto solo en mobile/tablet */
+    .blog-post-content_container {
+        font-size: 10px !important;
+        -webkit-line-clamp: 1 !important;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog-card-image {
+        aspect-ratio: 16/11 !important;
+    }
+
+    /* Solo en mobile/tablet: botones en columna, sin competir con reacciones */
+    .blog-card .edit-btn-wrapper {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 6px;
+        width: 100% !important;
+    }
+
+    .blog-card .edit-btn-wrapper .btn {
+        width: 100%;
+        min-width: unset;
+        padding: 6px 10px;
+        font-size: 10px;
+        white-space: nowrap;
+        text-align: center;
+    }
+}
+
+/* ============================================
     ✨ BOTÓN ESCRIBIR ARTÍCULO - Fix transición suave
     ============================================ */
+
+/* ============================================
+    🌙 HU-044: Paleta dark unificada (variables CSS)
+    ============================================ */
+:root {
+    --jd-dark-bg-primary: #0f172a;
+    --jd-dark-bg-secondary: #1e293b;
+    --jd-dark-bg-tertiary: #334155;
+    --jd-dark-bg-hover: #475569;
+    --jd-dark-text-primary: #f8fafc;
+    --jd-dark-text-secondary: #e2e8f0;
+    --jd-dark-text-muted: #94a3b8;
+    --jd-dark-text-accent: #fbbf24;
+    --jd-dark-border: #475569;
+    --jd-dark-border-subtle: #334155;
+}
+
+/* ============================================
+    🌙 HU-044: Transiciones suaves para modo dark
+    ============================================ */
+body.home-p {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.jd-section {
+    transition: background-color 0.3s;
+}
+
+.search-filters {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.3s;
+}
+
+.blog-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.3s, border-color 0.3s;
+}
+
+.blog-date-range-container {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.3s;
+}
+
+.blog-search-group {
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.3s;
+}
+
+.chip {
+    transition: all 0.15s ease, background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.empty-state-container {
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.sort-menu {
+    transition: border-color 0.3s, background-color 0.3s;
+}
 
 /* Botón empty state con animación pulsante */
 .empty-state-actions .btn.blog-write-btn {
@@ -62,133 +172,426 @@
 }
 
 /* ============================================
-    🌙 MODO DARK - Dark mode para blog_list
+    🍔 FIX: Botón hamburguesa navbar responsive
+    ============================================ */
+/* En mobile: ocultar el menú por defecto */
+#navigation-menu .navbar-collapse.collapse:not(.show) {
+    /* display: none !important; */
+}
+
+/* En mobile: cuando tiene .show, forzar block con máxima especificidad */
+#navigation-menu .navbar-collapse.collapse.show {
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    flex-basis: auto !important;
+    flex-grow: 0 !important;
+    transition: none !important;
+    /* position: static !important; */
+    z-index: auto !important;
+}
+
+/* Forzar visibilidad en mobile incluso si hay overflow del padre */
+#navigation-menu {
+    overflow: visible !important;
+}
+
+.navbar-collapse {
+    overflow-y: auto !important;
+    max-height: 80vh !important;
+}
+
+/* ============================================
+    �🌙 MODO DARK - Dark mode para blog_list
+    ============================================ */
+
+/* ============================================
+    🖼️ FIX: .addon-imagen-background__blog-list no debe tapar el título
+    ============================================ */
+.jd-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.addon-imagen-background__blog-list {
+    z-index: 0 !important;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Asegurar que el título y slogan queden por encima del fondo decorativo */
+.section-title,
+.header-slogan,
+.section-sub-title {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+    🌙 HU-044 Fase 2: Zonas base
     ============================================ */
 html[data-reading-mode="dark"] body.home-p {
-    background-color: #0f172a;
+    background-color: var(--jd-dark-bg-primary);
 }
 
 html[data-reading-mode="dark"] .jd-section {
-    background-color: #0f172a;
+    background-color: var(--jd-dark-bg-primary);
 }
 
 html[data-reading-mode="dark"] .section-title,
 html[data-reading-mode="dark"] .section-sub-title,
 html[data-reading-mode="dark"] .header-slogan {
-    color: #e2e8f0;
+    color: var(--jd-dark-text-secondary);
 }
 
 html[data-reading-mode="dark"] .search-filters {
-    background: #1e293b;
-    border-color: #334155;
+    background: var(--jd-dark-bg-secondary);
+    border-color: var(--jd-dark-border-subtle);
 }
 
 html[data-reading-mode="dark"] .search-filters legend.main-title-filters {
-    background: #1e293b;
-    color: #94a3b8;
+    background: var(--jd-dark-bg-secondary);
+    color: var(--jd-dark-text-muted);
 }
 
 html[data-reading-mode="dark"] .blog-date-range-container,
 html[data-reading-mode="dark"] .blog-search-group {
-    background: #1e293b;
-    border-color: #334155;
+    background: var(--jd-dark-bg-secondary);
+    border-color: var(--jd-dark-border-subtle);
+}
+
+html[data-reading-mode="dark"] .blog-search-second-row {
+    background: var(--jd-dark-bg-primary);
+}
+
+html[data-reading-mode="dark"] #filters-sticky-row {
+    background: var(--jd-dark-bg-primary);
+}
+
+html[data-reading-mode="dark"] #filter-chips-row {
+    background: var(--jd-dark-bg-primary);
+}
+
+html[data-reading-mode="dark"] .articles-list__container {
+    background-color: var(--jd-dark-bg-primary);
+}
+
+html[data-reading-mode="dark"] .addon-imagen-background__blog-list {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 html[data-reading-mode="dark"] .blog-date-input,
 html[data-reading-mode="dark"] .blog-search-input {
-    background: #1e293b !important;
-    color: #e2e8f0 !important;
+    background: var(--jd-dark-bg-secondary) !important;
+    color: var(--jd-dark-text-secondary) !important;
+}
+
+html[data-reading-mode="dark"] .blog-search-input {
+    color: var(--jd-dark-text-secondary) !important;
+}
+
+html[data-reading-mode="dark"] .blog-date-input,
+html[data-reading-mode="dark"] .blog-date-input.flatpickr-alt-input {
+    color: var(--jd-dark-text-secondary) !important;
 }
 
 html[data-reading-mode="dark"] .blog-card {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
+    background-color: var(--jd-dark-bg-secondary) !important;
+    border-color: var(--jd-dark-border-subtle) !important;
+}
+
+html[data-reading-mode="dark"] .blog-card .card-body {
+    background: transparent;
 }
 
 html[data-reading-mode="dark"] .blog-card .card-body h3 a {
-    color: #e2e8f0 !important;
+    color: var(--jd-dark-text-secondary) !important;
+}
+
+html[data-reading-mode="dark"] .blog-card .card-body h3 a:hover {
+    color: var(--jd-dark-text-accent) !important;
 }
 
 html[data-reading-mode="dark"] .blog-card .card-body p.text-muted {
-    background: #334155;
+    background: var(--jd-dark-bg-tertiary);
     color: #cbd5e1 !important;
-    border-color: #475569;
+    border-color: var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .title-article-content {
+    background-color: var(--jd-dark-bg-tertiary) !important;
+    border: 1px solid var(--jd-dark-border) !important;
+}
+
+html[data-reading-mode="dark"] .blog-post-content_container {
+    background: var(--jd-dark-bg-tertiary) !important;
+    border: 1px solid var(--jd-dark-border) !important;
+    color: var(--jd-dark-text-secondary) !important;
 }
 
 html[data-reading-mode="dark"] .blog-card-meta {
-    color: #94a3b8 !important;
+    color: var(--jd-dark-text-muted) !important;
 }
 
-html[data-reading-mode="dark"] .blog-card-meta span {
+html[data-reading-mode="dark"] .blog-card-meta span:nth-child(1),
+html[data-reading-mode="dark"] .blog-card-meta span:nth-child(2) {
     background: rgba(148, 163, 184, 0.15);
-    color: #94a3b8;
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-card-meta i {
+    color: var(--jd-dark-text-muted);
+    background: var(--jd-dark-bg-tertiary);
+}
+
+html[data-reading-mode="dark"] .author-name {
+    background: var(--jd-dark-bg-tertiary);
+    border: 1px solid var(--jd-dark-border);
+    color: var(--jd-dark-text-secondary);
+}
+
+html[data-reading-mode="dark"] .category-inline-link {
+    color: var(--jd-dark-text-secondary);
+    background: var(--jd-dark-bg-tertiary);
+    border: 1px solid var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .category-inline-link:hover {
+    color: var(--jd-dark-text-accent);
+    background: var(--jd-dark-bg-hover);
+    text-decoration: none;
 }
 
 html[data-reading-mode="dark"] .blog-tags-list.blog-tags-container {
-    background: #334155;
-    border-color: #475569;
+    background: var(--jd-dark-bg-tertiary);
+    border-color: var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .blog-tag {
+    background: var(--jd-dark-bg-hover);
+    border: 1px solid var(--jd-dark-border);
+    color: var(--jd-dark-text-secondary);
+}
+
+html[data-reading-mode="dark"] .blog-tag:hover {
+    color: var(--jd-dark-text-accent);
+    background: var(--jd-dark-bg-primary);
+    border-color: var(--jd-dark-text-accent);
+    transform: translateY(-1px);
+}
+
+html[data-reading-mode="dark"] .blog-tags-list.blog-tags-container.blog-tags-empty {
+    background-color: var(--jd-dark-bg-tertiary);
+    border: 1px solid var(--jd-dark-border);
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-tags-list.blog-tags-container.blog-tags-empty:hover {
+    border-color: var(--jd-dark-border);
+    color: var(--jd-dark-text-secondary);
+}
+
+html[data-reading-mode="dark"] .blog-tags-empty__icon {
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-tags-list.blog-tags-container.blog-tags-empty:hover .blog-tags-empty__icon {
+    color: var(--jd-dark-text-secondary);
 }
 
 html[data-reading-mode="dark"] .chip {
-    background: #334155;
-    color: #94a3b8;
-    border-color: #475569;
+    background: var(--jd-dark-bg-tertiary);
+    color: var(--jd-dark-text-muted);
+    border-color: var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .chip-remove {
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .chip-remove:hover {
+    opacity: 1;
+    color: #fca5a5;
+}
+
+html[data-reading-mode="dark"] .chip-clear-all {
+    background: var(--jd-dark-bg-hover);
+    color: #fca5a5;
+    border-color: #f87171;
+}
+
+html[data-reading-mode="dark"] .chip-clear-all:hover {
+    background: var(--jd-dark-bg-hover);
+    color: #fca5a5;
+    border-color: #f87171;
+    text-decoration: none;
 }
 
 html[data-reading-mode="dark"] .empty-state-container {
+    border-color: var(--jd-dark-border-subtle) !important;
     background: transparent;
-    border-color: #334155;
 }
 
 html[data-reading-mode="dark"] .empty-state-container h3 {
-    color: #e2e8f0;
+    color: var(--jd-dark-text-secondary);
 }
 
 html[data-reading-mode="dark"] .empty-state-container p {
-    color: #94a3b8;
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .empty-state-actions .btn.blog-write-btn,
+html[data-reading-mode="dark"] .empty-state-actions .btn.blog-moderation-btn {
+    filter: brightness(1.05);
 }
 
 html[data-reading-mode="dark"] .blog-write-btn,
 html[data-reading-mode="dark"] .blog-moderation-btn {
-    filter: brightness(1.1);
+    filter: brightness(1.05);
+}
+
+html[data-reading-mode="dark"] .article_pending {
+    border-color: #b45309 !important;
+}
+
+html[data-reading-mode="dark"] .comment-info,
+html[data-reading-mode="dark"] .reactions-info {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+html[data-reading-mode="dark"] .blog-card:hover .comment-info {
+    background: linear-gradient(135deg, rgba(111, 66, 193, 0.9), rgba(111, 66, 193, 0.7));
+    border-color: var(--jd-dark-border);
+    color: #fff;
+}
+
+html[data-reading-mode="dark"] .blog-card:hover .reactions-info {
+    border-color: var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .float-meta-item {
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+}
+
+html[data-reading-mode="dark"] .blog-card:hover .float-meta-item {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+html[data-reading-mode="dark"] .blog-card-image {
+    background: var(--jd-dark-bg-primary);
+}
+
+html[data-reading-mode="dark"] .blog-card-image__placeholder {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-card-image__placeholder-icon {
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-card-image--no-img {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+html[data-reading-mode="dark"] .blog-card-image--no-img::before {
+    color: var(--jd-dark-text-muted);
 }
 
 html[data-reading-mode="dark"] .blog-date-apply-btn,
 html[data-reading-mode="dark"] .blog-date-clear-btn {
-    background: #334155 !important;
-    color: #e2e8f0 !important;
-    border-color: #475569 !important;
+    background: var(--jd-dark-bg-tertiary) !important;
+    color: var(--jd-dark-text-secondary) !important;
+    border-color: var(--jd-dark-border) !important;
 }
 
-html[data-reading-mode="dark"] .blog-search-icon,
+html[data-reading-mode="dark"] .blog-search-icon {
+    background: var(--jd-dark-bg-tertiary);
+    color: var(--jd-dark-text-accent);
+    border-color: var(--jd-dark-border);
+}
+
 html[data-reading-mode="dark"] .blog-search-btn {
-    background: #334155;
-    color: #e2e8f0;
-    border-color: #475569;
+    background: var(--jd-dark-bg-tertiary);
+    color: var(--jd-dark-text-secondary);
+    border-color: var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .blog-clear-btn {
+    background: var(--jd-dark-bg-tertiary);
+    border-color: var(--jd-dark-border);
+    color: var(--jd-dark-text-muted);
+}
+
+html[data-reading-mode="dark"] .blog-clear-btn:hover {
+    color: #fca5a5;
+    background: var(--jd-dark-bg-hover);
+    border-color: #f87171;
+    text-decoration: none;
+}
+
+html[data-reading-mode="dark"] .blog-date-clear-btn {
+    background: var(--jd-dark-bg-tertiary) !important;
+    color: var(--jd-dark-text-secondary) !important;
+    border-color: var(--jd-dark-border) !important;
 }
 
 html[data-reading-mode="dark"] .reading-mode-toggle {
-    background: #334155;
-    color: #fbbf24;
-    border-color: #475569;
+    background: var(--jd-dark-bg-tertiary);
+    color: var(--jd-dark-text-accent);
+    border-color: var(--jd-dark-border);
 }
 
 html[data-reading-mode="dark"] .reading-mode-toggle:hover {
-    background: #475569;
+    background: var(--jd-dark-bg-hover);
+}
+
+html[data-reading-mode="dark"] .sort-menu {
+    background: var(--jd-dark-bg-secondary);
+    border: 1px solid var(--jd-dark-border);
+}
+
+html[data-reading-mode="dark"] .sort-option {
+    color: var(--jd-dark-text-secondary);
+    border-bottom: 1px solid var(--jd-dark-border-subtle);
+}
+
+html[data-reading-mode="dark"] .sort-option:hover {
+    background: var(--jd-dark-bg-hover);
+    color: var(--jd-dark-text-accent);
+    text-decoration: none;
+}
+
+html[data-reading-mode="dark"] .sort-option.active {
+    background: var(--jd-dark-bg-hover);
+    color: var(--jd-dark-text-accent);
+    font-weight: 600;
+}
+
+html[data-reading-mode="dark"] .sort-option.active::after {
+    color: var(--jd-dark-text-accent);
+}
+
+html[data-reading-mode="dark"] .sort-option i {
+    color: var(--jd-dark-text-accent);
 }
 
 /* Reading mode toggle button - normal state */
 .reading-mode-toggle {
     background: #f1f5f9;
     color: #64748b;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: 1px solid #6c757d;
+    border-radius: 20px;
     width: 36px;
     height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
 }
 
 .reading-mode-toggle:hover {
@@ -208,6 +611,29 @@ html[data-reading-mode="dark"] .empty-state-container .text-dark {
 
 html[data-reading-mode="dark"] .empty-state-container .text-muted {
     color: #94a3b8 !important;
+}
+
+/* ============================================
+    🌙 HU-044 Fase 6: Elementos adicionales
+    ============================================ */
+html[data-reading-mode="dark"] .section-title {
+    background-color: var(--jd-dark-bg-secondary);
+    color: var(--jd-dark-text-primary);
+}
+
+html[data-reading-mode="dark"] .section-sub-title {
+    background-color: var(--jd-dark-bg-secondary);
+    color: var(--jd-dark-text-secondary);
+}
+
+html[data-reading-mode="dark"] .header-slogan {
+    color: var(--jd-dark-text-secondary);
+}
+
+html[data-reading-mode="dark"] .blog-result-count {
+    background: var(--jd-dark-bg-tertiary);
+    color: var(--jd-dark-text-muted);
+    border: 1px solid var(--jd-dark-border);
 }
 
 /* ============================================

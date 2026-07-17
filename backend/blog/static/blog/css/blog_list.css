@@ -426,6 +426,7 @@
 /* --- Contenedor de la Card --- */
 /* --- Contenedor de la Card --- */
 .blog-card {
+    position: relative;
     /* Borde ultra‑minimalista: sin borde visible, solo sombra */
     border: 2px solid rgba(1, 1, 1, 0.17);
     border-radius: 13px;
@@ -639,6 +640,20 @@
     color: #3498db;
 }
 
+.blog-card .stretched-link {
+    z-index: 5;
+}
+
+/* En mobile, los botones Editar/Moderar deben estar SIEMPRE sobre el link */
+@media (max-width: 540px) {
+
+    .edit-btn-wrapper,
+    .edit-btn-wrapper .btn {
+        z-index: 20;
+        position: relative;
+    }
+}
+
 /* -------------------------------------------------
    UI/UX Mejoras para los botones de acción en la lista de blogs
    ------------------------------------------------- */
@@ -772,7 +787,6 @@
 
 
 
-
 .articles-list__container {
     /* border: 1px solid red; */
     background-color: white;
@@ -874,12 +888,12 @@
 /* --- Botón Editar --- */
 .edit-btn-wrapper {
     position: relative;
-    z-index: 10;
+    z-index: 20;
 }
 
 .edit-btn {
     position: relative;
-    z-index: 10;
+    z-index: 20;
 }
 
 /* --- Tags/Badges --- */
@@ -1146,7 +1160,7 @@ body.home-p {
 
 /* Aseguramos que el contenedor del blog quede por encima de la capa decorativa */
 .jd-section .container {
-    position: relative;
+    /* position: relative; */
     z-index: 1;
 }
 
@@ -1156,7 +1170,7 @@ body.home-p {
    available width. They are therefore removed to avoid conflicts. */
 
 /* =========================================
-   🟡 FILA 2: Buscador + botones alineados izquierda
+   🟡 FILRA 2: Buscador + botones alineados izquierda
    ========================================= */
 .blog-search-second-row {
     display: flex;
@@ -1357,8 +1371,7 @@ body.home-p {
 
 /* --------------------------------------------------------------------------
    BOTÓN "ESCRIBIR ARTÍCULO" - estilo profesional y limpio
-   -------------------------------------------------------------------------- */
-/*
+   --------------------------------------------------------------------------
    Se agrega un estilo distintivo para el botón que permite crear un nuevo
    artículo. Utilizamos un degradado sutil, bordes redondeados y transiciones
    suaves para que el botón se sienta moderno sin recurrir a íconos o
@@ -1536,7 +1549,7 @@ body.home-p {
     position: absolute;
     top: 10px;
     left: 10px;
-    z-index: 5;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -1628,7 +1641,7 @@ span.author-name {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 10;
+    z-index: 2;
     animation: badgePulse 2s ease-in-out infinite;
 }
 
@@ -1637,7 +1650,7 @@ span.author-name {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 10;
+    z-index: 2;
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     width: 32px;
@@ -1901,9 +1914,6 @@ span.author-name {
     margin-top: 6px;
     min-width: 220px;
 }
-
-
-
 
 
 

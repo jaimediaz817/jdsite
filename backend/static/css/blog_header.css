@@ -2,6 +2,14 @@
    BLOG HEADER - Glassmorphism Moderno
    ============================================= */
 
+/* ✅ OCULTAR HAMBURGUESA EN DESKTOP - FIX CRÍTICO */
+@media (min-width: 992px) {
+    #navigation-menu .navbar-toggler {
+        display: none !important;
+    }
+}
+
+
 /* Contenedor principal - Forzar fondo oscuro consistente */
 html body #navigation-menu {
     background: #1f2225 !important;
@@ -100,6 +108,36 @@ html body #navigation-menu {
     justify-content: space-between !important;
     align-items: center !important;
     flex-grow: 1;
+}
+
+/* ✅ FIX DEFINITIVO: Sobrescribir display:none de .collapse en desktop */
+@media (min-width: 992px) {
+    #navigation-menu #navbarSupportedContent.collapse {
+        display: flex !important;
+    }
+}
+
+/* ✅ FIX DROPDOWN USUARIO: evitar que el nav lo corte */
+#navigation-menu.navbar {
+    overflow: visible !important;
+}
+
+#navigation-menu .navbar-collapse {
+    overflow: visible !important;
+}
+
+#navigation-menu .dropdown {
+    position: relative;
+}
+
+#navigation-menu .dropdown-menu {
+    z-index: 1050 !important;
+    top: 100% !important;
+    margin-top: 0.25rem !important;
+}
+
+#navigation-menu .nav-item.dropdown.show .dropdown-menu {
+    display: block !important;
 }
 
 #navigation-menu .navbar-nav {
@@ -345,7 +383,7 @@ html body #navigation-menu {
 
     #navigation-menu .navbar-collapse.show {
         display: flex !important;
-        margin-top: 9px;
+        /* margin-top: 9px; */
     }
 
     #navigation-menu .navbar-nav {

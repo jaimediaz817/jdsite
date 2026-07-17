@@ -3108,7 +3108,7 @@ html[data-reading-mode="dark"] .vl-highlight {
 }
 
 .blog-video-caption::before {
-    content: 'ðŸŽ¬';
+    content: '-';
     font-size: 1rem;
     flex-shrink: 0;
 }

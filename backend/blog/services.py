@@ -487,10 +487,19 @@ def save_blog_to_source(data, user):
     # existente (útil al editar un artículo sin cambiar la imagen). ``existing_fm``
     # contiene el front‑matter previo, por lo que podemos reutilizar su valor.
     if image_filename:
-        new_fm["cover_image"] = f"/static/blogs/{folder_name}/{image_filename}"
+        # Usar slug limpio (sin fecha) para que la ruta pública sea estable
+        # y coincida con la carpeta que crea import_blogs en static/blogs/<slug>/
+        new_fm["cover_image"] = f"/static/blogs/{slug}/{image_filename}"
     else:
         # Mantener la portada anterior cuando no se proporciona una nueva.
-        new_fm["cover_image"] = existing_fm.get("cover_image", "")
+        # Si la portada anterior tiene fecha, la normalizamos al slug limpio.
+        old_cover = existing_fm.get("cover_image", "")
+        if old_cover:
+            # Extraer solo el nombre del archivo de la ruta anterior
+            old_filename = Path(old_cover).name
+            new_fm["cover_image"] = f"/static/blogs/{slug}/{old_filename}"
+        else:
+            new_fm["cover_image"] = ""
     new_fm["category"] = category
     new_fm["tags"] = tags
     new_fm["meta_title"] = meta_title
@@ -604,6 +613,7 @@ def save_blog_to_source(data, user):
         "folder": folder_name,
         "published": is_published,
         "status": "published" if is_published else "draft",
+        "cover_image": new_fm.get("cover_image", ""),
     }
 
 

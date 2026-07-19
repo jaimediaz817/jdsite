@@ -231,7 +231,7 @@
             <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
 
               <!-- 🔙 Back link -->
-              <div class="mb-5">
+              <div class="mb-2">
                 <a href="{% url 'blog:blog_list' %}" class="jd-back-link">
                   <i class="fas fa-arrow-left"></i>
                   <span>Volver al listado</span>
@@ -268,7 +268,7 @@
                                 <h1 class="jd-article-title">{{ post.title }}</h1>
                                 <!-- Categoría del artículo (si existe) -->
                                 {% if post.category %}
-                                <div class="category-badge mb-3">
+                                <div class="category-badge mb-1">
                                     <a href="{% url 'blog:blog_list' %}?category={{ post.category.slug }}" class="badge category-link" title="Ver más artículos de {{ post.category.name }}">
                                         <i class="fas fa-folder-open mr-1"></i> {{ post.category.name }}
                                     </a>
@@ -949,10 +949,10 @@
       }
       #qr-modal-close {
         position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 36px;
-        height: 36px;
+        top: -2px;
+        right: -2px;
+        width: 34px;
+        height: 34px;
         border-radius: 50%;
         border: 1px solid rgba(255,255,255,0.1);
         background: rgba(255,255,255,0.06);

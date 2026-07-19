@@ -1,0 +1,89 @@
+/* ==========================================================================
+   HU-050: COMENTARIOS COMPACTOS Y PROFESIONALES
+   ==========================================================================
+   Versión compacta y minimalista de los comentarios
+   - Reduce padding vertical en un 30%
+   - Avatar más pequeño
+   - Botones más estrechos
+   - Respuesta inline más integrada
+   ========================================================================== */
+
+/* --- Comentario principal compacto --- */
+.jd-comment {
+    gap: 10px;
+    padding: 1rem 0;
+}
+
+.jd-comment-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.jd-comment-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 0 10px 10px 10px;
+}
+
+/* --- Acciones compactas --- */
+.jd-comment-actions {
+    margin-top: 0.4rem;
+    gap: 2px;
+}
+
+.jd-react-btn {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+}
+
+.jd-reply-toggle {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+}
+
+/* --- Reply inline más compacto --- */
+.jd-inline-reply-inner {
+    padding: 0.5rem 0.75rem;
+    gap: 6px;
+}
+
+.jd-reply-textarea {
+    min-height: 50px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+/* --- Respuestas anidadas --- */
+.jd-replies {
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    gap: 0.5rem;
+}
+
+.jd-reply-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 9px;
+}
+
+.jd-reply-bubble {
+    padding: 0.55rem 0.75rem;
+}
+
+/* --- Skeleton compacto --- */
+.sk-comment {
+    gap: 10px;
+    padding: 0.5rem 0;
+}
+
+.sk-comment-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+/* --- Toggle replies button más compacto --- */
+.jd-toggle-replies-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}

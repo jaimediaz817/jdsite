@@ -286,20 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ===== IMAGE ZOOM =====
-document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('image-zoom-modal');
-    var modalImg = document.getElementById('image-zoom-content');
-    if (modal && modalImg) {
-        document.querySelectorAll('.blog-content img').forEach(function(img) {
-            img.addEventListener('click', function() {
-                modalImg.src = img.src;
-                modal.showModal();
-            });
-        });
-        modal.addEventListener('click', function(e) { if (e.target === modal) modal.close(); });
-    }
-});
+// ===== IMAGE ZOOM ===== (Consolidado en LIGHTBOX MEJORAS - ver abajo)
 
 // ===== SHARE BUTTONS =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -739,17 +726,15 @@ function closeLightbox() {
         if (img.closest(".popup-gallery-container, .gallery-preview")) return;
         if (window.galleryModalOpen) return;
         e.preventDefault();
-        if (img.dataset.blogImg === "single") {
-            openLightbox([img], 0);
-            return;
-        }
-        var gridItem = img.closest(".blog-image-grid-item");
-        if (!gridItem) return;
-        var grid = gridItem.closest(".blog-image-grid");
-        if (!grid) return;
-        var images = Array.from(grid.querySelectorAll(".blog-image-grid-item img"));
-        var index = images.indexOf(img);
-        openLightbox(images, index);
+        
+        // Obtener TODAS las imágenes del artículo (excluyendo slides, popup gallery, etc)
+        var allImages = Array.from(document.querySelectorAll(".blog-content img"))
+            .filter(function(i) {
+                return !i.closest(".slides-container, .popup-gallery-container, .gallery-preview");
+            });
+        
+        var index = allImages.indexOf(img);
+        openLightbox(allImages, index);
     });
 
     // Delegación + listeners directos para máxima robustez en <dialog>

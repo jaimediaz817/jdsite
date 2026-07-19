@@ -645,11 +645,11 @@
     <script src="{% static 'blog/js/blog_editor/index.js' %}"></script>
     <script src="{% static 'blog/js/blog_editor/image-selector.js' %}?v=20250624-2"></script>
     <script src="{% static 'blog/js/blog_editor/video-widget.js' %}"></script>
-    <script src="{% static 'blog/js/blog_editor/slide-widget.js' %}"></script>
-  <script>
-    // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)
-    var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';
-  </script>
+    <script src="{% static 'blog/js/blog_editor/slide-widget.js' %}?v=20250628-1"></script>
+    <script>
+        // URL for eliminar archivo desde editor (usa la misma vista que la dashboard)
+        var DELETE_FILE_URL = '{% url "blog:delete_resource_file" %}';
+    </script>
     <!-- Drone volador animación -->
     <script src='{% static 'blog/js/zeppelin.js' %}'></script>
 </body>

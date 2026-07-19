@@ -47,9 +47,23 @@ Optimizar la distribución del espacio en la sección de comentarios del blog de
 - `.jd-reply-textarea`: min-height 60px → 50px
 
 ## Implementación
-1. Archivo CSS creado: `backend/blog/static/blog/css/blog_detail_compact.css`
-2. Pendiente: Añadir `<link>` en `blog_detail.html`
-3. Pendiente: `collectstatic` y deploy en VPS
+1. ✅ Archivo CSS creado: `backend/blog/static/blog/css/blog_detail_compact.css`
+2. ✅ Responsive incluido (media queries para móvil ≤767px)
+3. Pendiente: Añadir `<link>` en `blog_detail.html`
+4. Pendiente: `collectstatic` y deploy en VPS
+
+## Responsive (Fase 4)
+- Móvil: `.jd-comment` en columna, avatar 28px, padding reducido
+- `.jd-replies` con padding-left 0.5rem
+- `.jd-reply-avatar` 24px en móvil
 
 ## Estado
-🟡 PARCIAL - Fase 1 y 2 completadas, pendiente integración
+🟢 LISTO PARA PROBAR - Solo falta integrar el CSS en el template
+
+## Deploy commands:
+```bash
+git pull origin main
+# Añadir link en blog_detail.html
+python manage.py collectstatic --noinput
+restart gunicorn (o systemctl restart gunicorn)
+```

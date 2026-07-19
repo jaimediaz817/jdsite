@@ -47,10 +47,52 @@ window.prevSlide = prevSlide;
 window.nextSlide = nextSlide;
 window.goToSlide = goToSlide;
 
-document.addEventListener('DOMContentLoaded', function() {
+function initSlides() {
+    var container = getSlidesContainer();
+    if (!container) return;
+    if (container.dataset.slidesInitialized) return;
+    container.dataset.slidesInitialized = 'true';
     var slides = getSlides();
     if (slides.length) setActiveSlide(0);
-});
+
+    // Navegación táctil (swipe) y por clic en zonas izquierda/derecha
+    var startX = 0, startY = 0;
+    container.addEventListener('touchstart', function(e) {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    container.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].screenX - startX;
+        var dy = e.changedTouches[0].screenY - startY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+            if (dx < 0) nextSlide(); else prevSlide();
+        }
+    }, { passive: true });
+
+    function onContainerClick(e) {
+        var target = e.target;
+        if (target.closest('a, button, .slide-caption, .gallery-images, input, textarea, select')) return;
+        if (target.closest('.popup-gallery-container, [onclick*="openGalleryPopup"]')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        if (window.galleryModalOpen) return;
+
+        var rect = container.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width;
+        if (x < 0.35) { e.preventDefault(); prevSlide(); }
+        else if (x > 0.65) { e.preventDefault(); nextSlide(); }
+    }
+    container._jdClickHandler = onContainerClick;
+    container.addEventListener('click', onContainerClick);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSlides);
+} else {
+    initSlides();
+}
 
 // Back to top button functionality
 // Back to top button functionality
@@ -93,6 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ===== GALLERY POPUP =====
 window.openGalleryPopup = function(element) {
+    window.galleryModalOpen = true;
+    disableSlides(true);
+    closeLightboxIfOpen();
+
+    if (element) {
+        element.setAttribute('aria-expanded', 'true');
+    }
+
     var raw = element.querySelector('.gallery-images').value;
     var entries = raw.split('|||');
     var images = [], titles = [], descriptions = [];
@@ -136,13 +186,51 @@ window.openGalleryPopup = function(element) {
         currentIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
         updateImage();
     };
-    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    modal.onclick = function(e) {
+        if (e.target === modal) { modal.remove(); window.galleryModalOpen = false; disableSlides(false); }
+    };
     document.onkeydown = function(e) {
-        if (e.key === 'Escape') modal.remove();
+        if (e.key === 'Escape') { modal.remove(); window.galleryModalOpen = false; disableSlides(false); }
         if (e.key === 'ArrowLeft') prevImage();
         if (e.key === 'ArrowRight') nextImage();
     };
+    // Asegurar cierre de bandera aunque se cierre por botón interno
+    window.addEventListener('gallery-popup-closed', function() { window.galleryModalOpen = false; disableSlides(false); });
+
+    // Cierre robusto desde botón interno del modal
+    var closeBtn = modal.querySelector('.gallery-modal-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.remove();
+            window.galleryModalOpen = false;
+            disableSlides(false);
+        });
+    }
 };
+
+function disableSlides(disabled) {
+    var container = getSlidesContainer();
+    if (!container || !container._jdClickHandler) return;
+    if (disabled) {
+        container.classList.add('gallery-open');
+        container.removeEventListener('click', container._jdClickHandler);
+    } else {
+        container.classList.remove('gallery-open');
+        container.addEventListener('click', container._jdClickHandler);
+    }
+}
+
+function closeLightboxIfOpen() {
+    var modal = document.getElementById('image-zoom-modal');
+    if (!modal) return;
+    try { modal.close(); } catch (e) { modal.style.display = ''; }
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.dispatchEvent(new Event('gallery-popup-closed'));
+}
 
 // ===== READING PROGRESS BAR =====
 console.log('Iniciando barra progreso');
@@ -573,12 +661,12 @@ document.addEventListener("DOMContentLoaded", function() {
     var isOpen = false;
     var savedScrollY = 0;
 
-    function openLightbox(images, index) {
+function openLightbox(images, index) {
         currentImages = images;
         currentIndex = index;
         savedScrollY = window.scrollY;
         showImage(index);
-        modal.showModal();
+        try { modal.showModal(); } catch (e) { modal.style.display = "flex"; }
         isOpen = true;
         updateNavButtons();
         updateCounter();
@@ -625,8 +713,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function closeLightbox() {
-        modal.close();
+function closeLightbox() {
+        try { modal.close(); } catch (e) { modal.style.display = ""; }
         isOpen = false;
         document.body.style.overflow = "";
         document.body.style.position = "";
@@ -648,6 +736,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener("click", function(e) {
         var img = e.target.closest(".blog-image-grid-item img, img[data-blog-img='single']");
         if (!img) return;
+        if (img.closest(".popup-gallery-container, .gallery-preview")) return;
+        if (window.galleryModalOpen) return;
         e.preventDefault();
         if (img.dataset.blogImg === "single") {
             openLightbox([img], 0);
@@ -662,19 +752,28 @@ document.addEventListener("DOMContentLoaded", function() {
         openLightbox(images, index);
     });
 
-    if (closeBtn) closeBtn.addEventListener("click", function(e) {
-        e.stopPropagation();
-        closeLightbox();
-    });
-    if (prevBtn) prevBtn.addEventListener("click", function(e) { e.stopPropagation(); navigate(-1); });
-    if (nextBtn) nextBtn.addEventListener("click", function(e) { e.stopPropagation(); navigate(1); });
-
-    // Cerrar al hacer clic en el backdrop del modal
+    // Delegación + listeners directos para máxima robustez en <dialog>
+    // Delegación + listeners directos para máxima robustez en <dialog>
     modal.addEventListener("click", function(e) {
-        if (e.target === modal) {
+        var target = e.target;
+        console.log('🔍 Click en modal:', target.className, target.tagName);
+        if (target.closest(".modal-lightbox-close")) {
+            console.log('🔴 Click en close button');
+            e.preventDefault(); e.stopPropagation(); closeLightbox();
+        } else if (target.closest(".modal-lightbox-prev")) {
+            console.log('◀️ Click en prev button, currentIndex:', currentIndex);
+            e.preventDefault(); e.stopPropagation(); navigate(-1);
+        } else if (target.closest(".modal-lightbox-next")) {
+            console.log('▶️ Click en next button, currentIndex:', currentIndex, 'total:', currentImages.length);
+            e.preventDefault(); e.stopPropagation(); navigate(1);
+        } else if (target === modal || target.classList.contains("modal-lightbox-wrapper")) {
             closeLightbox();
         }
     });
+
+    if (closeBtn) closeBtn.addEventListener("click", function(e) { console.log('🔴 closeBtn direct click'); e.preventDefault(); e.stopPropagation(); closeLightbox(); });
+    if (prevBtn) prevBtn.addEventListener("click", function(e) { console.log('◀️ prevBtn direct click'); e.preventDefault(); e.stopPropagation(); navigate(-1); });
+    if (nextBtn) nextBtn.addEventListener("click", function(e) { console.log('▶️ nextBtn direct click'); e.preventDefault(); e.stopPropagation(); navigate(1); });
 
     document.addEventListener("keydown", function(e) {
         if (!isOpen) return;

@@ -1070,9 +1070,136 @@ html {
     }
 }
 
+/* Lightbox animaciones */
+@keyframes lightbox-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes lightbox-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Spinner de carga mientras se descarga la imagen del modal */
+.modal-lightbox-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    display: none;
+    z-index: 100001;
+}
+
+.modal-lightbox-spinner.show {
+    display: block;
+}
+
+/* Wrapper del contenido del modal */
+.modal-lightbox-wrapper {
+    position: relative;
+    padding: 4rem 1rem 1rem 1rem;
+}
+
+/* Botones de navegación del lightbox */
+.modal-lightbox-close,
+.modal-lightbox-prev,
+.modal-lightbox-next {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 100001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.modal-lightbox-close {
+    top: 1rem;
+    right: 1rem;
+    transform: none;
+}
+
+.modal-lightbox-prev {
+    left: 1rem;
+    transform: translateY(-50%);
+}
+
+.modal-lightbox-next {
+    right: 1rem;
+    transform: translateY(-50%);
+}
+
+.modal-lightbox-close:hover,
+.modal-lightbox-prev:hover,
+.modal-lightbox-next:hover {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.modal-lightbox-close:focus-visible,
+.modal-lightbox-prev:focus-visible,
+.modal-lightbox-next:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.modal-lightbox-prev.hidden,
+.modal-lightbox-next.hidden {
+    display: none;
+}
+
+/* Contador de imágenes */
+.modal-lightbox-counter {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    display: none;
+    z-index: 100001;
+}
+
+.modal-lightbox-counter.show {
+    display: block;
+}
+
+#image-zoom-modal[open] .modal-lightbox-wrapper {
+    animation: lightbox-scale-in 0.3s ease-out;
+}
+
 /* ==========================================================================
-   4. BARRA LATERAL FLOTANTE (Reacciones)
-   ========================================================================== */
+    4. BARRA LATERAL FLOTANTE (Reacciones)
+    ========================================================================== */
 .floating-reaction-bar {
     position: fixed;
     left: 2rem;
@@ -4159,229 +4286,4 @@ html[data-reading-mode="dark"] .blog-content pre .code-header {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-
-/* ==========================================================================
-   4. IMAGE LIGHTBOX MODAL
-   ========================================================================== */
-#image-zoom-modal {
-    border: none !important;
-    outline: none !important;
-    padding: 0;
-    background: transparent;
-    max-width: none;
-    max-height: none;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    border-radius: 12px;
-}
-
-#image-zoom-modal::backdrop {
-    background: rgba(0, 0, 0, 0.85);
-}
-
-.modal-lightbox-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
-}
-
-#image-zoom-content {
-    max-width: 90vw;
-    max-height: 85vh;
-    border-radius: 0.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
-}
-
-.modal-lightbox-close,
-.modal-lightbox-prev,
-.modal-lightbox-next {
-    position: fixed;
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 400;
-    font-size: 2rem;
-    line-height: 1;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background 0.2s ease, opacity 0.2s ease;
-    z-index: 100;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.modal-lightbox-close {
-    top: 1rem;
-    right: 1rem;
-    width: 2.75rem;
-    height: 2.75rem;
-    padding: 0;
-    border-radius: 9999px;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    line-height: 1;
-}
-
-.modal-lightbox-close:hover,
-.modal-lightbox-prev:hover,
-.modal-lightbox-next:hover {
-    background: rgba(0, 0, 0, 0.65);
-}
-
-.modal-lightbox-close:focus-visible,
-.modal-lightbox-prev:focus-visible,
-.modal-lightbox-next:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.85);
-    outline-offset: 2px;
-}
-
-.modal-lightbox-prev {
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.modal-lightbox-next {
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.modal-lightbox-prev.hidden,
-.modal-lightbox-next.hidden {
-    display: none;
-}
-
-.modal-lightbox-counter {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
-    font-family: 'Montserrat', sans-serif;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 0.3rem 0.8rem;
-    border-radius: 1rem;
-    display: none;
-}
-
-.modal-lightbox-counter.show {
-    display: block;
-}
-
-.modal-lightbox-spinner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    border: 3px solid rgba(255, 255, 255, 0.15);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: lightbox-spin 0.7s linear infinite;
-    z-index: 99;
-    display: none;
-}
-
-.modal-lightbox-spinner.show {
-    display: block;
-}
-
-/* ==========================================================================
-   5. LIGHTBOX ANIMACIONES (Fase 3)
-   ========================================================================== */
-
-/* Animacion de apertura: fade + scale up */
-#image-zoom-modal[open] {
-    animation: lightbox-fade-in 0.25s ease-out;
-}
-
-#image-zoom-modal[open] .modal-lightbox-wrapper {
-    animation: lightbox-scale-in 0.3s ease-out;
-}
-
-@keyframes lightbox-fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes lightbox-scale-in {
-    from {
-        opacity: 0;
-        transform: scale(0.92);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Transicion al cambiar imagen en el modal */
-#image-zoom-content {
-    transition: opacity 0.2s ease;
-}
-
-#image-zoom-content.loading {
-    opacity: 0.4;
-}
-
-/* Spinner de carga mientras se descarga la imagen del modal */
-.modal-lightbox-spinner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    border: 3px solid rgba(255, 255, 255, 0.15);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: lightbox-spin 0.7s linear infinite;
-    z-index: 99;
-    display: none;
-}
-
-.modal-lightbox-spinner.show {
-    display: block;
-}
-
-@keyframes lightbox-spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Transicion hover en grid mejorada */
-.blog-image-grid-item {
-    transition: box-shadow 0.3s ease;
-}
-
-.blog-image-grid-item:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }

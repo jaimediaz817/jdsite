@@ -2,11 +2,6 @@
 // HU-20_C_V1: Slide / Popup Gallery Widget (modal unificado)
 // ======================================================
 
-// ======================================================
-// HU-022 Fase 0: Validación jQuery (solo diagnóstico)
-// ======================================================
-console.log('✅ [slide-widget.js] jQuery disponible:', typeof jQuery !== 'undefined');
-
 console.log('[slide-widget] modulo cargado');
 
 let currentGalleryMode = 'slides'; // 'slides' | 'popup:gallery'
@@ -38,39 +33,28 @@ async function uploadFileToServer(file) {
 // ======================================================
 // Apertura del modal y preset de modo
 // ======================================================
-/**
- * Open the gallery modal. If the cursor is currently inside an existing
- * slide/gallery block, we store the start line so that the block can be
- * replaced instead of inserting a duplicate.
- */
 function openGalleryModal(presetMode) {
     if (!easyMDE) return;
 
     const mode = presetMode || 'slides';
-    // Detect if we are inside an existing block (slides or popup:gallery).
-    // The image‑selector module already provides a reliable context detector.
     const ctx = (typeof detectImageContext === 'function') ? detectImageContext() : { mode: 'normal', startLine: null };
     if (ctx.mode === 'slides' || ctx.mode === 'popup:gallery') {
         currentGalleryMode = ctx.mode;
-        // startLine is the line where the opening ::: was found.
         window._galleryEditStartLine = typeof ctx.startLine === 'number' ? ctx.startLine : undefined;
     } else {
         window._galleryEditStartLine = undefined;
     }
 
+    console.log('[openGalleryModal] mode:', mode, 'ctx.mode:', ctx.mode);
+    
     updateGalleryModeUI();
     clearGalleryModalInputs();
     refreshGalleryModalGrid();
-    // Ensure any previous selection visual state is cleared
     clearGallerySelection();
     renderSelectedGalleryList();
     $('#galleryModal').modal('show');
 }
 
-/**
- * Remove the "is-selected" class from all thumbnail items in the gallery modal.
- * This prevents stale selections from persisting when the modal is reopened.
- */
 function clearGallerySelection() {
     const grid = document.getElementById('gallery-existing-images');
     if (!grid) return;
@@ -97,11 +81,9 @@ function updateGalleryModeUI() {
     // Toggle pills
     const pillSlides = document.getElementById('gallery-toggle-slides');
     const pillGallery = document.getElementById('gallery-toggle-gallery');
-    // The gallery pill should be active when the mode is 'popup:gallery'
     if (pillSlides) pillSlides.classList.toggle('active', mode === 'slides');
     if (pillGallery) pillGallery.classList.toggle('active', mode === 'popup:gallery');
 
-    // Etiqueta dinámica del botón de acción
     const createBtn = document.getElementById('gallery-create-btn');
     if (createBtn) {
         createBtn.innerHTML = mode === 'slides'
@@ -129,6 +111,7 @@ function refreshGalleryModalGrid() {
     grid.innerHTML = '';
 
     const files = (typeof uploadedFiles !== 'undefined') ? uploadedFiles : [];
+    console.log('[refreshGalleryModalGrid] files:', files.length);
 
     if (files.length === 0) {
         if (emptyState) emptyState.classList.remove('d-none');
@@ -145,7 +128,6 @@ function refreshGalleryModalGrid() {
 
             const img = document.createElement('img');
             img.className = 'selector-thumb';
-            // Encode the source URL to correctly handle filenames with spaces or special characters
             const rawSrc = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
             img.src = encodeURI(rawSrc);
             img.alt = file.filename;
@@ -186,33 +168,24 @@ function refreshGalleryModalGrid() {
 // ======================================================
 // Panel dinámico: una fila de inputs por imagen seleccionada
 // ======================================================
-/**
- * Render the dynamic panel that shows a row of inputs for each selected image.
- * Also updates the state of the "Crear" button – it should be enabled when at
- * least one image is selected and disabled otherwise.
- */
 function renderSelectedGalleryList() {
     const list = document.getElementById('gallery-selected-list');
     const emptySel = document.getElementById('gallery-no-selection');
     const createBtn = document.getElementById('gallery-create-btn');
     if (!list) return;
 
-    // Clear previous rows
     list.innerHTML = '';
 
-    // Show/hide the "no selection" placeholder
     if (selectedGalleryImages.length === 0) {
         if (emptySel) emptySel.classList.remove('d-none');
     } else {
         if (emptySel) emptySel.classList.add('d-none');
     }
 
-    // Enable or disable the create button based on selection count
     if (createBtn) {
         createBtn.disabled = selectedGalleryImages.length === 0;
     }
 
-    // Build rows for each selected image
     selectedGalleryImages.forEach((img, idx) => {
         const row = document.createElement('div');
         row.className = 'gallery-selected-row mb-2';
@@ -252,12 +225,13 @@ function renderSelectedGalleryList() {
 function confirmGalleryModal() {
     const mode = currentGalleryMode;
 
+    console.log('[confirmGalleryModal] mode:', mode, 'selected:', selectedGalleryImages.length);
+
     if (selectedGalleryImages.length === 0) {
         alert('Selecciona al menos una imagen.');
         return;
     }
 
-    // Normalizar campos
     const items = selectedGalleryImages.map(img => ({
         filename: img.filename,
         title: (img.title || '').trim() || 'Sin título',
@@ -268,7 +242,6 @@ function confirmGalleryModal() {
         mode === 'slides' ? ':::slides\n' : ':::popup:gallery\n';
 
     items.forEach(img => {
-        // Encode filename to handle spaces and special characters in URLs
         const encoded = encodeURIComponent(img.filename);
         block += `![${img.title}|${img.description}](./${encoded})\n`;
     });
@@ -276,13 +249,10 @@ function confirmGalleryModal() {
     block += ':::';
 
     insertGalleryInEditor(mode, block);
-    // Reset state after insertion to avoid residual data on next use
     selectedGalleryImages = [];
     window._galleryEditStartLine = undefined;
-    // Blur any element that might still have focus inside the modal to avoid aria-hidden warnings
     if (document.activeElement) document.activeElement.blur();
     $('#galleryModal').modal('hide');
-    // Ensure editor regains focus after the modal is fully hidden
     setTimeout(function() {
         if (typeof easyMDE !== 'undefined' && easyMDE.codemirror) {
             easyMDE.codemirror.focus();
@@ -293,12 +263,6 @@ function confirmGalleryModal() {
 // ======================================================
 // Inserción en el editor
 // ======================================================
-/**
- * Insert the generated block into the editor. If we previously detected that the
- * cursor was inside an existing slide/gallery block, we replace that block
- * instead of inserting a new one – this prevents duplicate blocks when the
- * user edits an existing slide.
- */
 function insertGalleryInEditor(mode, blockText) {
     if (!easyMDE || !blockText) return;
 
@@ -306,14 +270,10 @@ function insertGalleryInEditor(mode, blockText) {
     const doc = cm.getDoc();
     const cursor = window._imageSelectorCursor || doc.getCursor();
 
-    // If we have a stored start line for an existing block, replace the whole
-    // block (from the opening ::: to the closing :::). Otherwise, insert at
-    // the current cursor position.
     if (typeof window._galleryEditStartLine === 'number') {
         const startLine = window._galleryEditStartLine;
         let endLine = startLine;
         const lineCount = doc.lineCount();
-        // Search forward for the closing ":::" line.
         for (let i = startLine + 1; i < lineCount; i++) {
             const lineText = doc.getLine(i);
             if (lineText && lineText.trim() === ':::') {
@@ -321,15 +281,12 @@ function insertGalleryInEditor(mode, blockText) {
                 break;
             }
         }
-        // Replace the range covering the whole block.
         doc.replaceRange(blockText + '\n', { line: startLine, ch: 0 }, { line: endLine, ch: doc.getLine(endLine).length });
-        // Clean up the edit marker.
         window._galleryEditStartLine = undefined;
     } else {
         doc.replaceRange(blockText + '\n', cursor);
     }
 
-    // Refrescar widgets
     if (typeof refreshImageWidgets === 'function') {
         setTimeout(function () { refreshImageWidgets(); }, 100);
     }
@@ -341,10 +298,10 @@ function insertGalleryInEditor(mode, blockText) {
 // Toggle de modo (slides ⇄ gallery)
 // ======================================================
 function switchGalleryMode(newMode) {
+    console.log('[switchGalleryMode] prev:', currentGalleryMode, 'new:', newMode);
     if (newMode !== 'slides' && newMode !== 'popup:gallery') return;
     currentGalleryMode = newMode;
     updateGalleryModeUI();
-    // Se mantienen las imágenes seleccionadas, solo cambia el tipo de bloque
 }
 
 // ======================================================
@@ -368,26 +325,38 @@ function bindGalleryModalControls() {
     if (createBtn) {
         createBtn.removeEventListener('click', confirmGalleryModal);
         createBtn.addEventListener('click', confirmGalleryModal);
+        console.log('🔧 bindGalleryModalControls: gallery-create-btn binded');
     }
 
     const pillSlides = document.getElementById('gallery-toggle-slides');
     const pillGallery = document.getElementById('gallery-toggle-gallery');
 
+    console.log('🔧 bindGalleryModalControls: pillSlides=', !!pillSlides, 'pillGallery=', !!pillGallery);
+
     if (pillSlides) {
-        pillSlides.removeEventListener('click', function () { switchGalleryMode('slides'); });
-        pillSlides.addEventListener('click', function () { switchGalleryMode('slides'); });
+        pillSlides.removeEventListener('click', pillsSlidesClick);
+        pillSlides.addEventListener('click', pillsSlidesClick);
     }
     if (pillGallery) {
-        pillGallery.removeEventListener('click', function () { switchGalleryMode('popup:gallery'); });
-        pillGallery.addEventListener('click', function () { switchGalleryMode('popup:gallery'); });
+        pillGallery.removeEventListener('click', pillsGalleryClick);
+        pillGallery.addEventListener('click', pillsGalleryClick);
     }
 
-    // Subida desde PC dentro del modal (reutilizando lógica)
     const uploadBtn = document.getElementById('gallery-upload-btn');
     if (uploadBtn) {
         uploadBtn.removeEventListener('click', handleGalleryUploadClick);
         uploadBtn.addEventListener('click', handleGalleryUploadClick);
     }
+}
+
+function pillsSlidesClick() {
+    console.log('📊 pillsSlidesClick called');
+    switchGalleryMode('slides');
+}
+
+function pillsGalleryClick() {
+    console.log('🖼️ pillsGalleryClick called');
+    switchGalleryMode('popup:gallery');
 }
 
 function handleGalleryUploadClick() {

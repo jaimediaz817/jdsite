@@ -1,79 +1,40 @@
-# DIAGNÓSTICO: Botones de navegación del lightbox slide no funcionan
+# DIAGNÓSTICO: Botones de navegación del modal slide (galleryModal)
 
-## Problema identificado
+## Problema
+Los botones `#gallery-toggle-slides` y `#gallery-toggle-gallery` del modal `#galleryModal` no responden al click.
 
-Los botones `.modal-lightbox-prev` y `.modal-lightbox-next` dentro del modal `#image-zoom-modal` no responden al click.
+## Archivos modificados con console.log
 
-## Análisis del código
+### 1. `backend/blog/static/blog/js/blog_editor/slide-widget.js`
+- Agregado `console.log('[slide-widget] modulo cargado');` al iniciar
+- Agregado `console.log('🔧 bindGalleryModalControls: pillSlides=', !!pillSlides, ...)` en bind
+- Agregado `console.log('📊 pillsSlidesClick called');` en el click handler de slides
+- Agregado `console.log('🖼️ pillsGalleryClick called');` en el click handler de gallery
 
-### 1. Template (blog_detail.html)
-- ✅ El modal `#image-zoom-modal` está en líneas 780-789
-- ✅ Los botones existen: `.modal-lightbox-close`, `.modal-lightbox-prev`, `.modal-lightbox-next`
+## ACCIÓN REQUERIDA EN EL VPS
 
-### 2. JavaScript (blog_detail.js líneas 754-771)
-```javascript
-var prevBtn = modal.querySelector(".modal-lightbox-prev");
-var nextBtn = modal.querySelector(".modal-lightbox-next");
-...
-if (prevBtn) prevBtn.addEventListener("click", function(e) { e.preventDefault(); e.stopPropagation(); navigate(-1); });
-if (nextBtn) nextBtn.addEventListener("click", function(e) { e.preventDefault(); e.stopPropagation(); navigate(1); });
-```
-
-### 3. CSS (blog_detail.css)
-- ✅ Los estilos `.modal-lightbox-prev`, `.modal-lightbox-next`, `.modal-lightbox-close`, `.modal-lightbox-counter`, `.modal-lightbox-spinner` fueron agregados al archivo fuente
-
-## CAUSA RAÍZ IDENTIFICADA
-
-**Los estilos del lightbox estaban faltantes en el archivo fuente source** (`backend/blog/static/blog/css/blog_detail.css`). Solo existían en `staticfiles/` (compilado), lo que significa que:
-
-- Los botones tenían `position: fixed` pero sin dimensiones (`width`, `height`)
-- Sin `cursor: pointer`, parecían no ser clickeables
-- Sin `z-index` adecuado, podrían estar ocultos detrás de otros elementos
-
-## Solución aplicada
-
-### CSS agregado (ya aplicado):
-```css
-.modal-lightbox-close,
-.modal-lightbox-prev,
-.modal-lightbox-next {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    color: #fff;
-    border: none;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    font-size: 1.8rem;
-    cursor: pointer;
-    z-index: 100001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease;
-}
-
-.modal-lightbox-prev { left: 1rem; transform: translateY(-50%); }
-.modal-lightbox-next { right: 1rem; transform: translateY(-50%); }
-```
-
-### Comando ejecutado:
+### Pasos:
 ```bash
-.venv\Scripts\activate.bat && python backend\manage.py collectstatic --noinput
+# 1. Pull los cambios
+git pull origin main
+
+# 2. Collectstatic
+python manage.py collectstatic --noinput
+
+# 3. Reiniciar el servidor (si aplica)
+# systemctl restart gunicorn  # o el comando que uses
 ```
-Resultado: **24 static files copied** - CSS actualizado en staticfiles
 
-## Estado actual
-- ✅ CSS agregado al archivo fuente
-- ✅ collectstatic ejecutado exitosamente
-- ✅ Template verificado - tiene los botones correctos
-- ✅ JS verificado - delegación de eventos está bien implementada
+### Verificar en el navegador:
+1. Abrir la consola del navegador (F12)
+2. Ir a la página del editor de blog
+3. Click en el botón de **Slides** de la barra MTP
+4. Ver los logs:
+   - `[slide-widget] modulo cargado` - ¿se ve al cargar la página?
+   - `🔧 bindGalleryModalControls: pillSlides=true pillGallery=true` - ¿existen los elementos?
+   - `📊 pillsSlidesClick called` - ¿se ejecuta al hacer click?
 
-## Acción restante
-Hacer commit y push a producción:
-```bash
-git add backend/blog/static/blog/css/blog_detail.css
-git commit -m "fix: agregar estilos lightbox navegacion prev/next"
-git push origin main
+## Posibles causas si no funciona:
+1. **jQuery no cargado**: El modal usa `$('#galleryModal').modal('show')` que requiere jQuery
+2. **Bootstrap 4 no funciona**: El proyecto usa Bootstrap 4, no 5
+3. **Los elementos no existen en el DOM**: Verificar que `#gallery-toggle-slides` y `#gallery-toggle-gallery` están en el template

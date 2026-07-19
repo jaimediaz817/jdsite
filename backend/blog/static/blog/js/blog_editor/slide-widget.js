@@ -422,14 +422,18 @@ async function uploadAndRenderGalleryFile(file) {
 // ======================================================
 // Boot
 // ======================================================
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
+try {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            initGalleryToolbar();
+            bindGalleryModalControls();
+        });
+    } else {
         initGalleryToolbar();
         bindGalleryModalControls();
-    });
-} else {
-    initGalleryToolbar();
-    bindGalleryModalControls();
+    }
+} catch (e) {
+    console.error('❌ [slide-widget.js] Error en boot:', e);
 }
 
 // Exponer globalmente

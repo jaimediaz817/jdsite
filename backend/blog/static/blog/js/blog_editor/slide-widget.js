@@ -127,13 +127,16 @@ function refreshGalleryModalGrid() {
             const isSel = selectedGalleryImages.some(img => img.filename === file.filename);
             if (isSel) item.classList.add('is-selected');
 
-            const img = document.createElement('img');
-            img.className = 'selector-thumb';
-            const rawSrc = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
-            img.src = encodeURI(rawSrc);
-            img.alt = file.filename;
-            img.loading = 'lazy';
-            img.onerror = function () { this.src = '/static/blog/images/no-image.png'; };
+        const img = document.createElement('img');
+        img.className = 'selector-thumb';
+        const rawSrc = file.url || `/media/blog_editor_temp/${document.body.dataset.userId}/${file.filename}`;
+        img.src = encodeURI(rawSrc);
+        img.alt = file.filename;
+        img.loading = 'lazy';
+        // No fallback - evita bucle infinito si el archivo no existe
+        img.onerror = function () {
+            this.style.display = 'none';
+        };
 
             const name = document.createElement('div');
             name.className = 'uploaded-filename';

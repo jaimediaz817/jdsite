@@ -2,6 +2,7 @@
 // HU-20_C_V1: Slide / Popup Gallery Widget (modal unificado)
 // ======================================================
 
+console.log('🚨🚨🚨 [slide-widget.js] ARCHIVO CARGADO - INICIANDO...');
 console.log('[slide-widget] modulo cargado');
 
 let currentGalleryMode = 'slides'; // 'slides' | 'popup:gallery'

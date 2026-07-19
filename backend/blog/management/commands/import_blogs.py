@@ -466,8 +466,9 @@ class Command(BaseCommand):
                 f"</div>"
             )
 
+        # TODO: antes: r":::slides\s*\n(.*?):::",
         markdown_content = re.sub(
-            r":::slides\s*\n(.*?):::",
+            r":::slides\s*\n([\s\S]*?)\n:::",
             _replace_slides,
             markdown_content,
             flags=re.DOTALL,

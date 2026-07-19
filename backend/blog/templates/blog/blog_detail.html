@@ -508,10 +508,22 @@
                               />
                             </div>
                           {% else %}
-                            <input type="hidden" name="{{ comment_form.name.html_name }}" value="{{ user.get_full_name|default:user.username }}" />
-                          {% endif %}
+                             <input type="hidden" name="{{ comment_form.name.html_name }}" value="{{ user.get_full_name|default:user.username }}" />
+                             <!-- HU-008: Campos de identificación para usuarios autenticados -->
+                             {% with social_account=user.socialaccount_set.first %}
+                               {% if social_account %}
+                                 <input type="hidden" name="identification_level" value="registered" />
+                                 <input type="hidden" name="provider" value="{{ social_account.provider }}" />
+                                 <input type="hidden" name="provider_uid" value="{{ social_account.uid }}" />
+                               {% else %}
+                                 <input type="hidden" name="identification_level" value="identified" />
+                                 <input type="hidden" name="provider" value="" />
+                                 <input type="hidden" name="provider_uid" value="" />
+                               {% endif %}
+                             {% endwith %}
+                           {% endif %}
 
-                          <div class="jd-textarea-wrapper">
+                           <div class="jd-textarea-wrapper">
                             <textarea
                               name="{{ comment_form.content.html_name }}"
                               id="{{ comment_form.content.id_for_label }}"
@@ -795,6 +807,8 @@
         window.USER_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
         window.USER_NAME = '{{ user.get_full_name|default:user.username|escapejs }}';
         window.USER_EMAIL = '{{ user.email|escapejs }}';
+        window.USER_PROVIDER = '{% if user.socialaccount_set.first %}{{ user.socialaccount_set.first.provider|escapejs }}{% endif %}';
+        window.USER_PROVIDER_UID = '{% if user.socialaccount_set.first %}{{ user.socialaccount_set.first.uid|escapejs }}{% endif %}';
         window.IS_SUPERUSER = {{ user.is_superuser|yesno:"true,false" }};
         window.BLOG_SLUG = '{{ post.slug|escapejs }}';
         window.BLOG_TITLE = '{{ post.title|escapejs }}';

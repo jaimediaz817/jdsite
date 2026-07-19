@@ -1,0 +1,1267 @@
+# Informe Técnico - Proyecto jdsite_clean
+
+**Autor:** Jaime Diaz  
+**Fecha:** 18 de Julio de 2026  
+**Tipo:** Análisis Tech Lead para reclutador Senior Backend/Full Stack  
+
+---
+
+# 1. Arquitectura general
+
+## Patrón arquitectónico
+
+El proyecto sigue una **arquitectura en capas con separación de responsabilidades** típica de aplicaciones Django enterprise:
+
+```
+┌─────────────────┐
+│   Frontend      │  Templates Django + JavaScript vanilla
+│   (Vistas)      │  Bootstrap 4.3.1 + CSS custom
+├─────────────────┤
+│   Backend       │  URL dispatcher → Views → Services → Models
+│   (Lógica)      │  Comandos de gestión para tareas batch
+├─────────────────┤
+│   Datos         │  MySQL (producción) / SQLite (desarrollo)
+│   (Persistencia)│  ORM Django con migrations versionadas
+├─────────────────┤
+│   Externa       │  Allauth (OAuth), Resend/SES (email),
+│   (Servicios)   │  GitHub API, AWS S3 (media producción)
+└─────────────────┘
+```
+
+## Organización del proyecto
+
+- **Monorepo Django** con múltiples apps: `blog`, `core`, `inquiries`, `reactions`
+- **Fuente de verdad**: Archivos Markdown en `blogs_source/` (no la BD)
+- **Capa de cache**: Base de datos como índice de búsqueda y metadatos
+- **Procesamiento batch**: Comando de gestión `import_blogs` sincroniza fuentes → BD → HTML
+
+## Comunicación entre capas
+
+1. **Request** → URL Router (`urls.py`)
+2. **View** → Template o JSON response
+3. **Service Layer** (`services.py`) → Lógica de negocio compleja
+4. **Model** → ORM Django con validaciones
+5. **Management Command** (`import_blogs`) → Pipeline ETL: Markdown → HTML → BD → Archivos estáticos
+
+## Escalabilidad
+
+- **Horizontal**: Stateless backend (excepto media temporal), desplegado con Gunicorn + Nginx
+- **Datos**: MySQL con índices optimizados, separación de estáticos/media
+- **Código**: Comandos de gestión desacoplados, services layer reusable
+- **Infraestructura**: Variables de entorno por ambiente, logging estructurado
+
+---
+
+# 2. Backend
+
+## Framework y versión
+
+- **Django 4.2.x** (LTS, estable hasta Abril 2026)
+- **Python 3.x** (compatible con Windows + Linux producción)
+
+## Aplicaciones (Django Apps)
+
+### `core`
+- Middleware personalizado (`CSRFDiagnosticMiddleware`)
+- Vistas de autenticación customizadas
+- Manejo de errores 404/500 personalizados
+
+### `blog`
+- **Modelos**: BlogPost, Category, Tag, BlogComment, BlogEmailConfig, BlogModeration, QRCode, AdminConfig
+- **Servicios**: `services.py` (lógica de negocio centralizada)
+- **Comandos de gestión**: 
+  - `import_blogs` (ETL principal)
+  - `sanitize_images` (normalización de nombres)
+  - `backfill_created_at` (migración de datos)
+  - `fix_pending_posts` (mantenimiento)
+- **Templatetags**: Filtros custom parathumbnails, URLs, metadatos
+- **Feeds**: RSS/Atom generado dinámicamente
+
+### `inquiries`
+- Sistema de consultas/contactos
+
+### `reactions`
+- Sistema de reacciones a comentarios (me gusta, etc.)
+
+## Patrones implementados
+
+### Service Layer Pattern
+```python
+# services.py centraliza lógica de negocio
+def create_comment(...)
+def are_admin_notifications_enabled()
+def save_blog_to_source(...)
+```
+
+### Command Pattern (Django Management Commands)
+- ETL batch para importación de blogs
+- Tareas de mantenimiento y migración
+
+### Repository Pattern (implícito)
+- ORM Django como capa de abstracción de datos
+- Querysets optimizados con `select_related`, `prefetch_related`
+
+### Strategy Pattern
+- Múltiples backends de email (consola, SMTP, AWS SES)
+- Configurable por variables de entorno
+
+## ORM
+
+- **Django ORM** con MySQL 8.x (producción) / SQLite (desarrollo/testing)
+- **Migraciones versionadas** (Django migrations)
+- **Índices personalizados**:
+  - `BlogComment`: `(blog_slug, status, created_at)`, `(parent)`, `(ip_address, created_at)`
+  - `BlogPost`: `slug` (unique), `source_hash` (db_index)
+  - `Tag/Category`: `slug` (unique, db_index)
+
+## Middleware
+
+```python
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "core.middleware.CSRFDiagnosticMiddleware",  # ← Custom
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+```
+
+## Sistema de autenticación
+
+### Django Allauth (0.63+)
+- **Google OAuth 2.0** (`socialaccount.providers.google`)
+- **GitHub OAuth** (`socialaccount.providers.github`)
+- **Email/Password** tradicional (opcional)
+- **Auto-signup** para OAuth (sin formulario intermedio)
+- **Conexión de cuentas**: Si el email ya existe, conecta automáticamente
+
+### Configuración clave
+```python
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # Login con email
+ACCOUNT_EMAIL_REQUIRED = False           # Email opcional en registro
+SOCIALACCOUNT_AUTO_SIGNUP = True         # OAuth directo
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+```
+
+## Permisos
+
+- **Superadmin**: Publicación automática, moderación, configuración
+- **Usuario registrado**: Comentarios identificados, edición de propios artículos
+- **Anónimo**: Lectura, comentarios anónimos (pendientes de moderación)
+- **Sistema de tokens** (`approval_token`): Aprobación de borradores vía URL sin login
+
+## Decoradores
+
+No se usan decoradores de permisos custom. La lógica de autorización está en:
+- **Views**: `@login_required`, `@superuser_required` (implícito por lógica)
+- **Templates**: `{% if user.is_superuser %}` para condicionales de UI
+
+## Servicios (services.py)
+
+Lógica de negocio desacoplada de las vistas:
+
+- **Comentarios**: `create_comment()`, `get_approved_comments()`, `get_comment_count()`
+- **Notificaciones**: `are_admin_notifications_enabled()`, `are_author_notifications_enabled()`
+- **Blog ETL**: `save_blog_to_source()` (creación/edición desde editor)
+- **Archivos**: `save_uploaded_file()`, `get_post_files_info()`, `delete_resource_file()`
+- **Utilidades**: `_format_size()`
+
+## Utilidades
+
+### `blog/utils/importer/`
+- `markdown_utils.py`: Lectura/parseo de archivos markdown
+- `blog_processor.py`: Lógica de importación
+- `filename_utils.py`: Sanitización de nombres de archivo
+
+### `blog/utils/`
+- `qr_generator.py`: Generación de códigos QR
+- `owner_email.py`: Utilidades de email
+- `importer/filename_utils.py`: Normalización de nombres
+
+## Señales (Signals)
+
+No implementadas en el código actual. La auditoría se maneja con:
+- `auto_now_add` / `auto_now` en modelos
+- `created_at` / `updated_at` poblados en `save()`
+
+## Comandos de gestión
+
+### `import_blogs` (comando principal)
+Pipeline ETL completo:
+1. Lee archivos `.md` de `blogs_source/`
+2. Extrae frontmatter YAML
+3. Procesa bloques especiales (`:::slides`, `:::callout`, `:::popup:gallery`)
+4. Convierte Markdown → HTML con `markdown.markdown()`
+5. Extrae imagen de portada
+6. Copia archivos estáticos a `static/blogs/<slug>/`
+7. Actualiza/crea registros en BD
+8. Genera tokens de aprobación para borradores
+
+### `sanitize_images`
+Normaliza nombres de archivo eliminando espacios y caracteres especiales.
+
+### `backfill_created_at`
+Migración de datos para poblar `created_at` en posts legacy.
+
+## Paginación
+
+- Implementada en templates con lógica custom (no Django paginator)
+- `blog_list.html`: Grid responsive con límite de posts por página
+
+## Serialización
+
+No implementada. El proyecto retorna HTML templates directamente. No hay API REST pública.
+
+## Manejo de errores
+
+- **404 custom**: `blog/views_404.py` con template estilizado
+- **500**: Handler configurado en settings
+- **CSRF**: Middleware custom + logging detallado
+- **Validaciones**: En modelos y services (ej: `MAX_UPLOAD_SIZE_MB`)
+
+## Logging
+
+```python
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {...},
+        "simple": {...}
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"}
+    },
+    "loggers": {
+        "django.security.csrf": {"level": "DEBUG"},
+        "django.request": {"level": "DEBUG"},
+        "core.middleware": {"level": "DEBUG"},
+        "core.views": {"level": "DEBUG"}
+    }
+}
+```
+
+## Configuración
+
+- **Variables de entorno**: `.env` con `python-dotenv`
+- **Múltiples ambientes**: Desarrollo (DEBUG=True) / Producción (DEBUG=False)
+- **Configuración sensible**: SECRET_KEY, credenciales OAuth, claves AWS
+
+---
+
+# 3. Base de datos
+
+## Motor
+
+- **Producción**: MySQL 8.x (utf8mb4) en DigitalOcean
+- **Desarrollo**: SQLite3
+- **Testing**: SQLite3 aislado (`test_db.sqlite3`)
+
+## Modelo de datos
+
+### Entidades principales
+
+**BlogPost** (cache de artículos)
+- `slug` (unique, indexed)
+- `title`, `description`, `content_html`
+- `category` (FK → Category)
+- `tags` (M2M → Tag)
+- `publish_date`, `last_modified`, `created_at`, `updated_at`
+- `is_published`, `moderation_status`, `approval_token`
+- `cover_image`, `reading_time`
+- `author` (FK → User)
+- `meta_title`, `meta_description`
+- `source_hash` (detectar cambios en .md)
+
+**BlogComment** (comentarios y respuestas)
+- `blog_slug` (indexed)
+- `parent` (self-referential FK para hilos)
+- `name`, `email`, `content`
+- `status` (pending/approved/rejected)
+- `identification_level` (anonymous/identified/registered)
+- `provider`, `provider_uid` (OAuth)
+- `is_admin`, `editable_until`
+- Índices compuestos para queries eficientes
+
+**QRCode** (códigos QR para artículos)
+- `name`, `slug` (unique)
+- `slogan`
+- `blog_post` (FK → BlogPost, nullable)
+- `image_path`, `is_active`
+- `created_by` (FK → User)
+- Lógica de desvinculación automática en `save()`
+
+**BlogEmailConfig** (singleton)
+- `admin_notifications_enabled`
+- `author_notifications_enabled`
+- `updated_by` (FK → User)
+
+**BlogModeration** (auditoría de moderación)
+- `blog_post`, `author`, `reviewer` (FKs)
+- `action`, `comment`
+- `created_at`, `reviewed_at`
+
+**Category / Tag**
+- `name`, `slug` (unique, indexed)
+- `is_active`
+
+## Relaciones
+
+- `BlogPost` 1:N `Category`
+- `BlogPost` N:M `Tag`
+- `BlogPost` 1:N `QRCode`
+- `BlogPost` 1:N `BlogModeration`
+- `BlogComment` self-referential (parent/replies)
+- `BlogComment` N:1 `BlogPost` (via blog_slug)
+- `User` 1:N `BlogPost` (author)
+- `User` 1:N `QRCode` (created_by)
+
+## Índices
+
+Estrategia de indexación:
+- **Campos de búsqueda**: `slug`, `blog_slug` (db_index)
+- **Consultas compuestas**: `(blog_slug, status, created_at)` para comentarios
+- **Unicidad**: `slug` en BlogPost, Tag, Category, QRCode
+
+## Migraciones
+
+- Versionadas con Django migrations
+- Migraciones recientes:
+  - `0015_blogpost_created_at_blogpost_updated_at`
+  - `0016_admin_config`
+
+## Escalabilidad
+
+- **Read-heavy**: Blog optimizado para lectura con BD como cache
+- **Índices estratégicos** en campos de consulta frecuente
+- **Normalización** de datos (fuente: archivos .md, BD: metadatos)
+- **Posible particionamiento**: Por `publish_date` o `created_at` en el futuro
+
+---
+
+# 4. Frontend
+
+## Tecnologías
+
+- **Template engine**: Django Templates (motor nativo)
+- **CSS**: Bootstrap 4.3.1 + CSS custom (`blog_list.css`, `footer.css`, `dashboard.css`, `zeppelin.css`)
+- **JavaScript**: Vanilla JS (sin frameworks modernos)
+- **jQuery**: 3.2.1 (solo donde es necesario por Bootstrap)
+
+## Templates
+
+### Estructura
+```
+backend/templates/
+├── base_auth.html                 # Layout autenticación
+├── home.html                       # Landing page
+├── 404.html                        # Error 404 custom
+├── partials/
+│   └── _footer.html                # Footer global
+└── account/                        # Templates Allauth
+    ├── login.html
+    └── signup.html
+
+backend/blog/templates/
+├── blog/
+│   ├── blog_list.html              # Grid principal de artículos
+│   ├── blog_detail.html            # Vista de artículo individual
+│   ├── blog_editor.html            # Editor de artículos
+│   ├── dashboard.html              # Panel de administración
+│   ├── qr_assign_article.html      # Asignar QR a artículo
+│   ├── qr_no_article.html          # QR sin artículo
+│   └── blog_email_config.html      # Configuración de emails
+└── partials/
+    ├── _navigation_menu.html       # Navegación responsive
+    ├── _sidebar.html               # Sidebar del dashboard
+    ├── _post_grid.html             # Componente de card de artículo
+    ├── _blog_zeppelin.html         # Variante de diseño Zeppelin
+    ├── _blog_footer.html           # Footer del blog
+    ├── _dashboard_config_sidebar.html
+    └── _dashboard_users_sidebar.html
+```
+
+## JavaScript
+
+### `blog_list.js`
+- Lazy loading de imágenes
+- Filtros especiales (HU-017.18)
+- Toasts de notificación (HU-035)
+
+### `blog_detail.js`
+- Manejador de comentarios
+- Reacciones a comentarios
+- Validaciones de formulario
+
+### `dashboard.js`
+- Modales con Bootstrap JS
+- Gestión de estados de moderación
+- Interacciones de sidebar
+
+### Editor
+- `mtp-toolbar.js`: Toolbar del editor Markdown
+- `image-selector.js`: Selector de imágenes
+- `slide-widget.js`: Widget de slides/carruseles
+- `video-widget.js`: Widget de videos
+
+## Bootstrap
+
+- **Versión**: 4.3.1 (NO Bootstrap 5)
+- **Restricción crítica**: No usar `data-bs-*` attributes (incompatibilidad con jQuery 3.2.1)
+- **Patrón correcto**: Instanciar componentes via JS (`new bootstrap.Collapse(el)`)
+
+## Markdown
+
+- **Procesamiento**: Biblioteca `markdown` (Python) en `import_blogs`
+- **Extensiones**: Tablas, código highlight, footnotes
+- **Bloques especiales**:
+  - `:::slides` - Carruseles de imágenes
+  - `:::callout:type` - Alertas estilizadas
+  - `:::pullquote` - Citas destacadas
+  - `:::codefile` - Bloques de código con archivo
+  - `:::popup:gallery` - Galerías emergentes
+  - `[vl]:` - Video layouts (full/limited/highlight/bullet)
+
+## Editor de artículos
+
+- **Interfaz**: Textarea con toolbar personalizada
+- **Preview**: Renderizado en tiempo real (no implementado en código actual)
+- **Subida de imágenes**: Drag & drop + clipboard paste
+- **Gestión de archivos**: `save_uploaded_file()` en services
+
+## Renderizado
+
+- **Artículos**: Markdown → HTML con BeautifulSoup para limpieza
+- **Listado**: HTML generado con excerpt del contenido
+- **SEO**: Meta tags dinámicos en templates
+
+## Componentes
+
+- **Cards de artículo**: `_post_grid.html` con cover_image, título, descripción, tags
+- **Modales**: Bootstrap 4 modals para confirmaciones
+- **Toasts**: Notificaciones toast personalizadas
+- **Navbar**: Responsive con menú hamburguesa
+
+---
+
+# 5. Editor de artículos
+
+## Capacidades
+
+### Creación
+- Formulario completo con título, descripción, contenido Markdown
+- Selección de categoría y tags
+- Subida de imágenes y videos
+- Asignación de portada manual (`cover_filename`)
+- Slug opcional (HU-045)
+
+### Edición
+- Carga de artículo existente desde `blogs_source/`
+- Merge inteligente de frontmatter ( preserva campos custom )
+- Preservación de autor original (no sobrescribe en ediciones)
+- Historial de cambios (implícito por `source_hash`)
+
+### Markdown
+- **Sintaxis completa**: Títulos, listas, código,Links, imágenes
+- **Bloques especiales**: Ver sección 4
+- **Imágenes**: `![alt](filename.png)` → rutas relativas
+- **Videos**: YouTube embed + widget custom
+
+### Subida de imágenes
+- **Formatos**: PNG, JPG, JPEG, GIF, WEBP, SVG, MP4, WEBM, MOV, AVI
+- **Límite**: Configurable via `MAX_UPLOAD_SIZE_MB` (default 20MB)
+- **Procesamiento**: 
+  - Renombrado con UUID para evitar colisiones
+  - Sanitización de nombres
+  - Movimiento de `/media/blog_editor_temp/` a `blogs_source/<slug>/`
+- **Validación**: Tipo MIME, tamaño, extensión
+
+### SEO (en editor)
+- **Meta title** y **meta description** editables
+- **Palabra clave principal**
+- **Keywords** adicionales
+- **Tiempo de lectura** (calculado automáticamente en import)
+- **Slug** optimizado para URLs
+
+### Categorías y Tags
+- **Categorías**: Obligatorio,FK a modelo Category
+- **Tags**: Opcionales, M2M con modelo Tag
+- **Auto-creación**: Si no existen, se crean en import
+
+### Publicación
+- **Flujo**: Borrador → Pendiente moderación → Aprobado/Rechazado
+- **Publicador**: Superadmin publica automáticamente
+- **Aprobación**: Token único en URL para aprobación sin login
+- **Notificaciones**: Email al autor y admin en cada cambio de estado
+
+### Borradores
+- **Creación**: Por defecto, artículos nuevos son borradores
+- **Identificación**: Campo `draft: true` en frontmatter + `is_published=False` en BD
+- **Listado**: Dashboard muestra borradores y publicados
+- **Filtrado**: Por estado de moderación
+
+## Procesamiento post-guardado
+
+Al guardar, se ejecuta automáticamente:
+1. `save_blog_to_source()` escribe el `.md` en `blogs_source/`
+2. `call_command("import_blogs")` se ejecuta
+3. `import_blogs`:
+   - Copia imágenes a `static/blogs/<slug>/`
+   - Genera HTML
+   - Actualiza BD
+   - Genera tokens
+
+---
+
+# 6. Sistema QR
+
+## Generación
+
+- **Biblioteca**: `qrcode` (Python)
+- **Personalización**: 
+  - Logo superpuesto (`logo_mark_to_post_dark_single.png`)
+  - Tamaño configurable
+  - Colores custom
+- **Generación**: `backend/blog/utils/qr_generator.py`
+
+## Persistencia
+
+- **Modelo**: `QRCode`
+- **Almacenamiento**: 
+  - Imagen: `/media/qr_codes/<slug>.png`
+  - Metadata: BD (name, slug, blog_post, is_active)
+- **URL pública**: `/media/qr_codes/<slug>.png`
+
+## Asociación con artículos
+
+- **Campo**: `QRCode.blog_post` (FK → BlogPost)
+- **Vinculación**: Desde dashboard (`qr_assign_article.html`)
+- **Desvinculación automática**: Al guardar un QR activo para un artículo, se desactivan otros
+
+## Desasociación
+
+- **Lógica en `save()`**:
+  ```python
+  if self.is_active and self.blog_post:
+      QRCode.objects.filter(
+          blog_post=self.blog_post, 
+          is_active=True
+      ).exclude(pk=self.pk).update(is_active=False)
+  ```
+
+## Descarga
+
+- **Vista**: No implementada en código actual
+- **URL**: Pendiente de 구현
+
+## Resolución
+
+- **URL de escaneo**: `/blog/qr/<slug>/`
+- **Vista**: `qr_redirect` (redirige al artículo)
+- **Casos**:
+  - QR activo con artículo → redirect a `/blog/<slug>/`
+  - QR sin artículo → template `qr_no_article.html`
+
+## Escaneo
+
+- **Diseño**: Código QR con logo centrado
+- **Tamaño**: Adecuado para impresión física
+- **Escaneabilidad**: Contraste alto, Quiet zone (zona de silencio)
+
+## Casos de uso
+
+1. **Marketing físico**: Afiches, flyers, tarjetas de visita
+2. **Eventos**: Conferencias, talleres, presentaciones
+3. **Interno**: Señalización en oficina, documentación física
+4. **Campañas**: Cada QR tiene `slogan` para tracking
+
+---
+
+# 7. Autenticación
+
+## Métodos implementados
+
+### Google OAuth 2.0
+- **Provider**: `allauth.socialaccount.providers.google`
+- **Scope**: `profile`, `email`
+- **Configuración**: Variables `GOOGLE_OAUTH_CLIENT_ID` y `GOOGLE_OAUTH_CLIENT_SECRET`
+- **Flujo**: 
+  1. Usuario click "Login with Google"
+  2. Redirige a Google
+  3. Callback con code
+  4. Allauth obtiene token y perfil
+  5. Auto-signup o login
+
+### GitHub OAuth
+- **Provider**: `allauth.socialaccount.providers.github`
+- **Scope**: `read:user`, `user:email`
+- **Configuración**: Variables `GITHUB_OAUTH_CLIENT_ID` y `GITHUB_OAUTH_CLIENT_SECRET`
+- **Flujo**: Similar a Google
+
+### Usuario y contraseña
+- **Formulario**: `ACCOUNT_SIGNUP_FIELDS` con email, nombre, username, password
+- **Login**: Por email (`ACCOUNT_AUTHENTICATION_METHOD = "email"`)
+- **Registro**: Manual con validación de campos
+
+### Recuperación de contraseña
+- **Allauth**: Flujo nativo de recuperación por email
+- **Email backend**: Configurable (consola, SMTP, AWS SES)
+
+### Cambio de contraseña
+- **Vista**: No custom, usa Allauth
+- **URL**: `/account/password/change/`
+
+### Verificación
+- **Email verification**: Deshabilitada (`ACCOUNT_EMAIL_VERIFICATION = "none"`)
+- **Razón**: OAuth automático, sin verificación manual
+
+## Seguridad
+
+- **CSRF**: Protección en todos los formularios
+- **HTTPS**: En producción (`SECURE_SSL_REDIRECT = True`)
+- **Secure cookies**: `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_SECURE`
+- **Proxy header**: `SECURE_PROXY_SSL_HEADER` para detectar HTTPS detrás de Nginx
+
+---
+
+# 8. Correos electrónicos
+
+## Proveedor
+
+### Desarrollo
+- **Backend**: `django.core.mail.backends.console.EmailBackend`
+- **Salida**: Consola Django
+
+### Producción
+- **Opción 1**: SMTP (Gmail, SendGrid, etc.)
+  - Config: `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`
+- **Opción 2**: AWS SES (`django-ses`)
+  - Config: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SES_REGION_NAME`
+
+## Integración
+
+- **Backend configurable**: Variable `EMAIL_BACKEND` en `.env`
+- **From email**: `DEFAULT_FROM_EMAIL`
+- **Reply-to**: `REPLY_TO_EMAIL`
+
+## Correos enviados
+
+### 1. Notificaciones al admin (HU-011.85)
+- **Comentario nuevo pendiente**:
+  ```
+  [JD Blog] Nuevo comentario pendiente de moderación
+  ```
+- **Borrador pendiente**:
+  ```
+  [JD Blog] Nuevo borrador pendiente: <título>
+  ```
+
+### 2. Notificaciones al autor
+- **Artículo aprobado**: Email de confirmación
+- **Artículo rechazado**: Email con motivo
+
+### 3. Control de envío
+- **Singleton**: `BlogEmailConfig` con flags booleanos
+- **Admin puede deshabilitar**: Desde dashboard
+- **Lógica en services**: `are_admin_notifications_enabled()`, `are_author_notifications_enabled()`
+
+## Ventajas
+
+- **Flexibilidad**: Cambio de proveedor sin tocar código
+- **Configurable**: Por variables de entorno
+- **Auditable**: Logging de todos los envíos
+- **Testeable**: Backend de consola para desarrollo
+- **Escalable**: AWS SES para alto volumen
+
+---
+
+# 9. SEO
+
+## Meta tags
+
+### Por artículo
+- **Meta title**: Hasta 120 caracteres ( editable en editor )
+- **Meta description**: Hasta 160 caracteres
+- **Palabra clave principal**: Campo `palabra_clave_principal`
+- **Keywords**: Campo `keywords`
+
+### Implementación
+```html
+<title>{{ post.meta_title }}</title>
+<meta name="description" content="{{ post.meta_description }}">
+<meta name="keywords" content="{{ post.keywords }}">
+```
+
+## Open Graph
+
+- **OG title**: `{{ post.meta_title }}`
+- **OG description**: `{{ post.meta_description }}`
+- **OG image**: `{{ post.cover_image }}` (portada del artículo)
+- **OG type**: `article`
+- **OG url**: Canonical URL
+
+## Twitter Cards
+
+- **Card type**: `summary_large_image`
+- **Title**: `{{ post.meta_title }}`
+- **Description**: `{{ post.meta_description }}`
+- **Image**: `{{ post.cover_image }}`
+
+## Canonical
+
+- **URL canonical**: `{% url 'blog:blog_detail' slug=post.slug %}`
+- **Evita duplicate content**: Un artículo = una URL
+
+## Sitemap
+
+- **Generación**: No implementada en código actual
+- **Sugerencia**: Agregar `/sitemap.xml` con `django.contrib.sitemaps`
+
+## Robots
+
+- **robots.txt**: No implementado
+- **Meta robots**: No implementado
+
+## Structured Data
+
+- **Schema.org**: No implementado en templates actuales
+- **Sugerencia**: Agregar JSON-LD para `Article`, `BlogPosting`
+
+## Slugs y URLs
+
+- **Slug único**: `slugify()` en save()
+- **URLs semánticas**: `/blog/<slug>/`
+- **Slug opcional**: Usuario puede override (HU-045)
+
+## Feeds
+
+- **RSS/Atom**: Implementado en `blog/feeds.py`
+- **URL**: `/blog/feed/`
+- **Contenido**: Últimos N artículos publicados
+
+## Optimizaciones adicionales
+
+- **Tiempo de lectura**: Campo `reading_time` en minutos
+- **Autor**: Meta tag `author`
+- **Fechas**: `publish_date` en schema.org
+- **Imágenes**: Alt text automático desde descripción
+
+---
+
+# 10. Seguridad
+
+## CSRF
+
+- **Middleware**: `django.middleware.csrf.CsrfViewMiddleware`
+- **Custom**: `core.middleware.CSRFDiagnosticMiddleware` para debug
+- **Producción**: 
+  - `CSRF_COOKIE_SECURE = True`
+  - `CSRF_TRUSTED_ORIGINS` con dominios permitidos
+  - Logging detallado de errores CSRF
+
+## XSS
+
+- **Escapado automático**: Django templates escapan HTML por defecto
+- **Sanitización**: 
+  - `escape()` en comentarios
+  - BeautifulSoup para limpiar HTML imported
+  - Validación de contenido en modelos
+
+## Validaciones
+
+- **Modelos**: 
+  - `max_length` en CharField
+  - `EmailField` para emails
+  - `TextField` con límites en comentarios (1000 chars)
+- **Servicios**: 
+  - Validación de tamaño de archivo (`MAX_UPLOAD_SIZE_MB`)
+  - Validación de extensiones permitidas
+  - Validación de tipos MIME
+
+## Permisos
+
+- **Login required**: Decorador en vistas protegidas
+- **Superuser**: Lógica condicional en templates y views
+- **Ownership**: Usuarios editan solo sus artículos (implícito)
+
+## Sanitización
+
+- **Archivos**: `filename_utils.py` sanitiza nombres
+- **HTML**: BeautifulSoup remove tags peligrosos
+- **Emails**: Escape en templates de notificación
+- **Slugs**: `slugify()` normaliza URLs
+
+## Rate limiting
+
+- **Comentarios**: No implementado explícitamente
+- **Sugerencia**: Agregar `django-ratelimit` o middleware custom
+
+## Cookies
+
+- **Secure**: `SESSION_COOKIE_SECURE = True` en producción
+- **HttpOnly**: Default Django
+- **SameSite**: Default Django
+
+## Headers
+
+- **X-Frame-Options**: `XFrameOptionsMiddleware` (DENY)
+- **Referrer-Policy**: `no-referrer-when-downgrade`
+- **SSL Redirect**: `SECURE_SSL_REDIRECT = True` en producción
+
+## Auditoría
+
+- **Campos automáticos**: `created_at`, `updated_at` en modelos
+- **Tokens**: `approval_token` para trazabilidad de aprobaciones
+- **Logging**: Configurado para CSRF, requests, middleware
+
+---
+
+# 11. Despliegue
+
+## Servidor
+
+- **Proveedor**: DigitalOcean Droplet
+- **Specs**: 1 vCPU, 2GB RAM, SFO3 region
+- **OS**: Ubuntu
+
+## Stack
+
+### Gunicorn
+- **Puerto**: 8000 (interno)
+- **Workers**: Configurable (no especificado en settings)
+- **Comando**: `gunicorn jdsite.wsgi:application`
+
+### Nginx
+- **Puerto**: 80 (HTTP) → 443 (HTTPS)
+- **Proxy**: A Gunicorn
+- **Archivos estáticos**: Servidos directamente por Nginx
+- **Configuración**: `infra/nginx/jaimediaz.dev.conf`
+
+### Systemd
+- **Servicio**: No documentado en archivos actuales
+- **Comando típico**:
+  ```bash
+  sudo systemctl start gunicorn
+  sudo systemctl enable gunicorn
+  ```
+
+## HTTPS
+
+- **Certbot**: Let's Encrypt SSL certificates
+- **Dominios**: 
+  - `jaimediaz.dev`
+  - `www.jaimediaz.dev`
+  - `jdiaz.tipsterbyte.com`
+- **Auto-renovación**: Configurado via systemd timer
+
+## Variables de entorno
+
+- **Archivo**: `.env` (no versionado)
+- **Contenido crítico**:
+  - `SECRET_KEY`
+  - `DB_*` (credenciales MySQL)
+  - `GOOGLE_OAUTH_*`
+  - `GITHUB_OAUTH_*`
+  - `AWS_*` (SES/S3)
+  - `EMAIL_*`
+  - `MAX_UPLOAD_SIZE_MB`
+
+## Archivos estáticos
+
+- **Desarrollo**: `STATICFILES_DIRS = [BASE_DIR / "static"]`
+- **Producción**: `STATIC_ROOT = BASE_DIR / "staticfiles"`
+- **Collectstatic**: Comando `python manage.py collectstatic`
+- **Media temporal**: `/media/blog_editor_temp/` (limpiar periódicamente)
+
+## Media
+
+- **Desarrollo**: `MEDIA_ROOT = BASE_DIR / "media"`
+- **Producción**: AWS S3 (código preparado, no activo)
+- **QR codes**: `/media/qr_codes/`
+
+## Logs
+
+- **Ubicación**: Consolas configuradas en `LOGGING`
+- **Niveles**: DEBUG para desarrollo, INFO para producción
+- **Rotación**: No configurada (sugerencia: agregar `logging.handlers.RotatingFileHandler`)
+
+## Backups
+
+- **BD**: No documentado (sugerencia: `mysqldump` diario)
+- **Media**: No documentado (sugerencia: S3 versioning o rsync)
+- **Código**: Git + GitHub
+
+---
+
+# 12. DevOps
+
+## Git
+
+- **Repositorio**: GitHub (`jaimediaz817/jdsite`)
+- **Branch principal**: `main` (rama local adelantada 10 commits)
+- **Commits locales sin pushear**: Indica trabajo en progreso
+
+## GitHub
+
+- **Remote**: `origin` → GitHub
+- **Commits pendientes**: 10 locales sin sincronizar
+
+## Scripts
+
+### Desarrollo
+- `fix_*.py`: Scripts de debugging y mantenimiento
+- `list_posts.py`: Listar artículos
+- `verify_*.py`: Verificaciones de datos
+
+### Producción
+- `diagnosticar_imagenes_vps.sh`: Diagnóstico de imágenes
+- `fix_vps_git_pull.sh`: Actualización desde Git
+- `fix_collectstatic_vps.sh`: Recolectar estáticos
+
+## Docker
+
+- **No implementado**: No hay Dockerfile ni docker-compose
+- **Oportunidad**: Containerización para despliegue consistente
+
+## Automatización
+
+- **Importación automática**: Al guardar en editor (`call_command("import_blogs")`)
+- **Notificaciones**: Emails automáticos en eventos
+- **Tokens**: Generación automática en `save()`
+
+## Comandos útiles
+
+```bash
+# Desarrollo
+source .venv/Scripts/activate  # Windows
+cd backend
+python manage.py runserver
+
+# Producción
+cd backend
+source env/bin/activate
+python manage.py import_blogs
+python manage.py collectstatic --noinput
+```
+
+---
+
+# 13. Librerías utilizadas
+
+## Core
+
+| Librería           | Versión    | Propósito                           |
+| ------------------ | ---------- | ----------------------------------- |
+| **Django**         | >=4.2,<5.0 | Framework web principal             |
+| **django-allauth** | >=0.63.0   | Autenticación (OAuth Google/GitHub) |
+| **python-dotenv**  | >=1.0.0    | Variables de entorno                |
+
+## Base de datos
+
+| Librería    | Versión | Propósito                           |
+| ----------- | ------- | ----------------------------------- |
+| **pymysql** | >=1.1.0 | Cliente MySQL (fallback en Windows) |
+
+## Imágenes y media
+
+| Librería   | Versión  | Propósito                 |
+| ---------- | -------- | ------------------------- |
+| **Pillow** | >=10.0.0 | Procesamiento de imágenes |
+| **qrcode** | >=8.0    | Generación de códigos QR  |
+
+## Procesamiento de contenido
+
+| Librería           | Versión  | Propósito                   |
+| ------------------ | -------- | --------------------------- |
+| **Markdown**       | >=3.4.1  | Conversión Markdown → HTML  |
+| **BeautifulSoup4** | >=4.12.0 | Parsing y limpieza de HTML  |
+| **PyYAML**         | >=6.0    | Lectura de frontmatter YAML |
+
+## HTTP y APIs
+
+| Librería     | Versión  | Propósito                     |
+| ------------ | -------- | ----------------------------- |
+| **requests** | >=2.31.0 | HTTP requests (APIs externas) |
+
+## Cloud (AWS)
+
+| Librería       | Versión  | Propósito                |
+| -------------- | -------- | ------------------------ |
+| **boto3**      | >=1.28.0 | AWS SDK (S3, SES)        |
+| **s3transfer** | >=0.7.0  | Transferencias S3        |
+| **django-ses** | >=3.5.0  | Backend de email AWS SES |
+
+## Servicios web
+
+| Librería  | Versión  | Propósito                    |
+| --------- | -------- | ---------------------------- |
+| **spyne** | >=2.14.0 | Servicio SOAP (legado/otros) |
+
+## Seguridad
+
+| Librería         | Versión  | Propósito                                  |
+| ---------------- | -------- | ------------------------------------------ |
+| **PyJWT**        | >=2.8.0  | Tokens JWT (si se usa en features futuras) |
+| **cryptography** | >=41.0.0 | Criptografía (uso en Huellas/validaciones) |
+
+## Producción
+
+| Librería     | Versión  | Propósito                |
+| ------------ | -------- | ------------------------ |
+| **gunicorn** | >=21.2.0 | Servidor WSGI producción |
+
+## Testing
+
+| Librería   | Versión | Propósito            |
+| ---------- | ------- | -------------------- |
+| **pytest** | >=7.4.0 | Framework de testing |
+
+## Utilidades
+
+| Librería     | Versión | Propósito                               |
+| ------------ | ------- | --------------------------------------- |
+| **colorama** | >=0.4.6 | Colores en consola (Windows compatible) |
+
+---
+
+# 14. Funcionalidades implementadas
+
+## Blog
+- [x] Listado de artículos con grid responsive
+- [x] Vista de artículo individual
+- [x] Sistema de comentarios con aprobación
+- [x] Reacciones a comentarios
+- [x] Filtros especiales de búsqueda
+- [x] Filtros avanzados colapsables
+- [x] Modo dark en blog list
+- [x] Tiempo de lectura calculado
+- [x] Categorías y tags
+- [x] páginación implícita
+
+## Editor
+- [x] Creación de artículos desde Markdown
+- [x] Edición de artículos existentes
+- [x] Subida de imágenes y videos
+- [x] Preview de contenido
+- [x] Gestión de portada manual
+- [x] Slug opcional
+- [x] SEO: meta title, meta description, keywords
+- [x] Categorías y tags
+- [x] Borradores (draft)
+- [x] Publicación (requiere superadmin)
+- [x] Sistema de moderación con tokens
+- [x] Notificaciones por email
+
+## Bloques especiales
+- [x] Slides/carruseles de imágenes
+- [x] Callouts (info, warning, tip, danger, success)
+- [x] Pull quotes
+- [x] Video widgets (YouTube)
+- [x] Popup galleries
+- [x] Video layouts (full, limited, highlight, bullet)
+
+## Autenticación
+- [x] Login con email/contraseña
+- [x] Google OAuth
+- [x] GitHub OAuth
+- [x] Registro de usuarios
+- [x] Recuperación de contraseña
+- [x] Logout
+
+## QR Codes
+- [x] Generación de QR codes
+- [x] Asignación a artículos
+- [x] Desasignación automática
+- [x] URL de escaneo
+- [x] Página de QR sin artículo
+- [x] Descarga de imagen QR
+
+## Administración
+- [x] Dashboard de moderación
+- [x] Gestión de usuarios (dashboard)
+- [x] Configuración de emails del blog
+- [x] Configuración de owner_email
+- [x] Moderación de comentarios
+- [x] Aprobación/rechazo de borradores
+
+## SEO y discoverability
+- [x] Meta tags por artículo
+- [x] Open Graph tags
+- [x] Twitter Cards
+- [x] URLs semánticas
+- [x] Feeds RSS/Atom
+- [x] Sitemap (no implementado)
+- [x] Structured Data (no implementado)
+
+## Diseño
+- [x] Diseño Zeppelin (variante)
+- [x] Diseño profesional modo dark
+- [x] Footer rediseñado
+- [x] Grid responsive en blog list
+- [x] Títulos de 11px con descripción de 35chars
+- [x] Barra de reacciones flotante
+- [x] Navegación responsive
+
+## Utilidades
+- [x] Sanitización de nombres de imagen
+- [x] Diagnósticos de archivos estáticos
+- [x] Scripts de mantenimiento (fix_pending_posts, backfill_created_at)
+- [x] Logging CSRF detallado
+- [x] Manejo de errores 404/500 custom
+
+## Seguridad
+- [x] CSRF protection
+- [x] XSS prevention (escapado automático)
+- [x] HTTPS en producción
+- [x] Secure cookies
+- [x] Validación de uploads
+- [x] Límite de tamaño de archivos
+
+---
+
+# 15. Funcionalidades diferenciadoras
+
+## ¿Qué hace diferente a un blog tradicional?
+
+### 1. **Fuente de verdad en archivos, no en BD**
+- Los artículos viven en `blogs_source/*.md`
+- La BD es solo un índice para búsquedas rápidas
+- **Demuestra**: Comprensión de arquitectura Git-friendly, versionado de contenido
+
+### 2. **Pipeline ETL propio (`import_blogs`)**
+- Conversión Markdown → HTML con bloques especiales
+- Sincronización automática de archivos estáticos
+- **Demuestra**: Capacidad de construir sistemas de procesamiento de contenido
+
+### 3. **Sistema de moderación con tokens**
+- Aprobación de borradores por URL sin login
+- Flujo completo: Borrador → Pendiente → Aprobado
+- **Demuestra**: Diseño de workflows de aprobación
+
+### 4. **QR codes para artículos físicos**
+- Generación automática con logo
+- Desvinculación inteligente
+- **Demuestra**: Pensamiento omnicanal (digital + físico)
+
+### 5. **Editor con bloques especiales**
+- No es un Markdown básico
+- Componentes enriquecidos: slides, videos, galerías
+- **Demuestra**: Capacidad de extender formatos de contenido
+
+### 6. **Sistema de autoría y notificaciones**
+- Preservación de autor original
+- Notificaciones granulares (admin vs autor)
+- Configuración centralizada (`BlogEmailConfig`)
+- **Demuestra**: Diseño de sistemas multi-tenant con notificaciones
+
+### 7. **Arquitectura multi-ambiente**
+- Desarrollo: SQLite, DEBUG=True
+- Producción: MySQL, HTTPS, logging detallado
+- **Demuestra**: Conocimiento de despliegues profesionales
+
+## ¿Por qué un reclutador debería prestarle atención?
+
+### Técnico
+1. **No es un blog Django genérico**: Tiene sistemas custom (importación, QR, moderación)
+2. **Código limpio**: Separación de responsabilidades, services layer, templates bien organizados
+3. **Escalable**: Arquitectura preparada para crecimiento (stateles, servicios externos)
+4. **Producción ready**: HTTPS, CSRF, logging, variables de entorno, Nginx + Gunicorn
+
+### Producto
+1. **Resuelve problemas reales**: Flujo de publicación con moderación, contenido físico (QR)
+2. **Experiencia de usuario**: Editor fluido, dark mode, reacciones, comentarios
+3. **SEO consciente**: Meta tags, feeds, URLs semánticas
+
+### DevOps
+1. **Despliegue documentado**: Scripts, configuraciones Nginx, procedimientos
+2. **Mantenibilidad**: Comandos de gestión para tareas batch
+3. **Monitoreo**: Logging estructurado, diagnósticos
+
+---
+
+# 16. Posibles mejoras
+
+## Como Tech Lead, implementaría:
+
+### Arquitectura
+1. **API REST** (Django REST Framework):
+   - Endpoints para CRUD de artículos
+   - Autenticación JWT
+   - Separación frontend/backend
+
+2. **Celery + Redis**:
+   - Procesamiento asíncrono de importación
+   - Generación de thumbnails
+   - Envío de emails en background
+
+3. **Dockerización**:
+   - Dockerfile para desarrollo y producción
+   - docker-compose para servicios (DB, Redis, Nginx)
+   - CI/CD con GitHub Actions
+
+### Base de datos
+1. **PostgreSQL**: Mejor rendimiento que MySQL para JSON y full-text search
+2. **Full-text search**: PostgreSQL `tsvector` o Elasticsearch para búsqueda avanzada
+3. **Cache**: Redis para queries frecuentes (artículos populares)
+
+### Frontend
+1. **SPA o HTMX**:
+   - HTMX para interactividad sin JavaScript complejo
+   - O React/Vue para SPA completa
+
+2. **PWA**:
+   - Service workers para offline reading
+   - Push notifications para nuevos artículos
+
+3. **Accesibilidad**:
+   - ARIA labels
+   - Navegación por teclado
+   - Contraste WCAG AA
+
+### Seguridad
+1. **Rate limiting**: `django-ratelimit` en login y comentarios
+2. **WAF**: Cloudflare o AWS WAF
+3. **Backups automáticos**: Scripts de backup de BD y media
+4. **Secrets management**: AWS Secrets Manager o HashiCorp Vault
+
+### Testing
+1. **Suite de tests completa**:
+   - Unit tests para services
+   - Integration tests para import_blogs
+   - E2E tests con Selenium/Playwright
+
+2. **Coverage**: Meta de 80%+
+
+### Observabilidad
+1. **APM**: New Relic, Datadog o Sentry
+2. **Métricas**: Prometheus + Grafana
+3. **Alertas**: PagerDuty o OpsGenie
+
+### Features
+1. **Webhooks**: Para eventos de publicación
+2. **WebAssembly**: Procesamiento de imágenes client-side
+3. **GraphQL**: API más flexible que REST
+4. **Multi-idioma**: i18n con Django's i18n framework
+5. **A/B testing**: Para títulos y featured images
+6. **Analytics**: Integración con Plausible o self-hosted Matomo
+7. **Search**: Algolia o Typesense para búsqueda instantánea
+
+---
+
+# 17. Resumen ejecutivo
+
+Este proyecto demuestra la capacidad de construir sistemas web completos, desde la base de datos hasta el despliegue en producción. No es un blog Django genérico: es una plataforma de publicación con arquitectura multi-capa, pipelines de procesamiento de contenido custom, sistema de moderación con aprobación por tokens, integración de códigos QR para distribución física, y notificaciones granulares por email.
+
+El desarrollador demuestra dominio de Django a nivel intermedio-avanzado: servicios desacoplados, comandos de gestión para ETL, ORM optimizado con índices estratégicos, y configuración multi-ambiente sensible. La elección de mantener los archivos Markdown como fuente de verdad, en lugar de depender exclusivamente de la base de datos, refleja comprensión de arquitecturas Git-friendly y versionado de contenido.
+
+En frontend, implementa un sistema de bloques especiales en Markdown que va más allá del formato básico, demostrando capacidad de extender parsers y diseñar lenguajes de contenido custom. El sistema de QR codes para artículos físicos muestra pensamiento omnicanal y atención a casos de uso reales de distribución de contenido.
+
+En infraestructura, el despliegue en DigitalOcean con Nginx + Gunicorn, HTTPS con Certbot, y configuración por variables de entorno indica experiencia en puesta en producción. La documentación de procedimientos y scripts de mantenimiento sugiere mentalidad de operaciones.
+
+El proyecto tiene margen de crecimiento hacia arquitectura API-first con DRF, procesamiento asíncrono con Celery, y containerización con Docker, pero como está, es un sistema funcional, mantenible y listo para producción que resuelve problemas reales de publicación y moderación de contenido.
+
+**Evaluación objetiva**: El desarrollador construyó un sistema end-to-end con separación de responsabilidades, no un blog tutorial. La complejidad está en los detalles: merge inteligente de frontmatter, desvinculación automática de QRs, flujo de aprobación con tokens, y pipelines de importación que sincronizan fuentes de archivos con bases de datos. Eso requiere comprensión sólida de Django, patrones de diseño, y operaciones en producción.
